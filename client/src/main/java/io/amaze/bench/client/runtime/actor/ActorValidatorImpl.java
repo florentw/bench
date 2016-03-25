@@ -1,0 +1,133 @@
+package io.amaze.bench.client.runtime.actor;
+
+import io.amaze.bench.client.api.actor.After;
+import io.amaze.bench.client.api.actor.Before;
+import io.amaze.bench.client.api.actor.Reactor;
+import io.amaze.bench.client.api.actor.Sender;
+
+import javax.validation.constraints.NotNull;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
+
+
+/**
+ * Created on 3/1/16.
+ *
+ * @author Florent Weber (florent.weber@gmail.com)
+ */
+final class ActorValidatorImpl implements ActorValidator {
+
+    private static final String VALIDATION_MSG = "Validation failed for class \"%s\".";
+    private static final String LOAD_MSG = "Could not load class \"%s\".";
+
+    ActorValidatorImpl() {
+        // Should not be instantiated
+    }
+
+    @Override
+    @NotNull
+    public Class<? extends Reactor> loadAndValidate(@NotNull final String className) throws ValidationException {
+
+        // Loading
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (Exception e) {
+            throw ValidationException.create(String.format(LOAD_MSG, className), e);
+        }
+
+        // Validation
+        Verify verify = new Verify(clazz);
+        verify.mustImplementReactor();
+        verify.mustHaveAPublicConstructor();
+        verify.mustNotBeAbstract();
+        verify.mustDeclareActor();
+        verify.mustNotImplementSender();
+        verify.canDeclareOneBeforeMethod();
+        verify.canDeclareOneAfterMethod();
+
+        if (!verify.causes().isEmpty()) {
+            throw ValidationException.create(String.format(VALIDATION_MSG, className), verify.causes());
+        }
+
+        return verify.resultingClass();
+    }
+
+    private static final class Verify {
+
+        private final List<Exception> causes = new ArrayList<>();
+        private final Class<?> inputActorClass;
+
+        private Class<? extends Reactor> typedOutputClass;
+
+        Verify(final Class<?> inputActorClass) {
+            this.inputActorClass = inputActorClass;
+        }
+
+        @NotNull
+        List<Exception> causes() {
+            return causes;
+        }
+
+        Class<? extends Reactor> resultingClass() {
+            return typedOutputClass;
+        }
+
+        void mustHaveAPublicConstructor() {
+            if (inputActorClass.getConstructors().length == 0) {
+                causes.add(new IllegalArgumentException("An actor class have at least one public constructor."));
+            }
+        }
+
+        void mustNotBeAbstract() {
+            if (Modifier.isAbstract(inputActorClass.getModifiers())) {
+                causes.add(new IllegalArgumentException("An actor class must not be abstract"));
+            }
+        }
+
+        void mustDeclareActor() {
+            if (inputActorClass.getAnnotation(io.amaze.bench.client.api.actor.Actor.class) == null) {
+                causes.add(new IllegalArgumentException("An actor class must have annotation @" + io.amaze.bench.client.api.actor.Actor.class.getName()));
+            }
+        }
+
+        void canDeclareOneAfterMethod() {
+            try {
+                findAtMostOneAnnotatedMethod(inputActorClass, After.class);
+            } catch (IllegalArgumentException e) {
+                causes.add(e);
+            }
+        }
+
+        void canDeclareOneBeforeMethod() {
+            try {
+                findAtMostOneAnnotatedMethod(inputActorClass, Before.class);
+            } catch (IllegalArgumentException e) {
+                causes.add(e);
+            }
+        }
+
+        void mustNotImplementSender() {
+            boolean failed = true;
+            try {
+                inputActorClass.asSubclass(Sender.class);
+            } catch (ClassCastException e) { // NOSONAR
+                failed = false;
+            }
+            if (failed) {
+                causes.add(new IllegalArgumentException("An actor class must not implement " + Sender.class.getName()));
+            }
+        }
+
+        void mustImplementReactor() {
+            try {
+                this.typedOutputClass = inputActorClass.asSubclass(Reactor.class);
+            } catch (ClassCastException e) { // NOSONAR
+                causes.add(new IllegalArgumentException("An actor class must implement " + Reactor.class.getName()));
+            }
+        }
+    }
+}
