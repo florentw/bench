@@ -47,7 +47,7 @@ public class ForkedActorManagerTest {
 
     private ForkedActorManager actorManager;
 
-    private static void verifyFileContentWithin(String fileName, String expectedContent, long timeout, TimeUnit unit) {
+    private static void verifyFileContentWithin(File file, String expectedContent, long timeout, TimeUnit unit) {
 
         long timeoutMs = unit.toMillis(timeout);
         long t0 = System.currentTimeMillis();
@@ -56,7 +56,7 @@ public class ForkedActorManagerTest {
         while ((current - t0) < timeoutMs) {
             String content = null;
             try {
-                content = FileHelper.readFile(fileName);
+                content = FileHelper.readFile(file.getAbsolutePath());
             } catch (IOException e) {
                 Throwables.propagate(e);
             }
@@ -68,7 +68,7 @@ public class ForkedActorManagerTest {
             current = System.currentTimeMillis();
         }
 
-        fail("Condition not verified on time: " + fileName + " did not contain " + expectedContent + " within " + timeoutMs + "ms");
+        fail("Condition not verified on time: " + file.getAbsolutePath() + " did not contain " + expectedContent + " within " + timeoutMs + "ms");
     }
 
     @Before
@@ -95,29 +95,34 @@ public class ForkedActorManagerTest {
         assertNotNull(actor);
         assertThat(actor.name(), is(DUMMY_ACTOR));
 
-        verifyFileContentWithin(rdvFile.getAbsolutePath(), TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFile, TestActorWriter.OK, 20, TimeUnit.SECONDS);
         actorManager.close();
     }
 
     @Test
     public void close_actor_after_called_and_watchdog_detects() throws ValidationException, IOException, InterruptedException {
-        File rdvFile = folder.newFile();
+        File rdvFileInit = folder.newFile();
+        File rdvFileAfter = folder.newFile();
+
         String jsonConfig = "{" + //
                 "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"" + //
+                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + // For sync purposes
+                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFileAfter.getAbsolutePath() + "\"" + // To actually test
                 "}";
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
         ForkedActorManager.WatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
-        Thread.sleep(2000);
+        // Sync with process
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, 20, TimeUnit.SECONDS);
 
         actor.close();
 
-        verifyFileContentWithin(rdvFile.getAbsolutePath(), TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, 20, TimeUnit.SECONDS);
 
-        Thread.sleep(500);
+        // Here we sleep a little bit to let time for the forked JVM to die
+        Thread.sleep(1000); // NOSONAR
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasExited(), is(true));
@@ -127,41 +132,46 @@ public class ForkedActorManagerTest {
 
     @Test
     public void close_actor_twice() throws ValidationException, IOException, InterruptedException {
-        File rdvFile = folder.newFile();
+        File rdvFileInit = folder.newFile();
+        File rdvFileAfter = folder.newFile();
+
         String jsonConfig = "{" + //
                 "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"" + //
+                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + // For sync purposes
+                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFileAfter.getAbsolutePath() + "\"" + // To actually test
                 "}";
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
-        Thread.sleep(2000);
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, 20, TimeUnit.SECONDS);
 
         actor.close();
         actor.close();
 
-        verifyFileContentWithin(rdvFile.getAbsolutePath(), TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, 20, TimeUnit.SECONDS);
 
         actorManager.close();
     }
 
-
     @Test
     public void close_manager_closes_actor() throws ValidationException, IOException, InterruptedException {
-        File rdvFile = folder.newFile();
+        File rdvFileInit = folder.newFile();
+        File rdvFileAfter = folder.newFile();
+
         String jsonConfig = "{" + //
                 "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"" + //
+                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + // For sync purposes
+                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFileAfter.getAbsolutePath() + "\"" + // To actually test
                 "}";
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
         assertNotNull(actor);
 
-        Thread.sleep(2000);
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, 20, TimeUnit.SECONDS);
 
         actorManager.close();
 
-        verifyFileContentWithin(rdvFile.getAbsolutePath(), TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, 20, TimeUnit.SECONDS);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -169,8 +179,8 @@ public class ForkedActorManagerTest {
         AgentTest.DummyClientFactory factory = new AgentTest.DummyClientFactory(null, null);
         File folder = this.folder.newFolder();
         File localLogDir = spy(folder);
-        doReturn(false).when(localLogDir).mkdirs();
-        doReturn(false).when(localLogDir).exists();
+        doReturn(false).when(localLogDir).mkdirs(); // NOSONAR
+        doReturn(false).when(localLogDir).exists(); // NOSONAR
 
         actorManager = new ForkedActorManager(new ActorFactory(factory), localLogDir);
     }
