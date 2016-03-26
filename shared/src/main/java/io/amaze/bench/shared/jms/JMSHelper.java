@@ -16,13 +16,17 @@ public final class JMSHelper {
         // Helper class
     }
 
-    public static Serializable objectFromMsg(@NotNull final BytesMessage message) throws JMSException, IOException, ClassNotFoundException {
-        byte[] rawData = new byte[(int) message.getBodyLength()];
-        message.readBytes(rawData);
-        return convertFromBytes(rawData);
+    public static Serializable objectFromMsg(@NotNull final BytesMessage message) throws IOException {
+        try {
+            byte[] rawData = new byte[(int) message.getBodyLength()];
+            message.readBytes(rawData);
+            return convertFromBytes(rawData);
+        } catch (JMSException e) {
+            throw new IOException(e);
+        }
     }
 
-    public static byte[] convertToBytes(@NotNull final Serializable object) throws IOException, ClassNotFoundException {
+    public static byte[] convertToBytes(@NotNull final Serializable object) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(object);
@@ -30,10 +34,12 @@ public final class JMSHelper {
         }
     }
 
-    private static Serializable convertFromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
+    private static Serializable convertFromBytes(byte[] bytes) throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
              ObjectInput in = new ObjectInputStream(bis)) {
             return (Serializable) in.readObject();
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
     }
 }

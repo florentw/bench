@@ -22,6 +22,10 @@ public final class SystemInfos {
         SYSTEM_INFO = factory.create();
     }
 
+    private SystemInfos() {
+        // Should not be instantiated
+    }
+
     public static SystemInfo get() {
         return SYSTEM_INFO;
     }

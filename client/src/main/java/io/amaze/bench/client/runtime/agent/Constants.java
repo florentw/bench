@@ -13,4 +13,8 @@ public final class Constants {
 
     public static final String LOG_DIRECTORY_NAME = "logs";
 
+    private Constants() {
+        // Should not be instantiated
+    }
+
 }
