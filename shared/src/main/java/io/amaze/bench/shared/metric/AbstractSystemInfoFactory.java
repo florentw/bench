@@ -37,7 +37,7 @@ abstract class AbstractSystemInfoFactory implements SystemInfoFactory {
         String hostName;
         try {
             hostName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException ignore) { // NOSONAR
             hostName = UNKNOWN_STRING_VALUE;
         }
         return hostName;

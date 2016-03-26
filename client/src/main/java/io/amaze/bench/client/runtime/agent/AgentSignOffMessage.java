@@ -11,6 +11,10 @@ final class AgentSignOffMessage {
 
     private static final String SIGN_OFF_COMMAND = "Bye";
 
+    private AgentSignOffMessage() {
+        // Should not be instantiated
+    }
+
     public static String create() {
         return SIGN_OFF_COMMAND;
     }

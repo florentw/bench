@@ -45,7 +45,7 @@ class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         try {
             content = FileHelper.readFile(filePath);
         } catch (IOException e) {
-            LOG.info("Could not read file: " + filePath);
+            LOG.info("Could not read file: " + filePath, e);
         }
         return content;
     }

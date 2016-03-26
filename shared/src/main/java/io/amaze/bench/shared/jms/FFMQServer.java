@@ -46,10 +46,8 @@ public final class FFMQServer implements JMSServer {
 
     private static void purgeQueuesAnTopicsProperties() throws JMSException {
         File tmpDir = new File(DATA_DIR_PATH);
-        if (!tmpDir.exists()) {
-            if (!tmpDir.mkdirs()) {
-                throw new JMSException("Could not createForAgent DATA_DIR for FFMQServer " + tmpDir.getAbsolutePath());
-            }
+        if (!tmpDir.exists() && !tmpDir.mkdirs()) {
+            throw new JMSException("Could not createForAgent DATA_DIR for FFMQServer " + tmpDir.getAbsolutePath());
         }
 
         String[] tmpProperties = tmpDir.list(new FilenameFilter() {
@@ -143,27 +141,27 @@ public final class FFMQServer implements JMSServer {
                                                       @NotNull final int port,
                                                       @NotNull final Settings settings) {
 
-        ClientListener tcpListener = new TcpListener(engine, host, port, settings, null);
-        ListenerThread listenerThread = new ListenerThread(host, port, tcpListener);
+        ClientListener localListener = new TcpListener(engine, host, port, settings, null);
+        ListenerThread listenerThread = new ListenerThread(host, port, localListener);
         listenerThread.start();
 
         int count = 200;
-        while (!listenerThread.hasFailed() && !tcpListener.isStarted() && count > 0) {
+        while (!listenerThread.hasFailed() && !localListener.isStarted() && count > 0) {
             Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
             count--;
         }
 
-        if (listenerThread.hasFailed() || !tcpListener.isStarted() || count == 0) {
+        if (listenerThread.hasFailed() || !localListener.isStarted() || count == 0) {
             throw Throwables.propagate(listenerThread.getException());
         }
 
-        return tcpListener;
+        return localListener;
     }
 
     private FFMQEngine initEngine(@NotNull final Settings settings) throws JMSException {
-        FFMQEngine engine = new FFMQEngine(ENGINE_NAME, settings);
-        engine.deploy();
-        return engine;
+        FFMQEngine localEngine = new FFMQEngine(ENGINE_NAME, settings);
+        localEngine.deploy();
+        return localEngine;
     }
 
     private Settings createSettings(@NotNull final String dataDirPath) {

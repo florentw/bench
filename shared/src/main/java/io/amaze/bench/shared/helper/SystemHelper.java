@@ -12,6 +12,10 @@ public final class SystemHelper {
 
     private static final String OS_NAME_LINUX = "Linux";
 
+    private SystemHelper() {
+        // Should not be instantiated
+    }
+
     public static boolean isLinux() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         return osBean.getName().contains(OS_NAME_LINUX);

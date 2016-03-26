@@ -3,6 +3,8 @@ package io.amaze.bench.shared.jms;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.timewalker.ffmq3.FFMQConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -18,6 +20,8 @@ import java.util.Hashtable;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 public class FFMQClient implements JMSClient {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FFMQClient.class);
 
     private static final int MAX_CACHE_SIZE = 100;
 
@@ -94,7 +98,7 @@ public class FFMQClient implements JMSClient {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws JMSException {
         synchronized (queueProducers) {
             queueProducers.cleanUp();
         }
@@ -108,7 +112,8 @@ public class FFMQClient implements JMSClient {
         } finally {
             try {
                 conn.close();
-            } catch (JMSException ignore) {
+            } catch (JMSException e) {
+                LOG.debug("Error while closing JMS connection.", e);
             }
         }
     }
@@ -142,11 +147,11 @@ public class FFMQClient implements JMSClient {
     }
 
     private InitialContext initContext(@NotNull final String host, @NotNull final int port) throws NamingException {
-        InitialContext context;
-        Hashtable<String, Object> env = new Hashtable<>();
+        InitialContext localContext;
+        Hashtable<String, Object> env = new Hashtable<>(); // NOSONAR - No choice here...
         env.put(Context.INITIAL_CONTEXT_FACTORY, FFMQConstants.JNDI_CONTEXT_FACTORY);
         env.put(Context.PROVIDER_URL, String.format("tcp://%s:%d", host, port));
-        context = new InitialContext(env);
-        return context;
+        localContext = new InitialContext(env);
+        return localContext;
     }
 }
