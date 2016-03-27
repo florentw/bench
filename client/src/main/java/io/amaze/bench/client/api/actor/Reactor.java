@@ -8,16 +8,16 @@ import java.io.Serializable;
 
 /**
  * Provides a listener on messages sent by other reactors.<br/>
- * The listener must be parametrized the type of the message class it accepts.<br/>
+ * The listener must be parametrized the type of the message class it accepts (parameter I).<br/>
  * <p/>
- * Input message class should be a pure data bean.<br/>
+ * I message class should be a pure data bean.<br/>
  * <p/>
  * Created on 2/28/16.
  *
  * @author Florent Weber (florent.weber@gmail.com)
  * @see io.amaze.bench.client.api.actor.Sender
  */
-public interface Reactor<Input extends Serializable> {
+public interface Reactor</** Input message type */I extends Serializable> {
 
     /**
      * The message dispatch/handling logic of an actor is to be implemented here.<br/>
@@ -27,6 +27,6 @@ public interface Reactor<Input extends Serializable> {
      * @param message Received payload, a data bean
      * @throws ReactorException Non-recoverable exceptions
      */
-    void onMessage(@NotNull String from, @NotNull Input message) throws ReactorException;
+    void onMessage(@NotNull String from, @NotNull I message) throws ReactorException;
 
 }
