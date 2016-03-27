@@ -38,6 +38,7 @@ import static org.mockito.Mockito.spy;
 public class ForkedActorManagerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForkedActorManagerTest.class);
+    private static final int MAX_TIMEOUT_SEC = 30;
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
@@ -95,7 +96,7 @@ public class ForkedActorManagerTest {
         assertNotNull(actor);
         assertThat(actor.name(), is(DUMMY_ACTOR));
 
-        verifyFileContentWithin(rdvFile, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
         actorManager.close();
     }
 
@@ -112,17 +113,17 @@ public class ForkedActorManagerTest {
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
-        ForkedActorManager.WatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
+        ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
         // Sync with process
-        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actor.close();
 
-        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         // Here we sleep a little bit to let time for the forked JVM to die
-        Thread.sleep(1000); // NOSONAR
+        Thread.sleep(2000); // NOSONAR
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasExited(), is(true));
@@ -143,12 +144,12 @@ public class ForkedActorManagerTest {
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
-        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actor.close();
         actor.close();
 
-        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actorManager.close();
     }
@@ -167,11 +168,11 @@ public class ForkedActorManagerTest {
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
         assertNotNull(actor);
 
-        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actorManager.close();
 
-        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, 20, TimeUnit.SECONDS);
+        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     @Test(expected = IllegalStateException.class)

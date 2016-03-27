@@ -36,7 +36,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private static final String TMP_CONFIG_FILE_PREFIX = "actor-config";
     private static final String TMP_CONFIG_FILE_SUFFIX = ".json";
 
-    private final Map<String, WatchDogThread> processes = new ConcurrentHashMap<>();
+    private final Map<String, ForkedActorWatchDogThread> processes = new ConcurrentHashMap<>();
     private final File localLogDir;
 
     ForkedActorManager(@NotNull final ActorFactory factory, @NotNull File localLogDir) {
@@ -63,7 +63,7 @@ final class ForkedActorManager extends AbstractActorManager {
 
             Process process = forkProcess(name, className, tempConfigFile.getAbsolutePath());
 
-            WatchDogThread thread = new WatchDogThread(name, process);
+            ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(name, process);
             thread.start();
             processes.put(name, thread);
         } catch (IOException e) {
@@ -78,7 +78,7 @@ final class ForkedActorManager extends AbstractActorManager {
 
             @Override
             public void close() {
-                WatchDogThread thread = processes.remove(name);
+                ForkedActorWatchDogThread thread = processes.remove(name);
                 if (thread == null) {
                     return;
                 }
@@ -89,19 +89,19 @@ final class ForkedActorManager extends AbstractActorManager {
     }
 
     @VisibleForTesting
-    Map<String, WatchDogThread> getProcesses() {
+    Map<String, ForkedActorWatchDogThread> getProcesses() {
         return ImmutableMap.copyOf(processes);
     }
 
     @Override
     public void close() {
-        for (WatchDogThread thread : processes.values()) {
+        for (ForkedActorWatchDogThread thread : processes.values()) {
             terminateProcess(thread);
         }
         processes.clear();
     }
 
-    private void terminateProcess(final WatchDogThread thread) {
+    private void terminateProcess(final ForkedActorWatchDogThread thread) {
         thread.close();
         thread.getProcess().destroy();
         Uninterruptibles.joinUninterruptibly(thread);
@@ -129,56 +129,6 @@ final class ForkedActorManager extends AbstractActorManager {
         LOG.info("Started process with command " + builder.command() + ", logging to " + actorLogFileName);
 
         return builder.start();
-    }
-
-    static class WatchDogThread extends Thread {
-
-        private static final Logger LOG = LoggerFactory.getLogger(WatchDogThread.class);
-
-        private final String name;
-        private final Process process;
-
-        private volatile boolean doWork = true;
-        private volatile boolean exited = false;
-
-        private WatchDogThread(final String name, final Process process) {
-            this.name = name;
-            this.process = process;
-            setName("WatchDog-" + name);
-        }
-
-        Process getProcess() {
-            return process;
-        }
-
-        public void close() {
-            doWork = false;
-        }
-
-        @Override
-        public void run() {
-            LOG.info(this + " Watching process " + process + "...");
-
-            while (doWork && !exited) {
-                try {
-                    int exitCode = process.waitFor();
-                    exited = true;
-                    LOG.info(this + " Exited with code " + exitCode + ".");
-                } catch (InterruptedException ignored) { // NOSONAR
-                }
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "WatchDogThread{" +
-                    '\'' + name + '\'' +
-                    '}';
-        }
-
-        boolean hasExited() {
-            return exited;
-        }
     }
 
 }
