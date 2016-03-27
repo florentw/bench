@@ -3,7 +3,6 @@ package io.amaze.bench.shared.jms;
 import com.google.common.annotations.VisibleForTesting;
 
 import javax.jms.BytesMessage;
-import javax.jms.JMSException;
 import javax.validation.constraints.NotNull;
 import java.io.*;
 
@@ -23,7 +22,7 @@ public final class JMSHelper {
             byte[] rawData = new byte[(int) message.getBodyLength()];
             message.readBytes(rawData);
             return convertFromBytes(rawData);
-        } catch (JMSException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }

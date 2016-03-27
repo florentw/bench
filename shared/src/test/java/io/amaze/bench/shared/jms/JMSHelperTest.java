@@ -22,6 +22,8 @@ import static org.mockito.Mockito.when;
  */
 public class JMSHelperTest {
 
+    private static final String DUMMY = "TEST";
+
     public static BytesMessage createTestBytesMessage(final byte[] data) throws JMSException {
         BytesMessage msg = mock(BytesMessage.class);
         when(msg.getBodyLength()).thenReturn((long) data.length);
@@ -38,7 +40,7 @@ public class JMSHelperTest {
 
     @Test
     public void serialize_deserialize() throws IOException {
-        String expected = "TEST";
+        String expected = DUMMY;
         byte[] data = JMSHelper.convertToBytes(expected);
         Serializable actual = JMSHelper.convertFromBytes(data);
 
@@ -47,12 +49,18 @@ public class JMSHelperTest {
 
     @Test
     public void serialize_deserialize_through_bytes_message() throws IOException, JMSException {
-        String expected = "TEST";
+        String expected = DUMMY;
         byte[] data = JMSHelper.convertToBytes(expected);
         BytesMessage bytesMessage = createTestBytesMessage(data);
         Serializable actual = JMSHelper.objectFromMsg(bytesMessage);
 
         assertThat((String) actual, is(expected));
+    }
+
+    @Test(expected = IOException.class)
+    public void serialize_deserialize_corrupted_data_through_bytes_message() throws IOException, JMSException {
+        BytesMessage bytesMessage = createTestBytesMessage(new byte[3]);
+        JMSHelper.objectFromMsg(bytesMessage);
     }
 
     @Test
