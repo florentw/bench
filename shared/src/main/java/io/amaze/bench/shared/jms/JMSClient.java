@@ -60,4 +60,7 @@ public interface JMSClient extends AutoCloseable {
      */
     void sendToTopic(@NotNull String topicName, @NotNull Serializable msg) throws JMSException;
 
+    @Override
+    void close();
+
 }

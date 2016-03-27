@@ -1,5 +1,6 @@
 package io.amaze.bench.shared.jms;
 
+import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.timewalker.ffmq3.FFMQConstants;
@@ -97,11 +98,11 @@ public class FFMQClient implements JMSClient {
     }
 
     @Override
-    public void close() throws JMSException {
+    public void close() {
         try {
             internalClose();
         } catch (javax.jms.JMSException e) {
-            throw new JMSException(e);
+            throw Throwables.propagate(e);
         }
     }
 

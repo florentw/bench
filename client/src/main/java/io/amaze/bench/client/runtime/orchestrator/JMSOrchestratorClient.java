@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
@@ -19,6 +20,11 @@ import java.io.Serializable;
 final class JMSOrchestratorClient implements OrchestratorClient {
 
     private final JMSClient client;
+
+    @VisibleForTesting
+    JMSOrchestratorClient(@NotNull final JMSClient client) {
+        this.client = client;
+    }
 
     JMSOrchestratorClient(@NotNull final String host, @NotNull final int port) {
         try {
@@ -44,6 +50,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     public void startActorListener(@NotNull final Actor actor) {
         try {
             client.addQueueListener(actor.name(), new JMSActorMessageListener(actor));
+            client.startListening();
         } catch (JMSException e) {
             throw Throwables.propagate(e);
         }
@@ -59,7 +66,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         client.close();
     }
 

@@ -23,4 +23,6 @@ public interface OrchestratorClient extends AutoCloseable {
 
     void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message);
 
+    @Override
+    void close();
 }

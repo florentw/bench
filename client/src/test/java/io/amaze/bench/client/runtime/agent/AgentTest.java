@@ -232,15 +232,15 @@ public class AgentTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             // Dummy
         }
 
-        public boolean isAgentListenerStarted() {
+        boolean isAgentListenerStarted() {
             return agentListenerStarted;
         }
 
-        public boolean isActorListenerStarted() {
+        boolean isActorListenerStarted() {
             return actorListenerStarted;
         }
 
