@@ -42,13 +42,21 @@ class JMSAgentMessageListener implements MessageListener {
 
         switch (msg.getAction()) { // NOSONAR
             case CREATE_ACTOR:
-                ActorCreationRequest data = (ActorCreationRequest) msg.getData();
-                listener.onActorCreationRequest(data.getActor(), data.getClassName(), data.getJsonConfig());
+                createActor(msg);
                 break;
             case CLOSE_ACTOR:
-                String aToClose = (String) msg.getData();
-                listener.onActorCloseRequest(aToClose);
+                closeActor(msg);
                 break;
         }
+    }
+
+    private void closeActor(final AgentInputMessage msg) {
+        String aToClose = (String) msg.getData();
+        listener.onActorCloseRequest(aToClose);
+    }
+
+    private void createActor(final AgentInputMessage msg) {
+        ActorCreationRequest data = (ActorCreationRequest) msg.getData();
+        listener.onActorCreationRequest(data.getActor(), data.getClassName(), data.getJsonConfig());
     }
 }
