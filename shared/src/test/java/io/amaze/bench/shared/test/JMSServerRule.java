@@ -2,14 +2,8 @@ package io.amaze.bench.shared.test;
 
 import com.google.common.base.Throwables;
 import io.amaze.bench.shared.helper.NetworkHelper;
-import io.amaze.bench.shared.jms.FFMQClient;
-import io.amaze.bench.shared.jms.FFMQServer;
-import io.amaze.bench.shared.jms.JMSClient;
-import io.amaze.bench.shared.jms.JMSServer;
+import io.amaze.bench.shared.jms.*;
 import org.junit.rules.ExternalResource;
-
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 
 /**
  * Junit 4 rule that provides an embedded JMSServer for tests.
@@ -20,7 +14,7 @@ import javax.naming.NamingException;
  */
 public class JMSServerRule extends ExternalResource {
 
-    public static final String DEFAULT_HOST = "localhost";
+    public static final String DEFAULT_HOST = NetworkHelper.LOCALHOST;
 
     private JMSServer server;
     private int port;
@@ -34,7 +28,7 @@ public class JMSServerRule extends ExternalResource {
     }
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         port = NetworkHelper.findFreePort();
         try {
             server = new FFMQServer(DEFAULT_HOST, port);
@@ -61,7 +55,7 @@ public class JMSServerRule extends ExternalResource {
     public JMSClient createClient() {
         try {
             return new FFMQClient(DEFAULT_HOST, port);
-        } catch (NamingException | JMSException e) {
+        } catch (JMSException e) {
             throw Throwables.propagate(e);
         }
     }

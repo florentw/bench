@@ -11,6 +11,8 @@ import java.net.ServerSocket;
  */
 public final class NetworkHelper {
 
+    public static final String LOCALHOST = "localhost";
+
     private NetworkHelper() {
         // Helper class
     }

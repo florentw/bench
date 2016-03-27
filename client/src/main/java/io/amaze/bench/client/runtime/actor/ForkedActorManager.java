@@ -67,7 +67,7 @@ final class ForkedActorManager extends AbstractActorManager {
             thread.start();
             processes.put(name, thread);
         } catch (IOException e) {
-            Throwables.propagate(e);
+            throw Throwables.propagate(e);
         }
 
         return new ManagedActor() {

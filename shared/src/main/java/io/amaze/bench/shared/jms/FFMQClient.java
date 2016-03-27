@@ -35,54 +35,98 @@ public class FFMQClient implements JMSClient {
     private final Session session;
     private final Connection conn;
 
-    public FFMQClient(@NotNull final String host, @NotNull final int port) throws NamingException, JMSException {
-
-        context = initContext(host, port);
-        conn = initConnection();
-        session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    public FFMQClient(@NotNull final String host, @NotNull final int port) throws JMSException {
+        try {
+            context = initContext(host, port);
+            conn = initConnection();
+            session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        } catch (Exception e) {
+            throw new JMSException(e);
+        }
     }
 
     @Override
     public void startListening() throws JMSException {
-        conn.start();
+        try {
+            conn.start();
+        } catch (javax.jms.JMSException e) {
+            throw new JMSException(e);
+        }
     }
 
     @Override
     public void addQueueListener(@NotNull final String listenerQueueName,
-                                 @NotNull final MessageListener listener) throws NamingException, JMSException {
-        Queue listenerQueue = lookupQueue(listenerQueueName);
-        MessageConsumer messageConsumer = session.createConsumer(listenerQueue);
-        messageConsumer.setMessageListener(listener);
+                                 @NotNull final MessageListener listener) throws JMSException {
+        try {
+            Queue listenerQueue = lookupQueue(listenerQueueName);
+            MessageConsumer messageConsumer = session.createConsumer(listenerQueue);
+            messageConsumer.setMessageListener(listener);
+        } catch (NamingException | javax.jms.JMSException e) {
+            throw new JMSException(e);
+        }
     }
 
     @Override
     public void addTopicListener(@NotNull final String listenerTopicName,
-                                 @NotNull final MessageListener listener) throws NamingException, JMSException {
-        Topic listenerTopic = lookupTopic(listenerTopicName);
-        MessageConsumer messageConsumer = session.createConsumer(listenerTopic);
-        messageConsumer.setMessageListener(listener);
+                                 @NotNull final MessageListener listener) throws JMSException {
+        try {
+            Topic listenerTopic = lookupTopic(listenerTopicName);
+            MessageConsumer messageConsumer = session.createConsumer(listenerTopic);
+            messageConsumer.setMessageListener(listener);
+        } catch (NamingException | javax.jms.JMSException e) {
+            throw new JMSException(e);
+        }
     }
 
     @Override
-    public void sendToQueue(@NotNull final String queueName,
-                            @NotNull final Serializable msg) throws NamingException, JMSException, InterruptedException, IOException, ClassNotFoundException {
-        MessageProducer producer;
+    public void sendToQueue(@NotNull final String queueName, @NotNull final Serializable msg) throws JMSException {
+        try {
+            internalSendToQueue(queueName, msg);
+        } catch (Exception e) {
+            throw new JMSException(e);
+        }
+    }
+
+    @Override
+    public void sendToTopic(@NotNull final String topicName, @NotNull final Serializable msg) throws JMSException {
+        try {
+            internalSendToTopic(topicName, msg);
+        } catch (Exception e) {
+            throw new JMSException(e);
+        }
+    }
+
+    @Override
+    public void close() throws JMSException {
+        try {
+            internalClose();
+        } catch (javax.jms.JMSException e) {
+            throw new JMSException(e);
+        }
+    }
+
+    private void internalClose() throws javax.jms.JMSException {
         synchronized (queueProducers) {
-            producer = queueProducers.getIfPresent(queueName);
-            if (producer == null) {
-                Queue queue = lookupQueue(queueName);
-                producer = session.createProducer(queue);
-                producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-                queueProducers.put(queueName, producer);
-            }
+            queueProducers.cleanUp();
         }
 
-        producer.send(objectToMessage(msg));
+        synchronized (topicProducers) {
+            topicProducers.cleanUp();
+        }
+
+        try {
+            session.close();
+        } finally {
+            try {
+                conn.close();
+            } catch (javax.jms.JMSException e) {
+                LOG.debug("Error while closing JMS connection.", e);
+            }
+        }
     }
 
-    @Override
-    public void sendToTopic(@NotNull final String topicName,
-                            @NotNull final Serializable msg) throws NamingException, JMSException, InterruptedException, IOException, ClassNotFoundException {
+    private void internalSendToTopic(@NotNull final String topicName,
+                                     @NotNull final Serializable msg) throws NamingException, javax.jms.JMSException, IOException, ClassNotFoundException {
         MessageProducer producer;
         synchronized (topicProducers) {
             producer = topicProducers.getIfPresent(topicName);
@@ -97,28 +141,23 @@ public class FFMQClient implements JMSClient {
         producer.send(objectToMessage(msg));
     }
 
-    @Override
-    public void close() throws JMSException {
+    private void internalSendToQueue(@NotNull final String queueName,
+                                     @NotNull final Serializable msg) throws NamingException, javax.jms.JMSException, IOException, ClassNotFoundException {
+        MessageProducer producer;
         synchronized (queueProducers) {
-            queueProducers.cleanUp();
-        }
-
-        synchronized (topicProducers) {
-            topicProducers.cleanUp();
-        }
-
-        try {
-            session.close();
-        } finally {
-            try {
-                conn.close();
-            } catch (JMSException e) {
-                LOG.debug("Error while closing JMS connection.", e);
+            producer = queueProducers.getIfPresent(queueName);
+            if (producer == null) {
+                Queue queue = lookupQueue(queueName);
+                producer = session.createProducer(queue);
+                producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+                queueProducers.put(queueName, producer);
             }
         }
+
+        producer.send(objectToMessage(msg));
     }
 
-    private BytesMessage objectToMessage(final Serializable payload) throws JMSException, IOException, ClassNotFoundException {
+    private BytesMessage objectToMessage(final Serializable payload) throws IOException, ClassNotFoundException, javax.jms.JMSException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutput out = new ObjectOutputStream(bos)) {
 
@@ -138,7 +177,7 @@ public class FFMQClient implements JMSClient {
         return (Topic) context.lookup(JNDI_TOPIC_PREFIX + topic);
     }
 
-    private Connection initConnection() throws NamingException, JMSException {
+    private Connection initConnection() throws NamingException, javax.jms.JMSException {
         // Lookup a connection factory in the context
         ConnectionFactory connFactory = (ConnectionFactory) context.lookup(FFMQConstants.JNDI_CONNECTION_FACTORY_NAME);
 

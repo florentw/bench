@@ -10,15 +10,15 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import javax.jms.BytesMessage;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.naming.NameAlreadyBoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static io.amaze.bench.shared.helper.NetworkHelper.LOCALHOST;
+import static io.amaze.bench.shared.helper.NetworkHelper.findFreePort;
 import static io.amaze.bench.shared.jms.JMSServerTest.DUMMY_QUEUE;
 import static io.amaze.bench.shared.jms.JMSServerTest.DUMMY_TOPIC;
 import static junit.framework.TestCase.assertNotNull;
@@ -39,20 +39,48 @@ public class JMSClientServerTest {
     public JMSServerRule server = new JMSServerRule();
 
     @Before
-    public void before() throws NameAlreadyBoundException, JMSException {
+    public void before() throws JMSException {
         server.getServer().createQueue(DUMMY_QUEUE);
     }
 
     @Test
-    public void start_stop_client() throws Exception {
+    public void start_close_client() throws Exception {
         try (JMSClient client = new FFMQClient(server.getHost(), server.getPort())) {
             TestCase.assertNotNull(client);
         }
     }
 
+    @Test(expected = JMSException.class)
+    public void start_client_with_wrong_endpoint_throws() throws Exception {
+        new FFMQClient(LOCALHOST, findFreePort());
+    }
+
     @Test
-    public void client_starts_listening_with_no_listener_throws() throws Exception {
+    public void close_client_after_server_closed_does_not_throw() throws Exception {
+        JMSClient client = new FFMQClient(server.getHost(), server.getPort());
+        server.getServer().close();
+        client.close();
+    }
+
+    @Test
+    public void close_client_twice_does_not_throw() throws Exception {
+        JMSClient client = new FFMQClient(server.getHost(), server.getPort());
+        server.getServer().close();
+        client.close();
+        client.close();
+    }
+
+    @Test
+    public void client_starts_listening_with_no_listener_does_not_throw() throws Exception {
         try (JMSClient client = server.createClient()) {
+            client.startListening();
+        }
+    }
+
+    @Test(expected = JMSException.class)
+    public void client_starts_listening_after_closing_server_throws() throws Exception {
+        try (JMSClient client = server.createClient()) {
+            server.getServer().close();
             client.startListening();
         }
     }
@@ -79,8 +107,14 @@ public class JMSClientServerTest {
     @Test
     public void client_sends_to_unknown_queue_does_not_throw() throws Exception {
         try (JMSClient client = server.createClient()) {
+            client.sendToQueue("None", DUMMY_PAYLOAD);
+        }
+    }
 
-            assertNotNull(server);
+    @Test(expected = JMSException.class)
+    public void client_sends_to_queue_after_server_closed_throws() throws Exception {
+        try (JMSClient client = server.createClient()) {
+            server.getServer().close();
             client.sendToQueue("None", DUMMY_PAYLOAD);
         }
     }
@@ -149,6 +183,14 @@ public class JMSClientServerTest {
 
             assertNotNull(server);
             client.sendToTopic(DUMMY_TOPIC, DUMMY_PAYLOAD);
+        }
+    }
+
+    @Test(expected = JMSException.class)
+    public void client_sends_to_topic_after_server_closed_throws() throws Exception {
+        try (JMSClient client = server.createClient()) {
+            server.getServer().close();
+            client.sendToTopic("None", DUMMY_PAYLOAD);
         }
     }
 

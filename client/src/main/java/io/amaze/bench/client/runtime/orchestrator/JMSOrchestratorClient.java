@@ -6,11 +6,9 @@ import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSException;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -25,8 +23,8 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     JMSOrchestratorClient(@NotNull final String host, @NotNull final int port) {
         try {
             client = new FFMQClient(host, port);
-        } catch (NamingException | JMSException e) {
-            throw Throwables.propagate(e); // FIXME TYPED ?
+        } catch (JMSException e) {
+            throw Throwables.propagate(e);
         }
     }
 
@@ -37,8 +35,8 @@ final class JMSOrchestratorClient implements OrchestratorClient {
         try {
             client.addTopicListener(agentsTopicName, new JMSAgentMessageListener(agentName, listener));
             client.startListening();
-        } catch (NamingException | JMSException e) {
-            throw Throwables.propagate(e); // FIXME TYPED ?
+        } catch (JMSException e) {
+            throw Throwables.propagate(e);
         }
     }
 
@@ -46,8 +44,8 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     public void startActorListener(@NotNull final Actor actor) {
         try {
             client.addQueueListener(actor.name(), new JMSActorMessageListener(actor));
-        } catch (NamingException | JMSException e) {
-            throw Throwables.propagate(e); // FIXME TYPED ?
+        } catch (JMSException e) {
+            throw Throwables.propagate(e);
         }
     }
 
@@ -55,9 +53,8 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
         try {
             client.sendToQueue(to, message);
-        } catch (NamingException | JMSException | IOException |
-                InterruptedException | ClassNotFoundException e) {
-            Throwables.propagate(e); // FIXME TYPED ?
+        } catch (JMSException e) {
+            throw Throwables.propagate(e);
         }
     }
 

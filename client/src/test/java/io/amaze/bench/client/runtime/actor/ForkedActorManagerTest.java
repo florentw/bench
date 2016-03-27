@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.AgentTest;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.shared.helper.FileHelper;
+import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
 import org.junit.Before;
@@ -15,8 +16,6 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
-import javax.naming.NameAlreadyBoundException;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +72,7 @@ public class ForkedActorManagerTest {
     }
 
     @Before
-    public void before() throws NameAlreadyBoundException, JMSException {
+    public void before() throws JMSException {
         AgentTest.RecorderOrchestratorClient client = spy(new AgentTest.RecorderOrchestratorClient());
 
         AgentTest.DummyClientFactory factory = new AgentTest.DummyClientFactory(null, client);

@@ -1,10 +1,7 @@
 package io.amaze.bench.shared.jms;
 
-import javax.jms.JMSException;
 import javax.jms.MessageListener;
-import javax.naming.NamingException;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -23,15 +20,44 @@ public interface JMSClient extends AutoCloseable {
      */
     void startListening() throws JMSException;
 
-    void addQueueListener(@NotNull String listenerQueueName,
-                          @NotNull MessageListener listener) throws NamingException, JMSException;
+    /**
+     * Registers a queue listener with the given {@link MessageListener}.<br/>
+     * The listener object will then be notified of any new message once {@link #startListening()} is called.<br/>
+     * Calls to this method after {@link #startListening()} was invoked will have no effect.
+     *
+     * @param listenerQueueName JMS queue to listen to
+     * @param listener          Listener to be notified
+     * @throws JMSException
+     */
+    void addQueueListener(@NotNull String listenerQueueName, @NotNull MessageListener listener) throws JMSException;
 
-    void addTopicListener(@NotNull String listenerTopicName,
-                          @NotNull MessageListener listener) throws NamingException, JMSException;
+    /**
+     * Registers a topic listener with the given {@link MessageListener}.<br/>
+     * The listener object will then be notified of any new message once {@link #startListening()} is called.<br/>
+     * Calls to this method after {@link #startListening()} was invoked will have no effect.
+     *
+     * @param listenerTopicName JMS topic to listen to
+     * @param listener          Listener to be notified
+     * @throws JMSException
+     */
+    void addTopicListener(@NotNull String listenerTopicName, @NotNull MessageListener listener) throws JMSException;
 
-    void sendToQueue(@NotNull String queueName,
-                     @NotNull Serializable msg) throws NamingException, JMSException, InterruptedException, IOException, ClassNotFoundException;
+    /**
+     * Sends a {@link Serializable} message to the specified JMS queue.
+     *
+     * @param queueName Destination JMS queue
+     * @param msg       The message to send
+     * @throws JMSException
+     */
+    void sendToQueue(@NotNull String queueName, @NotNull Serializable msg) throws JMSException;
 
-    void sendToTopic(@NotNull String topicName,
-                     @NotNull Serializable msg) throws NamingException, JMSException, InterruptedException, IOException, ClassNotFoundException;
+    /**
+     * Sends a {@link Serializable} message to the specified JMS topic.
+     *
+     * @param topicName Destination JMS topc
+     * @param msg       The message to send
+     * @throws JMSException
+     */
+    void sendToTopic(@NotNull String topicName, @NotNull Serializable msg) throws JMSException;
+
 }

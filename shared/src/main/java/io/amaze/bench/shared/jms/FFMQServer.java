@@ -1,5 +1,6 @@
 package io.amaze.bench.shared.jms;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.timewalker.ffmq3.FFMQCoreSettings;
@@ -17,6 +18,7 @@ import javax.naming.NameAlreadyBoundException;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,47 +28,115 @@ import java.util.concurrent.TimeUnit;
  */
 public final class FFMQServer implements JMSServer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FFMQServer.class);
+    @VisibleForTesting
+    static final String DATA_DIR_PATH = "tmp";
+    @VisibleForTesting
+    static final String PROP_SUFFIX = ".properties";
+    @VisibleForTesting
+    static final String QUEUE_PREFIX = "queue-";
+    @VisibleForTesting
+    static final String TOPIC_PREFIX = "topic-";
 
+    private static final Logger LOG = LoggerFactory.getLogger(FFMQServer.class);
     private static final String ENGINE_NAME = "FFMQ";
     private static final int MAX_NON_PERSISTENT_MESSAGES = 1000;
-    private static final String DATA_DIR_PATH = "tmp/";
 
     private final FFMQEngine engine;
     private final ClientListener tcpListener;
     private final Object queuesLock = new Object();
 
-    public FFMQServer(@NotNull final String host, @NotNull final int port) throws JMSException {
-        purgeQueuesAnTopicsProperties();
+    public FFMQServer(@NotNull final String host,
+                      @NotNull final int port) throws io.amaze.bench.shared.jms.JMSException {
+        try {
+            purgeQueuesAnTopicsProperties();
 
-        Settings settings = createSettings(DATA_DIR_PATH);
-        engine = initEngine(settings);
-        tcpListener = startListenerSynchronously(host, port, settings);
+            Settings settings = createSettings(DATA_DIR_PATH);
+            engine = initEngine(settings);
+            tcpListener = startListenerSynchronously(host, port, settings);
+        } catch (Exception e) {
+            throw new io.amaze.bench.shared.jms.JMSException(e);
+        }
     }
 
-    private static void purgeQueuesAnTopicsProperties() throws JMSException {
+    @Override
+    public void createQueue(@NotNull final String name) throws io.amaze.bench.shared.jms.JMSException {
+        try {
+            internalCreateQueue(name);
+        } catch (Exception e) {
+            throw new io.amaze.bench.shared.jms.JMSException(e);
+        }
+    }
+
+    @Override
+    public void createTopic(@NotNull final String name) throws io.amaze.bench.shared.jms.JMSException {
+        try {
+            internalCreateTopic(name);
+        } catch (Exception e) {
+            throw new io.amaze.bench.shared.jms.JMSException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteQueue(@NotNull final String queue) {
+        try {
+            engine.deleteQueue(queue);
+            return true;
+        } catch (Exception e) {
+            LOG.debug("Error while deleting queue " + queue, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteTopic(@NotNull final String topic) {
+        try {
+            engine.deleteTopic(topic);
+            return true;
+        } catch (Exception e) {
+            LOG.warn("Error while deleting topic " + topic, e);
+            return false;
+        }
+    }
+
+    @Override
+    public void close() {
+        synchronized (queuesLock) {
+            for (String queue : engine.getDestinationDefinitionProvider().getAllQueueNames()) {
+                deleteQueue(queue);
+            }
+
+            for (String topic : engine.getDestinationDefinitionProvider().getAllTopicNames()) {
+                deleteTopic(topic);
+            }
+
+            tcpListener.stop();
+            engine.undeploy();
+        }
+    }
+
+    private void purgeQueuesAnTopicsProperties() throws IOException {
         File tmpDir = new File(DATA_DIR_PATH);
         if (!tmpDir.exists() && !tmpDir.mkdirs()) {
-            throw new JMSException("Could not createForAgent DATA_DIR for FFMQServer " + tmpDir.getAbsolutePath());
+            throw new IOException("Could not create DATA_DIR for FFMQServer " + tmpDir.getAbsolutePath());
         }
 
         String[] tmpProperties = tmpDir.list(new FilenameFilter() {
             @Override
             public boolean accept(final File dir, final String name) {
-                return name.endsWith(".properties") && (name.startsWith("queue-") || name.startsWith("topic-"));
+                return (name.startsWith(QUEUE_PREFIX) || name.startsWith(TOPIC_PREFIX)) && //
+                        name.endsWith(PROP_SUFFIX);
             }
         });
 
         for (String fileName : tmpProperties) {
             File tmpFileToDelete = new File(tmpDir.getAbsolutePath() + File.separator + fileName);
             if (!tmpFileToDelete.delete()) {
-                throw new JMSException("Could not delete tmp file of FFMQServer " + tmpFileToDelete.getAbsolutePath());
+                throw new IOException("Could not delete tmp file of FFMQServer " + tmpFileToDelete.getAbsolutePath());
             }
         }
     }
 
-    @Override
-    public void createQueue(@NotNull final String name) throws JMSException, NameAlreadyBoundException {
+    private void internalCreateQueue(@NotNull final String name) throws JMSException, NameAlreadyBoundException {
         synchronized (queuesLock) {
             if (engine.getDestinationDefinitionProvider().hasQueueDefinition(name)) {
                 throw new NameAlreadyBoundException(String.format("The queue name '%s' is already in use.", name));
@@ -82,8 +152,7 @@ public final class FFMQServer implements JMSServer {
         }
     }
 
-    @Override
-    public void createTopic(@NotNull final String name) throws JMSException, NameAlreadyBoundException {
+    private void internalCreateTopic(@NotNull final String name) throws JMSException, NameAlreadyBoundException {
         synchronized (queuesLock) {
             if (engine.getDestinationDefinitionProvider().hasTopicDefinition(name)) {
                 throw new NameAlreadyBoundException(String.format("The topic name '%s' is already in use.", name));
@@ -96,44 +165,6 @@ public final class FFMQServer implements JMSServer {
             topicDef.setMaxNonPersistentMessages(MAX_NON_PERSISTENT_MESSAGES);
             topicDef.check();
             engine.createTopic(topicDef);
-        }
-    }
-
-    @Override
-    public boolean deleteQueue(@NotNull final String queue) {
-        try {
-            engine.deleteQueue(queue);
-            return true;
-        } catch (JMSException e) {
-            LOG.debug("Error while deleting queue " + queue, e);
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteTopic(@NotNull final String topic) {
-        try {
-            engine.deleteTopic(topic);
-            return true;
-        } catch (JMSException e) {
-            LOG.warn("Error while deleting topic " + topic, e);
-            return false;
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        synchronized (queuesLock) {
-            for (String queue : engine.getDestinationDefinitionProvider().getAllQueueNames()) {
-                deleteQueue(queue);
-            }
-
-            for (String topic : engine.getDestinationDefinitionProvider().getAllTopicNames()) {
-                deleteTopic(topic);
-            }
-
-            tcpListener.stop();
-            engine.undeploy();
         }
     }
 
@@ -173,7 +204,7 @@ public final class FFMQServer implements JMSServer {
         return settings;
     }
 
-    private static class ListenerThread extends Thread {
+    private static final class ListenerThread extends Thread {
 
         private static final String LISTENER_THREAD_NAME = "jms-listener";
         private final ClientListener listener;
