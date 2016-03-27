@@ -1,5 +1,7 @@
 package io.amaze.bench.shared.jms;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.validation.constraints.NotNull;
@@ -34,11 +36,12 @@ public final class JMSHelper {
         }
     }
 
-    private static Serializable convertFromBytes(byte[] bytes) throws IOException {
+    @VisibleForTesting
+    static Serializable convertFromBytes(byte[] bytes) throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
              ObjectInput in = new ObjectInputStream(bis)) {
             return (Serializable) in.readObject();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }

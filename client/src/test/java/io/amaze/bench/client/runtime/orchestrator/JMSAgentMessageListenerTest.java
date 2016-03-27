@@ -12,7 +12,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 
-import static io.amaze.bench.client.runtime.orchestrator.JMSActorMessageListenerTest.createTestBytesMessage;
+import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;

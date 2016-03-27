@@ -6,16 +6,14 @@ import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 
+import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -30,19 +28,6 @@ public class JMSActorMessageListenerTest {
     private Actor mockActor;
     private JMSActorMessageListener msgListener;
 
-    static BytesMessage createTestBytesMessage(final byte[] data) throws JMSException {
-        BytesMessage msg = mock(BytesMessage.class);
-        when(msg.getBodyLength()).thenReturn((long) data.length);
-        when(msg.readBytes(any(byte[].class))).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                byte[] out = (byte[]) invocation.getArguments()[0];
-                System.arraycopy(data, 0, out, 0, out.length);
-                return null;
-            }
-        }).thenReturn(data.length);
-        return msg;
-    }
 
     @Before
     public void before() {
