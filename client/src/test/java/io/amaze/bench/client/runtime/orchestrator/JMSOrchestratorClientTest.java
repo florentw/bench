@@ -41,6 +41,7 @@ public class JMSOrchestratorClientTest {
 
         verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
         verify(jmsClient).startListening();
+        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test
@@ -52,6 +53,7 @@ public class JMSOrchestratorClientTest {
 
         verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR), any(MessageListener.class));
         verify(jmsClient).startListening();
+        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test(expected = RuntimeException.class)
@@ -63,6 +65,7 @@ public class JMSOrchestratorClientTest {
 
         verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
         verify(jmsClient).startListening();
+        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test(expected = RuntimeException.class)
@@ -75,6 +78,7 @@ public class JMSOrchestratorClientTest {
 
         verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR), any(MessageListener.class));
         verify(jmsClient).startListening();
+        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test
@@ -83,6 +87,7 @@ public class JMSOrchestratorClientTest {
         client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
 
         verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR, testMsg);
+        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test(expected = RuntimeException.class)
