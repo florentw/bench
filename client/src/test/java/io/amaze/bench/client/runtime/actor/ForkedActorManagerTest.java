@@ -34,9 +34,10 @@ import static org.mockito.Mockito.spy;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 @Category(IntegrationTest.class)
-public class ForkedActorManagerTest {
+public final class ForkedActorManagerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForkedActorManagerTest.class);
+
     private static final int MAX_TIMEOUT_SEC = 30;
 
     @Rule
@@ -72,11 +73,12 @@ public class ForkedActorManagerTest {
     }
 
     @Before
-    public void before() throws JMSException {
+    public void before() throws JMSException, IOException {
         AgentTest.RecorderOrchestratorClient client = spy(new AgentTest.RecorderOrchestratorClient());
+        File folder = this.folder.newFolder();
 
         AgentTest.DummyClientFactory factory = new AgentTest.DummyClientFactory(null, client);
-        actorManager = new ForkedActorManager(new ActorFactory(factory));
+        actorManager = new ForkedActorManager(new ActorFactory(factory), folder);
 
         server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
         server.getServer().createQueue(DUMMY_ACTOR);
@@ -100,29 +102,27 @@ public class ForkedActorManagerTest {
     }
 
     @Test
-    public void close_actor_after_called_and_watchdog_detects() throws ValidationException, IOException, InterruptedException {
+    public void close_actor_and_watchdog_detects() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-        File rdvFileAfter = folder.newFile();
 
         String jsonConfig = "{" + //
                 "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + // For sync purposes
-                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFileAfter.getAbsolutePath() + "\"" + // To actually test
+                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"" + //
                 "}";
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
         ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
+        assertNotNull(watchDogThread);
 
         // Sync with process
         verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actor.close();
 
-        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
+        Uninterruptibles.joinUninterruptibly(watchDogThread);
 
-        // Here we sleep a little bit to let time for the forked JVM to die
-        Thread.sleep(2000); // NOSONAR
+        // We do not check the fact that the shutdown hook is actually called here
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasExited(), is(true));
