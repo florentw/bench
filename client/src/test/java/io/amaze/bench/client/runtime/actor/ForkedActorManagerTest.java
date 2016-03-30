@@ -87,10 +87,7 @@ public final class ForkedActorManagerTest {
     @Test
     public void create_actor_init_called() throws ValidationException, IOException, InterruptedException {
         File rdvFile = folder.newFile();
-        String jsonConfig = "{" + //
-                "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"" + //
-                "}";
+        String jsonConfig = configWithInitRdv(rdvFile);
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
@@ -104,11 +101,7 @@ public final class ForkedActorManagerTest {
     @Test
     public void close_actor_and_watchdog_detects() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-
-        String jsonConfig = "{" + //
-                "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"" + //
-                "}";
+        String jsonConfig = configWithInitRdv(rdvFileInit);
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
 
@@ -120,9 +113,8 @@ public final class ForkedActorManagerTest {
 
         actor.close();
 
-        Uninterruptibles.joinUninterruptibly(watchDogThread);
-
         // We do not check the fact that the shutdown hook is actually called here
+        Uninterruptibles.joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasExited(), is(true));
@@ -133,22 +125,22 @@ public final class ForkedActorManagerTest {
     @Test
     public void close_actor_twice() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-        File rdvFileAfter = folder.newFile();
-
-        String jsonConfig = "{" + //
-                "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + // For sync purposes
-                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFileAfter.getAbsolutePath() + "\"" + // To actually test
-                "}";
+        String jsonConfig = configWithInitRdv(rdvFileInit);
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
+
+        ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
         verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actor.close();
         actor.close();
 
-        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
+        // We do not check the fact that the shutdown hook is actually called here
+        Uninterruptibles.joinUninterruptibly(watchDogThread);
+
+        assertThat(actorManager.getProcesses().size(), is(0));
+        assertThat(watchDogThread.hasExited(), is(true));
 
         actorManager.close();
     }
@@ -156,22 +148,22 @@ public final class ForkedActorManagerTest {
     @Test
     public void close_manager_closes_actor() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-        File rdvFileAfter = folder.newFile();
-
-        String jsonConfig = "{" + //
-                "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + // For sync purposes
-                "\"" + TestActorWriter.AFTER_FILE_CONFIG + "\":\"" + rdvFileAfter.getAbsolutePath() + "\"" + // To actually test
-                "}";
+        String jsonConfig = configWithInitRdv(rdvFileInit);
 
         ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
         assertNotNull(actor);
+
+        ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
         verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actorManager.close();
 
-        verifyFileContentWithin(rdvFileAfter, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
+        // We do not check the fact that the shutdown hook is actually called here
+        Uninterruptibles.joinUninterruptibly(watchDogThread);
+
+        assertThat(actorManager.getProcesses().size(), is(0));
+        assertThat(watchDogThread.hasExited(), is(true));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -185,4 +177,10 @@ public final class ForkedActorManagerTest {
         actorManager = new ForkedActorManager(new ActorFactory(factory), localLogDir);
     }
 
+    private String configWithInitRdv(final File rdvFile) {
+        return "{" + //
+                "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
+                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"" + //
+                "}";
+    }
 }
