@@ -13,7 +13,7 @@ import javax.jms.MessageListener;
 /**
  * Convert received JMS messages from the master to the agent to calls to its {@link Reactor} methods.
  */
-class JMSAgentMessageListener implements MessageListener {
+final class JMSAgentMessageListener implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMSAgentMessageListener.class);
 

@@ -10,9 +10,15 @@ import javax.validation.constraints.NotNull;
 abstract class AbstractActorManager implements ActorManager {
 
     private final ActorFactory factory;
+    private final String agent;
 
-    AbstractActorManager(@NotNull final ActorFactory factory) {
+    AbstractActorManager(@NotNull final String agent, @NotNull final ActorFactory factory) {
+        this.agent = agent;
         this.factory = factory;
+    }
+
+    protected final String getAgent() {
+        return agent;
     }
 
     @NotNull

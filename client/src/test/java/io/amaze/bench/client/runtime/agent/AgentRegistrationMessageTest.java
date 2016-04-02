@@ -1,7 +1,11 @@
 package io.amaze.bench.client.runtime.agent;
 
+import com.google.common.testing.EqualsTester;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -15,10 +19,31 @@ public class AgentRegistrationMessageTest {
     @Test
     public void create_msg() {
         AgentRegistrationMessage msg = AgentRegistrationMessage.create();
+
         assertNotNull(msg);
+
         assertTrue(msg.getName().startsWith(AgentRegistrationMessage.DEFAULT_AGENT_PREFIX));
         assertNotNull(msg.getSystemInfo());
         assertTrue(msg.getCreationTime() > 0);
+    }
+
+    @Test
+    public void equality() {
+        AgentRegistrationMessage msg = AgentRegistrationMessage.create();
+        AgentRegistrationMessage msgDifferent = AgentRegistrationMessage.create("different");
+
+        new EqualsTester().addEqualityGroup(msg, msg).addEqualityGroup(msg.getName(), msg.getName()).addEqualityGroup(
+                msg.hashCode(),
+                msg.hashCode()).testEquals();
+
+        assertThat(msg, is(not(msgDifferent)));
+    }
+
+    @Test
+    public void to_string() {
+        AgentRegistrationMessage msg = AgentRegistrationMessage.create();
+
+        assertThat(msg.toString(), is(msg.toString()));
     }
 
 }

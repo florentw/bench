@@ -25,17 +25,18 @@ public final class AgentBootstrap {
 
         // TODO INSTALL SHUTDOWN HOOK
 
-        if (args.length != 2) {
+        if (args.length != 3) {
             LOG.info("Usage:");
-            LOG.info("$ benchclient <jmsServerHost> <jmsServerPort>");
+            LOG.info("$ benchclient <jmsServerHost> <jmsServerPort> <agentName>");
             return;
         }
 
         String host = args[0];
         int port = Integer.parseInt(args[1]);
+        String agent = args[2];
 
         OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(host, port);
-        ActorManager manager = new EmbeddedActorManager(new ActorFactory(clientFactory));
+        ActorManager manager = new EmbeddedActorManager(agent, new ActorFactory(agent, clientFactory));
         try (Agent ignore = new Agent(clientFactory, manager)) {
             Thread.sleep(Long.MAX_VALUE);
         }

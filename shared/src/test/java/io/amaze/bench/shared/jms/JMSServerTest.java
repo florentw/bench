@@ -20,6 +20,7 @@ public class JMSServerTest {
 
     static final String DUMMY_QUEUE = "DummyQueue";
     static final String DUMMY_TOPIC = "DummyTopic";
+
     @Rule
     public JMSServerRule server = new JMSServerRule();
 

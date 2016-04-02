@@ -33,14 +33,6 @@ public interface Actor extends AutoCloseable {
     void start();
 
     /**
-     * Closes the actor and invokes the {@link Reactor} method annotated with @{@link After}.<br/>
-     * Will send failure messages to the master.<br/>
-     * Send "closed" lifecycle notification if successful.<br/>
-     */
-    @Override
-    void close();
-
-    /**
      * Dump the actor's accumulated metrics and sends a message to the metrics actor for collection.<br/>
      * Will send failure messages to the master.<br/>
      */
@@ -54,5 +46,13 @@ public interface Actor extends AutoCloseable {
      * @param message Payload
      */
     void onMessage(@NotNull String from, @NotNull Serializable message);
+
+    /**
+     * Closes the actor and invokes the {@link Reactor} method annotated with @{@link After}.<br/>
+     * Will send failure messages to the master.<br/>
+     * Send "closed" lifecycle notification if successful.<br/>
+     */
+    @Override
+    void close();
 
 }

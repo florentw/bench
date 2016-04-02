@@ -3,6 +3,7 @@ package io.amaze.bench.client.runtime.orchestrator;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
+import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +14,6 @@ import javax.jms.Message;
 import java.io.IOException;
 
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
-import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -41,16 +40,14 @@ public class JMSAgentMessageListenerTest {
                                                                         TestActor.class.getName(),
                                                                         TestActor.DUMMY_CONFIG);
 
-        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT,
-                                                            AgentInputMessage.Action.CREATE_ACTOR,
-                                                            creationRequest);
+        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(masterMsg);
 
         listener.onMessage(testBytesMessage);
 
-        verify(agentListener).onActorCreationRequest(argThat(is(TestActor.DUMMY_ACTOR)),
-                                                     argThat(is(TestActor.class.getName())),
-                                                     argThat(is(TestActor.DUMMY_CONFIG)));
+        verify(agentListener).onActorCreationRequest(TestActor.DUMMY_ACTOR,
+                                                     TestActor.class.getName(),
+                                                     TestActor.DUMMY_CONFIG);
         verifyNoMoreInteractions(agentListener);
     }
 
@@ -60,9 +57,7 @@ public class JMSAgentMessageListenerTest {
                                                                         TestActor.class.getName(),
                                                                         TestActor.DUMMY_CONFIG);
 
-        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT + "2",
-                                                            AgentInputMessage.Action.CREATE_ACTOR,
-                                                            creationRequest);
+        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT + "2", Action.CREATE_ACTOR, creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(masterMsg);
 
         listener.onMessage(testBytesMessage);
@@ -72,14 +67,12 @@ public class JMSAgentMessageListenerTest {
 
     @Test
     public void close_actor_calls_listener() throws IOException, ClassNotFoundException, JMSException {
-        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT,
-                                                            AgentInputMessage.Action.CLOSE_ACTOR,
-                                                            TestActor.DUMMY_ACTOR);
+        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT, Action.CLOSE_ACTOR, TestActor.DUMMY_ACTOR);
         BytesMessage testBytesMessage = toBytesMessage(masterMsg);
 
         listener.onMessage(testBytesMessage);
 
-        verify(agentListener).onActorCloseRequest(argThat(is(TestActor.DUMMY_ACTOR)));
+        verify(agentListener).onActorCloseRequest(TestActor.DUMMY_ACTOR);
         verifyNoMoreInteractions(agentListener);
     }
 

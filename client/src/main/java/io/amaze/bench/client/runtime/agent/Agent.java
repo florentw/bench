@@ -20,6 +20,7 @@ import java.util.Set;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.MasterOutputMessage.Action.*;
+import static java.lang.String.format;
 
 /**
  * Created on 3/3/16.
@@ -42,14 +43,14 @@ final class Agent implements AgentClientListener, AutoCloseable {
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
         name = regMsg.getName();
 
-        LOG.info("Starting agent \"" + name + "\"...");
+        LOG.info(format("Starting agent \"%s\"...", name));
 
         agentClient = clientFactory.createForAgent();
 
-        agentClient.startAgentListener(name, Constants.AGENTS_ACTOR_NAME, this);
+        agentClient.startAgentListener(name, this);
         sendRegistrationMessage(regMsg);
 
-        LOG.info("Agent \"" + name + "\" started.");
+        LOG.info(format("Agent \"%s\" started.", name));
     }
 
     @Override
@@ -57,11 +58,14 @@ final class Agent implements AgentClientListener, AutoCloseable {
                                                     @NotNull final String className,
                                                     @NotNull final String jsonConfig) {
         if (actors.get(actor) != null) {
-            LOG.warn("The actor \"" + actor + "\" already exists.");
+            LOG.warn(format("The actor \"%s\" already exists.", actor));
             return;
         }
 
-        LOG.info("Actor creation request for actor \"" + actor + "\" with className \"" + className + "\", config: " + jsonConfig);
+        LOG.info(format("Actor creation request for actor \"%s\" with className \"%s\", config: \"%s\"",
+                        actor,
+                        className,
+                        jsonConfig));
 
         ManagedActor instance = createManagedActor(actor, className, jsonConfig);
         if (instance != null) {
@@ -69,24 +73,24 @@ final class Agent implements AgentClientListener, AutoCloseable {
             sendActorLifecycleMessage(actor, Phase.CREATED);
         }
 
-        LOG.info("Actor \"" + actor + "\" created.");
+        LOG.info(format("Actor \"%s\" created.", actor));
     }
 
     @Override
     public synchronized void onActorCloseRequest(@NotNull final String actor) {
         ManagedActor found = actors.remove(actor);
         if (found == null) {
-            LOG.warn("Could not find actor \"" + actor + "\" to close.");
+            LOG.warn(format("Could not find actor \"%s\" to close.", actor));
         } else {
-            LOG.info("Closing actor \"" + actor + "\"...");
+            LOG.info(format("Closing actor \"%s\"...", actor));
             found.close();
-            LOG.info("Closed actor \"" + actor + "\".");
+            LOG.info(format("Closed actor \"%s\".", actor));
         }
     }
 
     @Override
     public synchronized void close() throws Exception {
-        LOG.info("Closing agent \"" + name + "\"...");
+        LOG.info(format("Closing agent \"%s\"...", name));
 
         for (ManagedActor actor : actors.values()) {
             actor.close();
@@ -95,7 +99,7 @@ final class Agent implements AgentClientListener, AutoCloseable {
 
         signOffAgent();
 
-        LOG.info("Agent \"" + name + "\" closed.");
+        LOG.info(format("Agent \"%s\" closed.", name));
     }
 
     @NotNull
@@ -112,7 +116,7 @@ final class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void sendActorLifecycleMessage(@NotNull final String actor, @NotNull final Phase phase) {
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(actor, phase);
+        ActorLifecycleMessage msg = new ActorLifecycleMessage(actor, name, phase);
         sendToMaster(ACTOR_LIFECYCLE, msg);
     }
 
@@ -128,7 +132,7 @@ final class Agent implements AgentClientListener, AutoCloseable {
         try {
             instance = manager.createActor(actor, className, jsonConfig);
         } catch (Exception e) {
-            LOG.warn("Could not create actor \"" + actor + "\".", e);
+            LOG.warn(format("Could not create actor \"%s\".", actor), e);
             actorFailure(actor, e);
             return null;
         }
@@ -136,7 +140,7 @@ final class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void actorFailure(@NotNull final String actor, @NotNull final Throwable throwable) {
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(actor, Phase.FAILED, throwable);
+        ActorLifecycleMessage msg = new ActorLifecycleMessage(actor, name, Phase.FAILED, throwable);
         sendToMaster(ACTOR_LIFECYCLE, msg);
     }
 

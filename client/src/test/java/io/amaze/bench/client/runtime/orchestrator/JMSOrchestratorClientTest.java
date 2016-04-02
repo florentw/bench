@@ -37,7 +37,7 @@ public class JMSOrchestratorClientTest {
 
     @Test
     public void start_agent_listener() throws JMSException {
-        client.startAgentListener(TEST_AGENT, Constants.AGENTS_ACTOR_NAME, mock(AgentClientListener.class));
+        client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
 
         verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
         verify(jmsClient).startListening();
@@ -61,7 +61,7 @@ public class JMSOrchestratorClientTest {
 
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
-        client.startAgentListener(TEST_AGENT, Constants.AGENTS_ACTOR_NAME, mock(AgentClientListener.class));
+        client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
 
         verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
         verify(jmsClient).startListening();

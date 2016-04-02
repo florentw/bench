@@ -6,6 +6,7 @@ import io.amaze.bench.shared.metric.SystemInfos;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.util.Objects;
 
 /**
  * Message sent by an agent to the master after startup for registration.
@@ -49,5 +50,31 @@ public final class AgentRegistrationMessage implements Serializable {
 
     public SystemInfo getSystemInfo() {
         return systemInfo;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AgentRegistrationMessage that = (AgentRegistrationMessage) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "AgentRegistrationMessage{" +
+                "name='" + name + '\'' +
+                ", systemInfo=" + systemInfo +
+                ", creationTime=" + creationTime +
+                '}';
     }
 }

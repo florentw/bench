@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class JMSHelperTest {
+public final class JMSHelperTest {
 
     private static final String DUMMY = "TEST";
 

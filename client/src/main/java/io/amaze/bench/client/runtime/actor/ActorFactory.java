@@ -41,8 +41,10 @@ public final class ActorFactory {
 
     private final OrchestratorClientFactory clientFactory;
     private final ConfigParseOptions configParseOptions;
+    private final String agent;
 
-    public ActorFactory(@NotNull final OrchestratorClientFactory clientFactory) {
+    public ActorFactory(@NotNull final String agent, @NotNull final OrchestratorClientFactory clientFactory) {
+        this.agent = agent;
         this.clientFactory = clientFactory;
 
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
@@ -64,7 +66,7 @@ public final class ActorFactory {
         OrchestratorClient client = clientFactory.createForActor();
         Reactor reactor = createReactor(name, metricsSink, clazz, client, config);
 
-        return new BaseActor(name, metricsSink, beforeMethod, afterMethod, reactor, client);
+        return new BaseActor(name, agent, metricsSink, beforeMethod, afterMethod, reactor, client);
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {

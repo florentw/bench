@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class ValidationException extends Exception {
+public final class ValidationException extends Exception {
 
     private ValidationException(final String message) {
         super(message);

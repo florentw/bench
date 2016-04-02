@@ -13,7 +13,7 @@ import java.util.*;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
+final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinuxSystemInfoFactory.class);
 

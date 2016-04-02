@@ -18,10 +18,10 @@ import static io.amaze.bench.shared.helper.FileHelper.writeToFile;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class TestActorWriter extends TestActor {
+@io.amaze.bench.client.api.actor.Actor
+public final class TestActorWriter extends TestActor {
 
     static final String INIT_FILE_CONFIG = "init_file";
-    static final String AFTER_FILE_CONFIG = "after_file";
     static final String OK = "OK";
 
     private static final Logger LOG = LoggerFactory.getLogger(TestActorWriter.class);
@@ -48,15 +48,6 @@ public class TestActorWriter extends TestActor {
     @After
     @Override
     public void after() {
-        if (getConfig().hasPath(AFTER_FILE_CONFIG)) {
-            String afterFileName = getConfig().getString(AFTER_FILE_CONFIG);
-            try {
-                writeFile(afterFileName, OK);
-            } catch (ReactorException e) {
-                Throwables.propagate(e);
-            }
-        }
-
         super.after();
     }
 

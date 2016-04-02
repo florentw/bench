@@ -16,13 +16,18 @@ public final class ActorLifecycleMessage implements Serializable {
     private final String actor;
     private final Phase phase;
     private final Throwable throwable;
+    private final String agent;
 
-    public ActorLifecycleMessage(@NotNull final String actor, @NotNull final Phase phase) {
-        this(actor, phase, null);
+    public ActorLifecycleMessage(@NotNull final String actor, @NotNull final String agent, @NotNull final Phase phase) {
+        this(actor, agent, phase, null);
     }
 
-    public ActorLifecycleMessage(@NotNull final String actor, @NotNull final Phase phase, final Throwable throwable) {
+    public ActorLifecycleMessage(@NotNull final String actor,
+                                 @NotNull final String agent,
+                                 @NotNull final Phase phase,
+                                 final Throwable throwable) {
         this.actor = actor;
+        this.agent = agent;
         this.phase = phase;
         this.throwable = throwable;
     }
@@ -39,6 +44,10 @@ public final class ActorLifecycleMessage implements Serializable {
 
     public Throwable getThrowable() {
         return throwable;
+    }
+
+    public String getAgent() {
+        return agent;
     }
 
     public enum Phase {

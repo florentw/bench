@@ -20,7 +20,7 @@ import java.util.Hashtable;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class FFMQClient implements JMSClient {
+public final class FFMQClient implements JMSClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(FFMQClient.class);
 

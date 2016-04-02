@@ -31,15 +31,19 @@ public final class ReflectionHelper {
                                                       @NotNull final Class<? extends Annotation> annotation) {
         Method found = null;
         for (Method m : clazz.getMethods()) {
-            Annotation aInstance = m.getAnnotation(annotation);
-            if (aInstance != null) {
-                if (found != null) {
-                    throw new IllegalArgumentException(String.format(MSG_DECLARED_MORE_THAN_ONCE,
-                                                                     "@" + annotation.getSimpleName(),
-                                                                     clazz.getCanonicalName()));
-                } else {
-                    found = m;
-                }
+            Annotation an = m.getAnnotation(annotation);
+            if (an == null) {
+                continue;
+            }
+
+            if (found != null) {
+                String msg = String.format(MSG_DECLARED_MORE_THAN_ONCE,
+                                           "@" + annotation.getSimpleName(),
+                                           clazz.getCanonicalName());
+
+                throw new IllegalArgumentException(msg);
+            } else {
+                found = m;
             }
         }
         return found;

@@ -39,8 +39,8 @@ final class ForkedActorManager extends AbstractActorManager {
     private final Map<String, ForkedActorWatchDogThread> processes = new ConcurrentHashMap<>();
     private final File localLogDir;
 
-    ForkedActorManager(@NotNull final ActorFactory factory, @NotNull File localLogDir) {
-        super(factory);
+    ForkedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory, @NotNull File localLogDir) {
+        super(agent, factory);
         this.localLogDir = localLogDir;
 
         boolean success = localLogDir.mkdir();
@@ -49,26 +49,30 @@ final class ForkedActorManager extends AbstractActorManager {
         }
     }
 
-    ForkedActorManager(@NotNull final ActorFactory factory) {
-        this(factory, new File(LOG_DIRECTORY_NAME));
+    ForkedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory) {
+        this(agent, factory, new File(LOG_DIRECTORY_NAME));
     }
 
     @Override
     public ManagedActor createActor(@NotNull final String name,
                                     @NotNull final String className,
                                     @NotNull final String jsonConfig) throws ValidationException {
+        Process process;
         try {
             File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
             FileHelper.writeToFile(tempConfigFile, jsonConfig);
 
-            Process process = forkProcess(name, className, tempConfigFile.getAbsolutePath());
+            process = forkProcess(name, className, tempConfigFile.getAbsolutePath());
 
-            ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(name, process);
-            thread.start();
-            processes.put(name, thread);
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
+
+        ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(name, process);
+        thread.start();
+        thread.awaitUntilStarted();
+
+        processes.put(name, thread);
 
         return new ManagedActor() {
             @Override
@@ -115,9 +119,10 @@ final class ForkedActorManager extends AbstractActorManager {
                 "-cp", //
                 StandardSystemProperty.JAVA_CLASS_PATH.value(), // Use the current classpath
                 ActorBootstrap.class.getName(), // Main class
-                name, // arg[0]
-                className, // arg[1]
-                configFileName // arg[2]
+                getAgent(), // arg[0]
+                name, // arg[1]
+                className, // arg[2]
+                configFileName // arg[3]
         };
 
         ProcessBuilder builder = new ProcessBuilder(cmd);

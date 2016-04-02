@@ -33,6 +33,7 @@ public class BaseActor implements Actor {
     private static final String MSG_AFTER_METHOD_FAILED = " Error while invoking after method.";
 
     private final String name;
+    private final String agentName;
     private final MetricsSink sink;
     private final Method beforeMethod;
     private final Method afterMethod;
@@ -41,7 +42,7 @@ public class BaseActor implements Actor {
 
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
 
-    public BaseActor(@NotNull final String name,
+    public BaseActor(@NotNull final String name, @NotNull final String agentName,
                      @NotNull final MetricsSink sink,
                      final Method beforeMethod,
                      final Method afterMethod,
@@ -49,6 +50,7 @@ public class BaseActor implements Actor {
                      @NotNull final OrchestratorClient client) {
 
         this.name = name;
+        this.agentName = agentName;
         this.sink = sink;
         this.beforeMethod = beforeMethod;
         this.afterMethod = afterMethod;
@@ -81,7 +83,7 @@ public class BaseActor implements Actor {
         try {
             beforeMethod.invoke(instance);
         } catch (Exception e) {
-            LOG.warn(this + "Error while invoking before method on actor \"" + name + "\"", e);
+            LOG.warn(this + " Error while invoking before method on actor \"" + name + "\".", e);
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException ignored) { // NOSONAR
@@ -173,19 +175,19 @@ public class BaseActor implements Actor {
     }
 
     private void sendLifecycleMessage(@NotNull final Phase phase) {
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(name, phase);
+        ActorLifecycleMessage msg = new ActorLifecycleMessage(name, agentName, phase);
         sendToActorRegistry(ACTOR_LIFECYCLE, msg);
     }
 
     private void actorFailure(@NotNull final Throwable throwable) {
         LOG.warn(this + " failure.", throwable);
 
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(name, Phase.FAILED, throwable);
+        ActorLifecycleMessage msg = new ActorLifecycleMessage(name, agentName, Phase.FAILED, throwable);
         sendToActorRegistry(ACTOR_LIFECYCLE, msg);
     }
 
     @Override
-    public final String name() {
+    public String name() {
         return name;
     }
 

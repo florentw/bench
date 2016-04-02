@@ -2,8 +2,9 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
-import io.amaze.bench.client.runtime.agent.AgentTest;
 import io.amaze.bench.client.runtime.agent.Constants;
+import io.amaze.bench.client.runtime.agent.DummyClientFactory;
+import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
 import io.amaze.bench.shared.helper.FileHelper;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
@@ -21,12 +22,12 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 3/16/16.
@@ -74,11 +75,11 @@ public final class ForkedActorManagerTest {
 
     @Before
     public void before() throws JMSException, IOException {
-        AgentTest.RecorderOrchestratorClient client = spy(new AgentTest.RecorderOrchestratorClient());
+        RecorderOrchestratorClient client = spy(new RecorderOrchestratorClient());
         File folder = this.folder.newFolder();
 
-        AgentTest.DummyClientFactory factory = new AgentTest.DummyClientFactory(null, client);
-        actorManager = new ForkedActorManager(new ActorFactory(factory), folder);
+        DummyClientFactory factory = new DummyClientFactory(null, client);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, factory), folder);
 
         server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
         server.getServer().createQueue(DUMMY_ACTOR);
@@ -117,7 +118,7 @@ public final class ForkedActorManagerTest {
         Uninterruptibles.joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
-        assertThat(watchDogThread.hasExited(), is(true));
+        assertThat(watchDogThread.hasProcessExited(), is(true));
 
         actorManager.close();
     }
@@ -140,7 +141,7 @@ public final class ForkedActorManagerTest {
         Uninterruptibles.joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
-        assertThat(watchDogThread.hasExited(), is(true));
+        assertThat(watchDogThread.hasProcessExited(), is(true));
 
         actorManager.close();
     }
@@ -163,18 +164,32 @@ public final class ForkedActorManagerTest {
         Uninterruptibles.joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
-        assertThat(watchDogThread.hasExited(), is(true));
+        assertThat(watchDogThread.hasProcessExited(), is(true));
     }
 
     @Test(expected = IllegalStateException.class)
     public void create_manager_but_cant_create_local_log_dir() throws IOException {
-        AgentTest.DummyClientFactory factory = new AgentTest.DummyClientFactory(null, null);
+        DummyClientFactory factory = new DummyClientFactory(null, null);
         File folder = this.folder.newFolder();
         File localLogDir = spy(folder);
         doReturn(false).when(localLogDir).mkdirs(); // NOSONAR
         doReturn(false).when(localLogDir).exists(); // NOSONAR
 
-        actorManager = new ForkedActorManager(new ActorFactory(factory), localLogDir);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, factory), localLogDir);
+    }
+
+    @Test
+    public void watchdog_thread_is_interrupted_while_waitfor() throws InterruptedException {
+        Process mockedProcess = mock(Process.class);
+        when(mockedProcess.waitFor()).thenThrow(new InterruptedException());
+        ForkedActorWatchDogThread watchdog = new ForkedActorWatchDogThread(DUMMY_ACTOR, mockedProcess);
+        watchdog.start();
+        watchdog.awaitUntilStarted();
+        watchdog.close();
+
+        Uninterruptibles.joinUninterruptibly(watchdog);
+
+        assertThat(watchdog.hasProcessExited(), is(false));
     }
 
     private String configWithInitRdv(final File rdvFile) {

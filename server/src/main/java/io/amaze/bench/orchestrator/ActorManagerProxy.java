@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public interface AgentProxy {
+public interface ActorManagerProxy {
 
     void initActor(@NotNull ActorConfig actorConfig);
 

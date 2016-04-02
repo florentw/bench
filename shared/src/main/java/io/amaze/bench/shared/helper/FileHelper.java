@@ -35,8 +35,8 @@ public final class FileHelper {
     }
 
     public static void writeToFile(File dest, String content) throws IOException {
-        PrintWriter writer = new PrintWriter(dest, "UTF-8");
-        writer.print(content);
-        writer.close();
+        try (PrintWriter writer = new PrintWriter(dest, "UTF-8")) {
+            writer.print(content);
+        }
     }
 }

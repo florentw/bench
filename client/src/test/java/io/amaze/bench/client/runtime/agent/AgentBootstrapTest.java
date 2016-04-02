@@ -1,7 +1,5 @@
-package io.amaze.bench;
+package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.client.runtime.agent.AgentBootstrap;
-import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
@@ -18,7 +16,7 @@ import javax.jms.MessageListener;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 @Category(IntegrationTest.class)
-public class AgentBootstrapTest {
+public final class AgentBootstrapTest {
 
     @Rule
     public JMSServerRule server = new JMSServerRule();

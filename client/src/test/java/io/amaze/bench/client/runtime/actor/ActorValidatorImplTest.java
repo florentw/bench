@@ -17,7 +17,7 @@ import static junit.framework.TestCase.assertNotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class ActorValidatorImplTest {
+public final class ActorValidatorImplTest {
 
     @Test(expected = ValidationException.class)
     public void invalid_actor_class_throws() throws ValidationException {

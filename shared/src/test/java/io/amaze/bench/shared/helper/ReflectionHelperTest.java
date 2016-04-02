@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class ReflectionHelperTest {
+public final class ReflectionHelperTest {
 
     @Test
     public void find_no_annotated_method_returns_null() {

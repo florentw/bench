@@ -2,17 +2,11 @@ package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
@@ -27,7 +21,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class AgentTest {
+public final class AgentTest {
+
+    public static final String DUMMY_AGENT = "DUMMY_AGENT";
 
     private RecorderOrchestratorClient agentClient;
     private RecorderOrchestratorClient actorClient;
@@ -40,7 +36,7 @@ public class AgentTest {
         actorClient = new RecorderOrchestratorClient();
 
         clientFactory = new DummyClientFactory(agentClient, actorClient);
-        manager = new EmbeddedActorManager(new ActorFactory(clientFactory));
+        manager = new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory));
     }
 
     @Test
@@ -202,71 +198,4 @@ public class AgentTest {
         }
     }
 
-    public static class RecorderOrchestratorClient implements OrchestratorClient {
-
-        private final Map<String, List<Message<? extends Serializable>>> sentMessages = new HashMap<>();
-
-        private boolean agentListenerStarted = false;
-        private boolean actorListenerStarted = false;
-
-        @Override
-        public void startAgentListener(@NotNull final String agent,
-                                       @NotNull final String agentsTopic,
-                                       @NotNull final AgentClientListener listener) {
-            agentListenerStarted = true;
-        }
-
-        @Override
-        public void startActorListener(@NotNull final Actor actor) {
-            actorListenerStarted = true;
-        }
-
-        @Override
-        public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
-            List<Message<? extends Serializable>> msgs = sentMessages.get(to);
-            if (msgs == null) {
-                msgs = new ArrayList<>();
-                sentMessages.put(to, msgs);
-            }
-            msgs.add(message);
-        }
-
-        @Override
-        public void close() {
-            // Dummy
-        }
-
-        boolean isAgentListenerStarted() {
-            return agentListenerStarted;
-        }
-
-        boolean isActorListenerStarted() {
-            return actorListenerStarted;
-        }
-
-        public Map<String, List<Message<? extends Serializable>>> getSentMessages() {
-            return sentMessages;
-        }
-    }
-
-    public static final class DummyClientFactory implements OrchestratorClientFactory {
-
-        private final OrchestratorClient agentClient;
-        private final OrchestratorClient actorClient;
-
-        public DummyClientFactory(final OrchestratorClient agentClient, final OrchestratorClient actorClient) {
-            this.agentClient = agentClient;
-            this.actorClient = actorClient;
-        }
-
-        @Override
-        public OrchestratorClient createForAgent() {
-            return agentClient;
-        }
-
-        @Override
-        public OrchestratorClient createForActor() {
-            return actorClient;
-        }
-    }
 }

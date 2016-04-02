@@ -1,9 +1,11 @@
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.runtime.agent.AgentTest;
 import io.amaze.bench.client.runtime.agent.Constants;
+import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
+import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
 import io.amaze.bench.client.runtime.message.Message;
+import io.amaze.bench.shared.metric.Metric;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.*;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -24,15 +27,15 @@ import static org.mockito.Mockito.*;
  */
 public final class BaseActorTest {
 
-    private AgentTest.RecorderOrchestratorClient actorClient;
-    private AgentTest.DummyClientFactory clientFactory;
+    private RecorderOrchestratorClient actorClient;
+    private DummyClientFactory clientFactory;
     private ActorFactory factory;
 
     @Before
     public void before() {
-        actorClient = spy(new AgentTest.RecorderOrchestratorClient());
-        clientFactory = new AgentTest.DummyClientFactory(null, actorClient);
-        factory = new ActorFactory(clientFactory);
+        actorClient = spy(new RecorderOrchestratorClient());
+        clientFactory = new DummyClientFactory(null, actorClient);
+        factory = new ActorFactory(DUMMY_AGENT, clientFactory);
     }
 
     @Test
@@ -179,8 +182,11 @@ public final class BaseActorTest {
 
     @Test
     public void create_dump_metrics_sends_message_to_metrics_actor() throws Exception {
-        try (BaseActor actor = defaultTestActor()) {
+        try (BaseActor actor = createActor(TestActorMetrics.class)) {
             actor.start();
+
+            actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
+
             actor.dumpMetrics();
 
             // Check good flow of messages
@@ -189,14 +195,17 @@ public final class BaseActorTest {
             assertThat(msgsToMetrics.size(), is(1));
 
             // Check dump message sent
-            assertTrue(((Map) msgsToMetrics.get(0).data()).isEmpty());
+            Map<String, Metric> metricsMap = (Map<String, Metric>) msgsToMetrics.get(0).data(); // NOSONAR
+            assertThat(metricsMap.size(), is(2));
+            assertThat(metricsMap.get(TestActorMetrics.DUMMY_METRIC_A_KEY), is(TestActorMetrics.DUMMY_METRIC_A));
+            assertThat(metricsMap.get(TestActorMetrics.DUMMY_METRIC_B_KEY), is(TestActorMetrics.DUMMY_METRIC_B));
         }
     }
 
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
-        clientFactory = new AgentTest.DummyClientFactory(null, actorClient);
-        factory = new ActorFactory(clientFactory);
+        clientFactory = new DummyClientFactory(null, actorClient);
+        factory = new ActorFactory(DUMMY_AGENT, clientFactory);
 
         doThrow(new RuntimeException()).when(actorClient).close();
 
@@ -288,7 +297,7 @@ public final class BaseActorTest {
         return createActor(TestActor.class);
     }
 
-    private List<Message<? extends Serializable>> messagesSentToMasterFrom(final AgentTest.RecorderOrchestratorClient actorClient) {
+    private List<Message<? extends Serializable>> messagesSentToMasterFrom(final RecorderOrchestratorClient actorClient) {
         return actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
     }
 

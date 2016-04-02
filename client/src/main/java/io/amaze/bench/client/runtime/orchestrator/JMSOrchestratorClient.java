@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
+import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -35,11 +36,9 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     }
 
     @Override
-    public void startAgentListener(@NotNull final String agentName,
-                                   @NotNull final String agentsTopicName,
-                                   @NotNull final AgentClientListener listener) {
+    public void startAgentListener(@NotNull final String agentName, @NotNull final AgentClientListener listener) {
         try {
-            client.addTopicListener(agentsTopicName, new JMSAgentMessageListener(agentName, listener));
+            client.addTopicListener(Constants.AGENTS_ACTOR_NAME, new JMSAgentMessageListener(agentName, listener));
             client.startListening();
         } catch (JMSException e) {
             throw Throwables.propagate(e);

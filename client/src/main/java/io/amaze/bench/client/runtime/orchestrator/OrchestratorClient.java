@@ -15,9 +15,7 @@ import java.io.Serializable;
  */
 public interface OrchestratorClient extends AutoCloseable {
 
-    void startAgentListener(@NotNull final String agent,
-                            @NotNull final String agentsTopic,
-                            @NotNull final AgentClientListener listener);
+    void startAgentListener(@NotNull final String agent, @NotNull final AgentClientListener listener);
 
     void startActorListener(@NotNull final Actor actor);
 

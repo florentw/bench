@@ -1,12 +1,14 @@
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.runtime.agent.AgentTest;
+import io.amaze.bench.client.runtime.agent.DummyClientFactory;
+import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -17,17 +19,17 @@ import static org.mockito.Mockito.verify;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class EmbeddedActorManagerTest {
+public final class EmbeddedActorManagerTest {
 
-    private AgentTest.RecorderOrchestratorClient client;
+    private RecorderOrchestratorClient client;
     private ActorManager actorManager;
 
     @Before
     public void before() {
-        client = Mockito.spy(new AgentTest.RecorderOrchestratorClient());
+        client = Mockito.spy(new RecorderOrchestratorClient());
 
-        AgentTest.DummyClientFactory factory = new AgentTest.DummyClientFactory(null, client);
-        actorManager = new EmbeddedActorManager(new ActorFactory(factory));
+        DummyClientFactory factory = new DummyClientFactory(null, client);
+        actorManager = new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, factory));
     }
 
     @Test

@@ -3,6 +3,8 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.ConfigException;
 import io.amaze.bench.client.runtime.agent.AgentTest;
+import io.amaze.bench.client.runtime.agent.DummyClientFactory;
+import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.helper.FileHelper;
@@ -26,13 +28,14 @@ import static org.mockito.Mockito.verify;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class ActorBootstrapTest {
+public final class ActorBootstrapTest {
 
     private static final String CONF_PREFIX = "actor";
     private static final String CONF_SUFFIX = ".json";
 
     private static final String DUMMY = "dummy";
     private static final String DUMMY_CONFIG = "{\"master\":{\"host\":\"localhost\",\"port\":1337}}";
+    private static final String DUMMY_AGENT = AgentTest.DUMMY_AGENT;
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
@@ -41,9 +44,9 @@ public class ActorBootstrapTest {
 
     @Before
     public void before() {
-        OrchestratorClient client = new AgentTest.RecorderOrchestratorClient();
-        OrchestratorClientFactory factory = new AgentTest.DummyClientFactory(null, client);
-        actorBootstrap = new ActorBootstrap(factory);
+        OrchestratorClient client = new RecorderOrchestratorClient();
+        OrchestratorClientFactory factory = new DummyClientFactory(null, client);
+        actorBootstrap = new ActorBootstrap(DUMMY, factory);
     }
 
     @Test(expected = ValidationException.class)
@@ -94,7 +97,7 @@ public class ActorBootstrapTest {
         FileHelper.writeToFile(tmpConfigFile, "{}");
 
         try {
-            ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, tmpConfigFile.getAbsolutePath()});
+            ActorBootstrap.main(new String[]{DUMMY_AGENT, TestActor.DUMMY_ACTOR, DUMMY, tmpConfigFile.getAbsolutePath()});
         } catch (ConfigException ignore) {
         }
 
@@ -105,20 +108,20 @@ public class ActorBootstrapTest {
     public void main_reads_empty_temporary_config_file_and_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         FileHelper.writeToFile(tmpConfigFile, "{}");
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{DUMMY_AGENT, TestActor.DUMMY_ACTOR, DUMMY, tmpConfigFile.getAbsolutePath()});
     }
 
     @Test(expected = ValidationException.class)
     public void main_invalid_class_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         FileHelper.writeToFile(tmpConfigFile, DUMMY_CONFIG);
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{DUMMY_AGENT, TestActor.DUMMY_ACTOR, DUMMY, tmpConfigFile.getAbsolutePath()});
     }
 
     @Test(expected = RuntimeException.class)
     public void main_orchestrator_client_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         FileHelper.writeToFile(tmpConfigFile, DUMMY_CONFIG);
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, TestActor.class.getName(), tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{DUMMY_AGENT, TestActor.DUMMY_ACTOR, TestActor.class.getName(), tmpConfigFile.getAbsolutePath()});
     }
 }

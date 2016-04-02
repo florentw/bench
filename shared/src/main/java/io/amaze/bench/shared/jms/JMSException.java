@@ -7,7 +7,7 @@ package io.amaze.bench.shared.jms;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class JMSException extends Exception {
+public final class JMSException extends Exception {
 
     public JMSException(final Throwable cause) {
         super(cause);

@@ -24,28 +24,31 @@ public final class ActorBootstrap {
     private static final Logger LOG = LoggerFactory.getLogger(ActorBootstrap.class);
 
     private final OrchestratorClientFactory clientFactory;
+    private final String agentName;
 
-    ActorBootstrap(final OrchestratorClientFactory clientFactory) {
+    ActorBootstrap(final String agentName, final OrchestratorClientFactory clientFactory) {
         this.clientFactory = clientFactory;
+        this.agentName = agentName;
     }
 
     public static void main(String[] args) throws ValidationException, IOException {
 
-        if (args.length != 3) {
+        if (args.length != 4) {
             LOG.error("Usage:");
-            LOG.error("ActorBootstrap <actorName> <className> <temporaryConfigFile>");
+            LOG.error("ActorBootstrap <agentName> <actorName> <className> <temporaryConfigFile>");
             throw new IllegalArgumentException();
         }
 
-        String actorName = args[0];
-        String className = args[1];
-        String jsonTmpConfigFile = args[2];
+        String agentName = args[0];
+        String actorName = args[1];
+        String className = args[2];
+        String jsonTmpConfigFile = args[3];
 
         String jsonConfig = FileHelper.readFileAndDelete(jsonTmpConfigFile);
 
         OrchestratorClientFactory clientFactory = createClientFactory(jsonConfig);
 
-        ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
+        ActorBootstrap actorBootstrap = new ActorBootstrap(agentName, clientFactory);
         Actor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
 
         installShutdownHook(actor);
@@ -69,7 +72,7 @@ public final class ActorBootstrap {
                       final String className,
                       final String jsonConfig) throws ValidationException, IOException {
 
-        ActorFactory actorFactory = new ActorFactory(clientFactory);
+        ActorFactory actorFactory = new ActorFactory(agentName, clientFactory);
 
         return actorFactory.create(name, className, jsonConfig);
     }

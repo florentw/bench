@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Convert received JMS messages for an actor to calls to its {@link Reactor} methods.
  */
-class JMSActorMessageListener implements MessageListener {
+final class JMSActorMessageListener implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMSActorMessageListener.class);
 

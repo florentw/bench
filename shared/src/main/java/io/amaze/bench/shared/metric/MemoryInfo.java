@@ -26,4 +26,5 @@ public final class MemoryInfo implements Serializable {
     public Map<String, String> getMemoryProperties() {
         return memoryProperties;
     }
+
 }
