@@ -10,7 +10,7 @@ import io.amaze.bench.client.api.actor.Sender;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 @Actor
-public class TestActorBeforeThrows extends TestActor {
+public final class TestActorBeforeThrows extends TestActor {
     public TestActorBeforeThrows(final Sender sender) {
         super(sender);
     }

@@ -1,6 +1,8 @@
 package io.amaze.bench.orchestrator;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created on 3/9/16.
@@ -12,14 +14,13 @@ final class ActorConfig {
     private final String name;
     private final String className;
 
-    private final DeployConfig deploy;
+    private final DeployConfig deployConfig;
 
     public ActorConfig(@NotNull final String name,
-                       @NotNull final String className,
-                       @NotNull final DeployConfig deploy) {
+                       @NotNull final String className, @NotNull final DeployConfig deployConfig) {
         this.name = name;
         this.className = className;
-        this.deploy = deploy;
+        this.deployConfig = deployConfig;
     }
 
     public String getName() {
@@ -30,25 +31,25 @@ final class ActorConfig {
         return className;
     }
 
-    public DeployConfig getDeploy() {
-        return deploy;
+    public DeployConfig getDeployConfig() {
+        return deployConfig;
     }
 
-    public static class DeployConfig {
+    public static final class DeployConfig {
         private final boolean forked;
-        private final String hostGroup;
+        private final List<String> preferredHosts;
 
-        public DeployConfig(final boolean forked, final String hostGroup) {
+        public DeployConfig(final boolean forked, final List<String> preferredHosts) {
             this.forked = forked;
-            this.hostGroup = hostGroup;
+            this.preferredHosts = preferredHosts;
         }
 
-        public boolean isForked() {
-            return forked;
+        public List<String> getPreferredHosts() {
+            return Collections.unmodifiableList(preferredHosts);
         }
 
-        public String getHostGroup() {
-            return hostGroup;
+        public String getAgentJsonConfig() {
+            return "\"forked\":\"" + forked + "\"";
         }
     }
 }

@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class RegisteredAgent {
+public final class RegisteredAgent {
 
     private final String name;
     private final SystemInfo systemInfo;

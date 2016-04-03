@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public final class SystemInfo implements Serializable {
+public class SystemInfo implements Serializable {
 
     private final String hostName;
     private final int procCount;

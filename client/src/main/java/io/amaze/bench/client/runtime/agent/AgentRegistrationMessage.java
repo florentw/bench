@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public final class AgentRegistrationMessage implements Serializable {
+public class AgentRegistrationMessage implements Serializable {
 
     static final String DEFAULT_AGENT_PREFIX = "agent-";
 

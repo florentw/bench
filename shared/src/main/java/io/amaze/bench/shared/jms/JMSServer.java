@@ -3,6 +3,10 @@ package io.amaze.bench.shared.jms;
 import javax.validation.constraints.NotNull;
 
 /**
+ * Abstraction facade for a JMS server implementation.<br/>
+ * Implementations must start the underlying JMS server in the constructor and stop it in the {@link #close()} method.<br/>
+ * Allows to manage the server (queues and topics management).
+ * <p>
  * Created on 3/4/16.
  *
  * @author Florent Weber (florent.weber@gmail.com)

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created on 3/20/16.
@@ -55,24 +54,4 @@ public final class ProcessorInfo implements Serializable {
         return ImmutableMap.copyOf(properties);
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ProcessorInfo that = (ProcessorInfo) o;
-        return cores == that.cores &&
-                Objects.equals(modelName, that.modelName) &&
-                Objects.equals(frequency, that.frequency) &&
-                Objects.equals(cacheSize, that.cacheSize) &&
-                Objects.equals(properties, that.properties);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(modelName, cores, frequency, cacheSize, properties);
-    }
 }

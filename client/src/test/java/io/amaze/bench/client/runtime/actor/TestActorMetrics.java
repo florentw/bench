@@ -12,15 +12,15 @@ import io.amaze.bench.shared.metric.Metric;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 @io.amaze.bench.client.api.actor.Actor
-public class TestActorMetrics extends TestActor {
+public final class TestActorMetrics extends TestActor {
 
-    public static final String PRODUCE_METRICS_MSG = "PRODUCE_METRICS_MSG";
+    static final String PRODUCE_METRICS_MSG = "PRODUCE_METRICS_MSG";
 
-    public static final Metric DUMMY_METRIC_A = new Metric("latency", "ms", 1);
-    public static final Metric DUMMY_METRIC_B = new Metric("throughput", "events", "sec", 1);
+    static final Metric DUMMY_METRIC_A = new Metric("latency", "ms", 1);
+    static final Metric DUMMY_METRIC_B = new Metric("throughput", "events", "sec", 1);
 
-    public static final String DUMMY_METRIC_A_KEY = "DummyMetricA";
-    public static final String DUMMY_METRIC_B_KEY = "DummyMetricB";
+    static final String DUMMY_METRIC_A_KEY = "DummyMetricA";
+    static final String DUMMY_METRIC_B_KEY = "DummyMetricB";
 
     private final MetricsCollector metricsCollector;
 

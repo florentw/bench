@@ -51,6 +51,9 @@ public final class ActorRegistry {
         }
     }
 
+    /**
+     * @return An unmodifiable set of currently registered actors.
+     */
     public Set<RegisteredActor> all() {
         synchronized (actors) {
             return Collections.unmodifiableSet(new HashSet<>(actors.values()));

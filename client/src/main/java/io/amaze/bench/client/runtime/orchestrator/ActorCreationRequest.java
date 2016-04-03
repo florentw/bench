@@ -8,14 +8,15 @@ import java.io.Serializable;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class ActorCreationRequest implements Serializable {
+public final class ActorCreationRequest implements Serializable {
+
     private final String actor;
     private final String className;
     private final String jsonConfig;
 
-    ActorCreationRequest(@NotNull final String actor,
-                         @NotNull final String className,
-                         @NotNull final String jsonConfig) {
+    public ActorCreationRequest(@NotNull final String actor,
+                                @NotNull final String className,
+                                @NotNull final String jsonConfig) {
         this.actor = actor;
         this.className = className;
         this.jsonConfig = jsonConfig;

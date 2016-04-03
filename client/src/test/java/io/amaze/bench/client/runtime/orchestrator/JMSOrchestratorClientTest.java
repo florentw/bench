@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class JMSOrchestratorClientTest {
+public final class JMSOrchestratorClientTest {
 
     private static final String TEST_AGENT = "agent1";
 
@@ -62,10 +62,6 @@ public class JMSOrchestratorClientTest {
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
         client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
-
-        verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
-        verify(jmsClient).startListening();
-        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test(expected = RuntimeException.class)
@@ -75,10 +71,6 @@ public class JMSOrchestratorClientTest {
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
         client.startActorListener(actor);
-
-        verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR), any(MessageListener.class));
-        verify(jmsClient).startListening();
-        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test
