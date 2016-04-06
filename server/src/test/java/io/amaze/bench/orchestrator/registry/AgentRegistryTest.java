@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.amaze.bench.TestConstants.DUMMY_AGENT;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.mockito.Mockito.*;
 
 /**

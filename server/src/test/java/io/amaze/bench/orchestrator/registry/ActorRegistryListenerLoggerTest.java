@@ -3,8 +3,8 @@ package io.amaze.bench.orchestrator.registry;
 import org.junit.Before;
 import org.junit.Test;
 
-import static io.amaze.bench.TestConstants.DUMMY_ACTOR;
-import static io.amaze.bench.TestConstants.DUMMY_AGENT;
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.mockito.Mockito.*;
 
 /**
