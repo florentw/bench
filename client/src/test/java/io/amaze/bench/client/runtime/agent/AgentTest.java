@@ -2,19 +2,21 @@ package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
-import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
-import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
+import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 3/3/16.
@@ -27,8 +29,11 @@ public final class AgentTest {
 
     private RecorderOrchestratorClient agentClient;
     private RecorderOrchestratorClient actorClient;
+
     private DummyClientFactory clientFactory;
-    private ActorManager manager;
+    private ActorManagerFactory managerFactory;
+    private ActorManager embeddedManager;
+    private ActorManager forkedManager;
 
     @Before
     public void before() {
@@ -36,12 +41,26 @@ public final class AgentTest {
         actorClient = new RecorderOrchestratorClient();
 
         clientFactory = new DummyClientFactory(agentClient, actorClient);
-        manager = new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory));
+        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory)));
+        forkedManager = mock(ActorManager.class);
+
+        managerFactory = new ActorManagerFactory() {
+            @Override
+            public ActorManager createEmbedded(@NotNull final String agentName,
+                                               @NotNull final OrchestratorClientFactory factory) {
+                return embeddedManager;
+            }
+
+            @Override
+            public ActorManager createForked(@NotNull final String agentName) {
+                return forkedManager;
+            }
+        };
     }
 
     @Test
     public void start_agent_registers_properly() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
             assertNotNull(agent);
 
             // Check listeners
@@ -58,12 +77,16 @@ public final class AgentTest {
 
     @Test
     public void create_actor_registers_and_sends_lifecycle_msg() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
 
-            agent.onActorCreationRequest(DUMMY_ACTOR, TestActor.class.getCanonicalName(), DUMMY_CONFIG);
+            agent.onActorCreationRequest(DUMMY_CONFIG);
 
             assertThat(agent.getActors().size(), is(1));
             assertThat(agent.getActors().iterator().next().name(), is(DUMMY_ACTOR));
+
+            // Check managers interactions
+            verify(embeddedManager).createActor(DUMMY_CONFIG);
+            verifyZeroInteractions(forkedManager);
 
             // Check listeners
             assertThat(agentClient.isAgentListenerStarted(), is(true));
@@ -81,9 +104,21 @@ public final class AgentTest {
     }
 
     @Test
+    public void create_forked_actor_calls_the_right_manager() throws Exception {
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
+            ActorConfig actorConfig = configForActor(TestActor.class, true);
+            agent.onActorCreationRequest(actorConfig);
+
+            // Check managers interactions
+            verifyZeroInteractions(embeddedManager);
+            verify(forkedManager).createActor(actorConfig);
+        }
+    }
+
+    @Test
     public void create_then_close_actor() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
-            agent.onActorCreationRequest(DUMMY_ACTOR, TestActor.class.getCanonicalName(), DUMMY_CONFIG);
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
+            agent.onActorCreationRequest(DUMMY_CONFIG);
 
             agent.onActorCloseRequest(DUMMY_ACTOR);
 
@@ -104,7 +139,7 @@ public final class AgentTest {
 
     @Test
     public void close_unknown_actor() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
             agent.onActorCloseRequest(DUMMY_ACTOR);
             assertThat(agent.getActors().isEmpty(), is(true));
 
@@ -117,8 +152,8 @@ public final class AgentTest {
 
     @Test
     public void close_actor_failure() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
-            agent.onActorCreationRequest(DUMMY_ACTOR, TestActorAfterThrows.class.getCanonicalName(), DUMMY_CONFIG);
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
+            agent.onActorCreationRequest(configForActor(TestActorAfterThrows.class));
 
             agent.onActorCloseRequest(DUMMY_ACTOR);
 
@@ -140,8 +175,8 @@ public final class AgentTest {
     @Test
     public void closing_agent_closes_actors_and_unregisters() throws Exception {
         Agent outAgent;
-        try (Agent agent = new Agent(clientFactory, manager)) {
-            agent.onActorCreationRequest(DUMMY_ACTOR, TestActor.class.getCanonicalName(), DUMMY_CONFIG);
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
+            agent.onActorCreationRequest(DUMMY_CONFIG);
             outAgent = agent;
         }
 
@@ -167,9 +202,9 @@ public final class AgentTest {
 
     @Test
     public void create_same_actor_twice_registers_only_one() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
-            agent.onActorCreationRequest(DUMMY_ACTOR, TestActor.class.getCanonicalName(), DUMMY_CONFIG);
-            agent.onActorCreationRequest(DUMMY_ACTOR, TestActor.class.getCanonicalName(), DUMMY_CONFIG);
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
+            agent.onActorCreationRequest(DUMMY_CONFIG);
+            agent.onActorCreationRequest(DUMMY_CONFIG);
             assertThat(agent.getActors().size(), is(1));
 
             // Check good flow of messages
@@ -181,8 +216,8 @@ public final class AgentTest {
 
     @Test
     public void create_invalid_actor() throws Exception {
-        try (Agent agent = new Agent(clientFactory, manager)) {
-            agent.onActorCreationRequest(DUMMY_ACTOR, String.class.getCanonicalName(), DUMMY_CONFIG);
+        try (Agent agent = new Agent(clientFactory, managerFactory)) {
+            agent.onActorCreationRequest(configForActor(String.class));
             assertThat(agent.getActors().isEmpty(), is(true));
 
             // Check good flow of messages

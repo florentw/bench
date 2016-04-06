@@ -1,6 +1,5 @@
 package io.amaze.bench.orchestrator.registry;
 
-import io.amaze.bench.TestConstants;
 import io.amaze.bench.orchestrator.registry.RegisteredActor.State;
 import org.junit.After;
 import org.junit.Before;
@@ -8,6 +7,8 @@ import org.junit.Test;
 
 import java.util.Set;
 
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
@@ -46,50 +47,50 @@ public final class ActorRegistryTest {
 
     @Test
     public void actor_registered() {
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
 
-        assertThat(actor.getName(), is(TestConstants.DUMMY_ACTOR));
-        assertThat(actor.getAgent(), is(TestConstants.DUMMY_AGENT));
+        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.CREATED));
 
-        verify(clientListener).onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void list_all() {
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         Set<RegisteredActor> actors = registry.all();
         assertThat(actors.size(), is(1));
 
         RegisteredActor actor = actors.iterator().next();
-        assertThat(actor.getName(), is(TestConstants.DUMMY_ACTOR));
+        assertThat(actor.getName(), is(DUMMY_ACTOR));
         assertThat(actor.getState(), is(State.CREATED));
     }
 
     @Test
     public void actor_registered_and_started() {
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        orchestratorListener.onActorStarted(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        orchestratorListener.onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
 
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
 
-        assertThat(actor.getName(), is(TestConstants.DUMMY_ACTOR));
-        assertThat(actor.getAgent(), is(TestConstants.DUMMY_AGENT));
+        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.STARTED));
 
-        verify(clientListener).onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        verify(clientListener).onActorStarted(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(clientListener).onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void unknown_actor_started_does_not_throw() {
-        orchestratorListener.onActorStarted(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        orchestratorListener.onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
 
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);
 
         verifyNoMoreInteractions(clientListener);
@@ -97,22 +98,22 @@ public final class ActorRegistryTest {
 
     @Test
     public void actor_registered_and_closed_is_removed() {
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        orchestratorListener.onActorClosed(TestConstants.DUMMY_ACTOR);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        orchestratorListener.onActorClosed(DUMMY_ACTOR);
 
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);
 
-        verify(clientListener).onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        verify(clientListener).onActorClosed(TestConstants.DUMMY_ACTOR);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(clientListener).onActorClosed(DUMMY_ACTOR);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void unknown_actor_closed_does_not_notify() {
-        orchestratorListener.onActorClosed(TestConstants.DUMMY_ACTOR);
+        orchestratorListener.onActorClosed(DUMMY_ACTOR);
 
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);
 
         verifyNoMoreInteractions(clientListener);
@@ -122,14 +123,14 @@ public final class ActorRegistryTest {
     public void actor_registered_and_failed_is_removed() {
         Throwable dummyThrowable = new IllegalArgumentException();
 
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        orchestratorListener.onActorFailed(TestConstants.DUMMY_ACTOR, dummyThrowable);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        orchestratorListener.onActorFailed(DUMMY_ACTOR, dummyThrowable);
 
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);
 
-        verify(clientListener).onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
-        verify(clientListener).onActorFailed(TestConstants.DUMMY_ACTOR, dummyThrowable);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(clientListener).onActorFailed(DUMMY_ACTOR, dummyThrowable);
         verifyNoMoreInteractions(clientListener);
     }
 
@@ -137,9 +138,9 @@ public final class ActorRegistryTest {
     public void unknown_actor_failed_does_not_notify() {
         Throwable dummyThrowable = new IllegalArgumentException();
 
-        orchestratorListener.onActorFailed(TestConstants.DUMMY_ACTOR, dummyThrowable);
+        orchestratorListener.onActorFailed(DUMMY_ACTOR, dummyThrowable);
 
-        RegisteredActor actor = registry.byName(TestConstants.DUMMY_ACTOR);
+        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);
 
         verifyNoMoreInteractions(clientListener);
@@ -149,7 +150,7 @@ public final class ActorRegistryTest {
     public void removed_listener_not_notified() {
         registry.removeListener(clientListener);
 
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         verifyNoMoreInteractions(clientListener);
     }
@@ -159,7 +160,7 @@ public final class ActorRegistryTest {
         registry.removeListener(clientListener);
         registry.removeListener(clientListener);
 
-        orchestratorListener.onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         verifyNoMoreInteractions(clientListener);
     }

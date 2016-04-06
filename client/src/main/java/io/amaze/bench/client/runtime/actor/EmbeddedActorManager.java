@@ -10,10 +10,13 @@ import javax.validation.constraints.NotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public final class EmbeddedActorManager extends AbstractActorManager {
+public class EmbeddedActorManager extends AbstractActorManager {
+
+    private final ActorFactory factory;
 
     public EmbeddedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory) {
-        super(agent, factory);
+        super(agent);
+        this.factory = factory;
     }
 
     @Override
@@ -22,11 +25,10 @@ public final class EmbeddedActorManager extends AbstractActorManager {
     }
 
     @Override
-    public ManagedActor createActor(@NotNull final String name,
-                                    @NotNull final String className,
-                                    @NotNull final String jsonConfig) throws ValidationException {
+    public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
 
-        final Actor actor = getFactory().create(name, className, jsonConfig);
+        final String name = actorConfig.getName();
+        final Actor actor = factory.create(name, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
 
         return new ManagedActor() {
             @Override

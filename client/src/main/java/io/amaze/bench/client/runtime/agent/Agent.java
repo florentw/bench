@@ -2,10 +2,7 @@ package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import io.amaze.bench.client.api.ReactorException;
-import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.actor.ActorManager;
-import io.amaze.bench.client.runtime.actor.ManagedActor;
+import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
@@ -27,23 +24,27 @@ import static java.lang.String.format;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class Agent implements AgentClientListener, AutoCloseable {
+public final class Agent implements AgentClientListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Agent.class);
 
     private final Map<String, ManagedActor> actors = Maps.newHashMap();
     private final OrchestratorClient agentClient;
-    private final ActorManager manager;
+    private final ActorManager embeddedManager;
+    private final ActorManager forkedManager;
+
     private final String name;
 
-    Agent(@NotNull final OrchestratorClientFactory clientFactory,
-          @NotNull final ActorManager actorManager) throws ReactorException {
+    public Agent(@NotNull final OrchestratorClientFactory clientFactory,
+                 @NotNull final ActorManagerFactory actorManagers) {
 
-        manager = actorManager;
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
         name = regMsg.getName();
 
         LOG.info(format("Starting agent \"%s\"...", name));
+
+        embeddedManager = actorManagers.createEmbedded(name, clientFactory);
+        forkedManager = actorManagers.createForked(name);
 
         agentClient = clientFactory.createForAgent();
 
@@ -54,26 +55,22 @@ final class Agent implements AgentClientListener, AutoCloseable {
     }
 
     @Override
-    public synchronized void onActorCreationRequest(@NotNull final String actor,
-                                                    @NotNull final String className,
-                                                    @NotNull final String jsonConfig) {
-        if (actors.get(actor) != null) {
-            LOG.warn(format("The actor \"%s\" already exists.", actor));
+    public synchronized void onActorCreationRequest(@NotNull final ActorConfig actorConfig) {
+        String actorName = actorConfig.getName();
+        if (actors.get(actorName) != null) {
+            LOG.warn(format("The actor \"%s\" already exists.", actorName));
             return;
         }
 
-        LOG.info(format("Actor creation request for actor \"%s\" with className \"%s\", config: \"%s\"",
-                        actor,
-                        className,
-                        jsonConfig));
+        LOG.info(format("Actor creation request for actor \"%s\" with config: %s", actorName, actorConfig));
 
-        ManagedActor instance = createManagedActor(actor, className, jsonConfig);
+        ManagedActor instance = createManagedActor(actorConfig);
         if (instance != null) {
-            actors.put(actor, instance);
-            sendActorLifecycleMessage(actor, Phase.CREATED);
+            actors.put(actorName, instance);
+            sendActorLifecycleMessage(actorName, Phase.CREATED);
         }
 
-        LOG.info(format("Actor \"%s\" created.", actor));
+        LOG.info(format("Actor \"%s\" created.", actorName));
     }
 
     @Override
@@ -125,18 +122,26 @@ final class Agent implements AgentClientListener, AutoCloseable {
         agentClient.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, masterOutputMessage));
     }
 
-    private ManagedActor createManagedActor(@NotNull final String actor,
-                                            @NotNull final String className,
-                                            @NotNull final String jsonConfig) {
+    private ManagedActor createManagedActor(@NotNull final ActorConfig actorConfig) {
         ManagedActor instance;
         try {
-            instance = manager.createActor(actor, className, jsonConfig);
+            ActorManager manager = getActorManager(actorConfig.getDeployConfig());
+            instance = manager.createActor(actorConfig);
+
         } catch (Exception e) {
-            LOG.warn(format("Could not create actor \"%s\".", actor), e);
-            actorFailure(actor, e);
+            LOG.warn(format("Could not create actor with config \"%s\".", actorConfig), e);
+            actorFailure(actorConfig.getName(), e);
             return null;
         }
         return instance;
+    }
+
+    private ActorManager getActorManager(@NotNull final DeployConfig deployConfig) {
+        if (deployConfig.isForked()) {
+            return forkedManager;
+        } else {
+            return embeddedManager;
+        }
     }
 
     private void actorFailure(@NotNull final String actor, @NotNull final Throwable throwable) {

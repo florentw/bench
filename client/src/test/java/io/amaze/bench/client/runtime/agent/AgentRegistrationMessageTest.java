@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class AgentRegistrationMessageTest {
+public final class AgentRegistrationMessageTest {
 
     @Test
     public void create_msg() {

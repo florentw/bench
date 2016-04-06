@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
 
 /**
@@ -39,9 +40,9 @@ final class ForkedActorManager extends AbstractActorManager {
     private final Map<String, ForkedActorWatchDogThread> processes = new ConcurrentHashMap<>();
     private final File localLogDir;
 
-    ForkedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory, @NotNull File localLogDir) {
-        super(agent, factory);
-        this.localLogDir = localLogDir;
+    ForkedActorManager(@NotNull final String agent, @NotNull File localLogDir) {
+        super(agent);
+        this.localLogDir = checkNotNull(localLogDir);
 
         boolean success = localLogDir.mkdir();
         if (!success && !localLogDir.exists()) {
@@ -49,40 +50,45 @@ final class ForkedActorManager extends AbstractActorManager {
         }
     }
 
-    ForkedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory) {
-        this(agent, factory, new File(LOG_DIRECTORY_NAME));
+    ForkedActorManager(@NotNull final String agent) {
+        this(agent, new File(LOG_DIRECTORY_NAME));
     }
 
     @Override
-    public ManagedActor createActor(@NotNull final String name,
-                                    @NotNull final String className,
-                                    @NotNull final String jsonConfig) throws ValidationException {
+    public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
         Process process;
+
+        final String actor = actorConfig.getName();
+
         try {
             File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
-            FileHelper.writeToFile(tempConfigFile, jsonConfig);
+            FileHelper.writeToFile(tempConfigFile, actorConfig.getActorJsonConfig());
 
-            process = forkProcess(name, className, tempConfigFile.getAbsolutePath());
+            process = forkProcess(actor,
+                                  actorConfig.getClassName(),
+                                  actorConfig.getDeployConfig().getJmsServerHost(),
+                                  actorConfig.getDeployConfig().getJmsServerPort(),
+                                  tempConfigFile.getAbsolutePath());
 
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
 
-        ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(name, process);
+        ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(actor, process);
         thread.start();
         thread.awaitUntilStarted();
 
-        processes.put(name, thread);
+        processes.put(actor, thread);
 
         return new ManagedActor() {
             @Override
             public String name() {
-                return name;
+                return actor;
             }
 
             @Override
             public void close() {
-                ForkedActorWatchDogThread thread = processes.remove(name);
+                ForkedActorWatchDogThread thread = processes.remove(actor);
                 if (thread == null) {
                     return;
                 }
@@ -111,18 +117,22 @@ final class ForkedActorManager extends AbstractActorManager {
         Uninterruptibles.joinUninterruptibly(thread);
     }
 
-    private Process forkProcess(@NotNull final String name,
-                                @NotNull final String className,
-                                @NotNull final String configFileName) throws IOException {
+    private Process forkProcess(final String name,
+                                final String className,
+                                final String jmsServerHost,
+                                final int jmsServerPort,
+                                final String configFileName) throws IOException {
         String[] cmd = { //
                 StandardSystemProperty.JAVA_HOME.value() + JAVA_CMD_PATH, //
                 "-cp", //
                 StandardSystemProperty.JAVA_CLASS_PATH.value(), // Use the current classpath
-                ActorBootstrap.class.getName(), // Main class
-                getAgent(), // arg[0]
-                name, // arg[1]
-                className, // arg[2]
-                configFileName // arg[3]
+                ActorBootstrap.class.getName(),  // Main class
+                getAgent(),                      // arg[0]
+                name,                            // arg[1]
+                className,                       // arg[2]
+                jmsServerHost,                   // arg[3]
+                Integer.toString(jmsServerPort), // arg[4]
+                configFileName                   // arg[5]
         };
 
         ProcessBuilder builder = new ProcessBuilder(cmd);

@@ -3,8 +3,6 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.Constants;
-import io.amaze.bench.client.runtime.agent.DummyClientFactory;
-import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
 import io.amaze.bench.shared.helper.FileHelper;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
@@ -19,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
@@ -75,11 +74,9 @@ public final class ForkedActorManagerTest {
 
     @Before
     public void before() throws JMSException, IOException {
-        RecorderOrchestratorClient client = spy(new RecorderOrchestratorClient());
         File folder = this.folder.newFolder();
 
-        DummyClientFactory factory = new DummyClientFactory(null, client);
-        actorManager = new ForkedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, factory), folder);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, folder);
 
         server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
         server.getServer().createQueue(DUMMY_ACTOR);
@@ -88,9 +85,8 @@ public final class ForkedActorManagerTest {
     @Test
     public void create_actor_init_called() throws ValidationException, IOException, InterruptedException {
         File rdvFile = folder.newFile();
-        String jsonConfig = configWithInitRdv(rdvFile);
-
-        ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
+        ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFile);
+        ManagedActor actor = actorManager.createActor(actorConfig);
 
         assertNotNull(actor);
         assertThat(actor.name(), is(DUMMY_ACTOR));
@@ -102,9 +98,8 @@ public final class ForkedActorManagerTest {
     @Test
     public void close_actor_and_watchdog_detects() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-        String jsonConfig = configWithInitRdv(rdvFileInit);
-
-        ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
+        ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
+        ManagedActor actor = actorManager.createActor(actorConfig);
 
         ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
         assertNotNull(watchDogThread);
@@ -126,9 +121,8 @@ public final class ForkedActorManagerTest {
     @Test
     public void close_actor_twice() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-        String jsonConfig = configWithInitRdv(rdvFileInit);
-
-        ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
+        ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
+        ManagedActor actor = actorManager.createActor(actorConfig);
 
         ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
@@ -149,9 +143,8 @@ public final class ForkedActorManagerTest {
     @Test
     public void close_manager_closes_actor() throws ValidationException, IOException, InterruptedException {
         File rdvFileInit = folder.newFile();
-        String jsonConfig = configWithInitRdv(rdvFileInit);
-
-        ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActorWriter.class.getName(), jsonConfig);
+        ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
+        ManagedActor actor = actorManager.createActor(actorConfig);
         assertNotNull(actor);
 
         ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
@@ -169,13 +162,12 @@ public final class ForkedActorManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void create_manager_but_cant_create_local_log_dir() throws IOException {
-        DummyClientFactory factory = new DummyClientFactory(null, null);
         File folder = this.folder.newFolder();
         File localLogDir = spy(folder);
         doReturn(false).when(localLogDir).mkdirs(); // NOSONAR
         doReturn(false).when(localLogDir).exists(); // NOSONAR
 
-        actorManager = new ForkedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, factory), localLogDir);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, localLogDir);
     }
 
     @Test
@@ -192,10 +184,15 @@ public final class ForkedActorManagerTest {
         assertThat(watchdog.hasProcessExited(), is(false));
     }
 
-    private String configWithInitRdv(final File rdvFile) {
-        return "{" + //
-                "\"master\":{\"host\":\"" + server.getHost() + "\",\"port\":" + server.getPort() + "}," + //
-                "\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"" + //
-                "}";
+    private ActorConfig configWithInitRdv(final String className, final File rdvFile) {
+
+        DeployConfig deployConfig = new DeployConfig(server.getHost(),
+                                                     server.getPort(),
+                                                     true,
+                                                     Collections.<String>emptyList());
+
+        String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
+
+        return new ActorConfig(DUMMY_ACTOR, className, deployConfig, jsonConfig);
     }
 }

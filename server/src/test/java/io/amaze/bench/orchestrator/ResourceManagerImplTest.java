@@ -1,5 +1,8 @@
 package io.amaze.bench.orchestrator;
 
+import io.amaze.bench.client.runtime.actor.ActorConfig;
+import io.amaze.bench.client.runtime.actor.DeployConfig;
+import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
@@ -12,8 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static io.amaze.bench.TestConstants.DUMMY_ACTOR;
-import static io.amaze.bench.TestConstants.DUMMY_AGENT;
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_JSON_CONFIG;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -41,8 +45,7 @@ public final class ResourceManagerImplTest {
         orchestratorServer = mock(OrchestratorServer.class);
         resourceManager = new ResourceManagerImpl(orchestratorServer, agentRegistry);
 
-        List<String> preferredHosts = Collections.emptyList();
-        defaultActorConfig = new ActorConfig(DUMMY_ACTOR, "", new ActorConfig.DeployConfig(false, preferredHosts));
+        defaultActorConfig = TestActor.DUMMY_CONFIG;
     }
 
     @Test(expected = IllegalStateException.class)
@@ -111,12 +114,16 @@ public final class ResourceManagerImplTest {
         List<String> preferredHosts = new ArrayList<>();
         preferredHosts.add(regMsgAgentOnPHost.getSystemInfo().getHostName());
 
-        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR, "", new ActorConfig.DeployConfig(false, preferredHosts));
+        ActorConfig actorConfig = configWithPreferredHosts(preferredHosts);
         resourceManager.createActor(actorConfig);
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
         assertThat(pickedAgent.getName(), is(DUMMY_AGENT));
+    }
+
+    private ActorConfig configWithPreferredHosts(final List<String> preferredHosts) {
+        return new ActorConfig(DUMMY_ACTOR, "", new DeployConfig("", 0, false, preferredHosts), DUMMY_JSON_CONFIG);
     }
 
     @Test
@@ -127,7 +134,7 @@ public final class ResourceManagerImplTest {
         List<String> preferredHosts = new ArrayList<>();
         preferredHosts.add(OTHER_HOST);
 
-        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR, "", new ActorConfig.DeployConfig(false, preferredHosts));
+        ActorConfig actorConfig = configWithPreferredHosts(preferredHosts);
         resourceManager.createActor(actorConfig);
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
@@ -144,7 +151,7 @@ public final class ResourceManagerImplTest {
 
         List<String> preferredHosts = Collections.emptyList();
 
-        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR, "", new ActorConfig.DeployConfig(false, preferredHosts));
+        ActorConfig actorConfig = configWithPreferredHosts(preferredHosts);
         resourceManager.createActor(actorConfig);
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));

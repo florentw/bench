@@ -11,9 +11,7 @@ import javax.validation.constraints.NotNull;
 public interface ActorManager extends AutoCloseable {
 
     @NotNull
-    ManagedActor createActor(@NotNull String name,
-                             @NotNull String className,
-                             @NotNull String jsonConfig) throws ValidationException;
+    ManagedActor createActor(@NotNull ActorConfig actorConfig) throws ValidationException;
 
     @Override
     void close();

@@ -1,5 +1,7 @@
 package io.amaze.bench.client.runtime.agent;
 
+import io.amaze.bench.client.runtime.actor.ActorConfig;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -13,11 +15,9 @@ public interface AgentClientListener {
     /**
      * Method is called when an actor creation request is received from the master.
      *
-     * @param actor      Actor name to createForAgent
-     * @param className  Actor fully qualified class name
-     * @param jsonConfig The actor configuration, arbitrary JSON format
+     * @param actorConfig The actor configuration
      */
-    void onActorCreationRequest(@NotNull String actor, @NotNull String className, @NotNull String jsonConfig);
+    void onActorCreationRequest(@NotNull ActorConfig actorConfig);
 
     /**
      * Called when the agent is requested to close an actor.

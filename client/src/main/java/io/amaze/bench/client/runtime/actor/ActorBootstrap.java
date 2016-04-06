@@ -1,8 +1,6 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.helper.FileHelper;
@@ -31,22 +29,31 @@ public final class ActorBootstrap {
         this.agentName = agentName;
     }
 
+    /**
+     * @param args [agentName] [actorName] [className] [jmsServerHost] [jmsServerPort] [temporaryConfigFile]
+     * @throws ValidationException
+     * @throws IOException
+     */
     public static void main(String[] args) throws ValidationException, IOException {
 
-        if (args.length != 4) {
+        if (args.length != 6) {
             LOG.error("Usage:");
-            LOG.error("ActorBootstrap <agentName> <actorName> <className> <temporaryConfigFile>");
+            LOG.error(
+                    "ActorBootstrap <agentName> <actorName> <className> <jmsServerHost> <jmsServerPort> <temporaryConfigFile>");
             throw new IllegalArgumentException();
         }
 
         String agentName = args[0];
         String actorName = args[1];
         String className = args[2];
-        String jsonTmpConfigFile = args[3];
+        String jmsServerHost = args[3];
+        int jmsServerPort = Integer.parseInt(args[4]);
+        String jsonTmpConfigFile = args[5];
 
+        // Read and delete the temporary config file
         String jsonConfig = FileHelper.readFileAndDelete(jsonTmpConfigFile);
 
-        OrchestratorClientFactory clientFactory = createClientFactory(jsonConfig);
+        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(jmsServerHost, jmsServerPort);
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(agentName, clientFactory);
         Actor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
@@ -59,13 +66,6 @@ public final class ActorBootstrap {
         ActorShutdownThread hook = new ActorShutdownThread(actor);
         Runtime.getRuntime().addShutdownHook(hook);
         return hook;
-    }
-
-    private static OrchestratorClientFactory createClientFactory(final String jsonConfig) {
-        Config config = ConfigFactory.parseString(jsonConfig);
-        String host = config.getString("master.host");
-        int port = config.getInt("master.port");
-        return new JMSOrchestratorClientFactory(host, port);
     }
 
     Actor createActor(final String name,

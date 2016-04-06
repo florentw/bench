@@ -3,6 +3,8 @@ package io.amaze.bench.client.runtime.actor;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/4/16.
  *
@@ -18,9 +20,9 @@ public final class ActorInputMessage implements Serializable {
                              @NotNull final String from,
                              @NotNull final Serializable payload) {
 
-        this.command = command;
-        this.from = from;
-        this.payload = payload;
+        this.command = checkNotNull(command);
+        this.from = checkNotNull(from);
+        this.payload = checkNotNull(payload);
     }
 
     public Command getCommand() {

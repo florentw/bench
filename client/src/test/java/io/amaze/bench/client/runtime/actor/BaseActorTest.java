@@ -60,7 +60,7 @@ public final class BaseActorTest {
 
     @Test(expected = ValidationException.class)
     public void create_invalid_actor_throws() throws ValidationException {
-        factory.create(DUMMY_ACTOR, String.class.getName(), DUMMY_CONFIG);
+        factory.create(DUMMY_ACTOR, String.class.getName(), DUMMY_JSON_CONFIG);
     }
 
     @Test(expected = ValidationException.class)
@@ -290,7 +290,7 @@ public final class BaseActorTest {
     }
 
     private BaseActor createActor(final Class<?> actorClass) throws ValidationException {
-        return (BaseActor) factory.create(DUMMY_ACTOR, actorClass.getName(), DUMMY_CONFIG);
+        return (BaseActor) factory.create(DUMMY_ACTOR, actorClass.getName(), DUMMY_JSON_CONFIG);
     }
 
     private BaseActor defaultTestActor() throws ValidationException {

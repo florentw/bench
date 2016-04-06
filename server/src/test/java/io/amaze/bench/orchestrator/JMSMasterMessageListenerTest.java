@@ -1,6 +1,5 @@
 package io.amaze.bench.orchestrator;
 
-import io.amaze.bench.TestConstants;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
@@ -17,6 +16,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Mockito.*;
 
@@ -62,50 +63,47 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void agent_signoff() throws IOException, JMSException {
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.UNREGISTER_AGENT, TestConstants.DUMMY_AGENT);
+        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.UNREGISTER_AGENT, DUMMY_AGENT);
         BytesMessage msg = bytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
 
-        verify(agentRegistryLstnr).onAgentSignOff(TestConstants.DUMMY_AGENT);
+        verify(agentRegistryLstnr).onAgentSignOff(DUMMY_AGENT);
         verifyNoMoreInteractions(agentRegistryLstnr);
         verifyNoMoreInteractions(actorRegistryLstnr);
     }
 
     @Test
     public void actor_created() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(TestConstants.DUMMY_ACTOR,
-                                                                TestConstants.DUMMY_AGENT,
+        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT,
                                                                 Phase.CREATED);
         MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = bytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorCreated(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        verify(actorRegistryLstnr).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(agentRegistryLstnr);
         verifyNoMoreInteractions(actorRegistryLstnr);
     }
 
     @Test
     public void actor_started() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(TestConstants.DUMMY_ACTOR,
-                                                                TestConstants.DUMMY_AGENT,
+        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT,
                                                                 Phase.STARTED);
         MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = bytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorStarted(TestConstants.DUMMY_ACTOR, TestConstants.DUMMY_AGENT);
+        verify(actorRegistryLstnr).onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(agentRegistryLstnr);
         verifyNoMoreInteractions(actorRegistryLstnr);
     }
 
     @Test
     public void actor_failure() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(TestConstants.DUMMY_ACTOR,
-                                                                TestConstants.DUMMY_AGENT,
+        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT,
                                                                 Phase.FAILED,
                                                                 null);
 
@@ -114,15 +112,14 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorFailed(TestConstants.DUMMY_ACTOR, null);
+        verify(actorRegistryLstnr).onActorFailed(DUMMY_ACTOR, null);
         verifyNoMoreInteractions(agentRegistryLstnr);
         verifyNoMoreInteractions(actorRegistryLstnr);
     }
 
     @Test
     public void actor_closed() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(TestConstants.DUMMY_ACTOR,
-                                                                TestConstants.DUMMY_AGENT,
+        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT,
                                                                 Phase.CLOSED);
 
         MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
@@ -130,7 +127,7 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorClosed(TestConstants.DUMMY_ACTOR);
+        verify(actorRegistryLstnr).onActorClosed(DUMMY_ACTOR);
         verifyNoMoreInteractions(agentRegistryLstnr);
         verifyNoMoreInteractions(actorRegistryLstnr);
     }

@@ -1,5 +1,7 @@
 package io.amaze.bench.orchestrator;
 
+import io.amaze.bench.client.runtime.actor.ActorConfig;
+
 import javax.validation.constraints.NotNull;
 
 /**

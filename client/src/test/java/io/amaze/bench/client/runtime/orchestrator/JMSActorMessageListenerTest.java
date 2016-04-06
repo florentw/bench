@@ -50,8 +50,7 @@ public final class JMSActorMessageListenerTest {
     @Test
     public void start_actor_msg() throws IOException, ClassNotFoundException, JMSException {
         ActorInputMessage inputMsg = new ActorInputMessage(Command.START,
-                                                           TestActor.DUMMY_ACTOR,
-                                                           null);
+                                                           TestActor.DUMMY_ACTOR, "");
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -64,7 +63,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void stop_actor_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(Command.STOP, TestActor.DUMMY_ACTOR, null);
+        ActorInputMessage inputMsg = new ActorInputMessage(Command.STOP, TestActor.DUMMY_ACTOR, "");
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -78,8 +77,7 @@ public final class JMSActorMessageListenerTest {
     @Test
     public void dump_actor_metrics_msg() throws IOException, ClassNotFoundException, JMSException {
         ActorInputMessage inputMsg = new ActorInputMessage(Command.DUMP_METRICS,
-                                                           TestActor.DUMMY_ACTOR,
-                                                           null);
+                                                           TestActor.DUMMY_ACTOR, "");
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);

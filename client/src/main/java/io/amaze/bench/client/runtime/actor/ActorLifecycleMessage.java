@@ -3,6 +3,8 @@ package io.amaze.bench.client.runtime.actor;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * This message class represents actor lifecycle notifications.<br/>
  * It is meant to be sent by an agent to the master.<br/>
@@ -26,9 +28,9 @@ public final class ActorLifecycleMessage implements Serializable {
                                  @NotNull final String agent,
                                  @NotNull final Phase phase,
                                  final Throwable throwable) {
-        this.actor = actor;
-        this.agent = agent;
-        this.phase = phase;
+        this.actor = checkNotNull(actor);
+        this.agent = checkNotNull(agent);
+        this.phase = checkNotNull(phase);
         this.throwable = throwable;
     }
 

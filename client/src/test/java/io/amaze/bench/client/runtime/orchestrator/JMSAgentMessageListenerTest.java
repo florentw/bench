@@ -13,6 +13,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 
+import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Mockito.*;
 
@@ -21,9 +22,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class JMSAgentMessageListenerTest {
-
-    private static final String DUMMY_AGENT = "test-agent";
+public final class JMSAgentMessageListenerTest {
 
     private AgentClientListener agentListener;
     private JMSAgentMessageListener listener;
@@ -36,26 +35,20 @@ public class JMSAgentMessageListenerTest {
 
     @Test
     public void create_actor_calls_listener() throws IOException, ClassNotFoundException, JMSException {
-        ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_ACTOR,
-                                                                        TestActor.class.getName(),
-                                                                        TestActor.DUMMY_CONFIG);
+        ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
 
         AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(masterMsg);
 
         listener.onMessage(testBytesMessage);
 
-        verify(agentListener).onActorCreationRequest(TestActor.DUMMY_ACTOR,
-                                                     TestActor.class.getName(),
-                                                     TestActor.DUMMY_CONFIG);
+        verify(agentListener).onActorCreationRequest(eq(TestActor.DUMMY_CONFIG));
         verifyNoMoreInteractions(agentListener);
     }
 
     @Test
     public void create_actor_for_wrong_agent_does_nothing() throws IOException, ClassNotFoundException, JMSException {
-        ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_ACTOR,
-                                                                        TestActor.class.getName(),
-                                                                        TestActor.DUMMY_CONFIG);
+        ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
 
         AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT + "2", Action.CREATE_ACTOR, creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(masterMsg);

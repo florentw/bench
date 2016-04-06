@@ -57,6 +57,6 @@ final class JMSAgentMessageListener implements MessageListener {
 
     private void createActor(final AgentInputMessage msg) {
         ActorCreationRequest data = (ActorCreationRequest) msg.getData();
-        listener.onActorCreationRequest(data.getActor(), data.getClassName(), data.getJsonConfig());
+        listener.onActorCreationRequest(data.getActorConfig());
     }
 }

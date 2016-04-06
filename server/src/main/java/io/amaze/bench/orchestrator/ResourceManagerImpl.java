@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Iterables;
+import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.client.runtime.orchestrator.ActorCreationRequest;
@@ -44,9 +44,7 @@ final class ResourceManagerImpl implements ResourceManager {
         String name = actorConfig.getName();
         orchestratorServer.createActorQueue(name);
 
-        ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig.getName(),
-                                                                         actorConfig.getClassName(),
-                                                                         createJsonActorConfig(actorConfig));
+        ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig);
 
         RegisteredAgent agent = applyDeployStrategy(actorConfig);
         if (agent == null) {
@@ -119,7 +117,7 @@ final class ResourceManagerImpl implements ResourceManager {
         Optional<RegisteredAgent> agentMatchingHost = FluentIterable.from(allAgents).filter(new Predicate<RegisteredAgent>() {
             @Override
             public boolean apply(final RegisteredAgent input) {
-                return Iterables.contains(preferredHosts, input.getSystemInfo().getHostName());
+                return preferredHosts.contains(input.getSystemInfo().getHostName());
             }
         }).first();
 
@@ -129,9 +127,5 @@ final class ResourceManagerImpl implements ResourceManager {
 
         LOG.warn("Could not find an agent deployed on one of the preferred hosts: " + preferredHosts);
         return null;
-    }
-
-    private String createJsonActorConfig(final ActorConfig actorConfig) {
-        return "{\"sys\":{\"deploy\":{" + actorConfig.getDeployConfig().getAgentJsonConfig() + "}}}";
     }
 }

@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
 
 
@@ -44,8 +45,8 @@ public final class ActorFactory {
     private final String agent;
 
     public ActorFactory(@NotNull final String agent, @NotNull final OrchestratorClientFactory clientFactory) {
-        this.agent = agent;
-        this.clientFactory = clientFactory;
+        this.agent = checkNotNull(agent);
+        this.clientFactory = checkNotNull(clientFactory);
 
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
     }

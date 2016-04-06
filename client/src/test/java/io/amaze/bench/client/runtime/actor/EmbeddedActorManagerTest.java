@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.junit.Assert.assertNotNull;
@@ -34,14 +33,14 @@ public final class EmbeddedActorManagerTest {
 
     @Test
     public void create_actor() throws ValidationException, InterruptedException {
-        ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActor.class.getName(), DUMMY_CONFIG);
+        ManagedActor actor = actorManager.createActor(DUMMY_CONFIG);
         assertNotNull(actor);
         verify(client).startActorListener(any(Actor.class));
     }
 
     @Test
     public void create_close_actor() throws Exception {
-        ManagedActor actor = actorManager.createActor(DUMMY_ACTOR, TestActor.class.getName(), DUMMY_CONFIG);
+        ManagedActor actor = actorManager.createActor(DUMMY_CONFIG);
         actor.close();
         verify(client).close();
     }

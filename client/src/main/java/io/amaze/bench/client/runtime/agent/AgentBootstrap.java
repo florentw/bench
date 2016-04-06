@@ -1,8 +1,6 @@
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.client.runtime.actor.ActorFactory;
-import io.amaze.bench.client.runtime.actor.ActorManager;
-import io.amaze.bench.client.runtime.actor.EmbeddedActorManager;
+import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.slf4j.Logger;
@@ -25,19 +23,17 @@ public final class AgentBootstrap {
 
         // TODO INSTALL SHUTDOWN HOOK
 
-        if (args.length != 3) {
+        if (args.length != 2) {
             LOG.info("Usage:");
-            LOG.info("$ benchclient <jmsServerHost> <jmsServerPort> <agentName>");
+            LOG.info("$ benchclient <jmsServerHost> <jmsServerPort>");
             return;
         }
 
         String host = args[0];
         int port = Integer.parseInt(args[1]);
-        String agent = args[2];
 
         OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(host, port);
-        ActorManager manager = new EmbeddedActorManager(agent, new ActorFactory(agent, clientFactory));
-        try (Agent ignore = new Agent(clientFactory, manager)) {
+        try (Agent ignore = new Agent(clientFactory, new ActorManagers())) {
             Thread.sleep(Long.MAX_VALUE);
         }
     }

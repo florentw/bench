@@ -1,5 +1,7 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
+import io.amaze.bench.client.runtime.actor.ActorConfig;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -10,27 +12,13 @@ import java.io.Serializable;
  */
 public final class ActorCreationRequest implements Serializable {
 
-    private final String actor;
-    private final String className;
-    private final String jsonConfig;
+    private final ActorConfig actorConfig;
 
-    public ActorCreationRequest(@NotNull final String actor,
-                                @NotNull final String className,
-                                @NotNull final String jsonConfig) {
-        this.actor = actor;
-        this.className = className;
-        this.jsonConfig = jsonConfig;
+    public ActorCreationRequest(@NotNull final ActorConfig actorConfig) {
+        this.actorConfig = actorConfig;
     }
 
-    public String getActor() {
-        return actor;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    String getJsonConfig() {
-        return jsonConfig;
+    ActorConfig getActorConfig() {
+        return actorConfig;
     }
 }
