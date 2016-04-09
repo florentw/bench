@@ -1,6 +1,7 @@
 package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.testing.EqualsTester;
+import com.google.common.testing.NullPointerTester;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -15,6 +16,13 @@ import static org.junit.Assert.assertTrue;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class AgentRegistrationMessageTest {
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(AgentRegistrationMessage.class);
+        tester.testAllPublicStaticMethods(AgentRegistrationMessage.class);
+    }
 
     @Test
     public void create_msg() {

@@ -3,6 +3,8 @@ package io.amaze.bench.client.runtime.agent;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/3/16.
  *
@@ -18,9 +20,9 @@ public final class AgentInputMessage implements Serializable {
                              @NotNull final Action action,
                              @NotNull final Serializable data) {
 
-        this.destinationAgent = destinationAgent;
-        this.action = action;
-        this.data = data;
+        this.destinationAgent = checkNotNull(destinationAgent);
+        this.action = checkNotNull(action);
+        this.data = checkNotNull(data);
     }
 
     public Action getAction() {

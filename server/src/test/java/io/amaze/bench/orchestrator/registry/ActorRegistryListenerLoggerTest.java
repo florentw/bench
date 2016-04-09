@@ -1,5 +1,6 @@
 package io.amaze.bench.orchestrator.registry;
 
+import com.google.common.testing.NullPointerTester;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,6 +25,13 @@ public final class ActorRegistryListenerLoggerTest {
     }
 
     @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(ActorRegistryListenerLogger.class);
+        tester.testAllPublicInstanceMethods(loggerListener);
+    }
+
+    @Test
     public void actor_created() {
         loggerListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
@@ -41,9 +49,10 @@ public final class ActorRegistryListenerLoggerTest {
 
     @Test
     public void actor_failed() throws Exception {
-        loggerListener.onActorFailed(DUMMY_ACTOR, null);
+        IllegalArgumentException throwable = new IllegalArgumentException();
+        loggerListener.onActorFailed(DUMMY_ACTOR, throwable);
 
-        verify(delegateListener).onActorFailed(DUMMY_ACTOR, null);
+        verify(delegateListener).onActorFailed(DUMMY_ACTOR, throwable);
         verifyNoMoreInteractions(delegateListener);
     }
 

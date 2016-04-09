@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.MasterOutputMessage.Action.*;
@@ -37,6 +38,8 @@ public final class Agent implements AgentClientListener, AutoCloseable {
 
     public Agent(@NotNull final OrchestratorClientFactory clientFactory,
                  @NotNull final ActorManagerFactory actorManagers) {
+        checkNotNull(clientFactory);
+        checkNotNull(actorManagers);
 
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
         name = regMsg.getName();
@@ -56,6 +59,8 @@ public final class Agent implements AgentClientListener, AutoCloseable {
 
     @Override
     public synchronized void onActorCreationRequest(@NotNull final ActorConfig actorConfig) {
+        checkNotNull(actorConfig);
+
         String actorName = actorConfig.getName();
         if (actors.get(actorName) != null) {
             LOG.warn(format("The actor \"%s\" already exists.", actorName));
@@ -75,6 +80,8 @@ public final class Agent implements AgentClientListener, AutoCloseable {
 
     @Override
     public synchronized void onActorCloseRequest(@NotNull final String actor) {
+        checkNotNull(actor);
+
         ManagedActor found = actors.remove(actor);
         if (found == null) {
             LOG.warn(format("Could not find actor \"%s\" to close.", actor));

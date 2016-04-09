@@ -3,6 +3,8 @@ package io.amaze.bench.client.runtime.agent;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/3/16.
  *
@@ -14,8 +16,8 @@ public final class MasterOutputMessage implements java.io.Serializable {
     private final Serializable data;
 
     public MasterOutputMessage(@NotNull final Action action, @NotNull final Serializable data) {
-        this.action = action;
-        this.data = data;
+        this.action = checkNotNull(action);
+        this.data = checkNotNull(data);
     }
 
     public Action getAction() {

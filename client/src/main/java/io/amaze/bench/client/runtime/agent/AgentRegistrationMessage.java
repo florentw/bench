@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Message sent by an agent to the master after startup for registration.
  *
@@ -24,8 +26,8 @@ public class AgentRegistrationMessage implements Serializable {
     private AgentRegistrationMessage(@NotNull final String name,
                                      @NotNull final SystemInfo systemInfo,
                                      final long creationTime) {
-        this.name = name;
-        this.systemInfo = systemInfo;
+        this.name = checkNotNull(name);
+        this.systemInfo = checkNotNull(systemInfo);
         this.creationTime = creationTime;
     }
 
@@ -35,6 +37,8 @@ public class AgentRegistrationMessage implements Serializable {
     }
 
     public static AgentRegistrationMessage create(@NotNull final String name) {
+        checkNotNull(name);
+
         SystemInfo systemInfo = SystemInfos.get();
         long creationTime = System.currentTimeMillis();
         return new AgentRegistrationMessage(name, systemInfo, creationTime);

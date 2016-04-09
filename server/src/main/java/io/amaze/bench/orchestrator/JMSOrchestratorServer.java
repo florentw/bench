@@ -10,6 +10,7 @@ import io.amaze.bench.shared.jms.JMSServer;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.client.runtime.agent.Constants.AGENTS_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
@@ -26,8 +27,8 @@ final class JMSOrchestratorServer implements OrchestratorServer {
 
     JMSOrchestratorServer(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         try {
-            this.server = server;
-            this.client = client;
+            this.server = checkNotNull(server);
+            this.client = checkNotNull(client);
 
             server.createQueue(MASTER_ACTOR_NAME);
             server.createTopic(AGENTS_ACTOR_NAME);
@@ -40,6 +41,8 @@ final class JMSOrchestratorServer implements OrchestratorServer {
     @Override
     public void startRegistryListeners(@NotNull final AgentRegistryListener agentsListener,
                                        @NotNull final ActorRegistryListener actorsListener) {
+        checkNotNull(agentsListener);
+        checkNotNull(actorsListener);
 
         try {
             JMSMasterMessageListener msgListener = new JMSMasterMessageListener(agentsListener, actorsListener);
@@ -53,6 +56,8 @@ final class JMSOrchestratorServer implements OrchestratorServer {
 
     @Override
     public void createActorQueue(@NotNull final String actor) {
+        checkNotNull(actor);
+
         try {
             server.createQueue(actor);
         } catch (JMSException e) {
@@ -62,11 +67,16 @@ final class JMSOrchestratorServer implements OrchestratorServer {
 
     @Override
     public void deleteActorQueue(@NotNull final String actor) {
+        checkNotNull(actor);
+
         server.deleteQueue(actor);
     }
 
     @Override
     public void sendToActor(@NotNull final String actorName, @NotNull final Serializable message) {
+        checkNotNull(actorName);
+        checkNotNull(message);
+
         try {
             client.sendToQueue(actorName, message);
         } catch (JMSException e) {
@@ -76,6 +86,8 @@ final class JMSOrchestratorServer implements OrchestratorServer {
 
     @Override
     public void sendToAgent(@NotNull final AgentInputMessage message) {
+        checkNotNull(message);
+
         try {
             client.sendToTopic(AGENTS_ACTOR_NAME, message);
         } catch (JMSException e) {

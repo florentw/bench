@@ -1,5 +1,9 @@
 package io.amaze.bench.orchestrator.registry;
 
+import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/29/16.
  *
@@ -11,10 +15,11 @@ public final class RegisteredActor {
     private final String agent;
     private final State state;
 
-    RegisteredActor(final String actor, final String agent, final State state) {
-        this.actor = actor;
-        this.agent = agent;
-        this.state = state;
+    RegisteredActor(@NotNull final String actor, @NotNull final String agent, @NotNull final State state) {
+
+        this.actor = checkNotNull(actor);
+        this.agent = checkNotNull(agent);
+        this.state = checkNotNull(state);
     }
 
     public String getName() {

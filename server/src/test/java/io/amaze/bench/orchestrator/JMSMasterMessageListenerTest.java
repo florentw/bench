@@ -1,5 +1,6 @@
 package io.amaze.bench.orchestrator;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
@@ -42,7 +43,9 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void null_parameters_invalid() {
-
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(JMSMasterMessageListener.class);
+        tester.testAllPublicInstanceMethods(messageListener);
     }
 
     @Test

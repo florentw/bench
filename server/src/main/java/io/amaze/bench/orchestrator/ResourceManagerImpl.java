@@ -62,6 +62,8 @@ final class ResourceManagerImpl implements ResourceManager {
 
     @Override
     public void closeActor(@NotNull final String name) {
+        checkNotNull(name);
+
         RegisteredAgent agent = actorsToAgents.remove(name);
         if (agent == null) {
             throw new IllegalArgumentException("Attempt to close unknown actor " + name);

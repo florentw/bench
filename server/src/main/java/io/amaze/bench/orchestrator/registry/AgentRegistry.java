@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/28/16.
  *
@@ -20,12 +22,16 @@ public final class AgentRegistry {
     private final Set<AgentRegistryListener> clientListeners = new HashSet<>();
 
     public void addListener(@NotNull final AgentRegistryListener listener) {
+        checkNotNull(listener);
+
         synchronized (clientListeners) {
             clientListeners.add(listener);
         }
     }
 
     public void removeListener(@NotNull final AgentRegistryListener listener) {
+        checkNotNull(listener);
+
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
             if (!removed) {
@@ -41,6 +47,8 @@ public final class AgentRegistry {
     }
 
     public RegisteredAgent byName(@NotNull final String name) {
+        checkNotNull(name);
+
         synchronized (agents) {
             return agents.get(name);
         }

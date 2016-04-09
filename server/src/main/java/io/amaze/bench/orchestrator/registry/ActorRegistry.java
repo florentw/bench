@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Thread safe
  * <p>
@@ -22,12 +24,16 @@ public final class ActorRegistry {
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();
 
     public void addListener(@NotNull final ActorRegistryListener listener) {
+        checkNotNull(listener);
+
         synchronized (clientListeners) {
             clientListeners.add(listener);
         }
     }
 
     public void removeListener(@NotNull final ActorRegistryListener listener) {
+        checkNotNull(listener);
+
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
             if (!removed) {
@@ -46,6 +52,8 @@ public final class ActorRegistry {
      * @return null if no actor with that name is found, returns the actor otherwise
      */
     public RegisteredActor byName(@NotNull final String name) {
+        checkNotNull(name);
+
         synchronized (actors) {
             return actors.get(name);
         }

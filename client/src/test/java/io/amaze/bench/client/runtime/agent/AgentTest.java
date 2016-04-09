@@ -1,8 +1,10 @@
 package io.amaze.bench.client.runtime.agent;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,21 +32,20 @@ public final class AgentTest {
     private RecorderOrchestratorClient agentClient;
     private RecorderOrchestratorClient actorClient;
 
-    private DummyClientFactory clientFactory;
-    private ActorManagerFactory managerFactory;
     private ActorManager embeddedManager;
     private ActorManager forkedManager;
+    private Agent agent;
 
     @Before
     public void before() {
         agentClient = new RecorderOrchestratorClient();
         actorClient = new RecorderOrchestratorClient();
 
-        clientFactory = new DummyClientFactory(agentClient, actorClient);
+        DummyClientFactory clientFactory = new DummyClientFactory(agentClient, actorClient);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory)));
         forkedManager = mock(ActorManager.class);
 
-        managerFactory = new ActorManagerFactory() {
+        ActorManagerFactory managerFactory = new ActorManagerFactory() {
             @Override
             public ActorManager createEmbedded(@NotNull final String agentName,
                                                @NotNull final OrchestratorClientFactory factory) {
@@ -56,132 +57,140 @@ public final class AgentTest {
                 return forkedManager;
             }
         };
+
+        agent = new Agent(clientFactory, managerFactory);
+    }
+
+    @After
+    public void after() throws Exception {
+        agent.close();
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(Agent.class);
+        tester.testAllPublicInstanceMethods(agent);
     }
 
     @Test
     public void start_agent_registers_properly() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            assertNotNull(agent);
-            assertNotNull(agent.getName());
+        assertNotNull(agent);
+        assertNotNull(agent.getName());
 
-            // Check listeners
-            assertThat(agentClient.isAgentListenerStarted(), is(true));
-            assertThat(agentClient.isActorListenerStarted(), is(false));
+        // Check listeners
+        assertThat(agentClient.isAgentListenerStarted(), is(true));
+        assertThat(agentClient.isActorListenerStarted(), is(false));
 
-            // Check actor registration message
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(1));
-            assertTrue(((MasterOutputMessage) msgsToMaster.get(0).data()).getData() instanceof AgentRegistrationMessage);
-        }
+        // Check actor registration message
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(1));
+        assertTrue(((MasterOutputMessage) msgsToMaster.get(0).data()).getData() instanceof AgentRegistrationMessage);
     }
 
     @Test
     public void create_actor_registers_and_sends_lifecycle_msg() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
 
-            agent.onActorCreationRequest(DUMMY_CONFIG);
+        agent.onActorCreationRequest(DUMMY_CONFIG);
 
-            assertThat(agent.getActors().size(), is(1));
-            assertThat(agent.getActors().iterator().next().name(), is(DUMMY_ACTOR));
+        assertThat(agent.getActors().size(), is(1));
+        assertThat(agent.getActors().iterator().next().name(), is(DUMMY_ACTOR));
 
-            // Check managers interactions
-            verify(embeddedManager).createActor(DUMMY_CONFIG);
-            verifyZeroInteractions(forkedManager);
+        // Check managers interactions
+        verify(embeddedManager).createActor(DUMMY_CONFIG);
+        verifyZeroInteractions(forkedManager);
 
-            // Check listeners
-            assertThat(agentClient.isAgentListenerStarted(), is(true));
-            assertThat(actorClient.isActorListenerStarted(), is(true));
+        // Check listeners
+        assertThat(agentClient.isAgentListenerStarted(), is(true));
+        assertThat(actorClient.isActorListenerStarted(), is(true));
 
-            // Check good flow of messages
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(2));
+        // Check good flow of messages
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(2));
 
-            // Check actor creation message
-            ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) msgsToMaster.get(1).data()).getData();
-            assertThat(lfMsg.getPhase(), is(Phase.CREATED));
-        }
+        // Check actor creation message
+        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) msgsToMaster.get(1).data()).getData();
+        assertThat(lfMsg.getPhase(), is(Phase.CREATED));
     }
 
     @Test
     public void create_forked_actor_calls_the_right_manager() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            ActorConfig actorConfig = configForActor(TestActor.class, true);
-            agent.onActorCreationRequest(actorConfig);
 
-            // Check managers interactions
-            verifyZeroInteractions(embeddedManager);
-            verify(forkedManager).createActor(actorConfig);
-        }
+        ActorConfig actorConfig = configForActor(TestActor.class, true);
+        agent.onActorCreationRequest(actorConfig);
+
+        // Check managers interactions
+        verifyZeroInteractions(embeddedManager);
+        verify(forkedManager).createActor(actorConfig);
     }
 
     @Test
     public void create_then_close_actor() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            agent.onActorCreationRequest(DUMMY_CONFIG);
 
-            agent.onActorCloseRequest(DUMMY_ACTOR);
+        agent.onActorCreationRequest(DUMMY_CONFIG);
 
-            // Check good flow of messages
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(2));
+        agent.onActorCloseRequest(DUMMY_ACTOR);
 
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(actorMsgsToMaster.size(), is(1));
+        // Check good flow of messages
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(2));
 
-            // Check closed message sent
-            ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
-            assertThat(lfMsg.getPhase(), is(Phase.CLOSED));
-        }
+        assertThat(actorClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(actorMsgsToMaster.size(), is(1));
+
+        // Check closed message sent
+        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
+        assertThat(lfMsg.getPhase(), is(Phase.CLOSED));
     }
 
     @Test
     public void close_unknown_actor() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            agent.onActorCloseRequest(DUMMY_ACTOR);
-            assertThat(agent.getActors().isEmpty(), is(true));
 
-            // Check good flow of messages
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(1));
-        }
+        agent.onActorCloseRequest(DUMMY_ACTOR);
+        assertThat(agent.getActors().isEmpty(), is(true));
+
+        // Check good flow of messages
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(1));
     }
 
     @Test
     public void close_actor_failure() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            agent.onActorCreationRequest(configForActor(TestActorAfterThrows.class));
 
-            agent.onActorCloseRequest(DUMMY_ACTOR);
+        agent.onActorCreationRequest(configForActor(TestActorAfterThrows.class));
 
-            // Check good flow of messages
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(2));
+        // When
+        agent.onActorCloseRequest(DUMMY_ACTOR);
 
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(actorMsgsToMaster.size(), is(1));
+        // Check good flow of messages
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(2));
 
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
-            assertThat(lfMsg.getPhase(), is(Phase.FAILED));
-        }
+        assertThat(actorClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(actorMsgsToMaster.size(), is(1));
+
+        // Check failed message sent
+        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
+        assertThat(lfMsg.getPhase(), is(Phase.FAILED));
     }
 
     @Test
     public void closing_agent_closes_actors_and_unregisters() throws Exception {
-        Agent outAgent;
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            agent.onActorCreationRequest(DUMMY_CONFIG);
-            outAgent = agent;
-        }
+        //Given
+        agent.onActorCreationRequest(DUMMY_CONFIG);
 
-        assertThat(outAgent.getActors().size(), is(0));
+        // When
+        agent.close();
+
+        // Then
+        assertThat(agent.getActors().size(), is(0));
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
@@ -198,40 +207,38 @@ public final class AgentTest {
 
         // Check sign off message
         Serializable lastMsg = ((MasterOutputMessage) msgsToMaster.get(2).data()).getData();
-        assertTrue(lastMsg.equals(outAgent.getName()));
+        assertTrue(lastMsg.equals(agent.getName()));
     }
 
     @Test
     public void create_same_actor_twice_registers_only_one() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            agent.onActorCreationRequest(DUMMY_CONFIG);
-            agent.onActorCreationRequest(DUMMY_CONFIG);
-            assertThat(agent.getActors().size(), is(1));
 
-            // Check good flow of messages
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(2));
-        }
+        agent.onActorCreationRequest(DUMMY_CONFIG);
+        agent.onActorCreationRequest(DUMMY_CONFIG);
+        assertThat(agent.getActors().size(), is(1));
+
+        // Check good flow of messages
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(2));
     }
 
     @Test
     public void create_invalid_actor() throws Exception {
-        try (Agent agent = new Agent(clientFactory, managerFactory)) {
-            agent.onActorCreationRequest(configForActor(String.class));
-            assertThat(agent.getActors().isEmpty(), is(true));
 
-            // Check good flow of messages
-            assertThat(agentClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-            assertThat(msgsToMaster.size(), is(2));
+        agent.onActorCreationRequest(configForActor(String.class));
+        assertThat(agent.getActors().isEmpty(), is(true));
 
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) msgsToMaster.get(1).data()).getData();
-            assertThat(lfMsg.getPhase(), is(Phase.FAILED));
-            assertNotNull(lfMsg.getThrowable());
-            assertThat(lfMsg.getActor(), is(DUMMY_ACTOR));
-        }
+        // Check good flow of messages
+        assertThat(agentClient.getSentMessages().size(), is(1));
+        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        assertThat(msgsToMaster.size(), is(2));
+
+        // Check failed message sent
+        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) msgsToMaster.get(1).data()).getData();
+        assertThat(lfMsg.getPhase(), is(Phase.FAILED));
+        assertNotNull(lfMsg.getThrowable());
+        assertThat(lfMsg.getActor(), is(DUMMY_ACTOR));
     }
 
 }

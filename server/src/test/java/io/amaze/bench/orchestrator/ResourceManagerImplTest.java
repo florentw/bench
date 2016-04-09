@@ -1,5 +1,6 @@
 package io.amaze.bench.orchestrator;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
 import io.amaze.bench.client.runtime.actor.TestActor;
@@ -46,6 +47,13 @@ public final class ResourceManagerImplTest {
         resourceManager = new ResourceManagerImpl(orchestratorServer, agentRegistry);
 
         defaultActorConfig = TestActor.DUMMY_CONFIG;
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(ResourceManagerImpl.class);
+        tester.testAllPublicInstanceMethods(resourceManager);
     }
 
     @Test(expected = IllegalStateException.class)

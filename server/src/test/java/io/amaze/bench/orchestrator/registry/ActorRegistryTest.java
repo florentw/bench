@@ -1,5 +1,6 @@
 package io.amaze.bench.orchestrator.registry;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.orchestrator.registry.RegisteredActor.State;
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +44,13 @@ public final class ActorRegistryTest {
     @Test
     public void listener_for_orchestrator_is_a_logger() {
         assertTrue(registry.getListenerForOrchestrator() instanceof ActorRegistryListenerLogger);
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(ActorRegistry.class);
+        tester.testAllPublicInstanceMethods(registry);
     }
 
     @Test

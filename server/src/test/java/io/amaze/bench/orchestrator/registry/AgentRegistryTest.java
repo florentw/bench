@@ -1,5 +1,6 @@
 package io.amaze.bench.orchestrator.registry;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import org.junit.After;
 import org.junit.Before;
@@ -36,6 +37,13 @@ public final class AgentRegistryTest {
     @After
     public void after() {
         registry.removeListener(clientListener);
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(AgentRegistry.class);
+        tester.testAllPublicInstanceMethods(registry);
     }
 
     @Test

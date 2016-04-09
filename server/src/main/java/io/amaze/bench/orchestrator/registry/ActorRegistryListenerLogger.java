@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/29/16.
  *
@@ -17,41 +19,44 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     private final ActorRegistryListener delegate;
 
     ActorRegistryListenerLogger(@NotNull final ActorRegistryListener delegate) {
-        this.delegate = delegate;
+        this.delegate = checkNotNull(delegate);
     }
 
     @Override
     public void onActorCreated(@NotNull final String name, @NotNull final String agent) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Create actor \"%s\" by agent \"%s\"", name, agent));
-        }
+        checkNotNull(name);
+        checkNotNull(agent);
+
+        LOG.info(String.format("Create actor \"%s\" by agent \"%s\"", name, agent));
 
         delegate.onActorCreated(name, agent);
     }
 
     @Override
     public void onActorStarted(@NotNull final String name, @NotNull final String agent) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Start of actor \"%s\" by agent \"%s\"", name, agent));
-        }
+        checkNotNull(name);
+        checkNotNull(agent);
+
+        LOG.info(String.format("Start of actor \"%s\" by agent \"%s\"", name, agent));
 
         delegate.onActorStarted(name, agent);
     }
 
     @Override
     public void onActorFailed(@NotNull final String name, @NotNull final Throwable throwable) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Actor failure of actor \"%s\"", name), throwable);
-        }
+        checkNotNull(name);
+        checkNotNull(throwable);
+
+        LOG.info(String.format("Actor failure of actor \"%s\"", name), throwable);
 
         delegate.onActorFailed(name, throwable);
     }
 
     @Override
     public void onActorClosed(@NotNull final String name) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Close actor \"%s\"", name));
-        }
+        checkNotNull(name);
+
+        LOG.info(String.format("Close actor \"%s\"", name));
 
         delegate.onActorClosed(name);
     }
