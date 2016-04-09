@@ -1,12 +1,14 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.base.Throwables;
+import com.google.common.testing.NullPointerTester;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.shared.helper.FileHelper;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,30 +50,6 @@ public final class ForkedActorManagerTest {
 
     private ForkedActorManager actorManager;
 
-    private static void verifyFileContentWithin(File file, String expectedContent, long timeout, TimeUnit unit) {
-
-        long timeoutMs = unit.toMillis(timeout);
-        long t0 = System.currentTimeMillis();
-        long current = t0;
-
-        while ((current - t0) < timeoutMs) {
-            String content = null;
-            try {
-                content = FileHelper.readFile(file.getAbsolutePath());
-            } catch (IOException e) {
-                Throwables.propagate(e);
-            }
-            if (expectedContent.equals(content)) {
-                return;
-            }
-            LOG.debug("Condition not met yet, sleeping for 500ms");
-            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-            current = System.currentTimeMillis();
-        }
-
-        fail("Condition not verified on time: " + file.getAbsolutePath() + " did not contain " + expectedContent + " within " + timeoutMs + "ms");
-    }
-
     @Before
     public void before() throws JMSException, IOException {
         File folder = this.folder.newFolder();
@@ -80,6 +58,18 @@ public final class ForkedActorManagerTest {
 
         server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
         server.getServer().createQueue(DUMMY_ACTOR);
+    }
+
+    @After
+    public void after() {
+        actorManager.close();
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(ForkedActorManager.class);
+        tester.testAllPublicInstanceMethods(actorManager);
     }
 
     @Test
@@ -194,5 +184,30 @@ public final class ForkedActorManagerTest {
         String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
 
         return new ActorConfig(DUMMY_ACTOR, className, deployConfig, jsonConfig);
+    }
+
+    private void verifyFileContentWithin(final File file,
+                                         final String expectedContent,
+                                         final long timeout,
+                                         final TimeUnit unit) {
+
+        long timeoutMs = unit.toMillis(timeout);
+        long t0 = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - t0) < timeoutMs) {
+            String content = null;
+            try {
+                content = FileHelper.readFile(file.getAbsolutePath());
+            } catch (IOException e) {
+                Throwables.propagate(e);
+            }
+            if (expectedContent.equals(content)) {
+                return;
+            }
+            LOG.debug("Condition not met yet, sleeping for 500ms");
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+        }
+
+        fail("Condition not verified on time: " + file.getAbsolutePath() + " did not contain " + expectedContent + " within " + timeoutMs + "ms");
     }
 }

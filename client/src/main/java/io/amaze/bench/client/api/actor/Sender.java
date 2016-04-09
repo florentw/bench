@@ -1,5 +1,6 @@
 package io.amaze.bench.client.api.actor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -25,6 +26,6 @@ public interface Sender {
      * @param to      Destination reactor's name, identifies uniquely a reactor in the cluster
      * @param message Payload to sendToQueue
      */
-    void send(final String to, final Serializable message);
+    void send(@NotNull final String to, @NotNull final Serializable message);
 
 }

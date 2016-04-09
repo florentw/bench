@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.actor;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
 import org.junit.Before;
@@ -22,13 +23,23 @@ public final class EmbeddedActorManagerTest {
 
     private RecorderOrchestratorClient client;
     private ActorManager actorManager;
+    private ActorFactory actorFactory;
 
     @Before
     public void before() {
         client = Mockito.spy(new RecorderOrchestratorClient());
 
         DummyClientFactory factory = new DummyClientFactory(null, client);
-        actorManager = new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, factory));
+        actorFactory = new ActorFactory(DUMMY_AGENT, factory);
+        actorManager = new EmbeddedActorManager(DUMMY_AGENT, actorFactory);
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(ActorFactory.class, actorFactory);
+        tester.testAllPublicConstructors(EmbeddedActorManager.class);
+        tester.testAllPublicInstanceMethods(actorManager);
     }
 
     @Test

@@ -14,10 +14,11 @@ import java.io.Serializable;
  * <p/>
  * Created on 2/28/16.
  *
+ * @param <I> Input message type
  * @author Florent Weber (florent.weber@gmail.com)
  * @see io.amaze.bench.client.api.actor.Sender
  */
-public interface Reactor</** Input message type */I extends Serializable> {
+public interface Reactor<I extends Serializable> {
 
     /**
      * The message dispatch/handling logic of an actor is to be implemented here.<br/>

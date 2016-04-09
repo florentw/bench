@@ -3,6 +3,8 @@ package io.amaze.bench.client.runtime.actor;
 
 import javax.validation.constraints.NotNull;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Instantiates actors using the given factory, in the local JVM.
  * <p>
@@ -16,7 +18,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
 
     public EmbeddedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory) {
         super(agent);
-        this.factory = factory;
+        this.factory = checkNotNull(factory);
     }
 
     @Override
@@ -26,6 +28,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
 
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
+        checkNotNull(actorConfig);
 
         final String name = actorConfig.getName();
         final Actor actor = factory.create(name, actorConfig.getClassName(), actorConfig.getActorJsonConfig());

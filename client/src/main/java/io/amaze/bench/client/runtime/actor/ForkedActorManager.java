@@ -56,23 +56,10 @@ final class ForkedActorManager extends AbstractActorManager {
 
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
-        Process process;
+        checkNotNull(actorConfig);
 
         final String actor = actorConfig.getName();
-
-        try {
-            File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
-            FileHelper.writeToFile(tempConfigFile, actorConfig.getActorJsonConfig());
-
-            process = forkProcess(actor,
-                                  actorConfig.getClassName(),
-                                  actorConfig.getDeployConfig().getJmsServerHost(),
-                                  actorConfig.getDeployConfig().getJmsServerPort(),
-                                  tempConfigFile.getAbsolutePath());
-
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
+        Process process = createActorProcess(actorConfig, actor);
 
         ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(actor, process);
         thread.start();
@@ -96,6 +83,22 @@ final class ForkedActorManager extends AbstractActorManager {
                 terminateProcess(thread);
             }
         };
+    }
+
+    private Process createActorProcess(final ActorConfig actorConfig, final String actor) {
+        try {
+            File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
+            FileHelper.writeToFile(tempConfigFile, actorConfig.getActorJsonConfig());
+
+            return forkProcess(actor,
+                               actorConfig.getClassName(),
+                               actorConfig.getDeployConfig().getJmsServerHost(),
+                               actorConfig.getDeployConfig().getJmsServerPort(),
+                               tempConfigFile.getAbsolutePath());
+
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
     }
 
     @VisibleForTesting
