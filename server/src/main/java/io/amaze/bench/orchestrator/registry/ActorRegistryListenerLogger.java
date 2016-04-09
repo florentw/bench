@@ -22,8 +22,8 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorCreated(@NotNull final String name, @NotNull final String agent) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Create actor \"%s\" by agent \"%s\"", name, agent));
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Create actor \"%s\" by agent \"%s\"", name, agent));
         }
 
         delegate.onActorCreated(name, agent);
@@ -31,8 +31,8 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorStarted(@NotNull final String name, @NotNull final String agent) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Start of actor \"%s\" by agent \"%s\"", name, agent));
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Start of actor \"%s\" by agent \"%s\"", name, agent));
         }
 
         delegate.onActorStarted(name, agent);
@@ -40,8 +40,8 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorFailed(@NotNull final String name, @NotNull final Throwable throwable) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Actor failure of actor \"%s\"", name), throwable);
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Actor failure of actor \"%s\"", name), throwable);
         }
 
         delegate.onActorFailed(name, throwable);
@@ -49,8 +49,8 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorClosed(@NotNull final String name) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Close actor \"%s\"", name));
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Close actor \"%s\"", name));
         }
 
         delegate.onActorClosed(name);

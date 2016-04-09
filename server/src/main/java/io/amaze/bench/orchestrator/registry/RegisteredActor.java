@@ -5,7 +5,7 @@ package io.amaze.bench.orchestrator.registry;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class RegisteredActor {
+public final class RegisteredActor {
 
     private final String actor;
     private final String agent;
@@ -29,7 +29,7 @@ final class RegisteredActor {
         return agent;
     }
 
-    enum State {
+    public enum State {
         CREATED,
         STARTED
     }

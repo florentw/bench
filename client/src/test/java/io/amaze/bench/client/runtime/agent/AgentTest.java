@@ -62,6 +62,7 @@ public final class AgentTest {
     public void start_agent_registers_properly() throws Exception {
         try (Agent agent = new Agent(clientFactory, managerFactory)) {
             assertNotNull(agent);
+            assertNotNull(agent.getName());
 
             // Check listeners
             assertThat(agentClient.isAgentListenerStarted(), is(true));
@@ -197,7 +198,7 @@ public final class AgentTest {
 
         // Check sign off message
         Serializable lastMsg = ((MasterOutputMessage) msgsToMaster.get(2).data()).getData();
-        assertTrue(lastMsg.equals(AgentSignOffMessage.create()));
+        assertTrue(lastMsg.equals(outAgent.getName()));
     }
 
     @Test

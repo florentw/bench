@@ -3,6 +3,7 @@ package io.amaze.bench.orchestrator;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
+import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
@@ -10,9 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.BytesMessage;
-import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/28/16.
@@ -28,30 +30,39 @@ final class JMSMasterMessageListener implements MessageListener {
 
     JMSMasterMessageListener(@NotNull final AgentRegistryListener agentsListener,
                              @NotNull final ActorRegistryListener actorsListener) {
-        this.agentsListener = agentsListener;
-        this.actorsListener = actorsListener;
+        this.agentsListener = checkNotNull(agentsListener);
+        this.actorsListener = checkNotNull(actorsListener);
     }
 
     @Override
-    public void onMessage(final Message message) {
-        MasterOutputMessage received;
+    public void onMessage(final javax.jms.Message message) {
+        Message received;
 
         try {
-            received = (MasterOutputMessage) JMSHelper.objectFromMsg((BytesMessage) message);
+            received = (Message) JMSHelper.objectFromMsg((BytesMessage) message);
         } catch (Exception e) {
-            LOG.error("Error while reading JMS message as MasterOutputMessage.", e);
+            LOG.error("Error while reading JMS message  as MasterOutputMessage.", e);
             return;
         }
 
-        switch (received.getAction()) { // NOSONAR
+        if (received.data() instanceof MasterOutputMessage) {
+            onMasterMessage(received);
+        } else {
+            LOG.error("Received invalid message \"" + received + "\" (not a MasterOutputMessage).");
+        }
+    }
+
+    private void onMasterMessage(final io.amaze.bench.client.runtime.message.Message received) {
+        MasterOutputMessage masterMsg = (MasterOutputMessage) received.data();
+        switch (masterMsg.getAction()) { // NOSONAR
             case REGISTER_AGENT:
-                onAgentRegistration(received);
+                onAgentRegistration(masterMsg);
                 break;
             case UNREGISTER_AGENT:
-                onAgentSignOff(received);
+                onAgentSignOff(masterMsg);
                 break;
             case ACTOR_LIFECYCLE:
-                onActorLifecycle(received);
+                onActorLifecycle(masterMsg);
                 break;
         }
     }

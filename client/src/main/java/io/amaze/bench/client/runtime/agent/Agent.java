@@ -104,12 +104,17 @@ public final class Agent implements AgentClientListener, AutoCloseable {
         return ImmutableSet.copyOf(actors.values());
     }
 
+    @NotNull
+    public String getName() {
+        return name;
+    }
+
     private void sendRegistrationMessage(@NotNull final AgentRegistrationMessage regMsg) {
         sendToMaster(REGISTER_AGENT, regMsg);
     }
 
     private void signOffAgent() {
-        sendToMaster(UNREGISTER_AGENT, AgentSignOffMessage.create());
+        sendToMaster(UNREGISTER_AGENT, name);
     }
 
     private void sendActorLifecycleMessage(@NotNull final String actor, @NotNull final Phase phase) {

@@ -23,8 +23,8 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
     @Override
     public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Agent \"%s\" registering, msg: %s", msg.getName(), msg));
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Agent \"%s\" registering, msg: %s", msg.getName(), msg));
         }
 
         delegate.onAgentRegistration(msg);
@@ -32,8 +32,8 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
     @Override
     public void onAgentSignOff(@NotNull final String agent) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Agent \"%s\" signing off.", agent));
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Agent \"%s\" signing off.", agent));
         }
 
         delegate.onAgentSignOff(agent);

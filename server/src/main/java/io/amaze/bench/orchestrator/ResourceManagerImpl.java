@@ -17,6 +17,8 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 4/2/16.
  *
@@ -34,12 +36,13 @@ final class ResourceManagerImpl implements ResourceManager {
 
     ResourceManagerImpl(@NotNull final OrchestratorServer orchestratorServer,
                         @NotNull final AgentRegistry agentRegistry) {
-        this.orchestratorServer = orchestratorServer;
-        this.agentRegistry = agentRegistry;
+        this.orchestratorServer = checkNotNull(orchestratorServer);
+        this.agentRegistry = checkNotNull(agentRegistry);
     }
 
     @Override
     public void createActor(@NotNull final ActorConfig actorConfig) {
+        checkNotNull(actorConfig);
 
         String name = actorConfig.getName();
         orchestratorServer.createActorQueue(name);
