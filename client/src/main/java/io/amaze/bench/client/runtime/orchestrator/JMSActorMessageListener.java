@@ -1,6 +1,5 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
-import com.google.common.base.Preconditions;
 import io.amaze.bench.client.api.actor.Reactor;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
@@ -12,6 +11,8 @@ import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Convert received JMS messages for an actor to calls to its {@link Reactor} methods.
  */
@@ -22,11 +23,13 @@ final class JMSActorMessageListener implements MessageListener {
     private final Actor actor;
 
     JMSActorMessageListener(@NotNull final Actor actor) {
-        this.actor = actor;
+        this.actor = checkNotNull(actor);
     }
 
     @Override
-    public void onMessage(final javax.jms.Message message) {
+    public void onMessage(@NotNull final javax.jms.Message message) {
+        checkNotNull(message);
+
         ActorInputMessage msg;
         try {
             msg = (ActorInputMessage) JMSHelper.objectFromMsg((BytesMessage) message);
@@ -46,7 +49,7 @@ final class JMSActorMessageListener implements MessageListener {
                 actor.dumpMetrics();
                 break;
             case MESSAGE:
-                Preconditions.checkNotNull(msg.getPayload());
+                checkNotNull(msg.getPayload());
                 actor.onMessage(msg.getFrom(), msg.getPayload());
                 break;
         }

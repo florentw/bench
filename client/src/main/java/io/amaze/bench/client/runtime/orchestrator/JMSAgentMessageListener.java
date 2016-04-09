@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
+import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Convert received JMS messages from the master to the agent to calls to its {@link Reactor} methods.
@@ -20,13 +23,15 @@ final class JMSAgentMessageListener implements MessageListener {
     private final AgentClientListener listener;
     private final String agentName;
 
-    JMSAgentMessageListener(final String agentName, final AgentClientListener listener) {
-        this.agentName = agentName;
-        this.listener = listener;
+    JMSAgentMessageListener(@NotNull final String agentName, @NotNull final AgentClientListener listener) {
+        this.agentName = checkNotNull(agentName);
+        this.listener = checkNotNull(listener);
     }
 
     @Override
-    public void onMessage(final javax.jms.Message message) {
+    public void onMessage(@NotNull final javax.jms.Message message) {
+        checkNotNull(message);
+
         AgentInputMessage msg;
         try {
             msg = (AgentInputMessage) JMSHelper.objectFromMsg((BytesMessage) message);

@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
@@ -7,6 +8,7 @@ import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +35,19 @@ public final class JMSOrchestratorClientTest {
     public void before() {
         jmsClient = mock(JMSClient.class);
         client = new JMSOrchestratorClient(jmsClient);
+    }
+
+    @After
+    public void after() {
+        client.close();
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(Message.class, new Message<>("", ""));
+        tester.testAllPublicConstructors(JMSOrchestratorClient.class);
+        tester.testAllPublicInstanceMethods(client);
     }
 
     @Test

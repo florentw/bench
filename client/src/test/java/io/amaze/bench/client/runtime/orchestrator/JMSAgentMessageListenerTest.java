@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
@@ -31,6 +32,13 @@ public final class JMSAgentMessageListenerTest {
     public void before() {
         agentListener = mock(AgentClientListener.class);
         listener = new JMSAgentMessageListener(DUMMY_AGENT, agentListener);
+    }
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(JMSAgentMessageListener.class);
+        tester.testAllPublicInstanceMethods(listener);
     }
 
     @Test

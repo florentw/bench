@@ -13,6 +13,9 @@ import io.amaze.bench.shared.jms.JMSException;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/3/16.
  *
@@ -24,10 +27,13 @@ final class JMSOrchestratorClient implements OrchestratorClient {
 
     @VisibleForTesting
     JMSOrchestratorClient(@NotNull final JMSClient client) {
-        this.client = client;
+        this.client = checkNotNull(client);
     }
 
     JMSOrchestratorClient(@NotNull final String host, @NotNull final int port) {
+        checkNotNull(host);
+        checkArgument(port > 0);
+
         try {
             client = new FFMQClient(host, port);
         } catch (JMSException e) {
@@ -37,6 +43,9 @@ final class JMSOrchestratorClient implements OrchestratorClient {
 
     @Override
     public void startAgentListener(@NotNull final String agentName, @NotNull final AgentClientListener listener) {
+        checkNotNull(agentName);
+        checkNotNull(listener);
+
         try {
             client.addTopicListener(Constants.AGENTS_ACTOR_NAME, new JMSAgentMessageListener(agentName, listener));
             client.startListening();
@@ -47,6 +56,8 @@ final class JMSOrchestratorClient implements OrchestratorClient {
 
     @Override
     public void startActorListener(@NotNull final Actor actor) {
+        checkNotNull(actor);
+
         try {
             client.addQueueListener(actor.name(), new JMSActorMessageListener(actor));
             client.startListening();
@@ -57,6 +68,9 @@ final class JMSOrchestratorClient implements OrchestratorClient {
 
     @Override
     public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+        checkNotNull(to);
+        checkNotNull(message);
+
         try {
             client.sendToQueue(to, message);
         } catch (JMSException e) {

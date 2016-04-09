@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.actor.TestActor;
@@ -27,23 +28,24 @@ public final class JMSActorMessageListenerTest {
     private static final String DUMMY_PAYLOAD = "hello";
 
     private Actor mockActor;
-    private JMSActorMessageListener msgListener;
+    private JMSActorMessageListener listener;
 
     @Before
     public void before() {
         mockActor = mock(Actor.class);
-        msgListener = new JMSActorMessageListener(mockActor);
+        listener = new JMSActorMessageListener(mockActor);
     }
 
     @Test
-    public void null_jms_message_does_not_throw() {
-        msgListener.onMessage(null);
-        verifyNoMoreInteractions(mockActor);
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(JMSActorMessageListener.class);
+        tester.testAllPublicInstanceMethods(listener);
     }
 
     @Test
     public void invalid_jms_message_does_not_throw() {
-        msgListener.onMessage(mock(Message.class));
+        listener.onMessage(mock(Message.class));
         verifyNoMoreInteractions(mockActor);
     }
 
@@ -55,7 +57,7 @@ public final class JMSActorMessageListenerTest {
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
-        msgListener.onMessage(msg);
+        listener.onMessage(msg);
 
         verify(mockActor).start();
         verifyNoMoreInteractions(mockActor);
@@ -68,7 +70,7 @@ public final class JMSActorMessageListenerTest {
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
-        msgListener.onMessage(msg);
+        listener.onMessage(msg);
 
         verify(mockActor).close();
         verifyNoMoreInteractions(mockActor);
@@ -82,7 +84,7 @@ public final class JMSActorMessageListenerTest {
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
-        msgListener.onMessage(msg);
+        listener.onMessage(msg);
 
         verify(mockActor).dumpMetrics();
         verifyNoMoreInteractions(mockActor);
@@ -97,7 +99,7 @@ public final class JMSActorMessageListenerTest {
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
-        msgListener.onMessage(msg);
+        listener.onMessage(msg);
     }
 
     @Test
@@ -109,7 +111,7 @@ public final class JMSActorMessageListenerTest {
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
-        msgListener.onMessage(msg);
+        listener.onMessage(msg);
 
         verify(mockActor).onMessage(argThat(is(TestActor.DUMMY_ACTOR)), argThat(is(DUMMY_PAYLOAD)));
         verifyNoMoreInteractions(mockActor);
