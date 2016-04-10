@@ -15,10 +15,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class FileHelperTest {
+public final class FileHelperTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void write_read_file() throws IOException {

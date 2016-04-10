@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.agent;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
@@ -19,13 +20,10 @@ public final class AgentBootstrap {
         // Should not be instantiated
     }
 
-    public static void main(String[] args) throws Exception {
-
-        // TODO INSTALL SHUTDOWN HOOK
-
+    public static void main(final String[] args) {
         if (args.length != 2) {
             LOG.info("Usage:");
-            LOG.info("$ benchclient <jmsServerHost> <jmsServerPort>");
+            LOG.info("$ agent <jmsServerHost> <jmsServerPort>");
             return;
         }
 
@@ -33,8 +31,38 @@ public final class AgentBootstrap {
         int port = Integer.parseInt(args[1]);
 
         OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(host, port);
-        try (Agent ignore = new Agent(clientFactory, new ActorManagers())) {
-            Thread.sleep(Long.MAX_VALUE);
+
+        Agent agent = createAgent(clientFactory);
+        registerShutdownHook(agent);
+    }
+
+    @VisibleForTesting
+    static Agent createAgent(final OrchestratorClientFactory clientFactory) {
+        return new Agent(clientFactory, new ActorManagers());
+    }
+
+    @VisibleForTesting
+    static Thread registerShutdownHook(final Agent agent) {
+        AgentShutdownHook hook = new AgentShutdownHook(agent);
+        Runtime.getRuntime().addShutdownHook(hook);
+        return hook;
+    }
+
+    private static final class AgentShutdownHook extends Thread {
+        private final Agent agent;
+
+        AgentShutdownHook(final Agent agent) {
+            this.agent = agent;
+        }
+
+        @Override
+        public void run() {
+            LOG.info("Calling shutdown hook for agent " + agent);
+            try {
+                agent.close();
+            } catch (Exception e) {
+                LOG.warn("Error while closing agent " + agent, e);
+            }
         }
     }
 

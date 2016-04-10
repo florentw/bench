@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class MetricsJsonHelperTest {
+public final class MetricsJsonHelperTest {
 
     private static final Metric METRIC_CPU = new Metric("Consumer CPU", "cycles", 100);
 

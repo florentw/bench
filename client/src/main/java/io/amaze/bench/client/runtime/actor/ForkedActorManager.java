@@ -37,7 +37,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private static final String TMP_CONFIG_FILE_PREFIX = "actor-config";
     private static final String TMP_CONFIG_FILE_SUFFIX = ".json";
 
-    private final Map<String, ForkedActorWatchDogThread> processes = new ConcurrentHashMap<>();
+    private final Map<String, ProcessWatchDogThread> processes = new ConcurrentHashMap<>();
     private final File localLogDir;
 
     ForkedActorManager(@NotNull final String agent, @NotNull File localLogDir) {
@@ -61,7 +61,7 @@ final class ForkedActorManager extends AbstractActorManager {
         final String actor = actorConfig.getName();
         Process process = createActorProcess(actorConfig, actor);
 
-        ForkedActorWatchDogThread thread = new ForkedActorWatchDogThread(actor, process);
+        ProcessWatchDogThread thread = new ProcessWatchDogThread(actor, process);
         thread.start();
         thread.awaitUntilStarted();
 
@@ -75,7 +75,7 @@ final class ForkedActorManager extends AbstractActorManager {
 
             @Override
             public void close() {
-                ForkedActorWatchDogThread thread = processes.remove(actor);
+                ProcessWatchDogThread thread = processes.remove(actor);
                 if (thread == null) {
                     return;
                 }
@@ -102,19 +102,19 @@ final class ForkedActorManager extends AbstractActorManager {
     }
 
     @VisibleForTesting
-    Map<String, ForkedActorWatchDogThread> getProcesses() {
+    Map<String, ProcessWatchDogThread> getProcesses() {
         return ImmutableMap.copyOf(processes);
     }
 
     @Override
     public void close() {
-        for (ForkedActorWatchDogThread thread : processes.values()) {
+        for (ProcessWatchDogThread thread : processes.values()) {
             terminateProcess(thread);
         }
         processes.clear();
     }
 
-    private void terminateProcess(final ForkedActorWatchDogThread thread) {
+    private void terminateProcess(final ProcessWatchDogThread thread) {
         thread.close();
         thread.getProcess().destroy();
         Uninterruptibles.joinUninterruptibly(thread);

@@ -1,9 +1,11 @@
 package io.amaze.bench.shared.jms;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.shared.helper.NetworkHelper;
 import io.amaze.bench.shared.test.JMSServerRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.File;
 
@@ -16,21 +18,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class JMSServerTest {
+public final class FFMQServerTest {
 
     static final String DUMMY_QUEUE = "DummyQueue";
     static final String DUMMY_TOPIC = "DummyTopic";
 
     @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
     public JMSServerRule server = new JMSServerRule();
+
+    @Test
+    public void null_parameters_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(FFMQServer.class);
+        tester.testAllPublicInstanceMethods(server);
+    }
 
     @Test
     public void start_stop_server() throws Exception {
         assertNotNull(server);
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void start_server_on_bound_port_throws() throws Exception {
+        expectedException.expect(JMSException.class);
+        expectedException.expectMessage("Cannot create server socket");
+
         new FFMQServer(JMSServerRule.DEFAULT_HOST, server.getPort());
     }
 
@@ -73,7 +88,7 @@ public class JMSServerTest {
 
     @Test
     public void delete_invalid_queue_does_not_throw() {
-        server.getServer().deleteQueue(null);
+        server.getServer().deleteQueue("$%?.");
     }
 
     @Test
@@ -100,7 +115,7 @@ public class JMSServerTest {
 
     @Test
     public void delete_invalid_topic_does_not_throw() {
-        server.getServer().deleteTopic(null);
+        server.getServer().deleteTopic("$%?");
     }
 
 }

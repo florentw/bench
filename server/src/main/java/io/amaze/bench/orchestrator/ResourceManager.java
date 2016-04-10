@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public interface ResourceManager extends AutoCloseable {
+interface ResourceManager extends AutoCloseable {
 
     /**
      * Requests an actor instantiation using the given {@link ActorConfig} configuration.

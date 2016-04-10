@@ -4,7 +4,10 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.concurrent.CountDownLatch;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Perform a waitFor on the given process to know when the process has terminated and avoid zombies.
@@ -13,9 +16,9 @@ import java.util.concurrent.CountDownLatch;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class ForkedActorWatchDogThread extends Thread {
+final class ProcessWatchDogThread extends Thread {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ForkedActorWatchDogThread.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessWatchDogThread.class);
 
     private final String name;
     private final Process process;
@@ -24,7 +27,10 @@ final class ForkedActorWatchDogThread extends Thread {
     private volatile boolean doWork = true;
     private volatile boolean exited = false;
 
-    ForkedActorWatchDogThread(final String name, final Process process) {
+    ProcessWatchDogThread(@NotNull final String name, @NotNull final Process process) {
+        checkNotNull(name);
+        checkNotNull(process);
+
         watchdogStartedLatch = new CountDownLatch(1);
         this.name = name;
         this.process = process;

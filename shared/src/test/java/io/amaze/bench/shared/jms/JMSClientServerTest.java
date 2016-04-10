@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import static io.amaze.bench.shared.helper.NetworkHelper.LOCALHOST;
 import static io.amaze.bench.shared.helper.NetworkHelper.findFreePort;
-import static io.amaze.bench.shared.jms.JMSServerTest.DUMMY_QUEUE;
-import static io.amaze.bench.shared.jms.JMSServerTest.DUMMY_TOPIC;
+import static io.amaze.bench.shared.jms.FFMQServerTest.DUMMY_QUEUE;
+import static io.amaze.bench.shared.jms.FFMQServerTest.DUMMY_TOPIC;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 @Category(IntegrationTest.class)
-public class JMSClientServerTest {
+public final class JMSClientServerTest {
 
     private static final String DUMMY_PAYLOAD = "Hello";
 

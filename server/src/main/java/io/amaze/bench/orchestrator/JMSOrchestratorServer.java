@@ -26,10 +26,10 @@ final class JMSOrchestratorServer implements OrchestratorServer {
     private final JMSClient client;
 
     JMSOrchestratorServer(@NotNull final JMSServer server, @NotNull final JMSClient client) {
-        try {
-            this.server = checkNotNull(server);
-            this.client = checkNotNull(client);
+        this.server = checkNotNull(server);
+        this.client = checkNotNull(client);
 
+        try {
             server.createQueue(MASTER_ACTOR_NAME);
             server.createTopic(AGENTS_ACTOR_NAME);
 

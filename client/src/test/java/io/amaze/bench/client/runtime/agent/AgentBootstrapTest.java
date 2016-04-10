@@ -1,53 +1,81 @@
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.shared.jms.JMSClient;
-import io.amaze.bench.shared.test.IntegrationTest;
-import io.amaze.bench.shared.test.JMSServerRule;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.rules.ExpectedException;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 
 /**
- * Created on 3/5/16.
+ * Created on 4/10/16.
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-@Category(IntegrationTest.class)
 public final class AgentBootstrapTest {
 
     @Rule
-    public JMSServerRule server = new JMSServerRule();
+    public final ExpectedException expectedException = ExpectedException.none();
+
+    private DummyClientFactory clientFactory;
+
+    @Before
+    public void before() {
+        clientFactory = new DummyClientFactory(mock(OrchestratorClient.class), mock(OrchestratorClient.class));
+    }
 
     @Test
-    public void bootstrap_with_server() throws Exception {
-        server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
-        server.getServer().createTopic(Constants.AGENTS_ACTOR_NAME);
+    public void invalid_arguments_show_usage() {
+        AgentBootstrap.main(new String[]{});
+    }
 
-        try (final JMSClient client = server.createClient()) {
-            client.addQueueListener(Constants.MASTER_ACTOR_NAME, new MessageListener() {
-                @Override
-                public void onMessage(final Message message) {
-                    System.out.println("received MASTER_ACTOR_NAME msg " + message);
-                }
-            });
+    @Test(expected = IllegalArgumentException.class)
+    public void invalid_arguments_throw() {
+        AgentBootstrap.main(new String[]{"dummy", "not_an_int"});
+    }
 
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        AgentBootstrap.main(new String[]{server.getHost(), "" + server.getPort()});
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
+    @Test
+    public void install_shutdown_hook() {
+        Agent agent = AgentBootstrap.createAgent(clientFactory);
 
-            client.startListening();
-            Thread.sleep(3000);
-        }
+        Thread shutdownHook = AgentBootstrap.registerShutdownHook(agent);
+
+        assertNotNull(shutdownHook);
+        boolean removed = Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        assertThat(removed, is(true));
+    }
+
+    @Test
+    public void shutdown_hook_closes_agent() throws Exception {
+        Agent agent = spy(AgentBootstrap.createAgent(clientFactory));
+        Thread shutdownHook = AgentBootstrap.registerShutdownHook(agent);
+
+        shutdownHook.run();
+
+        verify(agent).close();
+    }
+
+    @Test
+    public void shutdown_hook_closes_agent_and_close_fail_does_nothing() throws Exception {
+        Agent agent = spy(AgentBootstrap.createAgent(clientFactory));
+        doThrow(new IllegalArgumentException()).when(agent).close();
+        Thread shutdownHook = AgentBootstrap.registerShutdownHook(agent);
+
+        shutdownHook.run();
+
+        verify(agent).close();
+    }
+
+    @Test
+    public void can_create_agent() {
+        Agent agent = AgentBootstrap.createAgent(clientFactory);
+
+        assertNotNull(agent);
+        assertNotNull(agent.getName());
     }
 
 }

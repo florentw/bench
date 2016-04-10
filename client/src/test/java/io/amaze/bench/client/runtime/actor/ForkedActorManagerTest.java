@@ -91,7 +91,7 @@ public final class ForkedActorManagerTest {
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
         ManagedActor actor = actorManager.createActor(actorConfig);
 
-        ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
+        ProcessWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
         assertNotNull(watchDogThread);
 
         // Sync with process
@@ -114,7 +114,7 @@ public final class ForkedActorManagerTest {
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
         ManagedActor actor = actorManager.createActor(actorConfig);
 
-        ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
+        ProcessWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
         verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
@@ -137,7 +137,7 @@ public final class ForkedActorManagerTest {
         ManagedActor actor = actorManager.createActor(actorConfig);
         assertNotNull(actor);
 
-        ForkedActorWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
+        ProcessWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
 
         verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
@@ -164,7 +164,7 @@ public final class ForkedActorManagerTest {
     public void watchdog_thread_is_interrupted_while_waitfor() throws InterruptedException {
         Process mockedProcess = mock(Process.class);
         when(mockedProcess.waitFor()).thenThrow(new InterruptedException());
-        ForkedActorWatchDogThread watchdog = new ForkedActorWatchDogThread(DUMMY_ACTOR, mockedProcess);
+        ProcessWatchDogThread watchdog = new ProcessWatchDogThread(DUMMY_ACTOR, mockedProcess);
         watchdog.start();
         watchdog.awaitUntilStarted();
         watchdog.close();

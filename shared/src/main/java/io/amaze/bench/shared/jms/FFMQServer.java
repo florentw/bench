@@ -21,6 +21,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/2/16.
  *
@@ -45,8 +47,9 @@ public final class FFMQServer implements JMSServer {
     private final ClientListener tcpListener;
     private final Object queuesLock = new Object();
 
-    public FFMQServer(@NotNull final String host,
-                      @NotNull final int port) throws io.amaze.bench.shared.jms.JMSException {
+    public FFMQServer(@NotNull final String host, final int port) throws io.amaze.bench.shared.jms.JMSException {
+        checkNotNull(host);
+
         try {
             purgeQueuesAnTopicsProperties();
 
@@ -60,6 +63,8 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public void createQueue(@NotNull final String name) throws io.amaze.bench.shared.jms.JMSException {
+        checkNotNull(name);
+
         try {
             internalCreateQueue(name);
         } catch (Exception e) {
@@ -69,6 +74,8 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public void createTopic(@NotNull final String name) throws io.amaze.bench.shared.jms.JMSException {
+        checkNotNull(name);
+
         try {
             internalCreateTopic(name);
         } catch (Exception e) {
@@ -78,6 +85,8 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public boolean deleteQueue(@NotNull final String queue) {
+        checkNotNull(queue);
+
         try {
             engine.deleteQueue(queue);
             return true;
@@ -89,6 +98,8 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public boolean deleteTopic(@NotNull final String topic) {
+        checkNotNull(topic);
+
         try {
             engine.deleteTopic(topic);
             return true;

@@ -25,7 +25,7 @@ import static java.lang.String.format;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public final class Agent implements AgentClientListener, AutoCloseable {
+public class Agent implements AgentClientListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Agent.class);
 

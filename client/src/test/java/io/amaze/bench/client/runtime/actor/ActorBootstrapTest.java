@@ -61,21 +61,22 @@ public final class ActorBootstrapTest {
 
     @Test
     public void shutdown_thread_closes_actor() throws IOException, ValidationException {
-
         Actor actor = actorBootstrap.createActor(TestActor.DUMMY_ACTOR,
-                                                 TestActor.class.getName(), TestActor.DUMMY_JSON_CONFIG);
+                                                 TestActor.class.getName(),
+                                                 TestActor.DUMMY_JSON_CONFIG);
         actor = Mockito.spy(actor);
 
         ActorBootstrap.ActorShutdownThread thread = new ActorBootstrap.ActorShutdownThread(actor);
         thread.start();
-        Uninterruptibles.joinUninterruptibly(thread);
 
+        Uninterruptibles.joinUninterruptibly(thread);
         verify(actor).close();
     }
 
     @Test
     public void install_shutdown_hook() {
         Actor actor = mock(Actor.class);
+
         Thread thread = ActorBootstrap.installShutdownHook(actor);
 
         assertNotNull(thread);
