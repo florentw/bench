@@ -106,14 +106,14 @@ public final class JMSMasterMessageListenerTest {
     }
 
     @Test
-    public void actor_started() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.STARTED);
+    public void actor_initialized() throws IOException, JMSException {
+        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.INITIALIZED);
         MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(actorRegistryLstnr).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(agentRegistryLstnr);
         verifyNoMoreInteractions(actorRegistryLstnr);
     }

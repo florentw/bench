@@ -36,6 +36,6 @@ public final class RegisteredActor {
 
     public enum State {
         CREATED,
-        STARTED
+        INITIALIZED
     }
 }

@@ -107,7 +107,7 @@ public final class ResourceManagerAgentTest {
     }
 
     @Test
-    public void create_and_stop_embedded_actor_on_agent() throws InterruptedException {
+    public void create_and_close_embedded_actor_on_agent() throws InterruptedException {
         // Given
         List<String> preferredHosts = new ArrayList<>();
         ActorSync sync = getActorSync();
@@ -174,7 +174,7 @@ public final class ResourceManagerAgentTest {
 
     private static final class ActorSync implements ActorRegistryListener {
         private final CountDownLatch actorCreated = new CountDownLatch(1);
-        private final CountDownLatch actorStarted = new CountDownLatch(1);
+        private final CountDownLatch actorInitialized = new CountDownLatch(1);
         private final CountDownLatch actorFailed = new CountDownLatch(1);
         private final CountDownLatch actorClosed = new CountDownLatch(1);
 
@@ -184,8 +184,8 @@ public final class ResourceManagerAgentTest {
         }
 
         @Override
-        public void onActorStarted(@NotNull final String name, @NotNull final String agent) {
-            actorStarted.countDown();
+        public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
+            actorInitialized.countDown();
         }
 
         @Override

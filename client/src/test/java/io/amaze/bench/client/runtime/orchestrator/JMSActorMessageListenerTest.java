@@ -50,8 +50,8 @@ public final class JMSActorMessageListenerTest {
     }
 
     @Test
-    public void start_actor_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(Command.START,
+    public void initialize_actor_msg() throws IOException, ClassNotFoundException, JMSException {
+        ActorInputMessage inputMsg = new ActorInputMessage(Command.INIT,
                                                            TestActor.DUMMY_ACTOR, "");
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
@@ -59,13 +59,13 @@ public final class JMSActorMessageListenerTest {
 
         listener.onMessage(msg);
 
-        verify(mockActor).start();
+        verify(mockActor).init();
         verifyNoMoreInteractions(mockActor);
     }
 
     @Test
     public void stop_actor_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(Command.STOP, TestActor.DUMMY_ACTOR, "");
+        ActorInputMessage inputMsg = new ActorInputMessage(Command.CLOSE, TestActor.DUMMY_ACTOR, "");
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -86,7 +86,7 @@ public final class JMSActorMessageListenerTest {
 
         listener.onMessage(msg);
 
-        verify(mockActor).dumpMetrics();
+        verify(mockActor).dumpAndFlushMetrics();
         verifyNoMoreInteractions(mockActor);
     }
 

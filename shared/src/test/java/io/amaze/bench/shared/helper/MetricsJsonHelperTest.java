@@ -4,6 +4,8 @@ import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -35,7 +37,9 @@ public final class MetricsJsonHelperTest {
         Metric memAfter = new Metric("Consumer Mem. After", "bytes", 2048);
         sink.add("consumer.cpu", METRIC_CPU).add("consumer.mem.before", memBefore).add("consumer.mem.after", memAfter);
 
-        assertThat(MetricsJsonHelper.toJsonObject(sink).toString(), is(EXPECTED_SINK_JSON));
+        Map<String, Metric> metrics = sink.getMetricsAndFlush();
+
+        assertThat(MetricsJsonHelper.toJsonObject(metrics).toString(), is(EXPECTED_SINK_JSON));
     }
 
 }

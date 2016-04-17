@@ -39,10 +39,10 @@ public final class BaseActorTest {
     }
 
     @Test
-    public void create_start_actor() throws Exception {
+    public void create_init_actor() throws Exception {
         try (BaseActor actor = defaultTestActor()) {
 
-            actor.start();
+            actor.init();
 
             // Check before method is called
             assertThat(actor.name(), is(DUMMY_ACTOR));
@@ -52,9 +52,9 @@ public final class BaseActorTest {
             assertThat(actorClient.getSentMessages().size(), is(1));
             assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
 
-            // Check started message sent
+            // Check initialized message sent
             ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.STARTED));
+            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.INITIALIZED));
         }
     }
 
@@ -69,10 +69,10 @@ public final class BaseActorTest {
     }
 
     @Test
-    public void start_actor_throws() throws Exception {
+    public void initialize_actor_throws() throws Exception {
         try (BaseActor actor = createActor(TestActorBeforeThrows.class)) {
 
-            actor.start();
+            actor.init();
 
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
@@ -88,10 +88,10 @@ public final class BaseActorTest {
     }
 
     @Test
-    public void start_actor_failure_and_call_to_after_throws() throws Exception {
+    public void initialize_actor_failure_and_call_to_after_throws() throws Exception {
         try (BaseActor actor = createActor(TestActorBeforeAndAfterThrows.class)) {
 
-            actor.start();
+            actor.init();
 
             // Check good flow of messages
             assertThat(actorClient.getSentMessages().size(), is(1));
@@ -104,19 +104,19 @@ public final class BaseActorTest {
     }
 
     @Test
-    public void start_actor_no_before_method() throws Exception {
+    public void initialize_actor_no_before_method() throws Exception {
         Class<?> actorClass = TestActorNoBeforeNoAfter.class;
         try (BaseActor actor = createActor(actorClass)) {
 
-            actor.start();
+            actor.init();
 
             // Check good flow of messages
             assertThat(actorClient.getSentMessages().size(), is(1));
             assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
 
-            // Check started message sent
+            // Check initialized message sent
             ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.STARTED));
+            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.INITIALIZED));
         }
     }
 
@@ -183,11 +183,11 @@ public final class BaseActorTest {
     @Test
     public void create_dump_metrics_sends_message_to_metrics_actor() throws Exception {
         try (BaseActor actor = createActor(TestActorMetrics.class)) {
-            actor.start();
+            actor.init();
 
             actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
 
-            actor.dumpMetrics();
+            actor.dumpAndFlushMetrics();
 
             // Check good flow of messages
             assertThat(actorClient.getSentMessages().size(), is(2));

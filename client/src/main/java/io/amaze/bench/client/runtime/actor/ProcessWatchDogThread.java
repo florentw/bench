@@ -59,7 +59,6 @@ final class ProcessWatchDogThread extends Thread {
                 exited = true;
                 LOG.info(this + " Exited with code " + exitCode + ".");
             } catch (InterruptedException e) {
-                LOG.warn("Interruption received!", e);
                 Thread.currentThread().interrupt();
             }
         }

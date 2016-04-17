@@ -76,8 +76,8 @@ final class JMSMasterMessageListener implements MessageListener {
             case CREATED:
                 actorsListener.onActorCreated(actor, lfMsg.getAgent());
                 break;
-            case STARTED:
-                actorsListener.onActorStarted(actor, lfMsg.getAgent());
+            case INITIALIZED:
+                actorsListener.onActorInitialized(actor, lfMsg.getAgent());
                 break;
             case FAILED:
                 actorsListener.onActorFailed(actor, lfMsg.getThrowable());

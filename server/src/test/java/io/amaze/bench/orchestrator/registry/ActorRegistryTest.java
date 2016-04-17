@@ -79,24 +79,24 @@ public final class ActorRegistryTest {
     }
 
     @Test
-    public void actor_registered_and_started() {
+    public void actor_registered_and_initialized() {
         orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        orchestratorListener.onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
+        orchestratorListener.onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
 
         RegisteredActor actor = registry.byName(DUMMY_ACTOR);
 
         assertThat(actor.getName(), is(DUMMY_ACTOR));
         assertThat(actor.getAgent(), is(DUMMY_AGENT));
-        assertThat(actor.getState(), is(State.STARTED));
+        assertThat(actor.getState(), is(State.INITIALIZED));
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        verify(clientListener).onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(clientListener).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
-    public void unknown_actor_started_does_not_throw() {
-        orchestratorListener.onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
+    public void unknown_actor_initialized_does_not_throw() {
+        orchestratorListener.onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
 
         RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);

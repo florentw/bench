@@ -39,14 +39,14 @@ final class JMSActorMessageListener implements MessageListener {
         }
 
         switch (msg.getCommand()) { // NOSONAR
-            case START:
-                actor.start();
+            case INIT:
+                actor.init();
                 break;
-            case STOP:
+            case CLOSE:
                 actor.close();
                 break;
             case DUMP_METRICS:
-                actor.dumpMetrics();
+                actor.dumpAndFlushMetrics();
                 break;
             case MESSAGE:
                 checkNotNull(msg.getPayload());

@@ -67,13 +67,13 @@ public class BaseActor implements Actor {
     }
 
     @Override
-    public void start() {
+    public void init() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug(this + " Starting...");
+            LOG.debug(this + " Initializing...");
         }
 
         if (beforeMethod == null) {
-            sendLifecycleMessage(Phase.STARTED);
+            sendLifecycleMessage(Phase.INITIALIZED);
             return;
         }
 
@@ -92,7 +92,7 @@ public class BaseActor implements Actor {
             return;
         }
 
-        sendLifecycleMessage(Phase.STARTED);
+        sendLifecycleMessage(Phase.INITIALIZED);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class BaseActor implements Actor {
     }
 
     @Override
-    public final void dumpMetrics() {
-        Map<String, Metric> metrics = sink.metrics();
+    public final void dumpAndFlushMetrics() {
+        Map<String, Metric> metrics = sink.getMetricsAndFlush();
         client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metrics));
     }
 

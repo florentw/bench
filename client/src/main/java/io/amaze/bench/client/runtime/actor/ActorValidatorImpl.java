@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
 
 
@@ -24,12 +25,13 @@ final class ActorValidatorImpl implements ActorValidator {
     private static final String LOAD_MSG = "Could not load class \"%s\".";
 
     ActorValidatorImpl() {
-        // Should not be instantiated
+        // Should not be public
     }
 
     @Override
     @NotNull
     public Class<? extends Reactor> loadAndValidate(@NotNull final String className) throws ValidationException {
+        checkNotNull(className);
 
         // Loading
         Class<?> clazz;

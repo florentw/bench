@@ -11,7 +11,7 @@ public interface ActorRegistryListener {
 
     void onActorCreated(@NotNull String name, @NotNull String agent);
 
-    void onActorStarted(@NotNull String name, @NotNull String agent);
+    void onActorInitialized(@NotNull String name, @NotNull String agent);
 
     void onActorFailed(@NotNull String name, @NotNull Throwable throwable);
 

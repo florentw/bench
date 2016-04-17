@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.actor;
 
+import com.google.common.testing.NullPointerTester;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.AgentTest;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
@@ -45,6 +46,14 @@ public final class ActorBootstrapTest {
         OrchestratorClient client = new RecorderOrchestratorClient();
         OrchestratorClientFactory factory = new DummyClientFactory(null, client);
         actorBootstrap = new ActorBootstrap(DUMMY, factory);
+    }
+
+    @Test
+    public void null_parameters_are_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(ActorBootstrap.class);
+        tester.testAllPublicStaticMethods(ActorBootstrap.class);
+        tester.testAllPublicInstanceMethods(actorBootstrap);
     }
 
     @Test(expected = ValidationException.class)

@@ -83,23 +83,23 @@ public final class ActorRegistry {
         }
 
         @Override
-        public void onActorStarted(@NotNull final String name, @NotNull final String agent) {
+        public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
             synchronized (actors) {
                 RegisteredActor found = actors.get(name);
 
                 if (found != null) {
-                    RegisteredActor newActor = new RegisteredActor(name, found.getAgent(), State.STARTED);
+                    RegisteredActor newActor = new RegisteredActor(name, found.getAgent(), State.INITIALIZED);
                     actors.put(name, newActor);
 
                 } else {
-                    LOG.warn("Attempt to start an unknown Actor: " + name);
+                    LOG.warn("Attempt to initialize an unknown Actor: " + name);
                     return;
                 }
             }
 
             // Notify listeners
             for (ActorRegistryListener listener : listeners()) {
-                listener.onActorStarted(name, agent);
+                listener.onActorInitialized(name, agent);
             }
         }
 

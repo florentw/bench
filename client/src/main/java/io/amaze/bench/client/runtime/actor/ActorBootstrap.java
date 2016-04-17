@@ -7,7 +7,10 @@ import io.amaze.bench.shared.helper.FileHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Acts as entry point for a forked actor JVM, created by a {@link ForkedActorManager}.
@@ -24,9 +27,9 @@ public final class ActorBootstrap {
     private final OrchestratorClientFactory clientFactory;
     private final String agentName;
 
-    ActorBootstrap(final String agentName, final OrchestratorClientFactory clientFactory) {
-        this.clientFactory = clientFactory;
-        this.agentName = agentName;
+    ActorBootstrap(@NotNull final String agentName, @NotNull final OrchestratorClientFactory clientFactory) {
+        this.clientFactory = checkNotNull(clientFactory);
+        this.agentName = checkNotNull(agentName);
     }
 
     /**
@@ -34,7 +37,8 @@ public final class ActorBootstrap {
      * @throws ValidationException
      * @throws IOException
      */
-    public static void main(String[] args) throws ValidationException, IOException {
+    public static void main(final String[] args) throws ValidationException, IOException {
+        checkNotNull(args);
 
         if (args.length != 6) {
             LOG.error("Usage:");

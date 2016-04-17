@@ -31,12 +31,12 @@ public class TestActor implements Reactor<String> {
     private boolean beforeCalled = false;
     private boolean afterCalled = false;
 
-    public TestActor(Sender sender) {
+    public TestActor(final Sender sender) {
         this.sender = sender;
         this.config = ConfigFactory.parseString(DUMMY_JSON_CONFIG);
     }
 
-    public TestActor(Sender sender, final Config config) {
+    public TestActor(final Sender sender, final Config config) {
         this.sender = sender;
         this.config = config;
     }

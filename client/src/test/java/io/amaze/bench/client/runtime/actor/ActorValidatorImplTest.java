@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.actor;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.api.ReactorException;
 import io.amaze.bench.client.api.actor.After;
 import io.amaze.bench.client.api.actor.Before;
@@ -26,6 +27,13 @@ public final class ActorValidatorImplTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
+
+    @Test
+    public void null_parameters_are_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(ActorValidatorImpl.class);
+        tester.testAllPublicInstanceMethods(new ActorValidatorImpl());
+    }
 
     @Test
     public void invalid_actor_class_throws() throws ValidationException {

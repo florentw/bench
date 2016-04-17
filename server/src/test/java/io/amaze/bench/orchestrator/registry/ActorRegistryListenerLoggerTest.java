@@ -41,9 +41,9 @@ public final class ActorRegistryListenerLoggerTest {
 
     @Test
     public void actor_started() {
-        loggerListener.onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
+        loggerListener.onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
 
-        verify(delegateListener).onActorStarted(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(delegateListener).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(delegateListener);
     }
 

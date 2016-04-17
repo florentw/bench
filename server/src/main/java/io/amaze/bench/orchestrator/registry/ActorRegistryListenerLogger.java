@@ -33,13 +33,13 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     }
 
     @Override
-    public void onActorStarted(@NotNull final String name, @NotNull final String agent) {
+    public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
         checkNotNull(name);
         checkNotNull(agent);
 
-        LOG.info(String.format("Start of actor \"%s\" by agent \"%s\"", name, agent));
+        LOG.info(String.format("Initialization of actor \"%s\" by agent \"%s\"", name, agent));
 
-        delegate.onActorStarted(name, agent);
+        delegate.onActorInitialized(name, agent);
     }
 
     @Override

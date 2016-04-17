@@ -54,7 +54,7 @@ public final class ActorLifecycleMessage implements Serializable {
 
     public enum Phase {
         CREATED,
-        STARTED,
+        INITIALIZED,
         FAILED,
         CLOSED
     }

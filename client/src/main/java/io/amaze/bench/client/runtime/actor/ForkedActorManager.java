@@ -40,7 +40,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private final Map<String, ProcessWatchDogThread> processes = new ConcurrentHashMap<>();
     private final File localLogDir;
 
-    ForkedActorManager(@NotNull final String agent, @NotNull File localLogDir) {
+    ForkedActorManager(@NotNull final String agent, @NotNull final File localLogDir) {
         super(agent);
         this.localLogDir = checkNotNull(localLogDir);
 
@@ -59,7 +59,7 @@ final class ForkedActorManager extends AbstractActorManager {
         checkNotNull(actorConfig);
 
         final String actor = actorConfig.getName();
-        Process process = createActorProcess(actorConfig, actor);
+        Process process = createActorProcess(actorConfig);
 
         ProcessWatchDogThread thread = new ProcessWatchDogThread(actor, process);
         thread.start();
@@ -85,16 +85,12 @@ final class ForkedActorManager extends AbstractActorManager {
         };
     }
 
-    private Process createActorProcess(final ActorConfig actorConfig, final String actor) {
+    private Process createActorProcess(final ActorConfig actorConfig) {
         try {
             File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
             FileHelper.writeToFile(tempConfigFile, actorConfig.getActorJsonConfig());
 
-            return forkProcess(actor,
-                               actorConfig.getClassName(),
-                               actorConfig.getDeployConfig().getJmsServerHost(),
-                               actorConfig.getDeployConfig().getJmsServerPort(),
-                               tempConfigFile.getAbsolutePath());
+            return forkProcess(actorConfig, tempConfigFile.getAbsolutePath());
 
         } catch (IOException e) {
             throw Throwables.propagate(e);
@@ -120,11 +116,14 @@ final class ForkedActorManager extends AbstractActorManager {
         Uninterruptibles.joinUninterruptibly(thread);
     }
 
-    private Process forkProcess(final String name,
-                                final String className,
-                                final String jmsServerHost,
-                                final int jmsServerPort,
-                                final String configFileName) throws IOException {
+    private Process forkProcess(@NotNull final ActorConfig actorConfig,
+                                @NotNull final String configFileName) throws IOException {
+
+        String name = actorConfig.getName();
+
+        String jmsServerHost = actorConfig.getDeployConfig().getJmsServerHost();
+        int jmsServerPort = actorConfig.getDeployConfig().getJmsServerPort();
+
         String[] cmd = { //
                 StandardSystemProperty.JAVA_HOME.value() + JAVA_CMD_PATH, //
                 "-cp", //
@@ -132,7 +131,7 @@ final class ForkedActorManager extends AbstractActorManager {
                 ActorBootstrap.class.getName(),  // Main class
                 getAgent(),                      // arg[0]
                 name,                            // arg[1]
-                className,                       // arg[2]
+                actorConfig.getClassName(),      // arg[2]
                 jmsServerHost,                   // arg[3]
                 Integer.toString(jmsServerPort), // arg[4]
                 configFileName                   // arg[5]

@@ -26,17 +26,17 @@ public interface Actor extends AutoCloseable {
     String name();
 
     /**
-     * Starts the actor and invokes the {@link Reactor} method annotated with @{@link Before}.<br/>
+     * Initializes the actor by invoking the method annotated with @{@link Before} if any.<br/>
      * Will send failure messages to the master.<br/>
-     * Send "started" lifecycle notification if successful.<br/>
+     * Send "initialized" lifecycle notification if successful.<br/>
      */
-    void start();
+    void init();
 
     /**
-     * Dump the actor's accumulated metrics and sends a message to the metrics actor for collection.<br/>
+     * Dump the actor's accumulated getMetricsAndFlush and sends a message to the getMetricsAndFlush actor for collection.<br/>
      * Will send failure messages to the master.<br/>
      */
-    void dumpMetrics();
+    void dumpAndFlushMetrics();
 
     /**
      * Hook for the actor to receive messages.<br/>
