@@ -2,7 +2,10 @@ package io.amaze.bench.shared.helper;
 
 import org.junit.Test;
 
-import javax.validation.constraints.Null;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
 import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
@@ -20,20 +23,26 @@ public final class ReflectionHelperTest {
 
     @Test
     public void find_no_annotated_method_returns_null() {
-        Method method = findAtMostOneAnnotatedMethod(NoAnnotatedMethod.class, Null.class);
+        Method method = findAtMostOneAnnotatedMethod(NoAnnotatedMethod.class, TestAnnotation.class);
         assertNull(method);
     }
 
     @Test
     public void find_single_annotated_method_works() {
-        Method method = findAtMostOneAnnotatedMethod(SingleAnnotatedMethod.class, Null.class);
+        Method method = findAtMostOneAnnotatedMethod(SingleAnnotatedMethod.class, TestAnnotation.class);
         assertNotNull(method);
         assertThat(method.getName(), is("annotated"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void find_two_annotated_methods_throws() {
-        findAtMostOneAnnotatedMethod(TwoAnnotatedMethods.class, Null.class);
+        findAtMostOneAnnotatedMethod(TwoAnnotatedMethods.class, TestAnnotation.class);
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    public @interface TestAnnotation {
+
     }
 
     private interface NoAnnotatedMethod {
@@ -41,17 +50,17 @@ public final class ReflectionHelperTest {
     }
 
     private interface SingleAnnotatedMethod {
-        @Null
+        @TestAnnotation
         void annotated();
 
         void test();
     }
 
     private interface TwoAnnotatedMethods {
-        @Null
+        @TestAnnotation
         void annotated1();
 
-        @Null
+        @TestAnnotation
         void annotated2();
     }
 
