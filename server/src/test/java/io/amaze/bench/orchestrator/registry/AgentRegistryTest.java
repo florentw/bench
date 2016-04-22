@@ -8,8 +8,10 @@ import org.junit.Test;
 
 import java.util.Set;
 
-import static com.google.common.truth.Truth.assertThat;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -51,9 +53,9 @@ public final class AgentRegistryTest {
         orchestratorListener.onAgentRegistration(REG_MSG);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
-        assertThat(agent.getName()).is(DUMMY_AGENT);
-        assertThat(agent.getSystemInfo()).is(REG_MSG.getSystemInfo());
-        assertThat(agent.getCreationTime()).is(REG_MSG.getCreationTime());
+        assertThat(agent.getName(), is(DUMMY_AGENT));
+        assertThat(agent.getSystemInfo(), is(REG_MSG.getSystemInfo()));
+        assertThat(agent.getCreationTime(), is(REG_MSG.getCreationTime()));
 
         verify(clientListener).onAgentRegistration(REG_MSG);
         verifyNoMoreInteractions(clientListener);
@@ -65,7 +67,7 @@ public final class AgentRegistryTest {
         orchestratorListener.onAgentSignOff(DUMMY_AGENT);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
-        assertThat(agent).isNull();
+        assertNull(agent);
 
         verify(clientListener).onAgentRegistration(REG_MSG);
         verify(clientListener).onAgentSignOff(DUMMY_AGENT);
@@ -77,7 +79,7 @@ public final class AgentRegistryTest {
         orchestratorListener.onAgentSignOff(DUMMY_AGENT);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
-        assertThat(agent).isNull();
+        assertNull(agent);
 
         verifyNoMoreInteractions(clientListener);
     }
@@ -88,10 +90,10 @@ public final class AgentRegistryTest {
 
         Set<RegisteredAgent> agents = registry.all();
 
-        assertThat(agents.size()).is(1);
+        assertThat(agents.size(), is(1));
 
         RegisteredAgent agent = agents.iterator().next();
-        assertThat(agent.getName()).is(DUMMY_AGENT);
+        assertThat(agent.getName(), is(DUMMY_AGENT));
     }
 
     @Test
