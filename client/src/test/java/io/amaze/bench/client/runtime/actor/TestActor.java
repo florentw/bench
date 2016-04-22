@@ -3,10 +3,12 @@ package io.amaze.bench.client.runtime.actor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.client.api.ReactorException;
+import io.amaze.bench.client.api.TerminationException;
 import io.amaze.bench.client.api.actor.After;
 import io.amaze.bench.client.api.actor.Before;
 import io.amaze.bench.client.api.actor.Reactor;
 import io.amaze.bench.client.api.actor.Sender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -21,6 +23,7 @@ public class TestActor implements Reactor<String> {
     public static final String DUMMY_ACTOR = "test-actor";
     public static final String DUMMY_JSON_CONFIG = "{}";
     static final String FAIL_MSG = "DO_FAIL";
+    static final String TERMINATE_MSG = "TERMINATE";
 
     private static final DeployConfig DUMMY_DEPLOY_CONFIG = createDeployConfig(false);
     public static final ActorConfig DUMMY_CONFIG = createActorConfig();
@@ -63,9 +66,12 @@ public class TestActor implements Reactor<String> {
     }
 
     @Override
-    public void onMessage(final String from, final String message) throws ReactorException {
+    public void onMessage(@NotNull final String from,
+                          @NotNull final String message) throws ReactorException, TerminationException {
         if (message.equals(FAIL_MSG)) {
             throw new ReactorException("Provoked failure.");
+        } else if (message.equals(TERMINATE_MSG)) {
+            throw new TerminationException();
         }
 
         List<String> msgs = receivedMessages.get(from);

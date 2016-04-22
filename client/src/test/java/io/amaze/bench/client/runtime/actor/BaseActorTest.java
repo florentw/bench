@@ -165,6 +165,25 @@ public final class BaseActorTest {
     }
 
     @Test
+    public void actor_receives_message_and_throws_termination_exception() throws Exception {
+        try (BaseActor actor = defaultTestActor()) {
+
+            actor.onMessage(DUMMY_ACTOR, TERMINATE_MSG);
+
+            // Assert after method was called
+            assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
+
+            // Check good flow of messages
+            assertThat(actorClient.getSentMessages().size(), is(1));
+            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
+
+            // Check closed message sent
+            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
+            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.CLOSED));
+        }
+    }
+
+    @Test
     public void actor_throws_on_received_message_and_call_to_after_throws() throws Exception {
         try (BaseActor actor = createActor(TestActorAfterThrows.class)) {
 

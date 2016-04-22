@@ -13,7 +13,7 @@ public final class ReactorException extends Exception {
         super(message);
     }
 
-    public ReactorException(@NotNull final String message, final Throwable cause) {
+    public ReactorException(@NotNull final String message, @NotNull final Throwable cause) {
         super(message, cause);
     }
 }

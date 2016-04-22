@@ -1,6 +1,7 @@
 package io.amaze.bench.client.runtime.actor;
 
 import io.amaze.bench.client.api.ReactorException;
+import io.amaze.bench.client.api.TerminationException;
 import io.amaze.bench.client.api.actor.Reactor;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
 import io.amaze.bench.client.runtime.message.Message;
@@ -99,13 +100,18 @@ public class BaseActor implements Actor {
     public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
         try {
             instance.onMessage(from, message);
+
         } catch (ReactorException e) {
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {
                 LOG.warn(this + MSG_AFTER_METHOD_FAILED, afterException);
             }
+
             actorFailure(e);
+
+        } catch (TerminationException ignored) { // NOSONAR
+            close();
         }
     }
 

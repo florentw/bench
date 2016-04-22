@@ -2,6 +2,7 @@ package io.amaze.bench.client.api.actor;
 
 
 import io.amaze.bench.client.api.ReactorException;
+import io.amaze.bench.client.api.TerminationException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -29,9 +30,13 @@ public interface Reactor<I extends Serializable> {
      *
      * @param from    Source reactor name, unique in the cluster
      * @param message Received payload, a data bean
-     * @throws ReactorException Non-recoverable exceptions, will provoke a close of the actor and a call
-     *                          to the "@{@link After}" method if any.
+     * @throws ReactorException     Non-recoverable exceptions, will provoke a close of the actor and a call
+     *                              to the "@{@link After}" method if any. The exception will then be propagated
+     *                              for troubleshooting purpose.
+     * @throws TerminationException An exception to be thrown by the Actor to signify that it needs to terminate
+     *                              gracefully, it will provoke a close of the actor and a call
+     *                              to the "@{@link After}" method if any.
      */
-    void onMessage(@NotNull String from, @NotNull I message) throws ReactorException;
+    void onMessage(@NotNull String from, @NotNull I message) throws ReactorException, TerminationException;
 
 }

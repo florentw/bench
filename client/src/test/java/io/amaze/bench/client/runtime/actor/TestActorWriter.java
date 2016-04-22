@@ -3,8 +3,10 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
 import io.amaze.bench.client.api.ReactorException;
+import io.amaze.bench.client.api.TerminationException;
 import io.amaze.bench.client.api.actor.After;
 import io.amaze.bench.client.api.actor.Sender;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,9 @@ public final class TestActorWriter extends TestActor {
     }
 
     @Override
-    public void onMessage(final String from, final String message) throws ReactorException {
+    public void onMessage(@NotNull final String from,
+                          @NotNull final String message) throws ReactorException, TerminationException {
+
         super.onMessage(from, message);
     }
 
