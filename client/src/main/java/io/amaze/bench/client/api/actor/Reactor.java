@@ -2,8 +2,8 @@ package io.amaze.bench.client.api.actor;
 
 
 import io.amaze.bench.client.api.ReactorException;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**

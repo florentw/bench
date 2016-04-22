@@ -1,10 +1,10 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
 import java.util.concurrent.CountDownLatch;
 
 import static com.google.common.base.Preconditions.checkNotNull;

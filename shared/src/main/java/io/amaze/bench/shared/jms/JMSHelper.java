@@ -1,9 +1,9 @@
 package io.amaze.bench.shared.jms;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.jetbrains.annotations.NotNull;
 
 import javax.jms.BytesMessage;
-import javax.validation.constraints.NotNull;
 import java.io.*;
 
 /**

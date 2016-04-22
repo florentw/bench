@@ -3,8 +3,8 @@ package io.amaze.bench.shared.helper;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.amaze.bench.shared.metric.Metric;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.TreeMap;
 

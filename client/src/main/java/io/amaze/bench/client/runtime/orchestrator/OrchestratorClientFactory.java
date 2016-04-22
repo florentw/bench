@@ -1,6 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created on 3/1/16.

@@ -3,8 +3,8 @@ package io.amaze.bench.orchestrator;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**

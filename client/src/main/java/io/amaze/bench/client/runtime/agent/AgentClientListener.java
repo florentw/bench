@@ -1,8 +1,7 @@
 package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.client.runtime.actor.ActorConfig;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface to be implemented by an agent. These hooks are called upon reception of messages from the master.

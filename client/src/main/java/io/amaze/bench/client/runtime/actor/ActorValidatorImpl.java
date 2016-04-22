@@ -4,8 +4,8 @@ import io.amaze.bench.client.api.actor.After;
 import io.amaze.bench.client.api.actor.Before;
 import io.amaze.bench.client.api.actor.Reactor;
 import io.amaze.bench.client.api.actor.Sender;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;

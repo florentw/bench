@@ -7,10 +7,10 @@ import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
+import org.jetbrains.annotations.NotNull;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 

@@ -1,8 +1,7 @@
 package io.amaze.bench.client.runtime.actor;
 
 import io.amaze.bench.client.api.actor.Reactor;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Provides a {@link ActorValidator} instance to use for loading {@link Reactor} classes.

@@ -1,6 +1,7 @@
 package io.amaze.bench.client.runtime.actor;
 
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;

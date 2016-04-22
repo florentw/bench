@@ -1,6 +1,6 @@
 package io.amaze.bench.client.api;
 
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created on 2/28/16.

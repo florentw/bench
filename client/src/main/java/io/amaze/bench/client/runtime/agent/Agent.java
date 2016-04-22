@@ -6,10 +6,10 @@ import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;

@@ -2,8 +2,7 @@ package io.amaze.bench.client.api.actor;
 
 
 import io.amaze.bench.shared.metric.Metric;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created on 2/28/16.

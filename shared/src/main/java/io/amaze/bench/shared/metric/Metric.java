@@ -1,6 +1,7 @@
 package io.amaze.bench.shared.metric;
 
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;

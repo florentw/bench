@@ -1,8 +1,7 @@
 package io.amaze.bench.orchestrator.registry;
 
 import io.amaze.bench.shared.metric.SystemInfo;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

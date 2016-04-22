@@ -1,8 +1,8 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import io.amaze.bench.client.runtime.actor.ActorConfig;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;

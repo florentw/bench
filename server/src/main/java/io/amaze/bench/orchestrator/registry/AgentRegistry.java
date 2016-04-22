@@ -1,10 +1,10 @@
 package io.amaze.bench.orchestrator.registry;
 
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;

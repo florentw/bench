@@ -3,8 +3,8 @@ package io.amaze.bench.client.runtime.agent;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

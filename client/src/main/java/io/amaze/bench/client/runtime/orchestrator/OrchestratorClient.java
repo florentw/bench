@@ -4,8 +4,8 @@ package io.amaze.bench.client.runtime.orchestrator;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.message.Message;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**

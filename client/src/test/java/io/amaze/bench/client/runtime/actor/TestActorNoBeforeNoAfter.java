@@ -3,8 +3,7 @@ package io.amaze.bench.client.runtime.actor;
 import io.amaze.bench.client.api.ReactorException;
 import io.amaze.bench.client.api.actor.Actor;
 import io.amaze.bench.client.api.actor.Reactor;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created on 3/13/16.
