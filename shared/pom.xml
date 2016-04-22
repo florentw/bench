@@ -14,19 +14,24 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+            <version>${javax.jms.version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.timewalker.ffmq</groupId>
             <artifactId>ffmq3-server</artifactId>
-            <version>3.0.7</version>
+            <version>${ffmq.version}</version>
         </dependency>
         <dependency>
             <groupId>net.timewalker.ffmq</groupId>
             <artifactId>ffmq3-core</artifactId>
-            <version>3.0.7</version>
+            <version>${ffmq.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.6.1</version>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 
