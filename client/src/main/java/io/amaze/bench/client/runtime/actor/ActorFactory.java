@@ -95,14 +95,17 @@ public final class ActorFactory {
 
         pico.addComponent(new Sender() {
             @Override
-            public void send(final String to, final Serializable message) {
+            public void send(@NotNull final String to, @NotNull final Serializable message) {
+                checkNotNull(to);
+                checkNotNull(message);
+
                 client.sendToActor(to, new Message<>(actorName, message));
             }
         });
 
         pico.addComponent(new MetricsCollector() {
             @Override
-            public void putMetric(final String key, final Metric metric) {
+            public void putMetric(@NotNull final String key, @NotNull final Metric metric) {
                 sink.add(key, metric);
             }
         });

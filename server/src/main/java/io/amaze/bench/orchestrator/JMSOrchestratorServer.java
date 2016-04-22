@@ -55,21 +55,21 @@ final class JMSOrchestratorServer implements OrchestratorServer {
     }
 
     @Override
-    public void createActorQueue(@NotNull final String actor) {
-        checkNotNull(actor);
+    public void createActorQueue(@NotNull final String actorName) {
+        checkNotNull(actorName);
 
         try {
-            server.createQueue(actor);
+            server.createQueue(actorName);
         } catch (JMSException e) {
             throw propagate(e);
         }
     }
 
     @Override
-    public void deleteActorQueue(@NotNull final String actor) {
-        checkNotNull(actor);
+    public void deleteActorQueue(@NotNull final String actorName) {
+        checkNotNull(actorName);
 
-        server.deleteQueue(actor);
+        server.deleteQueue(actorName);
     }
 
     @Override

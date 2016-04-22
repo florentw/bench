@@ -1,7 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Throwables;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.Constants;
@@ -15,6 +14,7 @@ import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 3/3/16.
@@ -37,7 +37,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
         try {
             client = new FFMQClient(host, port);
         } catch (JMSException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 
@@ -50,7 +50,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
             client.addTopicListener(Constants.AGENTS_ACTOR_NAME, new JMSAgentMessageListener(agentName, listener));
             client.startListening();
         } catch (JMSException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 
@@ -62,7 +62,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
             client.addQueueListener(actor.name(), new JMSActorMessageListener(actor));
             client.startListening();
         } catch (JMSException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 
@@ -74,7 +74,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
         try {
             client.sendToQueue(to, message);
         } catch (JMSException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 

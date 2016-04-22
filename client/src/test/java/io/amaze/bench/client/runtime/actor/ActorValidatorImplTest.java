@@ -6,6 +6,7 @@ import io.amaze.bench.client.api.actor.After;
 import io.amaze.bench.client.api.actor.Before;
 import io.amaze.bench.client.api.actor.Reactor;
 import io.amaze.bench.client.api.actor.Sender;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -125,12 +126,12 @@ public final class ActorValidatorImplTest {
         }
 
         @Override
-        public void onMessage(final String from, final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
             // Dummy
         }
 
         @Override
-        public void send(final String to, final Serializable message) {
+        public void send(@NotNull final String to, @NotNull final Serializable message) {
             // Dummy
         }
     }
@@ -142,7 +143,7 @@ public final class ActorValidatorImplTest {
         }
 
         @Override
-        public void onMessage(final String from, final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
             // Dummy
         }
 
@@ -164,7 +165,7 @@ public final class ActorValidatorImplTest {
         }
 
         @Override
-        public void onMessage(final String from, final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
             // Dummy
         }
 
@@ -185,7 +186,7 @@ public final class ActorValidatorImplTest {
         }
 
         @Override
-        public void onMessage(final String from, final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
             // Dummy
         }
     }
