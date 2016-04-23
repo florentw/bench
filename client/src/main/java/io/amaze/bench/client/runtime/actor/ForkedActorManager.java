@@ -6,10 +6,10 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.shared.helper.FileHelper;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -54,6 +54,7 @@ final class ForkedActorManager extends AbstractActorManager {
         this(agent, new File(LOG_DIRECTORY_NAME));
     }
 
+    @NotNull
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
         checkNotNull(actorConfig);
@@ -68,6 +69,7 @@ final class ForkedActorManager extends AbstractActorManager {
         processes.put(actor, thread);
 
         return new ManagedActor() {
+            @NotNull
             @Override
             public String name() {
                 return actor;

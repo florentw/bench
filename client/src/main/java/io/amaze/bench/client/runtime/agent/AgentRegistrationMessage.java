@@ -2,8 +2,8 @@ package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.shared.metric.SystemInfo;
 import io.amaze.bench.shared.metric.SystemInfos;
-import org.jetbrains.annotations.NotNull;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;

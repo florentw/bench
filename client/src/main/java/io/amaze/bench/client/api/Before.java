@@ -1,4 +1,4 @@
-package io.amaze.bench.client.api.actor;
+package io.amaze.bench.client.api;
 
 import java.lang.annotation.*;
 
@@ -15,4 +15,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Before {
+
 }

@@ -1,6 +1,6 @@
 package io.amaze.bench.shared.jms;
 
-import org.jetbrains.annotations.NotNull;
+import javax.validation.constraints.NotNull;
 
 /**
  * Abstraction facade for a JMS server implementation.<br/>

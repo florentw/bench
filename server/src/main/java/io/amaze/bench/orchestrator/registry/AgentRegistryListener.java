@@ -1,7 +1,8 @@
 package io.amaze.bench.orchestrator.registry;
 
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created on 3/28/16.

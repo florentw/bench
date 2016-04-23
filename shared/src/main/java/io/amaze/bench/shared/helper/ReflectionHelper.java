@@ -1,8 +1,7 @@
 package io.amaze.bench.shared.helper;
 
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 

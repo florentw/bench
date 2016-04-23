@@ -2,14 +2,14 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
-import io.amaze.bench.client.api.ReactorException;
+import io.amaze.bench.client.api.After;
+import io.amaze.bench.client.api.IrrecoverableException;
+import io.amaze.bench.client.api.Sender;
 import io.amaze.bench.client.api.TerminationException;
-import io.amaze.bench.client.api.actor.After;
-import io.amaze.bench.client.api.actor.Sender;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ import static io.amaze.bench.shared.helper.FileHelper.writeToFile;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-@io.amaze.bench.client.api.actor.Actor
+@io.amaze.bench.client.api.Actor
 public final class TestActorWriter extends TestActor {
 
     static final String INIT_FILE_CONFIG = "init_file";
@@ -36,7 +36,7 @@ public final class TestActorWriter extends TestActor {
             String initFileName = getConfig().getString(INIT_FILE_CONFIG);
             try {
                 writeFile(initFileName, OK);
-            } catch (ReactorException e) {
+            } catch (IrrecoverableException e) {
                 Throwables.propagate(e);
             }
         }
@@ -44,7 +44,7 @@ public final class TestActorWriter extends TestActor {
 
     @Override
     public void onMessage(@NotNull final String from,
-                          @NotNull final String message) throws ReactorException, TerminationException {
+                          @NotNull final String message) throws IrrecoverableException, TerminationException {
 
         super.onMessage(from, message);
     }
@@ -55,12 +55,12 @@ public final class TestActorWriter extends TestActor {
         super.after();
     }
 
-    private void writeFile(final String fileName, final String content) throws ReactorException {
+    private void writeFile(final String fileName, final String content) throws IrrecoverableException {
         try {
             writeToFile(new File(fileName), content);
             LOG.info("Wrote \"" + content + "\" in file " + fileName + " ");
         } catch (IOException e) {
-            throw new ReactorException(String.format(MSG_CREATION_ERROR, fileName), e);
+            throw new IrrecoverableException(String.format(MSG_CREATION_ERROR, fileName), e);
         }
     }
 }

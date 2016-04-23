@@ -1,6 +1,6 @@
 package io.amaze.bench.shared.metric;
 
-import org.jetbrains.annotations.NotNull;
+import javax.validation.constraints.NotNull;
 
 /**
  * Instantiates a populated {@link SystemInfo} object.<br/>

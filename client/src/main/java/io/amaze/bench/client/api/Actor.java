@@ -1,4 +1,4 @@
-package io.amaze.bench.client.api.actor;
+package io.amaze.bench.client.api;
 
 import java.lang.annotation.*;
 
@@ -14,8 +14,8 @@ import java.lang.annotation.*;
  * Created on 2/28/16.
  *
  * @author Florent Weber (florent.weber@gmail.com)
- * @see io.amaze.bench.client.api.actor.Reactor
- * @see io.amaze.bench.client.api.actor.Sender
+ * @see Reactor
+ * @see Sender
  */
 @Target(value = {ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

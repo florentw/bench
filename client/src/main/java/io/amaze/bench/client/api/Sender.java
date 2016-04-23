@@ -1,7 +1,6 @@
-package io.amaze.bench.client.api.actor;
+package io.amaze.bench.client.api;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -16,7 +15,7 @@ import java.io.Serializable;
  * Created on 2/28/16.
  *
  * @author Florent Weber (florent.weber@gmail.com)
- * @see io.amaze.bench.client.api.actor.Reactor
+ * @see Reactor
  */
 public interface Sender {
 

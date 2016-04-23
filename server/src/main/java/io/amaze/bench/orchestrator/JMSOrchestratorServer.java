@@ -6,8 +6,8 @@ import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
-import org.jetbrains.annotations.NotNull;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;

@@ -1,8 +1,7 @@
 package io.amaze.bench.shared.metric;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -22,8 +21,7 @@ public final class Metric implements Serializable {
         this(label, firstUnit, null, value);
     }
 
-    public Metric(@NotNull final String label,
-                  @NotNull final String firstUnit, @Nullable final String secondUnit,
+    public Metric(@NotNull final String label, @NotNull final String firstUnit, final String secondUnit,
                   @NotNull final Number value) {
 
         this.label = checkNotNull(label);

@@ -1,19 +1,25 @@
 package io.amaze.bench.client.api;
 
-import org.jetbrains.annotations.NotNull;
+import javax.validation.constraints.NotNull;
 
 /**
- * Created on 2/28/16.
+ * A root type for errors to be thrown by an Actor while processing an incoming message.
  *
  * @author Florent Weber (florent.weber@gmail.com)
+ * @see IrrecoverableException
+ * @see TerminationException
  */
-public final class ReactorException extends Exception {
+public abstract class ReactorException extends Exception {
 
-    public ReactorException(@NotNull final String message) {
+    ReactorException() {
+        // To be overridden
+    }
+
+    ReactorException(@NotNull final String message) {
         super(message);
     }
 
-    public ReactorException(@NotNull final String message, @NotNull final Throwable cause) {
+    ReactorException(@NotNull final String message, @NotNull final Throwable cause) {
         super(message, cause);
     }
 }

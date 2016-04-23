@@ -1,8 +1,8 @@
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.api.actor.After;
-import io.amaze.bench.client.api.actor.Before;
-import io.amaze.bench.client.api.actor.Sender;
+import io.amaze.bench.client.api.After;
+import io.amaze.bench.client.api.Before;
+import io.amaze.bench.client.api.Sender;
 
 /**
  * Created on 3/13/16.

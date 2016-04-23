@@ -1,7 +1,6 @@
 package io.amaze.bench.client.runtime.message;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;

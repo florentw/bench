@@ -1,8 +1,9 @@
-package io.amaze.bench.client.api.actor;
+package io.amaze.bench.client.api;
 
 
 import io.amaze.bench.shared.metric.Metric;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created on 2/28/16.

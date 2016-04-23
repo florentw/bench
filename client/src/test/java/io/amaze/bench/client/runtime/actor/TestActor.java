@@ -2,14 +2,9 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.amaze.bench.client.api.ReactorException;
-import io.amaze.bench.client.api.TerminationException;
-import io.amaze.bench.client.api.actor.After;
-import io.amaze.bench.client.api.actor.Before;
-import io.amaze.bench.client.api.actor.Reactor;
-import io.amaze.bench.client.api.actor.Sender;
-import org.jetbrains.annotations.NotNull;
+import io.amaze.bench.client.api.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
@@ -17,7 +12,7 @@ import java.util.*;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-@io.amaze.bench.client.api.actor.Actor
+@io.amaze.bench.client.api.Actor
 public class TestActor implements Reactor<String> {
 
     public static final String DUMMY_ACTOR = "test-actor";
@@ -67,9 +62,9 @@ public class TestActor implements Reactor<String> {
 
     @Override
     public void onMessage(@NotNull final String from,
-                          @NotNull final String message) throws ReactorException, TerminationException {
+                          @NotNull final String message) throws IrrecoverableException, TerminationException {
         if (message.equals(FAIL_MSG)) {
-            throw new ReactorException("Provoked failure.");
+            throw new IrrecoverableException("Provoked failure.");
         } else if (message.equals(TERMINATE_MSG)) {
             throw new TerminationException();
         }

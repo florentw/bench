@@ -4,10 +4,10 @@ import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.helper.FileHelper;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,12 +32,12 @@ public final class ActorBootstrap {
         this.agentName = checkNotNull(agentName);
     }
 
-    /**
+    /**ll
      * @param args [agentName] [actorName] [className] [jmsServerHost] [jmsServerPort] [temporaryConfigFile]
      * @throws ValidationException
      * @throws IOException
      */
-    public static void main(@NotNull final String[] args) throws ValidationException, IOException {
+    public static void main(final String[] args) throws ValidationException, IOException {
         checkNotNull(args);
 
         if (args.length != 6) {

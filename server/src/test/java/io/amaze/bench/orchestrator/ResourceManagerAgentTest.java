@@ -13,13 +13,13 @@ import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSServer;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
-import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;

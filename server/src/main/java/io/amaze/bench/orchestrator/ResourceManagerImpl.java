@@ -10,10 +10,10 @@ import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.client.runtime.orchestrator.ActorCreationRequest;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
 import io.amaze.bench.orchestrator.registry.RegisteredAgent;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 

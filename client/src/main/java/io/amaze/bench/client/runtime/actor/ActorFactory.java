@@ -1,16 +1,16 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.*;
-import io.amaze.bench.client.api.actor.*;
+import io.amaze.bench.client.api.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
-import org.jetbrains.annotations.NotNull;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
@@ -31,7 +31,7 @@ import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotat
  *
  * @author Florent Weber (florent.weber@gmail.com)
  * @see Actor
- * @see io.amaze.bench.client.api.actor.Reactor
+ * @see Reactor
  */
 public final class ActorFactory {
 

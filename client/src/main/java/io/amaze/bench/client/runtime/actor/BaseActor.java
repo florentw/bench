@@ -1,23 +1,25 @@
 package io.amaze.bench.client.runtime.actor;
 
+import io.amaze.bench.client.api.IrrecoverableException;
+import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.api.ReactorException;
 import io.amaze.bench.client.api.TerminationException;
-import io.amaze.bench.client.api.actor.Reactor;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
 import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
@@ -101,7 +103,7 @@ public class BaseActor implements Actor {
         try {
             instance.onMessage(from, message);
 
-        } catch (ReactorException e) {
+        } catch (IrrecoverableException e) {
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {
@@ -112,6 +114,9 @@ public class BaseActor implements Actor {
 
         } catch (TerminationException ignored) { // NOSONAR
             close();
+
+        } catch (ReactorException e) {
+            throw propagate(e);
         }
     }
 

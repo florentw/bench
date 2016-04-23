@@ -1,8 +1,7 @@
 package io.amaze.bench.shared.jms;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.jms.MessageListener;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**

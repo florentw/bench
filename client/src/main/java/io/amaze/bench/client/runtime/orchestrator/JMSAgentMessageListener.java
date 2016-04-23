@@ -1,15 +1,15 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
-import io.amaze.bench.client.api.actor.Reactor;
+import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.shared.jms.JMSHelper;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
+import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

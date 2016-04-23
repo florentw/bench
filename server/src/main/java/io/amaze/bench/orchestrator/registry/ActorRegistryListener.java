@@ -1,6 +1,6 @@
 package io.amaze.bench.orchestrator.registry;
 
-import org.jetbrains.annotations.NotNull;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created on 3/28/16.

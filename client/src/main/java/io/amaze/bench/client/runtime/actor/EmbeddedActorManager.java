@@ -1,7 +1,7 @@
 package io.amaze.bench.client.runtime.actor;
 
 
-import org.jetbrains.annotations.NotNull;
+import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,6 +26,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
         // Nothing to close
     }
 
+    @NotNull
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
         checkNotNull(actorConfig);
@@ -34,6 +35,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
         final Actor actor = factory.create(name, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
 
         return new ManagedActor() {
+            @NotNull
             @Override
             public String name() {
                 return name;

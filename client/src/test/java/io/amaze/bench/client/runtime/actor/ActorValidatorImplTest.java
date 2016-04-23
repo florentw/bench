@@ -1,16 +1,13 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.api.ReactorException;
-import io.amaze.bench.client.api.actor.After;
-import io.amaze.bench.client.api.actor.Before;
-import io.amaze.bench.client.api.actor.Reactor;
-import io.amaze.bench.client.api.actor.Sender;
-import org.jetbrains.annotations.NotNull;
+import io.amaze.bench.client.api.Actor;
+import io.amaze.bench.client.api.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static io.amaze.bench.client.runtime.actor.ActorValidators.get;
@@ -24,7 +21,7 @@ import static junit.framework.TestCase.assertNotNull;
 public final class ActorValidatorImplTest {
 
     private static final String MSG_PUBLIC_CONSTRUCTOR = "An actor class have at least one public constructor.";
-    private static final String MSG_IMPLEMENT_REACTOR = "An actor class must implement io.amaze.bench.client.api.actor.Reactor";
+    private static final String MSG_IMPLEMENT_REACTOR = "An actor class must implement io.amaze.bench.client.api.Reactor";
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -49,7 +46,7 @@ public final class ActorValidatorImplTest {
         expectedException.expect(ValidationException.class);
         expectedException.expectMessage(MSG_PUBLIC_CONSTRUCTOR);
         expectedException.expectMessage(MSG_IMPLEMENT_REACTOR);
-        expectedException.expectMessage("An actor class must have annotation @io.amaze.bench.client.api.actor.Actor");
+        expectedException.expectMessage("An actor class must have annotation @io.amaze.bench.client.api.Actor");
 
         get().loadAndValidate(EmptyActor.class.getName());
     }
@@ -81,7 +78,7 @@ public final class ActorValidatorImplTest {
     @Test
     public void actor_implementing_sender_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
-        expectedException.expectMessage("An actor class must not implement io.amaze.bench.client.api.actor.Sender");
+        expectedException.expectMessage("An actor class must not implement io.amaze.bench.client.api.Sender");
 
         get().loadAndValidate(ImplementSender.class.getName());
     }
@@ -112,21 +109,21 @@ public final class ActorValidatorImplTest {
 
     }
 
-    @io.amaze.bench.client.api.actor.Actor
+    @io.amaze.bench.client.api.Actor
     private static final class NoReactor {
         public NoReactor() {
             // Dummy
         }
     }
 
-    @io.amaze.bench.client.api.actor.Actor
+    @Actor
     private static final class ImplementSender implements Reactor, Sender {
         public ImplementSender() {
             // Dummy
         }
 
         @Override
-        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
             // Dummy
         }
 
@@ -136,14 +133,14 @@ public final class ActorValidatorImplTest {
         }
     }
 
-    @io.amaze.bench.client.api.actor.Actor
+    @Actor
     private static final class TwoBeforeMethods implements Reactor {
         public TwoBeforeMethods() {
             // Dummy
         }
 
         @Override
-        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
             // Dummy
         }
 
@@ -158,14 +155,14 @@ public final class ActorValidatorImplTest {
         }
     }
 
-    @io.amaze.bench.client.api.actor.Actor
+    @Actor
     private static final class TwoAfterMethods implements Reactor {
         public TwoAfterMethods() {
             // Dummy
         }
 
         @Override
-        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
             // Dummy
         }
 
@@ -180,18 +177,18 @@ public final class ActorValidatorImplTest {
         }
     }
 
-    @io.amaze.bench.client.api.actor.Actor
+    @Actor
     private class PrivateConstructorActor implements Reactor {
         private PrivateConstructorActor() {
         }
 
         @Override
-        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
             // Dummy
         }
     }
 
-    @io.amaze.bench.client.api.actor.Actor
+    @Actor
     private abstract class AbstractActor implements Reactor {
 
     }

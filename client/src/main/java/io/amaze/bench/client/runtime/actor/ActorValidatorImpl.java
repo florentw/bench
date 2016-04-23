@@ -1,11 +1,9 @@
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.api.actor.After;
-import io.amaze.bench.client.api.actor.Before;
-import io.amaze.bench.client.api.actor.Reactor;
-import io.amaze.bench.client.api.actor.Sender;
-import org.jetbrains.annotations.NotNull;
+import io.amaze.bench.client.api.Actor;
+import io.amaze.bench.client.api.*;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,8 +89,8 @@ final class ActorValidatorImpl implements ActorValidator {
         }
 
         void mustDeclareActor() {
-            if (inputActorClass.getAnnotation(io.amaze.bench.client.api.actor.Actor.class) == null) {
-                causes.add(new IllegalArgumentException("An actor class must have annotation @" + io.amaze.bench.client.api.actor.Actor.class.getName()));
+            if (inputActorClass.getAnnotation(io.amaze.bench.client.api.Actor.class) == null) {
+                causes.add(new IllegalArgumentException("An actor class must have annotation @" + Actor.class.getName()));
             }
         }
 

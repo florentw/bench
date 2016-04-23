@@ -10,12 +10,12 @@ import net.timewalker.ffmq3.local.FFMQEngine;
 import net.timewalker.ffmq3.management.destination.definition.QueueDefinition;
 import net.timewalker.ffmq3.management.destination.definition.TopicDefinition;
 import net.timewalker.ffmq3.utils.Settings;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import javax.naming.NameAlreadyBoundException;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;

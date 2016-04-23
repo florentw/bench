@@ -1,10 +1,10 @@
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.api.actor.After;
-import io.amaze.bench.client.api.actor.Before;
-import io.amaze.bench.client.api.actor.Reactor;
-import org.jetbrains.annotations.NotNull;
+import io.amaze.bench.client.api.After;
+import io.amaze.bench.client.api.Before;
+import io.amaze.bench.client.api.Reactor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**

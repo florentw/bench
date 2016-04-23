@@ -41,7 +41,7 @@ public final class ReflectionHelperTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
-    public @interface TestAnnotation {
+    private @interface TestAnnotation {
 
     }
 
