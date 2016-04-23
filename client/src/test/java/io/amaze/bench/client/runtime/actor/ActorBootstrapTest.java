@@ -4,8 +4,8 @@ import com.google.common.testing.NullPointerTester;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.AgentTest;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
-import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.helper.FileHelper;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public final class ActorBootstrapTest {
 
     @Before
     public void before() {
-        OrchestratorClient client = new RecorderOrchestratorClient();
+        OrchestratorActor client = new RecorderOrchestratorActor();
         OrchestratorClientFactory factory = new DummyClientFactory(null, client);
         actorBootstrap = new ActorBootstrap(DUMMY, factory);
     }

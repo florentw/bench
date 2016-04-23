@@ -24,17 +24,14 @@ public final class JMSOrchestratorClientFactory implements OrchestratorClientFac
     }
 
     @Override
-    public OrchestratorClient createForAgent() {
-        return createClient();
+    public OrchestratorAgent createForAgent() {
+        return new JMSOrchestratorAgent(jmsServerHost, jmsServerPort);
     }
 
     @Override
-    public OrchestratorClient createForActor() {
-        return createClient();
+    public OrchestratorActor createForActor() {
+        return new JMSOrchestratorActor(jmsServerHost, jmsServerPort);
     }
 
-    private OrchestratorClient createClient() {
-        return new JMSOrchestratorClient(jmsServerHost, jmsServerPort);
-    }
 }
 

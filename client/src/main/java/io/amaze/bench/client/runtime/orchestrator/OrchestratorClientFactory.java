@@ -10,9 +10,9 @@ import javax.validation.constraints.NotNull;
 public interface OrchestratorClientFactory {
 
     @NotNull
-    OrchestratorClient createForAgent();
+    OrchestratorAgent createForAgent();
 
     @NotNull
-    OrchestratorClient createForActor();
+    OrchestratorActor createForActor();
 
 }

@@ -6,7 +6,7 @@ import io.amaze.bench.client.api.ReactorException;
 import io.amaze.bench.client.api.TerminationException;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class BaseActor implements Actor {
     private final Method beforeMethod;
     private final Method afterMethod;
     private final Reactor instance;
-    private final OrchestratorClient client;
+    private final OrchestratorActor client;
 
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
 
@@ -49,8 +49,7 @@ public class BaseActor implements Actor {
                      @NotNull final MetricsSink sink,
                      final Method beforeMethod,
                      final Method afterMethod,
-                     @NotNull final Reactor instance,
-                     @NotNull final OrchestratorClient client) {
+                     @NotNull final Reactor instance, @NotNull final OrchestratorActor client) {
 
         this.name = name;
         this.agentName = agentName;
@@ -104,6 +103,10 @@ public class BaseActor implements Actor {
             instance.onMessage(from, message);
 
         } catch (IrrecoverableException e) {
+            /**
+             * In the case of a non-recoverable error of the actor, we need to clean-up by calling after,
+             * and notifying the failure.
+             */
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {
@@ -113,6 +116,9 @@ public class BaseActor implements Actor {
             actorFailure(e);
 
         } catch (TerminationException ignored) { // NOSONAR
+            /**
+             * This is a graceful termination, just perform a regular close on the actor.
+             */
             close();
 
         } catch (ReactorException e) {

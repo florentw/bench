@@ -1,9 +1,6 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.client.runtime.actor.Actor;
-import io.amaze.bench.client.runtime.agent.AgentClientListener;
-import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -21,7 +18,7 @@ import static com.google.common.base.Throwables.propagate;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class JMSOrchestratorClient implements OrchestratorClient {
+abstract class JMSOrchestratorClient implements OrchestratorClient {
 
     private final JMSClient client;
 
@@ -41,33 +38,12 @@ final class JMSOrchestratorClient implements OrchestratorClient {
         }
     }
 
-    @Override
-    public void startAgentListener(@NotNull final String agentName, @NotNull final AgentClientListener listener) {
-        checkNotNull(agentName);
-        checkNotNull(listener);
-
-        try {
-            client.addTopicListener(Constants.AGENTS_ACTOR_NAME, new JMSAgentMessageListener(agentName, listener));
-            client.startListening();
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
+    final JMSClient getClient() {
+        return client;
     }
 
     @Override
-    public void startActorListener(@NotNull final Actor actor) {
-        checkNotNull(actor);
-
-        try {
-            client.addQueueListener(actor.name(), new JMSActorMessageListener(actor));
-            client.startListening();
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
-    }
-
-    @Override
-    public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+    public final void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
         checkNotNull(to);
         checkNotNull(message);
 
@@ -79,7 +55,7 @@ final class JMSOrchestratorClient implements OrchestratorClient {
     }
 
     @Override
-    public void close() {
+    public final void close() {
         client.close();
     }
 

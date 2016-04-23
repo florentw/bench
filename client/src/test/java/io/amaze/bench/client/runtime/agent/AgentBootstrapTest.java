@@ -1,6 +1,7 @@
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public final class AgentBootstrapTest {
 
     @Before
     public void before() {
-        clientFactory = new DummyClientFactory(mock(OrchestratorClient.class), mock(OrchestratorClient.class));
+        clientFactory = new DummyClientFactory(mock(OrchestratorAgent.class), mock(OrchestratorActor.class));
     }
 
     @Test

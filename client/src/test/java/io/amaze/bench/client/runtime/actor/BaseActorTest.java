@@ -3,7 +3,7 @@ package io.amaze.bench.client.runtime.actor;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
-import io.amaze.bench.client.runtime.agent.RecorderOrchestratorClient;
+import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.metric.Metric;
 import org.junit.Before;
@@ -27,13 +27,13 @@ import static org.mockito.Mockito.*;
  */
 public final class BaseActorTest {
 
-    private RecorderOrchestratorClient actorClient;
+    private RecorderOrchestratorActor actorClient;
     private DummyClientFactory clientFactory;
     private ActorFactory factory;
 
     @Before
     public void before() {
-        actorClient = spy(new RecorderOrchestratorClient());
+        actorClient = spy(new RecorderOrchestratorActor());
         clientFactory = new DummyClientFactory(null, actorClient);
         factory = new ActorFactory(DUMMY_AGENT, clientFactory);
     }
@@ -316,7 +316,7 @@ public final class BaseActorTest {
         return createActor(TestActor.class);
     }
 
-    private List<Message<? extends Serializable>> messagesSentToMasterFrom(final RecorderOrchestratorClient actorClient) {
+    private List<Message<? extends Serializable>> messagesSentToMasterFrom(final RecorderOrchestratorActor actorClient) {
         return actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
     }
 

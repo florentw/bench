@@ -3,8 +3,6 @@ package io.amaze.bench.client.runtime.orchestrator;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.TestActor;
-import io.amaze.bench.client.runtime.agent.AgentClientListener;
-import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
@@ -24,17 +22,15 @@ import static org.mockito.Mockito.*;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public final class JMSOrchestratorClientTest {
-
-    private static final String TEST_AGENT = "agent1";
+public final class JMSOrchestratorActorTest {
 
     private JMSClient jmsClient;
-    private JMSOrchestratorClient client;
+    private JMSOrchestratorActor client;
 
     @Before
     public void before() {
         jmsClient = mock(JMSClient.class);
-        client = new JMSOrchestratorClient(jmsClient);
+        client = new JMSOrchestratorActor(jmsClient);
     }
 
     @After
@@ -46,17 +42,8 @@ public final class JMSOrchestratorClientTest {
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(Message.class, new Message<>("", ""));
-        tester.testAllPublicConstructors(JMSOrchestratorClient.class);
+        tester.testAllPublicConstructors(JMSOrchestratorActor.class);
         tester.testAllPublicInstanceMethods(client);
-    }
-
-    @Test
-    public void start_agent_listener() throws JMSException {
-        client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
-
-        verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
-        verify(jmsClient).startListening();
-        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test
@@ -69,14 +56,6 @@ public final class JMSOrchestratorClientTest {
         verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR), any(MessageListener.class));
         verify(jmsClient).startListening();
         verifyNoMoreInteractions(jmsClient);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void start_agent_listener_and_listening_throws() throws JMSException {
-
-        doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
-
-        client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
     }
 
     @Test(expected = RuntimeException.class)

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Agent.class);
 
     private final Map<String, ManagedActor> actors = Maps.newHashMap();
-    private final OrchestratorClient agentClient;
+    private final OrchestratorAgent agentClient;
     private final ActorManager embeddedManager;
     private final ActorManager forkedManager;
 

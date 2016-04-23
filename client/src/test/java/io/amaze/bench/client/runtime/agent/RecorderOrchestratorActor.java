@@ -2,7 +2,7 @@ package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -16,17 +16,11 @@ import java.util.Map;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class RecorderOrchestratorClient implements OrchestratorClient {
+public class RecorderOrchestratorActor implements OrchestratorActor {
 
     private final Map<String, List<Message<? extends Serializable>>> sentMessages = new HashMap<>();
 
-    private boolean agentListenerStarted = false;
     private boolean actorListenerStarted = false;
-
-    @Override
-    public void startAgentListener(@NotNull final String agent, @NotNull final AgentClientListener listener) {
-        agentListenerStarted = true;
-    }
 
     @Override
     public void startActorListener(@NotNull final Actor actor) {
@@ -46,10 +40,6 @@ public class RecorderOrchestratorClient implements OrchestratorClient {
     @Override
     public void close() {
         // Dummy
-    }
-
-    boolean isAgentListenerStarted() {
-        return agentListenerStarted;
     }
 
     boolean isActorListenerStarted() {

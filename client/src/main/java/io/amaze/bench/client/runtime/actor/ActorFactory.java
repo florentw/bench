@@ -3,7 +3,7 @@ package io.amaze.bench.client.runtime.actor;
 import com.typesafe.config.*;
 import io.amaze.bench.client.api.*;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
@@ -64,7 +64,7 @@ public final class ActorFactory {
 
         MetricsSink metricsSink = MetricsSink.create();
 
-        OrchestratorClient client = clientFactory.createForActor();
+        OrchestratorActor client = clientFactory.createForActor();
         Reactor reactor = createReactor(name, metricsSink, clazz, client, config);
 
         return new BaseActor(name, agent, metricsSink, beforeMethod, afterMethod, reactor, client);
@@ -85,8 +85,7 @@ public final class ActorFactory {
      */
     private Reactor createReactor(final String actorName,
                                   final MetricsSink sink,
-                                  final Class<? extends Reactor> clazz,
-                                  final OrchestratorClient client,
+                                  final Class<? extends Reactor> clazz, final OrchestratorActor client,
                                   final Config config) {
 
         MutablePicoContainer pico = new DefaultPicoContainer();

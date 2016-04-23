@@ -29,8 +29,8 @@ public final class AgentTest {
 
     public static final String DUMMY_AGENT = "DUMMY_AGENT";
 
-    private RecorderOrchestratorClient agentClient;
-    private RecorderOrchestratorClient actorClient;
+    private RecorderOrchestratorAgent agentClient;
+    private RecorderOrchestratorActor actorClient;
 
     private ActorManager embeddedManager;
     private ActorManager forkedManager;
@@ -38,8 +38,8 @@ public final class AgentTest {
 
     @Before
     public void before() {
-        agentClient = new RecorderOrchestratorClient();
-        actorClient = new RecorderOrchestratorClient();
+        agentClient = new RecorderOrchestratorAgent();
+        actorClient = new RecorderOrchestratorActor();
 
         DummyClientFactory clientFactory = new DummyClientFactory(agentClient, actorClient);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory)));
@@ -80,7 +80,6 @@ public final class AgentTest {
 
         // Check listeners
         assertThat(agentClient.isAgentListenerStarted(), is(true));
-        assertThat(agentClient.isActorListenerStarted(), is(false));
 
         // Check actor registration message
         assertThat(agentClient.getSentMessages().size(), is(1));

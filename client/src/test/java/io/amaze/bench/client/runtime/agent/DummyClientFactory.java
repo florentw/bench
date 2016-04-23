@@ -1,6 +1,7 @@
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClient;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
+import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 
 /**
@@ -10,21 +11,21 @@ import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
  */
 public final class DummyClientFactory implements OrchestratorClientFactory {
 
-    private final OrchestratorClient agentClient;
-    private final OrchestratorClient actorClient;
+    private final OrchestratorAgent agentClient;
+    private final OrchestratorActor actorClient;
 
-    public DummyClientFactory(final OrchestratorClient agentClient, final OrchestratorClient actorClient) {
+    public DummyClientFactory(final OrchestratorAgent agentClient, final OrchestratorActor actorClient) {
         this.agentClient = agentClient;
         this.actorClient = actorClient;
     }
 
     @Override
-    public OrchestratorClient createForAgent() {
+    public OrchestratorAgent createForAgent() {
         return agentClient;
     }
 
     @Override
-    public OrchestratorClient createForActor() {
+    public OrchestratorActor createForActor() {
         return actorClient;
     }
 }
