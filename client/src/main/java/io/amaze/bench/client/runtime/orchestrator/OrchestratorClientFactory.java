@@ -3,9 +3,17 @@ package io.amaze.bench.client.runtime.orchestrator;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 3/1/16.
+ * Factory for interfaces to interact with orchestration layer.
+ * <ul>
+ * <li>Provides {@link OrchestratorAgent} instances for the {@link io.amaze.bench.client.runtime.agent.Agent}
+ * to listen to incoming messages.</li>
+ * <li>Provides {@link OrchestratorActor} instances for actors to listen to incoming messages
+ * and be able to send back.</li>
+ * </ul>
  *
  * @author Florent Weber (florent.weber@gmail.com)
+ * @see OrchestratorAgent
+ * @see OrchestratorActor
  */
 public interface OrchestratorClientFactory {
 

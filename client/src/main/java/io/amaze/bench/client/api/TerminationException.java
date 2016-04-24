@@ -12,17 +12,4 @@ public final class TerminationException extends ReactorException {
         super();
     }
 
-    /**
-     * Hidden constructor
-     */
-    TerminationException(final String message) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Hidden constructor
-     */
-    TerminationException(final String message, final Throwable cause) {
-        throw new UnsupportedOperationException();
-    }
 }

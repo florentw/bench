@@ -31,12 +31,12 @@ public final class AgentBootstrapIntegrationTest {
 
     @Rule
     public final JMSServerRule server = new JMSServerRule();
-    private Thread agentBoostrapThread;
+    private Thread agentBootstrapThread;
     private JMSClient client;
 
     @Before
     public void before() throws JMSException {
-        agentBoostrapThread = new Thread() {
+        agentBootstrapThread = new Thread() {
             @Override
             public void run() {
                 try {
@@ -65,7 +65,7 @@ public final class AgentBootstrapIntegrationTest {
         client.addQueueListener(Constants.MASTER_ACTOR_NAME, listener);
         client.startListening();
 
-        agentBoostrapThread.start();
+        agentBootstrapThread.start();
 
         boolean msgReceived = awaitUninterruptibly(listener.msgReceived, 2, TimeUnit.SECONDS);
         assertTrue(msgReceived);

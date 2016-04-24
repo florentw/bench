@@ -49,7 +49,6 @@ final class JMSActorMessageListener implements MessageListener {
                 actor.dumpAndFlushMetrics();
                 break;
             case MESSAGE:
-                checkNotNull(msg.getPayload());
                 actor.onMessage(msg.getFrom(), msg.getPayload());
                 break;
         }
