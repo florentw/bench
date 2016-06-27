@@ -1,10 +1,8 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.shared.helper.FileHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +14,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
+import static com.google.common.base.StandardSystemProperty.JAVA_HOME;
+import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
 
 /**
@@ -62,11 +63,11 @@ final class ForkedActorManager extends AbstractActorManager {
         final String actor = actorConfig.getName();
         Process process = createActorProcess(actorConfig);
 
-        ProcessWatchDogThread thread = new ProcessWatchDogThread(actor, process);
-        thread.start();
-        thread.awaitUntilStarted();
+        ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor, process);
+        watchDog.start();
+        watchDog.awaitUntilStarted();
 
-        processes.put(actor, thread);
+        processes.put(actor, watchDog);
 
         return new ManagedActor() {
             @NotNull
@@ -115,7 +116,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private void terminateProcess(final ProcessWatchDogThread thread) {
         thread.close();
         thread.getProcess().destroy();
-        Uninterruptibles.joinUninterruptibly(thread);
+        joinUninterruptibly(thread);
     }
 
     private Process forkProcess(@NotNull final ActorConfig actorConfig,
@@ -127,9 +128,9 @@ final class ForkedActorManager extends AbstractActorManager {
         int jmsServerPort = actorConfig.getDeployConfig().getJmsServerPort();
 
         String[] cmd = { //
-                StandardSystemProperty.JAVA_HOME.value() + JAVA_CMD_PATH, //
+                JAVA_HOME.value() + JAVA_CMD_PATH, //
                 "-cp", //
-                StandardSystemProperty.JAVA_CLASS_PATH.value(), // Use the current classpath
+                JAVA_CLASS_PATH.value(), // Use the current classpath
                 ActorBootstrap.class.getName(),  // Main class
                 getAgent(),                      // arg[0]
                 name,                            // arg[1]
@@ -139,11 +140,12 @@ final class ForkedActorManager extends AbstractActorManager {
                 configFileName                   // arg[5]
         };
 
-        ProcessBuilder builder = new ProcessBuilder(cmd);
-        builder.redirectErrorStream(true);
-
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";
-        builder.redirectOutput(new File(actorLogFileName));
+        File actorLogFile = new File(actorLogFileName);
+
+        ProcessBuilder builder = new ProcessBuilder(cmd) //
+                .redirectErrorStream(true) //
+                .redirectOutput(actorLogFile);
 
         LOG.info("Started process with command " + builder.command() + ", logging to " + actorLogFileName);
 

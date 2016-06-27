@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
@@ -43,21 +44,23 @@ public class BaseActor implements Actor {
     private final Reactor instance;
     private final OrchestratorActor client;
 
-    private final AtomicBoolean isClosed = new AtomicBoolean(false);
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
-    public BaseActor(@NotNull final String name, @NotNull final String agentName,
+    public BaseActor(@NotNull final String name,
+                     @NotNull final String agentName,
                      @NotNull final MetricsSink sink,
                      final Method beforeMethod,
                      final Method afterMethod,
-                     @NotNull final Reactor instance, @NotNull final OrchestratorActor client) {
+                     @NotNull final Reactor instance,
+                     @NotNull final OrchestratorActor client) {
 
-        this.name = name;
-        this.agentName = agentName;
-        this.sink = sink;
+        this.name = checkNotNull(name);
+        this.agentName = checkNotNull(agentName);
+        this.sink = checkNotNull(sink);
         this.beforeMethod = beforeMethod;
         this.afterMethod = afterMethod;
-        this.instance = instance;
-        this.client = client;
+        this.instance = checkNotNull(instance);
+        this.client = checkNotNull(client);
 
         // Plug the reactor listener to the JMS queue
         // Should be done last!
@@ -99,6 +102,9 @@ public class BaseActor implements Actor {
 
     @Override
     public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
+        checkNotNull(from);
+        checkNotNull(message);
+
         try {
             instance.onMessage(from, message);
 
@@ -134,8 +140,7 @@ public class BaseActor implements Actor {
 
     @Override
     public void close() {
-        boolean running = this.isClosed.compareAndSet(false, true);
-        if (!running) {
+        if (!running.compareAndSet(true, false)) {
             return;
         }
 

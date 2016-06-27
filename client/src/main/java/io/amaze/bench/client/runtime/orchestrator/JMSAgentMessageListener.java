@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.BytesMessage;
+import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
 
@@ -32,11 +33,8 @@ final class JMSAgentMessageListener implements MessageListener {
     public void onMessage(@NotNull final javax.jms.Message message) {
         checkNotNull(message);
 
-        AgentInputMessage msg;
-        try {
-            msg = (AgentInputMessage) JMSHelper.objectFromMsg((BytesMessage) message);
-        } catch (Exception e) {
-            LOG.error("Invalid AgentInputMessage received, message:" + message, e);
+        AgentInputMessage msg = readInputMessage(message);
+        if (msg == null) {
             return;
         }
 
@@ -52,6 +50,15 @@ final class JMSAgentMessageListener implements MessageListener {
             case CLOSE_ACTOR:
                 closeActor(msg);
                 break;
+        }
+    }
+
+    private AgentInputMessage readInputMessage(@NotNull final Message message) {
+        try {
+            return JMSHelper.objectFromMsg((BytesMessage) message);
+        } catch (Exception e) {
+            LOG.error("Invalid AgentInputMessage received, message:" + message, e);
+            return null;
         }
     }
 

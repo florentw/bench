@@ -1,15 +1,18 @@
 package io.amaze.bench.client.runtime.actor;
 
+import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
 import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.metric.Metric;
+import io.amaze.bench.shared.metric.MetricsSink;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +39,16 @@ public final class BaseActorTest {
         actorClient = spy(new RecorderOrchestratorActor());
         clientFactory = new DummyClientFactory(null, actorClient);
         factory = new ActorFactory(DUMMY_AGENT, clientFactory);
+    }
+
+    @Test
+    public void null_parameters_are_invalid() throws ValidationException {
+        NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(MetricsSink.class, MetricsSink.create());
+        tester.setDefault(Method.class, BaseActorTest.class.getMethods()[0]);
+        try (BaseActor actor = defaultTestActor()) {
+            tester.testAllPublicInstanceMethods(actor);
+        }
     }
 
     @Test

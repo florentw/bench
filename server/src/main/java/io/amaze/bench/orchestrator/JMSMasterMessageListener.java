@@ -37,12 +37,9 @@ final class JMSMasterMessageListener implements MessageListener {
     @Override
     public void onMessage(final javax.jms.Message message) {
         javax.jms.Message jmsMessage = checkNotNull(message);
-        Message received;
 
-        try {
-            received = (Message) JMSHelper.objectFromMsg((BytesMessage) jmsMessage);
-        } catch (Exception e) {
-            LOG.error("Error while reading JMS message  as MasterOutputMessage.", e);
+        Message received = readMessage(jmsMessage);
+        if (received == null) {
             return;
         }
 
@@ -50,6 +47,15 @@ final class JMSMasterMessageListener implements MessageListener {
             onMasterMessage(received);
         } else {
             LOG.error("Received invalid message \"" + received + "\" (not a MasterOutputMessage).");
+        }
+    }
+
+    private Message readMessage(final javax.jms.Message jmsMessage) {
+        try {
+            return JMSHelper.objectFromMsg((BytesMessage) jmsMessage);
+        } catch (Exception e) {
+            LOG.error("Error while reading JMS message  as MasterOutputMessage.", e);
+            return null;
         }
     }
 

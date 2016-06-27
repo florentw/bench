@@ -85,7 +85,8 @@ public final class ActorFactory {
      */
     private Reactor createReactor(final String actorName,
                                   final MetricsSink sink,
-                                  final Class<? extends Reactor> clazz, final OrchestratorActor client,
+                                  final Class<? extends Reactor> clazz,
+                                  final OrchestratorActor client,
                                   final Config config) {
 
         MutablePicoContainer pico = new DefaultPicoContainer();

@@ -1,5 +1,6 @@
 package io.amaze.bench.shared.jms;
 
+import com.google.common.testing.NullPointerTester;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -7,8 +8,8 @@ import org.mockito.stubbing.Answer;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.io.IOException;
-import java.io.Serializable;
 
+import static io.amaze.bench.shared.jms.JMSHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -39,41 +40,47 @@ public final class JMSHelperTest {
     }
 
     @Test
+    public void null_parameters_are_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicStaticMethods(NullPointerTester.class);
+    }
+
+    @Test
     public void serialize_deserialize() throws IOException {
         String expected = DUMMY;
-        byte[] data = JMSHelper.convertToBytes(expected);
-        Serializable actual = JMSHelper.convertFromBytes(data);
+        byte[] data = convertToBytes(expected);
+        String actual = convertFromBytes(data);
 
-        assertThat((String) actual, is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test
     public void serialize_deserialize_through_bytes_message() throws IOException, JMSException {
         String expected = DUMMY;
-        byte[] data = JMSHelper.convertToBytes(expected);
+        byte[] data = convertToBytes(expected);
         BytesMessage bytesMessage = createTestBytesMessage(data);
-        Serializable actual = JMSHelper.objectFromMsg(bytesMessage);
+        String actual = objectFromMsg(bytesMessage);
 
-        assertThat((String) actual, is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test(expected = IOException.class)
     public void serialize_deserialize_corrupted_data_through_bytes_message() throws IOException, JMSException {
         BytesMessage bytesMessage = createTestBytesMessage(new byte[3]);
-        JMSHelper.objectFromMsg(bytesMessage);
+        objectFromMsg(bytesMessage);
     }
 
     @Test
     public void serialize_deserialize_null() throws IOException {
-        byte[] data = JMSHelper.convertToBytes(null);
-        Serializable actual = JMSHelper.convertFromBytes(data);
+        byte[] data = convertToBytes(null);
+        String actual = convertFromBytes(data);
 
-        assertThat((String) actual, is((String) null));
+        assertThat(actual, is((String) null));
     }
 
     @Test(expected = IOException.class)
     public void deserialize_corrupted_data_throws() throws IOException {
-        JMSHelper.convertFromBytes(new byte[3]);
+        convertFromBytes(new byte[3]);
     }
 
 }

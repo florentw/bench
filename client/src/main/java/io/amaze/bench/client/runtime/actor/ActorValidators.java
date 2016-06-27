@@ -20,6 +20,9 @@ final class ActorValidators {
         // Factory
     }
 
+    /**
+     * @return An Actor validator instance.
+     */
     @NotNull
     public static ActorValidator get() {
         return impl;
