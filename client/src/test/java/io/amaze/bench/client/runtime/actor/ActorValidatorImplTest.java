@@ -10,6 +10,7 @@ import org.junit.rules.ExpectedException;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static io.amaze.bench.client.runtime.actor.ActorValidatorImpl.*;
 import static io.amaze.bench.client.runtime.actor.ActorValidators.get;
 import static junit.framework.TestCase.assertNotNull;
 
@@ -19,9 +20,6 @@ import static junit.framework.TestCase.assertNotNull;
  * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorValidatorImplTest {
-
-    private static final String MSG_PUBLIC_CONSTRUCTOR = "An actor class have at least one public constructor.";
-    private static final String MSG_IMPLEMENT_REACTOR = "An actor class must implement io.amaze.bench.client.api.Reactor";
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -45,7 +43,7 @@ public final class ActorValidatorImplTest {
     public void empty_actor_class_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
         expectedException.expectMessage(MSG_PUBLIC_CONSTRUCTOR);
-        expectedException.expectMessage(MSG_IMPLEMENT_REACTOR);
+        expectedException.expectMessage(String.format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName()));
         expectedException.expectMessage("An actor class must have annotation @io.amaze.bench.client.api.Actor");
 
         get().loadAndValidate(EmptyActor.class.getName());
@@ -54,7 +52,7 @@ public final class ActorValidatorImplTest {
     @Test
     public void abstract_actor_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
-        expectedException.expectMessage("An actor class must not be abstract");
+        expectedException.expectMessage(MSG_ABSTRACT_CLASS);
 
         get().loadAndValidate(AbstractActor.class.getName());
     }
@@ -70,7 +68,7 @@ public final class ActorValidatorImplTest {
     @Test
     public void actor_not_implementing_reactor_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
-        expectedException.expectMessage(MSG_IMPLEMENT_REACTOR);
+        expectedException.expectMessage(String.format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName()));
 
         get().loadAndValidate(NoReactor.class.getName());
     }

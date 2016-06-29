@@ -1,13 +1,14 @@
 package io.amaze.bench.client.runtime.actor;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 import java.util.concurrent.CountDownLatch;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 
 /**
  * Perform a waitFor on the given process to know when the process has terminated and avoid zombies.
@@ -16,7 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class ProcessWatchDogThread extends Thread {
+final class ProcessWatchDogThread extends Thread implements Closeable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessWatchDogThread.class);
 
@@ -28,12 +29,11 @@ final class ProcessWatchDogThread extends Thread {
     private volatile boolean exited = false;
 
     ProcessWatchDogThread(@NotNull final String name, @NotNull final Process process) {
-        checkNotNull(name);
-        checkNotNull(process);
+        this.name = checkNotNull(name);
+        this.process = checkNotNull(process);
 
         watchdogStartedLatch = new CountDownLatch(1);
-        this.name = name;
-        this.process = process;
+
         setName("WatchDog-" + name);
     }
 
@@ -41,6 +41,7 @@ final class ProcessWatchDogThread extends Thread {
         return process;
     }
 
+    @Override
     public void close() {
         doWork = false;
     }
@@ -50,9 +51,7 @@ final class ProcessWatchDogThread extends Thread {
         LOG.info(this + " Watching process " + process + "...");
 
         while (doWork && !exited) {
-            if (watchdogStartedLatch.getCount() > 0) {
-                watchdogStartedLatch.countDown();
-            }
+            watchdogStartedLatch.countDown();
 
             try {
                 int exitCode = process.waitFor();
@@ -68,7 +67,7 @@ final class ProcessWatchDogThread extends Thread {
      * Allows to await that the watchdog thread is actually started
      */
     void awaitUntilStarted() {
-        Uninterruptibles.awaitUninterruptibly(watchdogStartedLatch);
+        awaitUninterruptibly(watchdogStartedLatch);
     }
 
     boolean hasProcessExited() {

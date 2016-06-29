@@ -67,31 +67,36 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         List<ProcessorInfo> processors = new ArrayList<>();
 
         for (Map<String, String> cpuProperties : splitCpuContent) {
-            int coresCount = UNKNOWN_INT_VALUE;
             String cores = cpuProperties.get(CPUINFO_PROP_CPU_CORES);
-            if (cores != null && !cores.trim().isEmpty()) {
-                coresCount = Integer.parseInt(cores);
-            }
+            int coresCount = readIntProperty(cores);
 
             String modelName = cpuProperties.get(CPUINFO_PROP_MODEL_NAME);
-            if (modelName == null || modelName.trim().isEmpty()) {
-                modelName = UNKNOWN_STRING_VALUE;
-            }
+            modelName = readStringProperty(modelName);
 
             String cacheSize = cpuProperties.get(CPUINFO_PROP_CACHE_SIZE);
-            if (cacheSize == null || cacheSize.trim().isEmpty()) {
-                cacheSize = UNKNOWN_STRING_VALUE;
-            }
+            cacheSize = readStringProperty(cacheSize);
 
             String frequency = cpuProperties.get(CPUINFO_PROP_CPU_MHZ);
-            if (frequency == null || frequency.trim().isEmpty()) {
-                frequency = UNKNOWN_STRING_VALUE;
-            }
+            frequency = readStringProperty(frequency);
 
             processors.add(new ProcessorInfo(modelName, coresCount, frequency, cacheSize, cpuProperties));
         }
 
         return processors;
+    }
+
+    private String readStringProperty(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return UNKNOWN_STRING_VALUE;
+        }
+        return value;
+    }
+
+    private int readIntProperty(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return UNKNOWN_INT_VALUE;
+        }
+        return Integer.parseInt(value);
     }
 
     private List<Map<String, String>> getSplitCpuContent(final String cpuInfoContent) {

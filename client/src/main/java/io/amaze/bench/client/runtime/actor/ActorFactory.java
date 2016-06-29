@@ -71,13 +71,11 @@ public final class ActorFactory {
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
-        Config config;
         try {
-            config = ConfigFactory.parseString(jsonConfig, configParseOptions);
+            return ConfigFactory.parseString(jsonConfig, configParseOptions);
         } catch (ConfigException e) {
             throw ValidationException.create("Configuration error", e);
         }
-        return config;
     }
 
     /**

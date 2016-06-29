@@ -19,6 +19,10 @@ import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotat
  */
 final class ActorValidatorImpl implements ActorValidator {
 
+    static final String MSG_PUBLIC_CONSTRUCTOR = "An actor class have at least one public constructor.";
+    static final String MSG_ABSTRACT_CLASS = "An actor class must not be abstract";
+    static final String MSG_IMPLEMENT_REACTOR = "An actor class must implement %s";
+
     private static final String VALIDATION_MSG = "Validation failed for class \"%s\".";
     private static final String LOAD_MSG = "Could not load class \"%s\".";
 
@@ -31,15 +35,8 @@ final class ActorValidatorImpl implements ActorValidator {
     public Class<? extends Reactor> loadAndValidate(@NotNull final String className) throws ValidationException {
         checkNotNull(className);
 
-        // Loading
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(className);
-        } catch (Exception e) {
-            throw ValidationException.create(String.format(LOAD_MSG, className), e);
-        }
+        Class<?> clazz = loadClass(className);
 
-        // Validation
         Verify verify = new Verify(clazz);
         verify.mustImplementReactor();
         verify.mustHaveAPublicConstructor();
@@ -54,6 +51,14 @@ final class ActorValidatorImpl implements ActorValidator {
         }
 
         return verify.resultingClass();
+    }
+
+    private Class<?> loadClass(@NotNull final String className) throws ValidationException {
+        try {
+            return Class.forName(className);
+        } catch (Exception e) {
+            throw ValidationException.create(String.format(LOAD_MSG, className), e);
+        }
     }
 
     private static final class Verify {
@@ -78,13 +83,13 @@ final class ActorValidatorImpl implements ActorValidator {
 
         void mustHaveAPublicConstructor() {
             if (inputActorClass.getConstructors().length == 0) {
-                causes.add(new IllegalArgumentException("An actor class have at least one public constructor."));
+                causes.add(new IllegalArgumentException(MSG_PUBLIC_CONSTRUCTOR));
             }
         }
 
         void mustNotBeAbstract() {
             if (Modifier.isAbstract(inputActorClass.getModifiers())) {
-                causes.add(new IllegalArgumentException("An actor class must not be abstract"));
+                causes.add(new IllegalArgumentException(MSG_ABSTRACT_CLASS));
             }
         }
 
@@ -126,7 +131,7 @@ final class ActorValidatorImpl implements ActorValidator {
             try {
                 this.typedOutputClass = inputActorClass.asSubclass(Reactor.class);
             } catch (ClassCastException e) { // NOSONAR
-                causes.add(new IllegalArgumentException("An actor class must implement " + Reactor.class.getName()));
+                causes.add(new IllegalArgumentException(String.format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName())));
             }
         }
     }

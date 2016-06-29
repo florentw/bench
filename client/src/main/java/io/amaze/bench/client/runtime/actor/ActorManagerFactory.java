@@ -24,6 +24,7 @@ public interface ActorManagerFactory {
      * @param agentName The host agent name.
      * @param factory   An {@link OrchestratorClientFactory} to be used to create
      *                  {@link io.amaze.bench.client.runtime.orchestrator.OrchestratorActor} instances.
+     * @return An instantiated {@link EmbeddedActorManager}
      */
     @NotNull
     ActorManager createEmbedded(@NotNull String agentName, @NotNull OrchestratorClientFactory factory);
@@ -32,6 +33,7 @@ public interface ActorManagerFactory {
      * Will create a new instance of {@link ActorManager} that will instantiate each actor in a new JVM.
      *
      * @param agentName The host agent name.
+     * @return An instantiated {@link ForkedActorManager}
      */
     @NotNull
     ActorManager createForked(@NotNull String agentName);
