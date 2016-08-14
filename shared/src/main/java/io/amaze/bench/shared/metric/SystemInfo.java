@@ -67,14 +67,14 @@ public class SystemInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "SystemInfo{" +
-                "hostName='" + hostName + '\'' +
-                ", procCount=" + procCount +
-                ", procArch='" + procArch + '\'' +
-                ", osName='" + osName + '\'' +
-                ", osVersion='" + osVersion + '\'' +
-                ", processors=" + processors +
-                ", memoryInfo=" + memoryInfo +
+        return "SystemInfo{" + //
+                "hostName='" + hostName + '\'' + //
+                ", procCount=" + procCount + //
+                ", procArch='" + procArch + '\'' + //
+                ", osName='" + osName + '\'' + //
+                ", osVersion='" + osVersion + '\'' + //
+                ", processors=" + processors + //
+                ", memoryInfo=" + memoryInfo + //
                 '}';
     }
 }

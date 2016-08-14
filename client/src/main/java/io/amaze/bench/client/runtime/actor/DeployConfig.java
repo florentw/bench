@@ -40,12 +40,9 @@ public final class DeployConfig implements Serializable {
         return forked;
     }
 
-    String getJmsServerHost() {
-        return jmsServerHost;
-    }
-
-    int getJmsServerPort() {
-        return jmsServerPort;
+    @Override
+    public int hashCode() {
+        return Objects.hash(jmsServerHost, jmsServerPort, forked, preferredHosts);
     }
 
     @Override
@@ -57,25 +54,23 @@ public final class DeployConfig implements Serializable {
             return false;
         }
         DeployConfig that = (DeployConfig) o;
-        return jmsServerPort == that.jmsServerPort &&
-                forked == that.forked &&
-                Objects.equals(jmsServerHost, that.jmsServerHost) &&
-                Objects.equals(preferredHosts, that.preferredHosts);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(jmsServerHost, jmsServerPort, forked, preferredHosts);
+        return jmsServerPort == that.jmsServerPort && forked == that.forked && Objects.equals(jmsServerHost,
+                                                                                              that.jmsServerHost) && Objects.equals(
+                preferredHosts,
+                that.preferredHosts);
     }
 
     @Override
     public String toString() {
-        return "DeployConfig{" +
-                "jmsServerHost='" + jmsServerHost + '\'' +
-                ", jmsServerPort=" + jmsServerPort +
-                ", forked=" + forked +
-                ", preferredHosts=" + preferredHosts +
-                '}';
+        return "DeployConfig{" + "jmsServerHost='" + jmsServerHost + '\'' + ", jmsServerPort=" + jmsServerPort + ", forked=" + forked + ", preferredHosts=" + preferredHosts + '}';
+    }
+
+    String getJmsServerHost() {
+        return jmsServerHost;
+    }
+
+    int getJmsServerPort() {
+        return jmsServerPort;
     }
 
 }

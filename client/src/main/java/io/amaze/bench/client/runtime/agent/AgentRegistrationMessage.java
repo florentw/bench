@@ -57,6 +57,11 @@ public class AgentRegistrationMessage implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -69,16 +74,7 @@ public class AgentRegistrationMessage implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-
-    @Override
     public String toString() {
-        return "AgentRegistrationMessage{" +
-                "name='" + name + '\'' +
-                ", systemInfo=" + systemInfo +
-                ", creationTime=" + creationTime +
-                '}';
+        return "AgentRegistrationMessage{" + "name='" + name + '\'' + ", systemInfo=" + systemInfo + ", creationTime=" + creationTime + '}';
     }
 }

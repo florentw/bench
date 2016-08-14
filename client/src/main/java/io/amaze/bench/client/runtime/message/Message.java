@@ -32,9 +32,6 @@ public final class Message<T extends Serializable> implements Serializable {
 
     @Override
     public String toString() {
-        return "Message{" +
-                "from='" + from + '\'' +
-                ", data=" + data +
-                '}';
+        return "Message{" + "from='" + from + '\'' + ", data=" + data + '}';
     }
 }

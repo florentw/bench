@@ -38,9 +38,9 @@ public final class ActorInputMessage implements Serializable {
     }
 
     public enum Command {
-        INIT,
-        CLOSE,
-        DUMP_METRICS,
-        MESSAGE
+        INIT, //
+        CLOSE, //
+        DUMP_METRICS, //
+        MESSAGE //
     }
 }

@@ -37,10 +37,6 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
         setName("WatchDog-" + name);
     }
 
-    Process getProcess() {
-        return process;
-    }
-
     @Override
     public void close() {
         doWork = false;
@@ -63,6 +59,15 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "WatchDogThread{" + '\'' + name + '\'' + '}';
+    }
+
+    Process getProcess() {
+        return process;
+    }
+
     /**
      * Allows to await that the watchdog thread is actually started
      */
@@ -72,13 +77,6 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
 
     boolean hasProcessExited() {
         return exited;
-    }
-
-    @Override
-    public String toString() {
-        return "WatchDogThread{" +
-                '\'' + name + '\'' +
-                '}';
     }
 
 }

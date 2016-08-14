@@ -32,7 +32,7 @@ public final class ActorBootstrap {
         this.agentName = checkNotNull(agentName);
     }
 
-    /**ll
+    /**
      * @param args [agentName] [actorName] [className] [jmsServerHost] [jmsServerPort] [temporaryConfigFile]
      * @throws ValidationException
      * @throws IOException
@@ -72,8 +72,8 @@ public final class ActorBootstrap {
         return hook;
     }
 
-    Actor createActor(final String name,
-                      final String className,
+    Actor createActor(final String name, //
+                      final String className, //
                       final String jsonConfig) throws ValidationException, IOException {
 
         ActorFactory actorFactory = new ActorFactory(agentName, clientFactory);

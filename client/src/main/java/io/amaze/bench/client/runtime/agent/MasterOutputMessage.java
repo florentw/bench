@@ -51,9 +51,9 @@ public final class MasterOutputMessage implements java.io.Serializable {
      * </ul>
      */
     public enum Action {
-        REGISTER_AGENT,
-        UNREGISTER_AGENT,
-        ACTOR_LIFECYCLE
+        REGISTER_AGENT, //
+        UNREGISTER_AGENT, //
+        ACTOR_LIFECYCLE //
     }
 
 }

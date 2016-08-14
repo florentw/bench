@@ -38,7 +38,7 @@ public final class AgentInputMessage implements Serializable {
     }
 
     public enum Action {
-        CREATE_ACTOR,
-        CLOSE_ACTOR
+        CREATE_ACTOR, //
+        CLOSE_ACTOR //
     }
 }

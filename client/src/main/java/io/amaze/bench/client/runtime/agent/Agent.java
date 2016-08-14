@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.agent;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.amaze.bench.client.runtime.actor.*;
@@ -107,13 +108,14 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     @NotNull
-    synchronized Set<ManagedActor> getActors() {
-        return ImmutableSet.copyOf(actors.values());
+    public String getName() {
+        return name;
     }
 
     @NotNull
-    public String getName() {
-        return name;
+    @VisibleForTesting
+    synchronized Set<ManagedActor> getActors() {
+        return ImmutableSet.copyOf(actors.values());
     }
 
     private void sendRegistrationMessage(@NotNull final AgentRegistrationMessage regMsg) {

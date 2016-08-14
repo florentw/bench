@@ -43,8 +43,8 @@ public final class TestActorWriter extends TestActor {
     }
 
     @Override
-    public void onMessage(@NotNull final String from,
-                          @NotNull final String message) throws IrrecoverableException, TerminationException {
+    public void onMessage(@NotNull final String from, @NotNull final String message)
+            throws IrrecoverableException, TerminationException {
 
         super.onMessage(from, message);
     }

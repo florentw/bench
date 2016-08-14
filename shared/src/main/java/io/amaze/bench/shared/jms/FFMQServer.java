@@ -241,12 +241,12 @@ public final class FFMQServer implements JMSServer {
             }
         }
 
-        boolean hasFailed() {
-            return exception != null;
-        }
-
         public JMSException getException() {
             return exception;
+        }
+
+        boolean hasFailed() {
+            return exception != null;
         }
     }
 

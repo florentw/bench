@@ -44,9 +44,9 @@ public final class ActorConfig implements Serializable {
         return deployConfig;
     }
 
-    @NotNull
-    String getActorJsonConfig() {
-        return actorJsonConfig;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, className, deployConfig, actorJsonConfig);
     }
 
     @Override
@@ -58,24 +58,18 @@ public final class ActorConfig implements Serializable {
             return false;
         }
         ActorConfig that = (ActorConfig) o;
-        return Objects.equals(name, that.name) &&
-                Objects.equals(className, that.className) &&
-                Objects.equals(deployConfig, that.deployConfig) &&
-                Objects.equals(actorJsonConfig, that.actorJsonConfig);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, className, deployConfig, actorJsonConfig);
+        return Objects.equals(name, that.name) && Objects.equals(className, that.className) && Objects.equals(
+                deployConfig,
+                that.deployConfig) && Objects.equals(actorJsonConfig, that.actorJsonConfig);
     }
 
     @Override
     public String toString() {
-        return "ActorConfig{" +
-                "name='" + name + '\'' +
-                ", className='" + className + '\'' +
-                ", deployConfig=" + deployConfig +
-                ", actorJsonConfig='" + actorJsonConfig + '\'' +
-                '}';
+        return "ActorConfig{" + "name='" + name + '\'' + ", className='" + className + '\'' + ", deployConfig=" + deployConfig + ", actorJsonConfig='" + actorJsonConfig + '\'' + '}';
+    }
+
+    @NotNull
+    String getActorJsonConfig() {
+        return actorJsonConfig;
     }
 }

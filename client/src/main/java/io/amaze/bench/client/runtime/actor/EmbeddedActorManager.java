@@ -21,11 +21,6 @@ public class EmbeddedActorManager extends AbstractActorManager {
         this.factory = checkNotNull(factory);
     }
 
-    @Override
-    public void close() {
-        // Nothing to close
-    }
-
     @NotNull
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
@@ -46,5 +41,10 @@ public class EmbeddedActorManager extends AbstractActorManager {
                 actor.close();
             }
         };
+    }
+
+    @Override
+    public void close() {
+        // Nothing to close
     }
 }

@@ -20,9 +20,9 @@ public final class MetricsJsonHelperTest {
 
     private static final String EXPECTED_METRIC_JSON = "{\"label\":\"Consumer CPU\",\"firstUnit\":\"cycles\",\"value\":100}";
 
-    private static final String EXPECTED_SINK_JSON = "{" +
-            "\"consumer.cpu\":{\"label\":\"Consumer CPU\",\"firstUnit\":\"cycles\",\"value\":100}," +
-            "\"consumer.mem.after\":{\"label\":\"Consumer Mem. After\",\"firstUnit\":\"bytes\",\"value\":2048}," +
+    private static final String EXPECTED_SINK_JSON = "{" + //
+            "\"consumer.cpu\":{\"label\":\"Consumer CPU\",\"firstUnit\":\"cycles\",\"value\":100}," + //
+            "\"consumer.mem.after\":{\"label\":\"Consumer Mem. After\",\"firstUnit\":\"bytes\",\"value\":2048}," + //
             "\"consumer.mem.before\":{\"label\":\"Consumer Mem. Before\",\"firstUnit\":\"bytes\",\"value\":1024}}";
 
     @Test

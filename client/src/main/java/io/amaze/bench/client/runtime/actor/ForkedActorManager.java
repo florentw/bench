@@ -88,6 +88,19 @@ final class ForkedActorManager extends AbstractActorManager {
         };
     }
 
+    @Override
+    public void close() {
+        for (ProcessWatchDogThread thread : processes.values()) {
+            terminateProcess(thread);
+        }
+        processes.clear();
+    }
+
+    @VisibleForTesting
+    Map<String, ProcessWatchDogThread> getProcesses() {
+        return ImmutableMap.copyOf(processes);
+    }
+
     private Process createActorProcess(final ActorConfig actorConfig) {
         try {
             File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
@@ -100,27 +113,14 @@ final class ForkedActorManager extends AbstractActorManager {
         }
     }
 
-    @VisibleForTesting
-    Map<String, ProcessWatchDogThread> getProcesses() {
-        return ImmutableMap.copyOf(processes);
-    }
-
-    @Override
-    public void close() {
-        for (ProcessWatchDogThread thread : processes.values()) {
-            terminateProcess(thread);
-        }
-        processes.clear();
-    }
-
     private void terminateProcess(final ProcessWatchDogThread thread) {
         thread.close();
         thread.getProcess().destroy();
         joinUninterruptibly(thread);
     }
 
-    private Process forkProcess(@NotNull final ActorConfig actorConfig,
-                                @NotNull final String configFileName) throws IOException {
+    private Process forkProcess(@NotNull final ActorConfig actorConfig, @NotNull final String configFileName)
+            throws IOException {
 
         String name = actorConfig.getName();
 

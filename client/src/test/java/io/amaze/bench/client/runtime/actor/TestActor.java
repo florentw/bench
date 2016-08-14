@@ -39,14 +39,6 @@ public class TestActor implements Reactor<String> {
         this.config = config;
     }
 
-    private static DeployConfig createDeployConfig(final boolean forked) {
-        return new DeployConfig("", 0, forked, Collections.<String>emptyList());
-    }
-
-    private static ActorConfig createActorConfig() {
-        return configForActor(TestActor.class);
-    }
-
     public static ActorConfig configForActor(Class<?> clazz) {
         return new ActorConfig(DUMMY_ACTOR, clazz.getName(), DUMMY_DEPLOY_CONFIG, DUMMY_JSON_CONFIG);
     }
@@ -55,14 +47,22 @@ public class TestActor implements Reactor<String> {
         return new ActorConfig(DUMMY_ACTOR, clazz.getName(), createDeployConfig(forked), DUMMY_JSON_CONFIG);
     }
 
+    private static DeployConfig createDeployConfig(final boolean forked) {
+        return new DeployConfig("", 0, forked, Collections.<String>emptyList());
+    }
+
+    private static ActorConfig createActorConfig() {
+        return configForActor(TestActor.class);
+    }
+
     @Before
     public void before() {
         beforeCalled = true;
     }
 
     @Override
-    public void onMessage(@NotNull final String from,
-                          @NotNull final String message) throws IrrecoverableException, TerminationException {
+    public void onMessage(@NotNull final String from, @NotNull final String message)
+            throws IrrecoverableException, TerminationException {
         if (message.equals(FAIL_MSG)) {
             throw new IrrecoverableException("Provoked failure.");
         } else if (message.equals(TERMINATE_MSG)) {

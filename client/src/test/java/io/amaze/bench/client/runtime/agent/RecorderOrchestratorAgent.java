@@ -41,11 +41,11 @@ public class RecorderOrchestratorAgent implements OrchestratorAgent {
         // Dummy
     }
 
-    boolean isAgentListenerStarted() {
-        return agentListenerStarted;
-    }
-
     public Map<String, List<Message<? extends Serializable>>> getSentMessages() {
         return sentMessages;
+    }
+
+    boolean isAgentListenerStarted() {
+        return agentListenerStarted;
     }
 }

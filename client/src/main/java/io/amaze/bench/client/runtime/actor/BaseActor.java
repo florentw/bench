@@ -1,5 +1,6 @@
 package io.amaze.bench.client.runtime.actor;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.api.IrrecoverableException;
 import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.api.ReactorException;
@@ -67,8 +68,9 @@ public class BaseActor implements Actor {
         client.startActorListener(this);
     }
 
-    Reactor getInstance() {
-        return instance;
+    @Override
+    public String name() {
+        return name;
     }
 
     @Override
@@ -98,6 +100,12 @@ public class BaseActor implements Actor {
         }
 
         sendLifecycleMessage(Phase.INITIALIZED);
+    }
+
+    @Override
+    public final void dumpAndFlushMetrics() {
+        Map<String, Metric> metrics = sink.getMetricsAndFlush();
+        client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metrics));
     }
 
     @Override
@@ -133,12 +141,6 @@ public class BaseActor implements Actor {
     }
 
     @Override
-    public final void dumpAndFlushMetrics() {
-        Map<String, Metric> metrics = sink.getMetricsAndFlush();
-        client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metrics));
-    }
-
-    @Override
     public void close() {
         if (!running.compareAndSet(true, false)) {
             return;
@@ -163,6 +165,16 @@ public class BaseActor implements Actor {
                 LOG.warn(this + " Error while closing client.", e);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Actor{" + "'" + name + '\'' + '}';
+    }
+
+    @VisibleForTesting
+    Reactor getInstance() {
+        return instance;
     }
 
     private boolean tryToCallAfterMethod() {
@@ -206,17 +218,5 @@ public class BaseActor implements Actor {
 
         ActorLifecycleMessage msg = new ActorLifecycleMessage(name, agentName, Phase.FAILED, throwable);
         sendToActorRegistry(ACTOR_LIFECYCLE, msg);
-    }
-
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return "Actor{" +
-                "'" + name + '\'' +
-                '}';
     }
 }

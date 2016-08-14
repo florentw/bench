@@ -130,10 +130,6 @@ public final class ResourceManagerImplTest {
         assertThat(pickedAgent.getName(), is(DUMMY_AGENT));
     }
 
-    private ActorConfig configWithPreferredHosts(final List<String> preferredHosts) {
-        return new ActorConfig(DUMMY_ACTOR, "", new DeployConfig("", 0, false, preferredHosts), DUMMY_JSON_CONFIG);
-    }
-
     @Test
     public void create_actor_with_preferred_host_but_fallback() {
         // Registers agent on another host
@@ -165,6 +161,10 @@ public final class ResourceManagerImplTest {
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
         assertNotNull(pickedAgent);
+    }
+
+    private ActorConfig configWithPreferredHosts(final List<String> preferredHosts) {
+        return new ActorConfig(DUMMY_ACTOR, "", new DeployConfig("", 0, false, preferredHosts), DUMMY_JSON_CONFIG);
     }
 
     private AgentRegistrationMessage registerAgentOnOurHost() {

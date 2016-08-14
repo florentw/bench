@@ -42,11 +42,11 @@ public class RecorderOrchestratorActor implements OrchestratorActor {
         // Dummy
     }
 
-    boolean isActorListenerStarted() {
-        return actorListenerStarted;
-    }
-
     public Map<String, List<Message<? extends Serializable>>> getSentMessages() {
         return sentMessages;
+    }
+
+    boolean isActorListenerStarted() {
+        return actorListenerStarted;
     }
 }

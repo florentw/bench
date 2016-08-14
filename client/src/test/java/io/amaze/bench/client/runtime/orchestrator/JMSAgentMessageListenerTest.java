@@ -84,7 +84,8 @@ public final class JMSAgentMessageListenerTest {
         verifyNoMoreInteractions(agentListener);
     }
 
-    private BytesMessage toBytesMessage(final AgentInputMessage masterMsg) throws IOException, ClassNotFoundException, JMSException {
+    private BytesMessage toBytesMessage(final AgentInputMessage masterMsg)
+            throws IOException, ClassNotFoundException, JMSException {
         byte[] bytes = JMSHelper.convertToBytes(masterMsg);
         return createTestBytesMessage(bytes);
     }

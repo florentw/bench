@@ -38,10 +38,6 @@ abstract class JMSOrchestratorClient implements OrchestratorClient {
         }
     }
 
-    final JMSClient getClient() {
-        return client;
-    }
-
     @Override
     public final void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
         checkNotNull(to);
@@ -57,6 +53,10 @@ abstract class JMSOrchestratorClient implements OrchestratorClient {
     @Override
     public final void close() {
         client.close();
+    }
+
+    final JMSClient getClient() {
+        return client;
     }
 
 }

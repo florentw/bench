@@ -137,11 +137,6 @@ public final class ActorValidatorImplTest {
             // Dummy
         }
 
-        @Override
-        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
-            // Dummy
-        }
-
         @Before
         public void before1() {
             // Dummy
@@ -149,6 +144,11 @@ public final class ActorValidatorImplTest {
 
         @Before
         public void before2() {
+            // Dummy
+        }
+
+        @Override
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
             // Dummy
         }
     }
@@ -159,11 +159,6 @@ public final class ActorValidatorImplTest {
             // Dummy
         }
 
-        @Override
-        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
-            // Dummy
-        }
-
         @After
         public void after1() {
             // Dummy
@@ -171,6 +166,11 @@ public final class ActorValidatorImplTest {
 
         @After
         public void after2() {
+            // Dummy
+        }
+
+        @Override
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
             // Dummy
         }
     }

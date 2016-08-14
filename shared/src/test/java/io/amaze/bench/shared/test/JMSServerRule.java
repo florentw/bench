@@ -27,6 +27,18 @@ public class JMSServerRule extends ExternalResource {
         return port;
     }
 
+    public JMSServer getServer() {
+        return server;
+    }
+
+    public JMSClient createClient() {
+        try {
+            return new FFMQClient(DEFAULT_HOST, port);
+        } catch (JMSException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     @Override
     protected void before() {
         port = NetworkHelper.findFreePort();
@@ -45,18 +57,6 @@ public class JMSServerRule extends ExternalResource {
             } catch (Exception e) {
                 Throwables.propagate(e);
             }
-        }
-    }
-
-    public JMSServer getServer() {
-        return server;
-    }
-
-    public JMSClient createClient() {
-        try {
-            return new FFMQClient(DEFAULT_HOST, port);
-        } catch (JMSException e) {
-            throw Throwables.propagate(e);
         }
     }
 }

@@ -56,8 +56,8 @@ public final class FFMQClient implements JMSClient {
     }
 
     @Override
-    public void addQueueListener(@NotNull final String listenerQueueName,
-                                 @NotNull final MessageListener listener) throws JMSException {
+    public void addQueueListener(@NotNull final String listenerQueueName, @NotNull final MessageListener listener)
+            throws JMSException {
         try {
             Queue listenerQueue = lookupQueue(listenerQueueName);
             MessageConsumer messageConsumer = session.createConsumer(listenerQueue);
@@ -68,8 +68,8 @@ public final class FFMQClient implements JMSClient {
     }
 
     @Override
-    public void addTopicListener(@NotNull final String listenerTopicName,
-                                 @NotNull final MessageListener listener) throws JMSException {
+    public void addTopicListener(@NotNull final String listenerTopicName, @NotNull final MessageListener listener)
+            throws JMSException {
         try {
             Topic listenerTopic = lookupTopic(listenerTopicName);
             MessageConsumer messageConsumer = session.createConsumer(listenerTopic);
@@ -126,8 +126,8 @@ public final class FFMQClient implements JMSClient {
         }
     }
 
-    private void internalSendToTopic(@NotNull final String topicName,
-                                     @NotNull final Serializable msg) throws NamingException, javax.jms.JMSException, IOException, ClassNotFoundException {
+    private void internalSendToTopic(@NotNull final String topicName, @NotNull final Serializable msg)
+            throws NamingException, javax.jms.JMSException, IOException, ClassNotFoundException {
         MessageProducer producer;
         synchronized (topicProducers) {
             producer = topicProducers.getIfPresent(topicName);
@@ -142,8 +142,8 @@ public final class FFMQClient implements JMSClient {
         producer.send(objectToMessage(msg));
     }
 
-    private void internalSendToQueue(@NotNull final String queueName,
-                                     @NotNull final Serializable msg) throws NamingException, javax.jms.JMSException, IOException, ClassNotFoundException {
+    private void internalSendToQueue(@NotNull final String queueName, @NotNull final Serializable msg)
+            throws NamingException, javax.jms.JMSException, IOException, ClassNotFoundException {
         MessageProducer producer;
         synchronized (queueProducers) {
             producer = queueProducers.getIfPresent(queueName);
@@ -158,7 +158,8 @@ public final class FFMQClient implements JMSClient {
         producer.send(objectToMessage(msg));
     }
 
-    private BytesMessage objectToMessage(final Serializable payload) throws IOException, ClassNotFoundException, javax.jms.JMSException {
+    private BytesMessage objectToMessage(final Serializable payload)
+            throws IOException, ClassNotFoundException, javax.jms.JMSException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutput out = new ObjectOutputStream(bos)) {
 

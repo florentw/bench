@@ -38,8 +38,8 @@ public final class TestActorMetrics extends TestActor {
     }
 
     @Override
-    public void onMessage(@NotNull final String from,
-                          @NotNull final String message) throws IrrecoverableException, TerminationException {
+    public void onMessage(@NotNull final String from, @NotNull final String message)
+            throws IrrecoverableException, TerminationException {
 
         if (message.equals(PRODUCE_METRICS_MSG)) {
             metricsCollector.putMetric(DUMMY_METRIC_A_KEY, DUMMY_METRIC_A);
