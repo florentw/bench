@@ -61,7 +61,8 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
 
     @Override
     public String toString() {
-        return "WatchDogThread{" + '\'' + name + '\'' + '}';
+        return "{\"ProcessWatchDogThread\":{" + //
+                "\"name\":\"" + name + "\"" + "}}";
     }
 
     Process getProcess() {

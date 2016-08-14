@@ -27,17 +27,16 @@ public final class ValidationException extends Exception {
     }
 
     private static String appendCauses(String msg, List<Exception> causes) {
-        String out = msg;
+        StringBuilder out = new StringBuilder(msg);
 
         for (Exception cause : causes) {
-            String exceptionClass = "";
             if (!(cause instanceof IllegalArgumentException)) {
-                out += "\n" + Throwables.getStackTraceAsString(cause);
+                out.append("\n").append(Throwables.getStackTraceAsString(cause));
             } else {
-                out += "\n* " + exceptionClass + cause.getMessage();
+                out.append("\n* ").append(cause.getClass().getSimpleName()).append(" ").append(cause.getMessage());
             }
         }
 
-        return out;
+        return out.toString();
     }
 }

@@ -8,14 +8,16 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/20/16.
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
+final class LinuxSystemConfigFactory extends AbstractSystemConfigFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LinuxSystemInfoFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LinuxSystemConfigFactory.class);
 
     private static final String MEMINFO_DEFAULT_PATH = "/proc/meminfo";
     private static final String MEMINFO_PROP_MEM_TOTAL = "MemTotal";
@@ -31,24 +33,27 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
     private final String cpuInfoContent;
     private final String memInfoContent;
 
-    LinuxSystemInfoFactory() {
+    LinuxSystemConfigFactory() {
         this(CPUINFO_DEFAULT_PATH, MEMINFO_DEFAULT_PATH);
     }
 
-    LinuxSystemInfoFactory(String cpuInfoFilePath, String memInfoFilePath) {
+    LinuxSystemConfigFactory(String cpuInfoFilePath, String memInfoFilePath) {
+        checkNotNull(cpuInfoFilePath);
+        checkNotNull(memInfoFilePath);
+
         cpuInfoContent = readFileContent(cpuInfoFilePath);
         memInfoContent = readFileContent(memInfoFilePath);
     }
 
     @Override
-    public SystemInfo create() {
-        return new SystemInfo(getHostName(),
-                              getNbProcs(),
-                              getOsArch(),
-                              getOsName(),
-                              getOsVersion(),
-                              getMemoryInfo(),
-                              getProcessorsInfo());
+    public SystemConfig create() {
+        return new SystemConfig(getHostName(),
+                                getNbProcs(),
+                                getOsArch(),
+                                getOsName(),
+                                getOsVersion(),
+                                createMemoryConfig(),
+                                createProcessorConfigList());
     }
 
     private String readFileContent(final String filePath) {
@@ -60,21 +65,21 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         }
     }
 
-    private List<ProcessorInfo> getProcessorsInfo() {
+    private List<ProcessorConfig> createProcessorConfigList() {
         List<Map<String, String>> splitCpuContent;
         if (cpuInfoContent != null) {
             // Get a map of parser CPU properties for each detected CPU.
-            splitCpuContent = getSplitCpuContent(cpuInfoContent);
+            splitCpuContent = splitCpuContent(cpuInfoContent);
         } else {
             splitCpuContent = Collections.emptyList();
         }
 
-        // Use the parsed CPU properties to create ProcessorInfo objects
+        // Use the parsed CPU properties to create ProcessorConfig objects
         return createProcessorsInfoList(splitCpuContent);
     }
 
-    private List<ProcessorInfo> createProcessorsInfoList(final List<Map<String, String>> splitCpuContent) {
-        List<ProcessorInfo> processors = new ArrayList<>();
+    private List<ProcessorConfig> createProcessorsInfoList(final List<Map<String, String>> splitCpuContent) {
+        List<ProcessorConfig> processors = new ArrayList<>();
 
         for (Map<String, String> cpuProperties : splitCpuContent) {
             String cores = cpuProperties.get(CPUINFO_PROP_CPU_CORES);
@@ -89,7 +94,7 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
             String frequency = cpuProperties.get(CPUINFO_PROP_CPU_MHZ);
             frequency = readStringProperty(frequency);
 
-            processors.add(new ProcessorInfo(modelName, coresCount, frequency, cacheSize, cpuProperties));
+            processors.add(new ProcessorConfig(modelName, coresCount, frequency, cacheSize, cpuProperties));
         }
 
         return processors;
@@ -109,7 +114,7 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         return Integer.parseInt(value);
     }
 
-    private List<Map<String, String>> getSplitCpuContent(final String cpuInfoContent) {
+    private List<Map<String, String>> splitCpuContent(final String cpuInfoContent) {
         Iterable<String> lineSplitter = Splitter.onPattern(EOL_PATTERN).trimResults().split(cpuInfoContent);
         List<Map<String, String>> splitCpuContent = new ArrayList<>();
 
@@ -132,7 +137,7 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         return splitCpuContent;
     }
 
-    private Map<String, String> getSplitMemoryContent() {
+    private Map<String, String> splitMemoryContent() {
         if (memInfoContent == null) {
             return Collections.emptyMap();
         }
@@ -152,7 +157,7 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         return properties;
     }
 
-    private long getTotalMemoryKb(final Map<String, String> memoryProperties) {
+    private long parseTotalMemoryKb(final Map<String, String> memoryProperties) {
         String memTotal = memoryProperties.get(MEMINFO_PROP_MEM_TOTAL);
         if (memTotal == null || memTotal.trim().isEmpty()) {
             return UNKNOWN_INT_VALUE;
@@ -165,10 +170,10 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         }
     }
 
-    private MemoryInfo getMemoryInfo() {
-        Map<String, String> props = getSplitMemoryContent();
-        long totalMemoryKb = getTotalMemoryKb(props);
-        return new MemoryInfo(totalMemoryKb, props);
+    private MemoryConfig createMemoryConfig() {
+        Map<String, String> props = splitMemoryContent();
+        long totalMemoryKb = parseTotalMemoryKb(props);
+        return new MemoryConfig(totalMemoryKb, props);
     }
 
 }

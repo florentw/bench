@@ -1,6 +1,6 @@
 package io.amaze.bench.orchestrator.registry;
 
-import io.amaze.bench.shared.metric.SystemInfo;
+import io.amaze.bench.shared.metric.SystemConfig;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,15 +14,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class RegisteredAgent {
 
     private final String name;
-    private final SystemInfo systemInfo;
+    private final SystemConfig systemConfig;
     private final long creationTime;
 
-    RegisteredAgent(@NotNull final String name,
-                    @NotNull final SystemInfo systemInfo,
+    RegisteredAgent(@NotNull final String name, @NotNull final SystemConfig systemConfig,
                     @NotNull final long creationTime) {
 
         this.name = checkNotNull(name);
-        this.systemInfo = checkNotNull(systemInfo);
+        this.systemConfig = checkNotNull(systemConfig);
         this.creationTime = checkNotNull(creationTime);
     }
 
@@ -30,8 +29,8 @@ public final class RegisteredAgent {
         return name;
     }
 
-    public SystemInfo getSystemInfo() {
-        return systemInfo;
+    public SystemConfig getSystemConfig() {
+        return systemConfig;
     }
 
     public long getCreationTime() {

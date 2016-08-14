@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-abstract class AbstractSystemInfoFactory implements SystemInfoFactory {
+abstract class AbstractSystemConfigFactory implements SystemConfigFactory {
 
     static final String UNKNOWN_STRING_VALUE = "[Unknown]";
     static final int UNKNOWN_INT_VALUE = -1;

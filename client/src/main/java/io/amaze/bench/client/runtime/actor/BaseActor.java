@@ -117,7 +117,7 @@ public class BaseActor implements Actor {
             instance.onMessage(from, message);
 
         } catch (IrrecoverableException e) {
-            /**
+            /*
              * In the case of a non-recoverable error of the actor, we need to clean-up by calling after,
              * and notifying the failure.
              */
@@ -130,7 +130,7 @@ public class BaseActor implements Actor {
             actorFailure(e);
 
         } catch (TerminationException ignored) { // NOSONAR
-            /**
+            /*
              * This is a graceful termination, just perform a regular close on the actor.
              */
             close();
@@ -169,7 +169,7 @@ public class BaseActor implements Actor {
 
     @Override
     public String toString() {
-        return "Actor{" + "'" + name + '\'' + '}';
+        return "{\"Actor\":{" + "\"name\":\"" + name + "\"" + "}}";
     }
 
     @VisibleForTesting

@@ -64,7 +64,9 @@ public final class AgentRegistry {
         @Override
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
             synchronized (agents) {
-                RegisteredAgent agent = new RegisteredAgent(msg.getName(), msg.getSystemInfo(), msg.getCreationTime());
+                RegisteredAgent agent = new RegisteredAgent(msg.getName(),
+                                                            msg.getSystemConfig(),
+                                                            msg.getCreationTime());
                 agents.put(msg.getName(), agent);
             }
 

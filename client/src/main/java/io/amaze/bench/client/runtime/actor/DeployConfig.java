@@ -62,7 +62,11 @@ public final class DeployConfig implements Serializable {
 
     @Override
     public String toString() {
-        return "DeployConfig{" + "jmsServerHost='" + jmsServerHost + '\'' + ", jmsServerPort=" + jmsServerPort + ", forked=" + forked + ", preferredHosts=" + preferredHosts + '}';
+        return "{\"DeployConfig\":{" + //
+                "\"jmsServerHost\":\"" + jmsServerHost + "\"" + ", " + //
+                "\"jmsServerPort\":\"" + jmsServerPort + "\"" + ", " + //
+                "\"forked\":\"" + forked + "\"" + ", " + //
+                "\"preferredHosts\":\"" + preferredHosts + "\"}}";
     }
 
     String getJmsServerHost() {

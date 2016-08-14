@@ -54,7 +54,7 @@ public final class AgentRegistryTest {
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
         assertThat(agent.getName(), is(DUMMY_AGENT));
-        assertThat(agent.getSystemInfo(), is(REG_MSG.getSystemInfo()));
+        assertThat(agent.getSystemConfig(), is(REG_MSG.getSystemConfig()));
         assertThat(agent.getCreationTime(), is(REG_MSG.getCreationTime()));
 
         verify(clientListener).onAgentRegistration(REG_MSG);

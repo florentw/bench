@@ -10,18 +10,18 @@ import static org.junit.Assert.assertSame;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public final class SystemInfosTest {
+public final class SystemConfigsTest {
 
     @Test
     public void creates_non_null_system_info() {
-        SystemInfo systemInfo = SystemInfos.get();
-        assertNotNull(systemInfo);
+        SystemConfig systemConfig = SystemConfigs.get();
+        assertNotNull(systemConfig);
     }
 
     @Test
     public void second_call_returns_same_instance() {
-        SystemInfo first = SystemInfos.get();
-        SystemInfo second = SystemInfos.get();
+        SystemConfig first = SystemConfigs.get();
+        SystemConfig second = SystemConfigs.get();
         assertSame(first, second);
     }
 

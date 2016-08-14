@@ -1,7 +1,7 @@
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.shared.metric.SystemInfo;
-import io.amaze.bench.shared.metric.SystemInfos;
+import io.amaze.bench.shared.metric.SystemConfig;
+import io.amaze.bench.shared.metric.SystemConfigs;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -15,19 +15,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class AgentRegistrationMessage implements Serializable {
+public final class AgentRegistrationMessage implements Serializable {
 
     static final String DEFAULT_AGENT_PREFIX = "agent-";
 
     private final String name;
-    private final SystemInfo systemInfo;
+    private final SystemConfig systemConfig;
     private final long creationTime;
 
-    private AgentRegistrationMessage(@NotNull final String name,
-                                     @NotNull final SystemInfo systemInfo,
-                                     final long creationTime) {
+    public AgentRegistrationMessage(@NotNull final String name,
+                                    @NotNull final SystemConfig systemConfig,
+                                    final long creationTime) {
         this.name = checkNotNull(name);
-        this.systemInfo = checkNotNull(systemInfo);
+        this.systemConfig = checkNotNull(systemConfig);
         this.creationTime = creationTime;
     }
 
@@ -39,9 +39,9 @@ public class AgentRegistrationMessage implements Serializable {
     public static AgentRegistrationMessage create(@NotNull final String name) {
         checkNotNull(name);
 
-        SystemInfo systemInfo = SystemInfos.get();
+        SystemConfig systemConfig = SystemConfigs.get();
         long creationTime = System.currentTimeMillis();
-        return new AgentRegistrationMessage(name, systemInfo, creationTime);
+        return new AgentRegistrationMessage(name, systemConfig, creationTime);
     }
 
     public String getName() {
@@ -52,8 +52,8 @@ public class AgentRegistrationMessage implements Serializable {
         return creationTime;
     }
 
-    public SystemInfo getSystemInfo() {
-        return systemInfo;
+    public SystemConfig getSystemConfig() {
+        return systemConfig;
     }
 
     @Override
@@ -75,6 +75,9 @@ public class AgentRegistrationMessage implements Serializable {
 
     @Override
     public String toString() {
-        return "AgentRegistrationMessage{" + "name='" + name + '\'' + ", systemInfo=" + systemInfo + ", creationTime=" + creationTime + '}';
+        return "{\"AgentRegistrationMessage\":{" + //
+                "\"name\":\"" + name + "\"" + ", " + //
+                "\"systemConfig\":" + systemConfig + ", " + //
+                "\"creationTime\":\"" + creationTime + "\"" + "}}";
     }
 }

@@ -65,7 +65,11 @@ public final class ActorConfig implements Serializable {
 
     @Override
     public String toString() {
-        return "ActorConfig{" + "name='" + name + '\'' + ", className='" + className + '\'' + ", deployConfig=" + deployConfig + ", actorJsonConfig='" + actorJsonConfig + '\'' + '}';
+        return "{\"ActorConfig\":{" + //
+                "\"name\":\"" + name + "\"" + ", " + //
+                "\"className\":\"" + className + "\"" + ", " + //
+                "\"deployConfig\":" + deployConfig + ", " + //
+                "\"actorJsonConfig\":" + actorJsonConfig + "" + "}}";
     }
 
     @NotNull

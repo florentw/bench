@@ -80,7 +80,7 @@ public final class ResourceManagerAgentTest {
         RegisteredAgent registeredAgent = agentRegistry.all().iterator().next();
         assertThat(registeredAgent.getName(), is(agent.getName()));
         assertTrue(registeredAgent.getCreationTime() > 0);
-        assertNotNull(registeredAgent.getSystemInfo());
+        assertNotNull(registeredAgent.getSystemConfig());
     }
 
     @Test

@@ -122,7 +122,7 @@ final class ResourceManagerImpl implements ResourceManager {
         Optional<RegisteredAgent> agentMatchingHost = FluentIterable.from(allAgents).filter(new Predicate<RegisteredAgent>() {
             @Override
             public boolean apply(final RegisteredAgent input) {
-                return preferredHosts.contains(input.getSystemInfo().getHostName());
+                return preferredHosts.contains(input.getSystemConfig().getHostName());
             }
         }).first();
 

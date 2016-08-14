@@ -2,6 +2,8 @@ package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.shared.metric.SystemConfig;
+import io.amaze.bench.shared.metric.SystemConfigTest;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -20,6 +22,7 @@ public final class AgentRegistrationMessageTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(SystemConfig.class, SystemConfigTest.DUMMY_CONFIG);
         tester.testAllPublicConstructors(AgentRegistrationMessage.class);
         tester.testAllPublicStaticMethods(AgentRegistrationMessage.class);
     }
@@ -31,7 +34,7 @@ public final class AgentRegistrationMessageTest {
         assertNotNull(msg);
 
         assertTrue(msg.getName().startsWith(AgentRegistrationMessage.DEFAULT_AGENT_PREFIX));
-        assertNotNull(msg.getSystemInfo());
+        assertNotNull(msg.getSystemConfig());
         assertTrue(msg.getCreationTime() > 0);
     }
 

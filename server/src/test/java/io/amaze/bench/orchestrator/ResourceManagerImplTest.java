@@ -8,12 +8,15 @@ import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
 import io.amaze.bench.orchestrator.registry.RegisteredAgent;
-import io.amaze.bench.shared.metric.SystemInfo;
+import io.amaze.bench.shared.metric.MemoryConfig;
+import io.amaze.bench.shared.metric.ProcessorConfig;
+import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
@@ -120,7 +123,7 @@ public final class ResourceManagerImplTest {
         registerDummyAgentOnOtherHost(OTHER_DUMMY_AGENT);
 
         List<String> preferredHosts = new ArrayList<>();
-        preferredHosts.add(regMsgAgentOnPHost.getSystemInfo().getHostName());
+        preferredHosts.add(regMsgAgentOnPHost.getSystemConfig().getHostName());
 
         ActorConfig actorConfig = configWithPreferredHosts(preferredHosts);
         resourceManager.createActor(actorConfig);
@@ -174,10 +177,14 @@ public final class ResourceManagerImplTest {
     }
 
     private AgentRegistrationMessage registerDummyAgentOnOtherHost(final String agentName) {
-        AgentRegistrationMessage regMsgAgentOnOtherHost = spy(AgentRegistrationMessage.create(agentName));
-        SystemInfo sysInfoOtherHost = mock(SystemInfo.class);
-        when(sysInfoOtherHost.getHostName()).thenReturn(OTHER_HOST);
-        when(regMsgAgentOnOtherHost.getSystemInfo()).thenReturn(sysInfoOtherHost);
+        SystemConfig sysInfoOtherHost = new SystemConfig(OTHER_HOST,
+                                                         1,
+                                                         "",
+                                                         "",
+                                                         "",
+                                                         new MemoryConfig(0, new HashMap<String, String>()),
+                                                         new ArrayList<ProcessorConfig>());
+        AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentName, sysInfoOtherHost, 0);
         agentRegistry.getListenerForOrchestrator().onAgentRegistration(regMsgAgentOnOtherHost);
         return regMsgAgentOnOtherHost;
     }
