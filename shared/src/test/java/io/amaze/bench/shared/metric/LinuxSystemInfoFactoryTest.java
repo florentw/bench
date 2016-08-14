@@ -21,26 +21,27 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class LinuxSystemInfoFactoryTest {
+public final class LinuxSystemInfoFactoryTest {
 
     private static final String TEST_VALID_CPUINFO_RESOURCE = "/valid-cpuinfo.txt";
     private static final String TEST_VALID_MEMINFO_RESOURCE = "/valid-meminfo.txt";
 
     private static final String TEST_INVALID_MEMINFO_CONTENT = //
-            "MemFree:          956548 kB\n" +
-                    "Buffers:          192272 kB\n" +
+            "MemFree:          956548 kB\n" + //
+                    "Buffers:          192272 kB\n" + //
                     "Cached\n";
 
     private static final String TEST_CORRUPTED_MEMINFO_CONTENT = //
-            "MemTotal:          956 548 kB\n" +
-                    "Buffers:          192272 kB\n" +
+            "MemTotal:          956 548 kB\n" + //
+                    "Buffers:          192272 kB\n" + //
                     "\n";
 
     private static final String TEST_INVALID_CPUINFO_CONTENT = //
-            "processor\t: 3\n" +
-                    "vendor_id\t: GenuineIntel\n" +
-                    "cpu family\t: 6\n" +
+            "processor\t: 3\n" + //
+                    "vendor_id\t: GenuineIntel\n" + //
+                    "cpu family\t: 6\n" + //
                     "model\t\t: 42\n";
+
     private static final String DUMMY_FILE_NAME = "-DUMMY-";
 
     @Rule

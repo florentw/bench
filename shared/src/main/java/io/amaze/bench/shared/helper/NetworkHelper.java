@@ -18,13 +18,11 @@ public final class NetworkHelper {
     }
 
     public static int findFreePort() {
-        int port;
         try (ServerSocket socket = new ServerSocket(0)) {
-            port = socket.getLocalPort();
+            return socket.getLocalPort();
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
-        return port;
     }
 
 }

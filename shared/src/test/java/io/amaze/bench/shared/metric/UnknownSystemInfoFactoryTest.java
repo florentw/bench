@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class UnknownSystemInfoFactoryTest {
+public final class UnknownSystemInfoFactoryTest {
 
     @Test
     public void call_to_create_populates_system_info() {

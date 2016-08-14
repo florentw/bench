@@ -10,7 +10,7 @@ import static org.junit.Assert.assertSame;
  *
  * @author Florent Weber (florent.weber@gmail.com)
  */
-public class SystemInfosTest {
+public final class SystemInfosTest {
 
     @Test
     public void creates_non_null_system_info() {

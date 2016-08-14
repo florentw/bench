@@ -40,14 +40,24 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         memInfoContent = readFileContent(memInfoFilePath);
     }
 
+    @Override
+    public SystemInfo create() {
+        return new SystemInfo(getHostName(),
+                              getNbProcs(),
+                              getOsArch(),
+                              getOsName(),
+                              getOsVersion(),
+                              getMemoryInfo(),
+                              getProcessorsInfo());
+    }
+
     private String readFileContent(final String filePath) {
-        String content = null;
         try {
-            content = FileHelper.readFile(filePath);
+            return FileHelper.readFile(filePath);
         } catch (IOException e) {
             LOG.info("Could not read file: " + filePath, e);
+            return null;
         }
-        return content;
     }
 
     private List<ProcessorInfo> getProcessorsInfo() {
@@ -159,17 +169,6 @@ final class LinuxSystemInfoFactory extends AbstractSystemInfoFactory {
         Map<String, String> props = getSplitMemoryContent();
         long totalMemoryKb = getTotalMemoryKb(props);
         return new MemoryInfo(totalMemoryKb, props);
-    }
-
-    @Override
-    public SystemInfo create() {
-        return new SystemInfo(getHostName(),
-                              getNbProcs(),
-                              getOsArch(),
-                              getOsName(),
-                              getOsVersion(),
-                              getMemoryInfo(),
-                              getProcessorsInfo());
     }
 
 }
