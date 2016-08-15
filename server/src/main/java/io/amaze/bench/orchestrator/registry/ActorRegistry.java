@@ -13,8 +13,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Thread safe
  * <p>
  * Created on 3/28/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorRegistry {
 

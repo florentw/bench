@@ -6,8 +6,6 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Created on 4/24/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public interface OrchestratorAgent extends OrchestratorClient {
 

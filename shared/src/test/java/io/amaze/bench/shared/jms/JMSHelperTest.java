@@ -18,8 +18,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * Created on 3/27/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class JMSHelperTest {
 

@@ -8,8 +8,6 @@ import java.lang.annotation.*;
  * At most one method can be tagged with @{@link After}.
  * <p/>
  * Created on 2/28/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @Target(value = {ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

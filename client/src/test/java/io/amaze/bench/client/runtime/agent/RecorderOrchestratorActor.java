@@ -13,8 +13,6 @@ import java.util.Map;
 
 /**
  * Created on 3/30/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class RecorderOrchestratorActor implements OrchestratorActor {
 

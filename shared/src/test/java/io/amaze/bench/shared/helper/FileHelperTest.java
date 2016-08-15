@@ -12,8 +12,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created on 3/19/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class FileHelperTest {
 

@@ -6,8 +6,6 @@ import io.amaze.bench.client.api.Sender;
 
 /**
  * Created on 3/6/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @Actor
 public final class TestActorBeforeThrows extends TestActor {

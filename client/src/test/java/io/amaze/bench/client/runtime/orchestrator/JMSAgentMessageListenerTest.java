@@ -20,8 +20,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Created on 3/19/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class JMSAgentMessageListenerTest {
 

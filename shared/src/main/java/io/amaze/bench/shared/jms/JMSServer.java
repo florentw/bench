@@ -8,8 +8,6 @@ import javax.validation.constraints.NotNull;
  * Allows to manage the server (queues and topics management).
  * <p>
  * Created on 3/4/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public interface JMSServer extends AutoCloseable {
 

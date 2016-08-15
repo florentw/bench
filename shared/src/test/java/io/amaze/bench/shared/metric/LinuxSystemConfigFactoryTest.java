@@ -19,8 +19,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 3/20/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class LinuxSystemConfigFactoryTest {
 

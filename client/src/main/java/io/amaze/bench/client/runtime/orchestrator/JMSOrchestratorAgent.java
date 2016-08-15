@@ -13,8 +13,6 @@ import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 4/24/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class JMSOrchestratorAgent extends JMSOrchestratorClient implements OrchestratorAgent {
 

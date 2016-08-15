@@ -9,8 +9,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Instantiates actors using the given factory, in the local JVM.
  * <p>
  * Created on 2/28/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class EmbeddedActorManager extends AbstractActorManager {
 

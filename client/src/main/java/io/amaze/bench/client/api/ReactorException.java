@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 /**
  * A root type for errors to be thrown by an Actor while processing an incoming message.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see IrrecoverableException
  * @see TerminationException
  */

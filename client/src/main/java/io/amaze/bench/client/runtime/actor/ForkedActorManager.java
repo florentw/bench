@@ -27,7 +27,6 @@ import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
  * <p>
  * Created on 3/13/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see ActorBootstrap
  */
 final class ForkedActorManager extends AbstractActorManager {

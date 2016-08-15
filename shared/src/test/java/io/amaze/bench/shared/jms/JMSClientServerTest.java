@@ -27,8 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created on 3/2/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @Category(IntegrationTest.class)
 public final class JMSClientServerTest {

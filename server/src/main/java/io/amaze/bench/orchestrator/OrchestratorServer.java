@@ -10,7 +10,6 @@ import java.io.Serializable;
 /**
  * Facade to interact with the underlying messaging system for the orchestration server.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClient
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory
  */

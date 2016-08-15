@@ -29,7 +29,6 @@ import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotat
  * <li>Returns a {@link Actor} object wrapper for the resource manager to use</li>
  * </ul>
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see Actor
  * @see Reactor
  */

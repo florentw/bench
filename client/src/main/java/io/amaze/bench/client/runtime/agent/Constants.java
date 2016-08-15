@@ -2,8 +2,6 @@ package io.amaze.bench.client.runtime.agent;
 
 /**
  * Created on 3/5/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class Constants {
 

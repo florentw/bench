@@ -30,8 +30,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Created on 4/3/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ResourceManagerImplTest {
 

@@ -9,8 +9,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Message sent by the master to an agent when it is required to createForAgent an actor.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorCreationRequest implements Serializable {
 

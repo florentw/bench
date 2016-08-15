@@ -16,8 +16,6 @@ import static junit.framework.TestCase.assertNotNull;
 
 /**
  * Created on 3/1/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorValidatorImplTest {
 

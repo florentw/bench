@@ -12,8 +12,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/20/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class LinuxSystemConfigFactory extends AbstractSystemConfigFactory {
 

@@ -12,8 +12,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Message sent by an agent to the master after startup for registration.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class AgentRegistrationMessage implements Serializable {
 

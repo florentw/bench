@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
  * <p>
  * Created on 3/1/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see ActorValidators
  * @see Reactor
  */

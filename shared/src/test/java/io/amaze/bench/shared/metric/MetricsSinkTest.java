@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 4/17/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class MetricsSinkTest {
 

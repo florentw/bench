@@ -17,8 +17,6 @@ import java.util.Hashtable;
 
 /**
  * Created on 3/2/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class FFMQClient implements JMSClient {
 

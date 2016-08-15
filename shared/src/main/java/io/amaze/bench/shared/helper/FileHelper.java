@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 
 /**
  * Created on 3/16/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class FileHelper {
 

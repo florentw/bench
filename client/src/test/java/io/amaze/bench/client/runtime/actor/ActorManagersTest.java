@@ -12,8 +12,6 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Created on 4/9/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorManagersTest {
 

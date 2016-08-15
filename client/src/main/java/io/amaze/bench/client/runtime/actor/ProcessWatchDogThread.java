@@ -14,8 +14,6 @@ import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterrup
  * Perform a waitFor on the given process to know when the process has terminated and avoid zombies.
  * <p>
  * Created on 3/27/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class ProcessWatchDogThread extends Thread implements Closeable {
 

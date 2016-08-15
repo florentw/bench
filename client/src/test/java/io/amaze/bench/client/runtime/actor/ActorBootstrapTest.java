@@ -25,8 +25,6 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Created on 3/14/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorBootstrapTest {
 

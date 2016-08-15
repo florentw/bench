@@ -8,8 +8,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 4/6/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorManagers implements ActorManagerFactory {
 

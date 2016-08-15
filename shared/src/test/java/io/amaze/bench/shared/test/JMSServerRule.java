@@ -9,8 +9,6 @@ import org.junit.rules.ExternalResource;
  * Junit 4 rule that provides an embedded JMSServer for tests.
  * <p>
  * Created on 3/19/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class JMSServerRule extends ExternalResource {
 

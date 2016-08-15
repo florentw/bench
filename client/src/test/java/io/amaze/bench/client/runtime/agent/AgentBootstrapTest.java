@@ -14,8 +14,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Created on 4/10/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class AgentBootstrapTest {
 

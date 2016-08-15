@@ -11,7 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Represents a message sent to the OrchestratorServer master from an {@link Agent}.<br/>
  * Created on 3/3/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see Agent
  * @see ActorLifecycleMessage
  * @see AgentRegistrationMessage

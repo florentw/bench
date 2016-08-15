@@ -13,7 +13,6 @@ import java.lang.annotation.*;
  * <p/>
  * Created on 2/28/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see Reactor
  * @see Sender
  */

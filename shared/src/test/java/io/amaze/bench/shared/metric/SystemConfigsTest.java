@@ -7,8 +7,6 @@ import static org.junit.Assert.assertSame;
 
 /**
  * Created on 3/25/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class SystemConfigsTest {
 

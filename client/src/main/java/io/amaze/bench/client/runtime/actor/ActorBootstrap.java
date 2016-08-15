@@ -17,7 +17,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>
  * Created on 3/13/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see ForkedActorManager
  */
 public final class ActorBootstrap {

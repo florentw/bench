@@ -15,8 +15,6 @@ import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 3/3/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 abstract class JMSOrchestratorClient implements OrchestratorClient {
 

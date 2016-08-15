@@ -14,7 +14,6 @@ import java.io.Serializable;
  * </ul>
  * Created on 2/28/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see Reactor
  */
 public interface Sender {

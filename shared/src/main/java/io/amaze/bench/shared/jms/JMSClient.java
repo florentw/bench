@@ -6,8 +6,6 @@ import java.io.Serializable;
 
 /**
  * Created on 3/3/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public interface JMSClient extends AutoCloseable {
 

@@ -8,8 +8,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 2/24/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class Metric implements Serializable {
     private final String label;

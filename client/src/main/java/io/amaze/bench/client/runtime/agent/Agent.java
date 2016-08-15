@@ -23,8 +23,6 @@ import static java.lang.String.format;
 
 /**
  * Created on 3/3/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class Agent implements AgentClientListener, AutoCloseable {
 

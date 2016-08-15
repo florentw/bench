@@ -12,8 +12,6 @@ import java.util.Map;
 
 /**
  * Created on 4/24/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class RecorderOrchestratorAgent implements OrchestratorAgent {
 

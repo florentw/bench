@@ -21,8 +21,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 4/2/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class ResourceManagerImpl implements ResourceManager {
 

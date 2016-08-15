@@ -9,8 +9,6 @@ import java.util.*;
 
 /**
  * Created on 3/3/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @io.amaze.bench.client.api.Actor
 public class TestActor implements Reactor<String> {

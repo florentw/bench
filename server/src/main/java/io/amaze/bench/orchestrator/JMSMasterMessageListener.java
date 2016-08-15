@@ -18,8 +18,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/28/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class JMSMasterMessageListener implements MessageListener {
 

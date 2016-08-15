@@ -7,8 +7,6 @@ import javax.validation.constraints.NotNull;
 /**
  * Interface to be implemented by an agent. These hooks are called upon reception of messages from the master.
  * All these methods' implementations should fail silently.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public interface AgentClientListener {
 

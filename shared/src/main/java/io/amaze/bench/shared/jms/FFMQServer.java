@@ -25,8 +25,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/2/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class FFMQServer implements JMSServer {
 

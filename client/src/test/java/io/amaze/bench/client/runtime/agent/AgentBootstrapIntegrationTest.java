@@ -23,8 +23,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Created on 3/5/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @Category(IntegrationTest.class)
 public final class AgentBootstrapIntegrationTest {

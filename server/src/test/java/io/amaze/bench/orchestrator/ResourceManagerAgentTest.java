@@ -32,8 +32,6 @@ import static org.junit.Assert.*;
 
 /**
  * Created on 4/5/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @Category(IntegrationTest.class)
 public final class ResourceManagerAgentTest {

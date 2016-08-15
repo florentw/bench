@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * Created on 3/1/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ValidationException extends Exception {
 

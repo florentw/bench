@@ -10,8 +10,6 @@ import java.util.HashMap;
 
 /**
  * Created on 8/15/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class SystemConfigTest {

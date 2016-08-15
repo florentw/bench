@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
  * and be able to send back.</li>
  * </ul>
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see OrchestratorAgent
  * @see OrchestratorActor
  */

@@ -6,8 +6,6 @@ import io.amaze.bench.client.api.Sender;
 
 /**
  * Created on 3/13/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class TestActorBeforeAndAfterThrows extends TestActor {
     public TestActorBeforeAndAfterThrows(final Sender sender) {

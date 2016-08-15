@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 
 /**
  * Created on 2/28/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ReflectionHelper {
 

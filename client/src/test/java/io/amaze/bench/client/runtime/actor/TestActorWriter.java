@@ -17,8 +17,6 @@ import static io.amaze.bench.shared.helper.FileHelper.writeToFile;
 
 /**
  * Created on 3/15/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @io.amaze.bench.client.api.Actor
 public final class TestActorWriter extends TestActor {

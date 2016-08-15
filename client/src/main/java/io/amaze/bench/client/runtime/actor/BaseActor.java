@@ -29,8 +29,6 @@ import static io.amaze.bench.client.runtime.agent.MasterOutputMessage.Action.ACT
 
 /**
  * Created on 2/28/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public class BaseActor implements Actor {
 

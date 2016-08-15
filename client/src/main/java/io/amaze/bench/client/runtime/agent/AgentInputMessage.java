@@ -7,8 +7,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/3/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class AgentInputMessage implements Serializable {
 

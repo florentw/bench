@@ -7,8 +7,6 @@ import java.net.UnknownHostException;
 
 /**
  * Created on 3/20/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 abstract class AbstractSystemConfigFactory implements SystemConfigFactory {
 

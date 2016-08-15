@@ -11,8 +11,6 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Created on 3/31/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 @io.amaze.bench.client.api.Actor
 public final class TestActorMetrics extends TestActor {

@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
  * </ul>
  * Created on 4/6/16.
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see ActorManager
  */
 public interface ActorManagerFactory {

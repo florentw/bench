@@ -17,8 +17,6 @@ import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 
 /**
  * Created on 3/8/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class JMSOrchestratorServer implements OrchestratorServer {
 

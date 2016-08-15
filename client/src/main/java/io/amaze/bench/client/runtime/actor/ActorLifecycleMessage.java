@@ -10,8 +10,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * It is meant to be sent by an agent to the master.<br/>
  * <p/>
  * Created on 3/6/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 public final class ActorLifecycleMessage implements Serializable {
 

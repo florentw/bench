@@ -9,8 +9,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/29/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class ActorRegistryListenerLogger implements ActorRegistryListener {
 

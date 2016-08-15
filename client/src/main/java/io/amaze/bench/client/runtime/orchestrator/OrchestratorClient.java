@@ -12,7 +12,6 @@ import java.io.Serializable;
  * The alter-ego of this interface is OrchestratorServer on the orchestration server side.
  * <p>
  *
- * @author Florent Weber (florent.weber@gmail.com)
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory
  * @see Agent
  * @see io.amaze.bench.client.runtime.actor.BaseActor

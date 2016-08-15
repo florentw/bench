@@ -14,8 +14,6 @@ import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotat
 
 /**
  * Created on 3/1/16.
- *
- * @author Florent Weber (florent.weber@gmail.com)
  */
 final class ActorValidatorImpl implements ActorValidator {
 
