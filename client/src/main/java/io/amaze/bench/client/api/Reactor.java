@@ -29,7 +29,6 @@ import java.io.Serializable;
  * Created on 2/28/16.
  *
  * @param <I> Input message type
- * @author Florent Weber (florent.weber@gmail.com)
  * @see Sender
  * @see Before
  * @see After
