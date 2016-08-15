@@ -29,10 +29,9 @@ public final class JMSOrchestratorClientFactory implements OrchestratorClientFac
     private final int jmsServerPort;
 
     public JMSOrchestratorClientFactory(@NotNull final String jmsServerHost, final int port) {
-        checkNotNull(jmsServerHost);
         checkArgument(port > 0);
 
-        this.jmsServerHost = jmsServerHost;
+        this.jmsServerHost = checkNotNull(jmsServerHost);
         this.jmsServerPort = port;
     }
 

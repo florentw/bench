@@ -52,6 +52,16 @@ public final class JMSOrchestratorAgentTest {
         client.close();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void port_must_be_greater_than_zero() {
+        new JMSOrchestratorAgent("", -1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void invalid_hostname_throws() {
+        new JMSOrchestratorAgent("dummyhost", 1);
+    }
+
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();

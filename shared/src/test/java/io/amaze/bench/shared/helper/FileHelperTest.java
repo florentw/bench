@@ -22,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
+import static io.amaze.bench.shared.helper.FileHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,9 +39,9 @@ public final class FileHelperTest {
         File file = folder.newFile();
 
         String expected = "Test";
-        FileHelper.writeToFile(file, expected);
+        writeToFile(file, expected);
 
-        String actual = FileHelper.readFile(file.getPath());
+        String actual = readFile(file.getPath());
         assertThat(actual, is(expected));
     }
 
@@ -49,11 +50,27 @@ public final class FileHelperTest {
         File file = folder.newFile();
 
         String expected = "Test";
-        FileHelper.writeToFile(file, expected);
+        writeToFile(file, expected);
 
-        String actual = FileHelper.readFileAndDelete(file.getPath());
+        String actual = readFileAndDelete(file.getPath());
         assertThat(actual, is(expected));
         assertThat(file.exists(), is(false));
+    }
+
+    @Test(expected = IOException.class)
+    public void write_to_file_throws_when_readonly() throws IOException {
+        File file = folder.newFile();
+        if (file.setReadOnly()) {
+            String expected = "Test";
+            writeToFile(file, expected);
+        } else {
+            throw new IOException();
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void read_file_and_delete_unknown_file_throws() throws IOException {
+        readFileAndDelete("dummy.file");
     }
 
 }

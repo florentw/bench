@@ -24,6 +24,9 @@ import io.amaze.bench.shared.jms.JMSException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
 import java.io.Serializable;
@@ -35,14 +38,18 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/27/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class JMSOrchestratorActorTest {
 
+    @Mock
     private JMSClient jmsClient;
+    @Mock
+    private Actor actor;
+
     private JMSOrchestratorActor client;
 
     @Before
     public void before() {
-        jmsClient = mock(JMSClient.class);
         client = new JMSOrchestratorActor(jmsClient);
     }
 
@@ -61,7 +68,6 @@ public final class JMSOrchestratorActorTest {
 
     @Test
     public void start_actor_listener() throws JMSException {
-        Actor actor = mock(Actor.class);
         when(actor.name()).thenReturn(TestActor.DUMMY_ACTOR);
 
         client.startActorListener(actor);
@@ -73,7 +79,6 @@ public final class JMSOrchestratorActorTest {
 
     @Test(expected = RuntimeException.class)
     public void start_actor_listener_and_listening_throws() throws JMSException {
-        Actor actor = mock(Actor.class);
         when(actor.name()).thenReturn(TestActor.DUMMY_ACTOR);
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
@@ -92,8 +97,9 @@ public final class JMSOrchestratorActorTest {
     @Test(expected = RuntimeException.class)
     public void send_to_actors_sends_to_jms_queue_throws() throws JMSException {
         Message<String> testMsg = getTestMsg();
-        doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).sendToQueue(anyString(),
-                                                                                              any(Serializable.class));
+        doThrow(new JMSException(new IllegalArgumentException())) //
+                .when(jmsClient) //
+                .sendToQueue(anyString(), any(Serializable.class));
 
         client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
 

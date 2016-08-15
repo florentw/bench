@@ -17,7 +17,6 @@ package io.amaze.bench.client.runtime.orchestrator;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
-import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 
@@ -25,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static io.amaze.bench.client.runtime.agent.Constants.AGENTS_ACTOR_NAME;
 
 /**
  * Created on 4/24/16.
@@ -46,7 +46,7 @@ final class JMSOrchestratorAgent extends JMSOrchestratorClient implements Orches
         checkNotNull(listener);
 
         try {
-            getClient().addTopicListener(Constants.AGENTS_ACTOR_NAME, new JMSAgentMessageListener(agentName, listener));
+            getClient().addTopicListener(AGENTS_ACTOR_NAME, new JMSAgentMessageListener(agentName, listener));
             getClient().startListening();
         } catch (JMSException e) {
             throw propagate(e);
