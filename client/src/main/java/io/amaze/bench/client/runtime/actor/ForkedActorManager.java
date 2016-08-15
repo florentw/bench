@@ -18,7 +18,6 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
-import io.amaze.bench.shared.helper.FileHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +32,7 @@ import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
 import static com.google.common.base.StandardSystemProperty.JAVA_HOME;
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
+import static io.amaze.bench.shared.helper.FileHelper.writeToFile;
 
 /**
  * Forks a new JVM to host the actor.<br/>
@@ -118,7 +118,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private Process createActorProcess(final ActorConfig actorConfig) {
         try {
             File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
-            FileHelper.writeToFile(tempConfigFile, actorConfig.getActorJsonConfig());
+            writeToFile(tempConfigFile, actorConfig.getActorJsonConfig());
 
             return forkProcess(actorConfig, tempConfigFile.getAbsolutePath());
 

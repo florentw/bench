@@ -17,6 +17,8 @@ package io.amaze.bench.client.api;
 
 import javax.validation.constraints.NotNull;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * To be thrown by an Actor when a non-recoverable error happens.<br/>
  * It will notify the agent of the failure, that can perform additional actions to help troubleshoot the issue.
@@ -24,10 +26,10 @@ import javax.validation.constraints.NotNull;
 public final class IrrecoverableException extends ReactorException {
 
     public IrrecoverableException(@NotNull final String message) {
-        super(message);
+        super(checkNotNull(message));
     }
 
     public IrrecoverableException(@NotNull final String message, @NotNull final Throwable cause) {
-        super(message, cause);
+        super(checkNotNull(message), checkNotNull(cause));
     }
 }

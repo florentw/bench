@@ -96,9 +96,8 @@ public final class AgentTest {
 
         // Check actor registration message
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(1));
-        assertTrue(((MasterOutputMessage) msgsToMaster.get(0).data()).getData() instanceof AgentRegistrationMessage);
+        assertThat(messagesToMaster().size(), is(1));
+        assertTrue(firstMessage(messagesToMaster()) instanceof AgentRegistrationMessage);
     }
 
     @Test
@@ -119,11 +118,10 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(2));
+        assertThat(messagesToMaster().size(), is(2));
 
         // Check actor creation message
-        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) msgsToMaster.get(1).data()).getData();
+        ActorLifecycleMessage lfMsg = secondMessage(messagesToMaster());
         assertThat(lfMsg.getPhase(), is(Phase.CREATED));
     }
 
@@ -147,15 +145,13 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(2));
+        assertThat(messagesToMaster().size(), is(2));
 
         assertThat(actorClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(actorMsgsToMaster.size(), is(1));
+        assertThat(messagesToActorMaster().size(), is(1));
 
         // Check closed message sent
-        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
+        ActorLifecycleMessage lfMsg = firstMessage(messagesToActorMaster());
         assertThat(lfMsg.getPhase(), is(Phase.CLOSED));
     }
 
@@ -167,7 +163,7 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+        List<Message<? extends Serializable>> msgsToMaster = messagesToMaster();
         assertThat(msgsToMaster.size(), is(1));
     }
 
@@ -181,15 +177,13 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(2));
+        assertThat(messagesToMaster().size(), is(2));
 
         assertThat(actorClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(actorMsgsToMaster.size(), is(1));
+        assertThat(messagesToActorMaster().size(), is(1));
 
         // Check failed message sent
-        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
+        ActorLifecycleMessage lfMsg = firstMessage(messagesToActorMaster());
         assertThat(lfMsg.getPhase(), is(Phase.FAILED));
     }
 
@@ -206,19 +200,17 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(3));
+        assertThat(messagesToMaster().size(), is(3));
 
         assertThat(actorClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> actorMsgsToMaster = actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(actorMsgsToMaster.size(), is(1));
+        assertThat(messagesToActorMaster().size(), is(1));
 
         // Check actor is closed
-        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) actorMsgsToMaster.get(0).data()).getData();
+        ActorLifecycleMessage lfMsg = firstMessage(messagesToActorMaster());
         assertThat(lfMsg.getPhase(), is(Phase.CLOSED));
 
         // Check sign off message
-        Serializable lastMsg = ((MasterOutputMessage) msgsToMaster.get(2).data()).getData();
+        String lastMsg = thirdMessage(messagesToMaster());
         assertTrue(lastMsg.equals(agent.getName()));
     }
 
@@ -231,8 +223,7 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(2));
+        assertThat(messagesToMaster().size(), is(2));
     }
 
     @Test
@@ -243,14 +234,33 @@ public final class AgentTest {
 
         // Check good flow of messages
         assertThat(agentClient.getSentMessages().size(), is(1));
-        List<Message<? extends Serializable>> msgsToMaster = agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-        assertThat(msgsToMaster.size(), is(2));
+        assertThat(messagesToMaster().size(), is(2));
 
         // Check failed message sent
-        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) ((MasterOutputMessage) msgsToMaster.get(1).data()).getData();
+        ActorLifecycleMessage lfMsg = secondMessage(messagesToMaster());
         assertThat(lfMsg.getPhase(), is(Phase.FAILED));
         assertNotNull(lfMsg.getThrowable());
         assertThat(lfMsg.getActor(), is(DUMMY_ACTOR));
+    }
+
+    private List<Message<? extends Serializable>> messagesToActorMaster() {
+        return actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+    }
+
+    private List<Message<? extends Serializable>> messagesToMaster() {
+        return agentClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
+    }
+
+    private <T extends Serializable> T firstMessage(final List<Message<? extends Serializable>> messageList) {
+        return (T) ((AgentOutputMessage) messageList.get(0).data()).getData();
+    }
+
+    private <T extends Serializable> T secondMessage(final List<Message<? extends Serializable>> messageList) {
+        return (T) ((AgentOutputMessage) messageList.get(1).data()).getData();
+    }
+
+    private <T extends Serializable> T thirdMessage(final List<Message<? extends Serializable>> messageList) {
+        return (T) ((AgentOutputMessage) messageList.get(2).data()).getData();
     }
 
 }

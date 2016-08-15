@@ -16,9 +16,9 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
-import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
 import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.metric.Metric;
@@ -347,6 +347,6 @@ public final class BaseActorTest {
     }
 
     private <T extends Serializable> T firstMessageToMaster(final List<Message<? extends Serializable>> msgsToMaster) {
-        return (T) ((MasterOutputMessage) msgsToMaster.get(0).data()).getData();
+        return (T) ((AgentOutputMessage) msgsToMaster.get(0).data()).getData();
     }
 }

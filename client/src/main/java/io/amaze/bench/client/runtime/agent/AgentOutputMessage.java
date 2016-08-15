@@ -30,12 +30,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see ActorLifecycleMessage
  * @see AgentRegistrationMessage
  */
-public final class MasterOutputMessage implements java.io.Serializable {
+public final class AgentOutputMessage implements java.io.Serializable {
 
     private final Action action;
     private final Serializable data;
 
-    public MasterOutputMessage(@NotNull final Action action, @NotNull final Serializable data) {
+    public AgentOutputMessage(@NotNull final Action action, @NotNull final Serializable data) {
         this.action = checkNotNull(action);
         this.data = checkNotNull(data);
     }

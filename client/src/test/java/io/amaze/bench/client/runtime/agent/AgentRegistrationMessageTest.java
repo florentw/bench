@@ -17,8 +17,10 @@ package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
+import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.metric.SystemConfigTest;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,6 +34,13 @@ import static org.junit.Assert.assertTrue;
  */
 public final class AgentRegistrationMessageTest {
 
+    private AgentRegistrationMessage msg;
+
+    @Before
+    public void before() {
+        msg = AgentRegistrationMessage.create();
+    }
+
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
@@ -42,10 +51,6 @@ public final class AgentRegistrationMessageTest {
 
     @Test
     public void create_msg() {
-        AgentRegistrationMessage msg = AgentRegistrationMessage.create();
-
-        assertNotNull(msg);
-
         assertTrue(msg.getName().startsWith(AgentRegistrationMessage.DEFAULT_AGENT_PREFIX));
         assertNotNull(msg.getSystemConfig());
         assertTrue(msg.getCreationTime() > 0);
@@ -53,21 +58,22 @@ public final class AgentRegistrationMessageTest {
 
     @Test
     public void equality() {
-        AgentRegistrationMessage msg = AgentRegistrationMessage.create();
-        AgentRegistrationMessage msgDifferent = AgentRegistrationMessage.create("different");
+        AgentRegistrationMessage other = AgentRegistrationMessage.create("different");
 
         new EqualsTester().addEqualityGroup(msg, msg).addEqualityGroup(msg.getName(), msg.getName()).addEqualityGroup(
                 msg.hashCode(),
                 msg.hashCode()).testEquals();
 
-        assertThat(msg, is(not(msgDifferent)));
+        assertThat(msg, is(not(other)));
     }
 
     @Test
-    public void to_string() {
-        AgentRegistrationMessage msg = AgentRegistrationMessage.create();
+    public void serialize_deserialize() {
+        AgentRegistrationMessage received = SerializableTester.reserialize(msg);
 
-        assertThat(msg.toString(), is(msg.toString()));
+        assertThat(received.getCreationTime(), is(msg.getCreationTime()));
+        assertThat(received.getName(), is(msg.getName()));
+        assertNotNull(received.getSystemConfig());
     }
 
 }

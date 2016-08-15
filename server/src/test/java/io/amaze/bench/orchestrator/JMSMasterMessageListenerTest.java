@@ -18,9 +18,9 @@ package io.amaze.bench.orchestrator;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
+import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
+import io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
-import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
-import io.amaze.bench.client.runtime.agent.MasterOutputMessage.Action;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
@@ -83,7 +83,7 @@ public final class JMSMasterMessageListenerTest {
     @Test
     public void agent_registered() throws IOException, JMSException {
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.REGISTER_AGENT, regMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.REGISTER_AGENT, regMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -95,7 +95,7 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void agent_signoff() throws IOException, JMSException {
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.UNREGISTER_AGENT, DUMMY_AGENT);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.UNREGISTER_AGENT, DUMMY_AGENT);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -108,7 +108,7 @@ public final class JMSMasterMessageListenerTest {
     @Test
     public void actor_created() throws IOException, JMSException {
         ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.CREATED);
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -121,7 +121,7 @@ public final class JMSMasterMessageListenerTest {
     @Test
     public void actor_initialized() throws IOException, JMSException {
         ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.INITIALIZED);
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -135,7 +135,7 @@ public final class JMSMasterMessageListenerTest {
     public void actor_failure() throws IOException, JMSException {
         ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.FAILED, null);
 
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -149,7 +149,7 @@ public final class JMSMasterMessageListenerTest {
     public void actor_closed() throws IOException, JMSException {
         ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.CLOSED);
 
-        MasterOutputMessage inputMsg = new MasterOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -159,8 +159,8 @@ public final class JMSMasterMessageListenerTest {
         verifyNoMoreInteractions(actorRegistryLstnr);
     }
 
-    private BytesMessage toBytesMessage(final MasterOutputMessage masterMsg) throws IOException, JMSException {
-        Message<MasterOutputMessage> message = new Message<>("", masterMsg);
+    private BytesMessage toBytesMessage(final AgentOutputMessage masterMsg) throws IOException, JMSException {
+        Message<AgentOutputMessage> message = new Message<>("", masterMsg);
         final byte[] data = JMSHelper.convertToBytes(message);
         return createTestBytesMessage(data);
     }

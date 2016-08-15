@@ -20,7 +20,7 @@ import io.amaze.bench.client.api.IrrecoverableException;
 import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.api.ReactorException;
 import io.amaze.bench.client.api.TerminationException;
-import io.amaze.bench.client.runtime.agent.MasterOutputMessage;
+import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.shared.metric.Metric;
@@ -38,9 +38,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
+import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.ACTOR_LIFECYCLE;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
-import static io.amaze.bench.client.runtime.agent.MasterOutputMessage.Action.ACTOR_LIFECYCLE;
 
 /**
  * Created on 2/28/16.
@@ -216,9 +216,9 @@ public class BaseActor implements Actor {
         }
     }
 
-    private void sendToActorRegistry(MasterOutputMessage.Action action, Serializable msg) {
-        MasterOutputMessage masterOutputMessage = new MasterOutputMessage(action, msg);
-        client.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, masterOutputMessage));
+    private void sendToActorRegistry(AgentOutputMessage.Action action, Serializable msg) {
+        AgentOutputMessage agentOutputMessage = new AgentOutputMessage(action, msg);
+        client.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
     }
 
     private void sendLifecycleMessage(@NotNull final Phase phase) {

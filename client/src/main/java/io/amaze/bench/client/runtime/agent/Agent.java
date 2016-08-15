@@ -32,8 +32,8 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
+import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.*;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
-import static io.amaze.bench.client.runtime.agent.MasterOutputMessage.Action.*;
 import static java.lang.String.format;
 
 /**
@@ -144,9 +144,9 @@ public class Agent implements AgentClientListener, AutoCloseable {
         sendToMaster(ACTOR_LIFECYCLE, msg);
     }
 
-    private void sendToMaster(MasterOutputMessage.Action action, Serializable msg) {
-        MasterOutputMessage masterOutputMessage = new MasterOutputMessage(action, msg);
-        agentClient.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, masterOutputMessage));
+    private void sendToMaster(AgentOutputMessage.Action action, Serializable msg) {
+        AgentOutputMessage agentOutputMessage = new AgentOutputMessage(action, msg);
+        agentClient.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
     }
 
     private ManagedActor createManagedActor(@NotNull final ActorConfig actorConfig) {
