@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.orchestrator;
 
+import com.google.common.base.Optional;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
@@ -51,24 +52,25 @@ final class JMSMasterMessageListener implements MessageListener {
     public void onMessage(final javax.jms.Message message) {
         javax.jms.Message jmsMessage = checkNotNull(message);
 
-        Message received = readMessage(jmsMessage);
-        if (received == null) {
+        Optional<Message> received = readMessage(jmsMessage);
+        if (!received.isPresent()) {
             return;
         }
 
-        if (received.data() instanceof AgentOutputMessage) {
-            onMasterMessage(received);
+        Message internalMessage = received.get();
+        if (internalMessage.data() instanceof AgentOutputMessage) {
+            onMasterMessage(internalMessage);
         } else {
             LOG.error("Received invalid message \"" + received + "\" (not a AgentOutputMessage).");
         }
     }
 
-    private Message readMessage(final javax.jms.Message jmsMessage) {
+    private Optional<Message> readMessage(final javax.jms.Message jmsMessage) {
         try {
-            return JMSHelper.objectFromMsg((BytesMessage) jmsMessage);
+            return Optional.of((Message) JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
             LOG.error("Error while reading JMS message  as AgentOutputMessage.", e);
-            return null;
+            return Optional.absent();
         }
     }
 
@@ -84,6 +86,7 @@ final class JMSMasterMessageListener implements MessageListener {
             case ACTOR_LIFECYCLE:
                 onActorLifecycle(masterMsg);
                 break;
+            default:
         }
     }
 
@@ -104,6 +107,7 @@ final class JMSMasterMessageListener implements MessageListener {
             case CLOSED:
                 actorsListener.onActorClosed(actor);
                 break;
+            default:
         }
     }
 

@@ -25,7 +25,7 @@ import org.junit.rules.ExternalResource;
  * <p>
  * Created on 3/19/16.
  */
-public class JMSServerRule extends ExternalResource {
+public final class JMSServerRule extends ExternalResource {
 
     public static final String DEFAULT_HOST = NetworkHelper.LOCALHOST;
 

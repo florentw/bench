@@ -62,7 +62,7 @@ public final class ActorRegistry {
 
     /**
      * @param name name of the actor to find
-     * @return null if no actor with that name is found, returns the actor otherwise
+     * @return {@code null} if no actor with that name is found, returns the actor otherwise
      */
     public RegisteredActor byName(@NotNull final String name) {
         checkNotNull(name);

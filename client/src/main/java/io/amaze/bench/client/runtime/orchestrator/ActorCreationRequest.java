@@ -23,7 +23,7 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Message sent by the master to an agent when it is required to createForAgent an actor.
+ * Message sent by the master to an agent when it is required to create an actor.
  */
 public final class ActorCreationRequest implements Serializable {
 

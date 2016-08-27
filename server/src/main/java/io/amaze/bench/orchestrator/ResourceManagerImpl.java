@@ -18,7 +18,6 @@ package io.amaze.bench.orchestrator;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
@@ -33,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.FluentIterable.from;
 
 /**
  * Created on 4/2/16.
@@ -62,15 +62,15 @@ final class ResourceManagerImpl implements ResourceManager {
 
         ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig);
 
-        RegisteredAgent agent = applyDeployStrategy(actorConfig);
-        if (agent == null) {
+        Optional<RegisteredAgent> agent = applyDeployStrategy(actorConfig);
+        if (!agent.isPresent()) {
             throw new IllegalStateException("No agents found to create actor " + name);
         }
 
-        AgentInputMessage msg = new AgentInputMessage(agent.getName(), Action.CREATE_ACTOR, actorCreationMsg);
+        AgentInputMessage msg = new AgentInputMessage(agent.get().getName(), Action.CREATE_ACTOR, actorCreationMsg);
 
         orchestratorServer.sendToAgent(msg);
-        actorsToAgents.put(name, agent);
+        actorsToAgents.put(name, agent.get());
     }
 
     @Override
@@ -99,20 +99,30 @@ final class ResourceManagerImpl implements ResourceManager {
         return Collections.unmodifiableMap(actorsToAgents);
     }
 
-    private RegisteredAgent pickRandomAgent(final Set<RegisteredAgent> agents) {
+    private Optional<RegisteredAgent> pickRandomAgent(final Set<RegisteredAgent> agents) {
         int index = rand.nextInt(agents.size());
         Iterator<RegisteredAgent> it = agents.iterator();
         for (int i = 0; i < index; i++) {
             it.next();
         }
-        return it.next();
+        return Optional.of(it.next());
     }
 
-    private RegisteredAgent applyDeployStrategy(final ActorConfig actorConfig) {
+    /**
+     * Assigns actor creation to a specific agent according to the following strategy:
+     * <ul>
+     * <li>If the actor is configured with preferred hosts, pick one randomly</li>
+     * <li>Otherwise pick a random agent amongst all registered agents</li>
+     * </ul>
+     *
+     * @param actorConfig Configuration of the actor to assign an agent to
+     * @return An optional agent to host the actor
+     */
+    private Optional<RegisteredAgent> applyDeployStrategy(final ActorConfig actorConfig) {
         Set<RegisteredAgent> allAgents = agentRegistry.all();
 
         if (allAgents.isEmpty()) {
-            return null;
+            return Optional.absent();
         }
 
         final List<String> preferredHosts = actorConfig.getDeployConfig().getPreferredHosts();
@@ -121,29 +131,24 @@ final class ResourceManagerImpl implements ResourceManager {
         }
 
         // Try to find an agent on one of the preferred hosts
-        RegisteredAgent agentOnPreferredHost = pickAgentOnOneOfPreferredHosts(allAgents, preferredHosts);
-        if (agentOnPreferredHost != null) {
+        Optional<RegisteredAgent> agentOnPreferredHost = pickAgentOnOneOfPreferredHosts(allAgents, preferredHosts);
+        if (agentOnPreferredHost.isPresent()) {
             return agentOnPreferredHost;
         } else {
+            LOG.warn("Could not find an agent deployed on one of the preferred hosts: " + preferredHosts);
+
             // Fallback to pick a random agent
             return pickRandomAgent(allAgents);
         }
     }
 
-    private RegisteredAgent pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
-                                                           final List<String> preferredHosts) {
-        Optional<RegisteredAgent> agentMatchingHost = FluentIterable.from(allAgents).filter(new Predicate<RegisteredAgent>() {
+    private Optional<RegisteredAgent> pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
+                                                                     final List<String> preferredHosts) {
+        return from(allAgents).filter(new Predicate<RegisteredAgent>() {
             @Override
             public boolean apply(final RegisteredAgent input) {
                 return preferredHosts.contains(input.getSystemConfig().getHostName());
             }
         }).first();
-
-        if (agentMatchingHost.isPresent()) {
-            return agentMatchingHost.get();
-        }
-
-        LOG.warn("Could not find an agent deployed on one of the preferred hosts: " + preferredHosts);
-        return null;
     }
 }

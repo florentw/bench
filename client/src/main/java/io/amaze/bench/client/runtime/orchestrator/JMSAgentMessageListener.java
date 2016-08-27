@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.base.Optional;
 import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
@@ -48,32 +49,35 @@ final class JMSAgentMessageListener implements MessageListener {
     public void onMessage(@NotNull final javax.jms.Message message) {
         checkNotNull(message);
 
-        AgentInputMessage msg = readInputMessage(message);
-        if (msg == null) {
+        Optional<AgentInputMessage> msg = readInputMessage(message);
+        if (!msg.isPresent()) {
             return;
         }
+
+        AgentInputMessage inputMessage = msg.get();
 
         // Process messages only if sent to myself (topic)
-        if (!msg.getDestinationAgent().equals(agentName)) {
+        if (!inputMessage.getDestinationAgent().equals(agentName)) {
             return;
         }
 
-        switch (msg.getAction()) { // NOSONAR
+        switch (inputMessage.getAction()) { // NOSONAR
             case CREATE_ACTOR:
-                createActor(msg);
+                createActor(inputMessage);
                 break;
             case CLOSE_ACTOR:
-                closeActor(msg);
+                closeActor(inputMessage);
                 break;
+            default:
         }
     }
 
-    private AgentInputMessage readInputMessage(@NotNull final Message message) {
+    private Optional<AgentInputMessage> readInputMessage(@NotNull final Message message) {
         try {
-            return JMSHelper.objectFromMsg((BytesMessage) message);
+            return Optional.of((AgentInputMessage) JMSHelper.objectFromMsg((BytesMessage) message));
         } catch (Exception e) {
             LOG.error("Invalid AgentInputMessage received, message:" + message, e);
-            return null;
+            return Optional.absent();
         }
     }
 

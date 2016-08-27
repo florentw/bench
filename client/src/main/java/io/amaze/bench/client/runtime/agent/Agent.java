@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.amaze.bench.client.runtime.actor.*;
@@ -83,9 +84,9 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         LOG.info(format("Actor creation request for actor \"%s\" with config: %s", actorName, actorConfig));
 
-        ManagedActor instance = createManagedActor(actorConfig);
-        if (instance != null) {
-            actors.put(actorName, instance);
+        Optional<ManagedActor> instance = createManagedActor(actorConfig);
+        if (instance.isPresent()) {
+            actors.put(actorName, instance.get());
             sendActorLifecycleMessage(actorName, Phase.CREATED);
         }
 
@@ -115,7 +116,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         }
         actors.clear();
 
-        signOffAgent();
+        signOff();
 
         LOG.info(format("Agent \"%s\" closed.", name));
     }
@@ -135,7 +136,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         sendToMaster(REGISTER_AGENT, regMsg);
     }
 
-    private void signOffAgent() {
+    private void signOff() {
         sendToMaster(UNREGISTER_AGENT, name);
     }
 
@@ -149,21 +150,19 @@ public class Agent implements AgentClientListener, AutoCloseable {
         agentClient.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
     }
 
-    private ManagedActor createManagedActor(@NotNull final ActorConfig actorConfig) {
-        ManagedActor instance;
+    private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {
         try {
-            ActorManager manager = getActorManager(actorConfig.getDeployConfig());
-            instance = manager.createActor(actorConfig);
+            ActorManager manager = actorManager(actorConfig.getDeployConfig());
+            return Optional.of(manager.createActor(actorConfig));
 
         } catch (Exception e) {
             LOG.warn(format("Could not create actor with config \"%s\".", actorConfig), e);
             actorFailure(actorConfig.getName(), e);
-            return null;
+            return Optional.absent();
         }
-        return instance;
     }
 
-    private ActorManager getActorManager(@NotNull final DeployConfig deployConfig) {
+    private ActorManager actorManager(@NotNull final DeployConfig deployConfig) {
         if (deployConfig.isForked()) {
             return forkedManager;
         } else {

@@ -93,7 +93,7 @@ public final class ActorFactory {
     }
 
     /**
-     * Inject dependencies to createForAgent a reactor.
+     * Inject dependencies to create a reactor.
      */
     private Reactor createReactor(final String actorName,
                                   final MetricsSink sink,

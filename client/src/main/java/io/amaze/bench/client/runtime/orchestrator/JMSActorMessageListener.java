@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.base.Optional;
 import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
@@ -46,12 +47,13 @@ final class JMSActorMessageListener implements MessageListener {
     public void onMessage(@NotNull final javax.jms.Message message) {
         checkNotNull(message);
 
-        ActorInputMessage msg = readInputMessage(message);
-        if (msg == null) {
+        Optional<ActorInputMessage> msg = readInputMessage(message);
+        if (!msg.isPresent()) {
             return;
         }
 
-        switch (msg.getCommand()) { // NOSONAR
+        ActorInputMessage input = msg.get();
+        switch (input.getCommand()) { // NOSONAR
             case INIT:
                 actor.init();
                 break;
@@ -62,17 +64,18 @@ final class JMSActorMessageListener implements MessageListener {
                 actor.dumpAndFlushMetrics();
                 break;
             case MESSAGE:
-                actor.onMessage(msg.getFrom(), msg.getPayload());
+                actor.onMessage(input.getFrom(), input.getPayload());
                 break;
+            default:
         }
     }
 
-    private ActorInputMessage readInputMessage(@NotNull final Message message) {
+    private Optional<ActorInputMessage> readInputMessage(@NotNull final Message message) {
         try {
-            return JMSHelper.objectFromMsg((BytesMessage) message);
+            return Optional.of((ActorInputMessage) JMSHelper.objectFromMsg((BytesMessage) message));
         } catch (Exception e) {
             LOG.error("Invalid ActorInputMessage received, message:" + message, e);
-            return null;
+            return Optional.absent();
         }
     }
 }
