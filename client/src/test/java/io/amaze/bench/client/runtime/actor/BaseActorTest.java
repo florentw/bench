@@ -23,6 +23,7 @@ import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,6 +62,13 @@ public final class BaseActorTest {
         tester.setDefault(Method.class, BaseActorTest.class.getMethods()[0]);
         try (BaseActor actor = defaultTestActor()) {
             tester.testAllPublicInstanceMethods(actor);
+        }
+    }
+
+    @Test
+    public void toString_yields_valid_json() throws ValidationException {
+        try (BaseActor actor = defaultTestActor()) {
+            assertTrue(Json.isValid(actor.toString()));
         }
     }
 
