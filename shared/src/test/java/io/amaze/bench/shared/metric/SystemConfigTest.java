@@ -29,14 +29,12 @@ import java.util.HashMap;
 @RunWith(MockitoJUnitRunner.class)
 public final class SystemConfigTest {
 
-    private static final MemoryConfig MEMORY_CONFIG = new MemoryConfig(0, new HashMap<String, String>());
+    private static final MemoryConfig MEMORY_CONFIG = new MemoryConfig(0, new HashMap<>());
     public static final SystemConfig DUMMY_CONFIG = new SystemConfig("",
                                                                      1,
                                                                      "",
                                                                      "",
-                                                                     "",
-                                                                     MEMORY_CONFIG,
-                                                                     new ArrayList<ProcessorConfig>());
+                                                                     "", MEMORY_CONFIG, new ArrayList<>());
 
     @Test
     public void null_parameters_are_invalid() {

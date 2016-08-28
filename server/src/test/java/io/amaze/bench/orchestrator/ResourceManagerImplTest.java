@@ -24,7 +24,6 @@ import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
 import io.amaze.bench.orchestrator.registry.RegisteredAgent;
 import io.amaze.bench.shared.metric.MemoryConfig;
-import io.amaze.bench.shared.metric.ProcessorConfig;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -194,9 +193,7 @@ public final class ResourceManagerImplTest {
                                                          1,
                                                          "",
                                                          "",
-                                                         "",
-                                                         new MemoryConfig(0, new HashMap<String, String>()),
-                                                         new ArrayList<ProcessorConfig>());
+                                                         "", new MemoryConfig(0, new HashMap<>()), new ArrayList<>());
         AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentName, sysInfoOtherHost, 0);
         agentRegistry.getListenerForOrchestrator().onAgentRegistration(regMsgAgentOnOtherHost);
         return regMsgAgentOnOtherHost;

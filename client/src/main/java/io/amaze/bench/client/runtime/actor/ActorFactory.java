@@ -20,17 +20,15 @@ import io.amaze.bench.client.api.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
-import io.amaze.bench.shared.metric.Metric;
 import io.amaze.bench.shared.metric.MetricsSink;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
+import static io.amaze.bench.shared.helper.Reflection.findAtMostOneAnnotatedMethod;
 
 
 /**
@@ -105,22 +103,14 @@ public final class ActorFactory {
 
         pico.addComponent(config);
 
-        pico.addComponent(new Sender() {
-            @Override
-            public void send(@NotNull final String to, @NotNull final Serializable message) {
-                checkNotNull(to);
-                checkNotNull(message);
+        pico.addComponent((Sender) (to, message) -> {
+            checkNotNull(to);
+            checkNotNull(message);
 
-                client.sendToActor(to, new Message<>(actorName, message));
-            }
+            client.sendToActor(to, new Message<>(actorName, message));
         });
 
-        pico.addComponent(new MetricsCollector() {
-            @Override
-            public void putMetric(@NotNull final String key, @NotNull final Metric metric) {
-                sink.add(key, metric);
-            }
-        });
+        pico.addComponent((MetricsCollector) sink::add);
 
         pico.addComponent(clazz);
 

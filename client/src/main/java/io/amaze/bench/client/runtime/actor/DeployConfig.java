@@ -67,10 +67,10 @@ public final class DeployConfig implements Serializable {
             return false;
         }
         DeployConfig that = (DeployConfig) o;
-        return jmsServerPort == that.jmsServerPort && forked == that.forked && Objects.equals(jmsServerHost,
-                                                                                              that.jmsServerHost) && Objects.equals(
-                preferredHosts,
-                that.preferredHosts);
+        return jmsServerPort == that.jmsServerPort && //
+                forked == that.forked && //
+                Objects.equals(jmsServerHost, that.jmsServerHost) && //
+                Objects.equals(preferredHosts, that.preferredHosts);
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
-import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
+import static io.amaze.bench.shared.helper.Reflection.findAtMostOneAnnotatedMethod;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created on 3/1/16.
  */
-public final class ReflectionHelperTest {
+public final class ReflectionTest {
 
     @Test
     public void find_no_annotated_method_returns_null() {

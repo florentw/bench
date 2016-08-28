@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.shared.metric;
 
-import io.amaze.bench.shared.helper.SystemHelper;
+import io.amaze.bench.shared.helper.System;
 
 /**
  * Provides an instance of {@link SystemConfig}, populated with the configuration of the current box.
@@ -34,7 +34,7 @@ public final class SystemConfigs {
 
     private static SystemConfig createSystemInfoInstance() {
         SystemConfigFactory factory;
-        if (SystemHelper.isLinux()) {
+        if (System.isLinux()) {
             factory = new LinuxSystemConfigFactory();
         } else {
             factory = new UnknownSystemConfigFactory();

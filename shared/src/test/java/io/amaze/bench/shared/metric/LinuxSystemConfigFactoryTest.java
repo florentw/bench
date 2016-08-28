@@ -24,7 +24,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
-import static io.amaze.bench.shared.helper.FileHelper.writeToFile;
+import static io.amaze.bench.shared.helper.Files.writeTo;
 import static io.amaze.bench.shared.metric.LinuxSystemConfigFactory.UNKNOWN_INT_VALUE;
 import static io.amaze.bench.shared.metric.LinuxSystemConfigFactory.UNKNOWN_STRING_VALUE;
 import static junit.framework.TestCase.assertFalse;
@@ -108,7 +108,7 @@ public final class LinuxSystemConfigFactoryTest {
     @Test
     public void create_from_incomplete_cpu_info_file() throws IOException {
         File file = folder.newFile();
-        writeToFile(file, TEST_INVALID_CPUINFO_CONTENT);
+        writeTo(file, TEST_INVALID_CPUINFO_CONTENT);
 
         LinuxSystemConfigFactory configFactory = new LinuxSystemConfigFactory(file.getAbsolutePath(), validMemInfoPath);
         SystemConfig sysConfig = configFactory.create();
@@ -134,7 +134,7 @@ public final class LinuxSystemConfigFactoryTest {
     @Test
     public void create_from_incomplete_mem_info_file() throws IOException {
         File file = folder.newFile();
-        writeToFile(file, TEST_INVALID_MEMINFO_CONTENT);
+        writeTo(file, TEST_INVALID_MEMINFO_CONTENT);
 
         LinuxSystemConfigFactory configFactory = new LinuxSystemConfigFactory(validCpuInfoPath, file.getAbsolutePath());
         SystemConfig sysConfig = configFactory.create();
@@ -155,7 +155,7 @@ public final class LinuxSystemConfigFactoryTest {
     @Test
     public void create_from_corrupted_mem_info_file() throws IOException {
         File file = folder.newFile();
-        writeToFile(file, TEST_CORRUPTED_MEMINFO_CONTENT);
+        writeTo(file, TEST_CORRUPTED_MEMINFO_CONTENT);
 
         LinuxSystemConfigFactory configFactory = new LinuxSystemConfigFactory(validCpuInfoPath, file.getAbsolutePath());
         SystemConfig sysConfig = configFactory.create();

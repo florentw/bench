@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.client.runtime.orchestrator;
 
-import com.google.common.base.Optional;
 import io.amaze.bench.client.api.Reactor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
@@ -27,6 +26,7 @@ import javax.jms.BytesMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -46,7 +46,7 @@ final class JMSAgentMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(@NotNull final javax.jms.Message message) {
+    public void onMessage(@NotNull final Message message) {
         checkNotNull(message);
 
         Optional<AgentInputMessage> msg = readInputMessage(message);
@@ -74,10 +74,10 @@ final class JMSAgentMessageListener implements MessageListener {
 
     private Optional<AgentInputMessage> readInputMessage(@NotNull final Message message) {
         try {
-            return Optional.of((AgentInputMessage) JMSHelper.objectFromMsg((BytesMessage) message));
+            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) message));
         } catch (Exception e) {
             LOG.error("Invalid AgentInputMessage received, message:" + message, e);
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 

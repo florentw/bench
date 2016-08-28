@@ -21,8 +21,6 @@ import javax.validation.constraints.NotNull;
  * Abstraction facade for a JMS server implementation.<br/>
  * Implementations must start the underlying JMS server in the constructor and stop it in the {@link #close()} method.<br/>
  * Allows to manage the server (queues and topics management).
- * <p>
- * Created on 3/4/16.
  */
 public interface JMSServer extends AutoCloseable {
 
@@ -31,7 +29,7 @@ public interface JMSServer extends AutoCloseable {
      * Will throw if a queue with the same name already exist.
      *
      * @param name Name of the JMS queue to be created.
-     * @throws JMSException
+     * @throws JMSException When underlying JMS implementation fails
      */
     void createQueue(@NotNull String name) throws JMSException;
 
@@ -40,7 +38,7 @@ public interface JMSServer extends AutoCloseable {
      * Will throw if a queue with the same name already exist.
      *
      * @param name Name of the JMS topic to be created.
-     * @throws JMSException
+     * @throws JMSException When underlying JMS implementation fails
      */
     void createTopic(@NotNull String name) throws JMSException;
 

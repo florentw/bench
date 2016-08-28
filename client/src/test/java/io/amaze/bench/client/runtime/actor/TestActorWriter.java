@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 
-import static io.amaze.bench.shared.helper.FileHelper.writeToFile;
+import static io.amaze.bench.shared.helper.Files.writeTo;
 
 /**
  * Created on 3/15/16.
@@ -70,7 +70,7 @@ public final class TestActorWriter extends TestActor {
 
     private void writeFile(final String fileName, final String content) throws IrrecoverableException {
         try {
-            writeToFile(new File(fileName), content);
+            writeTo(new File(fileName), content);
             LOG.info("Wrote \"" + content + "\" in file " + fileName + " ");
         } catch (IOException e) {
             throw new IrrecoverableException(String.format(MSG_CREATION_ERROR, fileName), e);

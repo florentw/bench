@@ -41,12 +41,12 @@ public class RecorderOrchestratorAgent implements OrchestratorAgent {
 
     @Override
     public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
-        List<Message<? extends Serializable>> msgs = sentMessages.get(to);
-        if (msgs == null) {
-            msgs = new ArrayList<>();
-            sentMessages.put(to, msgs);
+        List<Message<? extends Serializable>> messages = sentMessages.get(to);
+        if (messages == null) {
+            messages = new ArrayList<>();
+            sentMessages.put(to, messages);
         }
-        msgs.add(message);
+        messages.add(message);
     }
 
     @Override

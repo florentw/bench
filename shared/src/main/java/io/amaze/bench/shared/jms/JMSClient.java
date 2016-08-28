@@ -20,7 +20,13 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * Created on 3/3/16.
+ * Abstraction of a JMS client providing a way to listen for messages on queues, topics.
+ * It also allows to send messages to a queue or a topic.<br/>
+ * A call to {@link #startListening()} can only be done once, and only after calling listener registration methods:<br/>
+ * <ul>
+ * <li>{@link #addQueueListener(String, MessageListener)}</li>
+ * <li>or {@link #addTopicListener(String, MessageListener)}</li>
+ * </ul>
  */
 public interface JMSClient extends AutoCloseable {
 
@@ -29,7 +35,7 @@ public interface JMSClient extends AutoCloseable {
      * The provided {@link javax.jms.MessageListener} instances will then be called upon reception off events.<br/>
      * This method need to be called only once, and once called, no other listeners can be added.<br/>
      *
-     * @throws JMSException
+     * @throws JMSException When an error happens while registering JMS listener
      */
     void startListening() throws JMSException;
 
@@ -40,7 +46,7 @@ public interface JMSClient extends AutoCloseable {
      *
      * @param listenerQueueName JMS queue to listen to
      * @param listener          Listener to be notified
-     * @throws JMSException
+     * @throws JMSException When underlying JMS implementation fails
      */
     void addQueueListener(@NotNull String listenerQueueName, @NotNull MessageListener listener) throws JMSException;
 
@@ -51,7 +57,7 @@ public interface JMSClient extends AutoCloseable {
      *
      * @param listenerTopicName JMS topic to listen to
      * @param listener          Listener to be notified
-     * @throws JMSException
+     * @throws JMSException When underlying JMS implementation fails
      */
     void addTopicListener(@NotNull String listenerTopicName, @NotNull MessageListener listener) throws JMSException;
 
@@ -60,7 +66,7 @@ public interface JMSClient extends AutoCloseable {
      *
      * @param queueName Destination JMS queue
      * @param msg       The message to send
-     * @throws JMSException
+     * @throws JMSException When underlying JMS implementation fails
      */
     void sendToQueue(@NotNull String queueName, @NotNull Serializable msg) throws JMSException;
 
@@ -69,7 +75,7 @@ public interface JMSClient extends AutoCloseable {
      *
      * @param topicName Destination JMS topc
      * @param msg       The message to send
-     * @throws JMSException
+     * @throws JMSException When underlying JMS implementation fails
      */
     void sendToTopic(@NotNull String topicName, @NotNull Serializable msg) throws JMSException;
 

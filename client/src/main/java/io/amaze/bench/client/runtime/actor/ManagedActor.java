@@ -18,13 +18,19 @@ package io.amaze.bench.client.runtime.actor;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 3/13/16.
+ * Facade on an actor instance as seen by the agent hosting it.
  */
 public interface ManagedActor {
 
+    /**
+     * Return the name of the actor
+     */
     @NotNull
-    String name();
+    String getName();
 
+    /**
+     * Terminates the actor by invoking its {@link Actor#close()} method.
+     */
     void close();
 
 }

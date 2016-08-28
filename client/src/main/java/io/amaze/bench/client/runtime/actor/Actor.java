@@ -24,9 +24,7 @@ import java.io.Serializable;
 
 /**
  * Wrapper interface for a {@link Reactor} instance.<br/>
- * Used by the Manager as an internal interface with an embedded {@link Reactor} instance.<br/>
- * <p/>
- * Created on 2/28/16.
+ * Used by the Manager as an internal interface with an embedded {@link Reactor} instance.
  */
 public interface Actor extends AutoCloseable {
 

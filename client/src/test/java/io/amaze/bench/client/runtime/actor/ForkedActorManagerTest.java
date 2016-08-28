@@ -19,7 +19,7 @@ import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.Constants;
-import io.amaze.bench.shared.helper.FileHelper;
+import io.amaze.bench.shared.helper.Files;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
@@ -92,7 +92,7 @@ public final class ForkedActorManagerTest {
         ManagedActor actor = actorManager.createActor(actorConfig);
 
         assertNotNull(actor);
-        assertThat(actor.name(), is(DUMMY_ACTOR));
+        assertThat(actor.getName(), is(DUMMY_ACTOR));
 
         verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
         actorManager.close();
@@ -191,8 +191,7 @@ public final class ForkedActorManagerTest {
 
         DeployConfig deployConfig = new DeployConfig(server.getHost(),
                                                      server.getPort(),
-                                                     true,
-                                                     Collections.<String>emptyList());
+                                                     true, Collections.emptyList());
 
         String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
 
@@ -210,7 +209,7 @@ public final class ForkedActorManagerTest {
         while ((System.currentTimeMillis() - t0) < timeoutMs) {
             String content = null;
             try {
-                content = FileHelper.readFile(file.getAbsolutePath());
+                content = Files.read(file.getAbsolutePath());
             } catch (IOException e) {
                 Throwables.propagate(e);
             }

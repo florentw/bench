@@ -16,7 +16,6 @@
 package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.amaze.bench.client.runtime.actor.*;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -111,9 +111,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
     public synchronized void close() throws Exception {
         LOG.info(format("Closing agent \"%s\"...", name));
 
-        for (ManagedActor actor : actors.values()) {
-            actor.close();
-        }
+        actors.values().forEach(ManagedActor::close);
         actors.clear();
 
         signOff();
@@ -158,7 +156,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         } catch (Exception e) {
             LOG.warn(format("Could not create actor with config \"%s\".", actorConfig), e);
             actorFailure(actorConfig.getName(), e);
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 

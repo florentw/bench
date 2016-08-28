@@ -15,27 +15,23 @@
  */
 package io.amaze.bench.shared.helper;
 
-import com.google.common.base.Throwables;
-
-import java.net.ServerSocket;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 
 /**
- * Created on 3/19/16.
+ * Created on 3/20/16.
  */
-public final class NetworkHelper {
+public final class System {
 
-    public static final String LOCALHOST = "localhost";
+    private static final String OS_NAME_LINUX = "Linux";
 
-    private NetworkHelper() {
-        // Helper class
+    private System() {
+        // Should not be instantiated
     }
 
-    public static int findFreePort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        } catch (Exception e) {
-            throw Throwables.propagate(e);
-        }
+    public static boolean isLinux() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        return osBean.getName().contains(OS_NAME_LINUX);
     }
 
 }

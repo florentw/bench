@@ -22,14 +22,13 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
-import static io.amaze.bench.shared.helper.FileHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created on 3/19/16.
  */
-public final class FileHelperTest {
+public final class FilesTest {
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
@@ -39,9 +38,9 @@ public final class FileHelperTest {
         File file = folder.newFile();
 
         String expected = "Test";
-        writeToFile(file, expected);
+        Files.writeTo(file, expected);
 
-        String actual = readFile(file.getPath());
+        String actual = Files.read(file.getPath());
         assertThat(actual, is(expected));
     }
 
@@ -50,9 +49,9 @@ public final class FileHelperTest {
         File file = folder.newFile();
 
         String expected = "Test";
-        writeToFile(file, expected);
+        Files.writeTo(file, expected);
 
-        String actual = readFileAndDelete(file.getPath());
+        String actual = Files.readAndDelete(file.getPath());
         assertThat(actual, is(expected));
         assertThat(file.exists(), is(false));
     }
@@ -62,7 +61,7 @@ public final class FileHelperTest {
         File file = folder.newFile();
         if (file.setReadOnly()) {
             String expected = "Test";
-            writeToFile(file, expected);
+            Files.writeTo(file, expected);
         } else {
             throw new IOException();
         }
@@ -70,7 +69,7 @@ public final class FileHelperTest {
 
     @Test(expected = IOException.class)
     public void read_file_and_delete_unknown_file_throws() throws IOException {
-        readFileAndDelete("dummy.file");
+        Files.readAndDelete("dummy.file");
     }
 
 }

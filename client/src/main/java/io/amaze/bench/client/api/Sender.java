@@ -31,6 +31,7 @@ import java.io.Serializable;
  *
  * @see Reactor
  */
+@FunctionalInterface
 public interface Sender {
 
     /**

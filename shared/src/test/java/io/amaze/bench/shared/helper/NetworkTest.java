@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.shared.metric;
+package io.amaze.bench.shared.helper;
 
-import com.google.common.testing.NullPointerTester;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.HashMap;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Created on 8/15/16.
+ * Created on 8/28/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class ProcessorConfigTest {
+public final class NetworkTest {
 
     @Test
-    public void null_parameters_are_invalid() {
-        ProcessorConfig processorConfig = new ProcessorConfig("", 1, "", "", new HashMap<>());
-        NullPointerTester tester = new NullPointerTester();
-
-        tester.testAllPublicConstructors(ProcessorConfig.class);
-        tester.testAllPublicInstanceMethods(processorConfig);
+    public void find_positive_port() {
+        assertTrue(Network.findFreePort() > 0);
     }
 
 }

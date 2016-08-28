@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.shared.helper.ReflectionHelper.findAtMostOneAnnotatedMethod;
+import static io.amaze.bench.shared.helper.Reflection.findAtMostOneAnnotatedMethod;
 
 
 /**

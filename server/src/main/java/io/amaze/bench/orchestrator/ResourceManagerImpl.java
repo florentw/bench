@@ -16,8 +16,6 @@
 package io.amaze.bench.orchestrator;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
@@ -32,7 +30,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.FluentIterable.from;
 
 /**
  * Created on 4/2/16.
@@ -88,10 +85,8 @@ final class ResourceManagerImpl implements ResourceManager {
 
     @Override
     public void close() {
-        Set<String> actorsMapCpy = new HashSet<>(actorsToAgents.keySet());
-        for (String actor : actorsMapCpy) {
-            closeActor(actor);
-        }
+        Set<String> actorsMapCopy = new HashSet<>(actorsToAgents.keySet());
+        actorsMapCopy.forEach(this::closeActor);
     }
 
     @VisibleForTesting
@@ -122,7 +117,7 @@ final class ResourceManagerImpl implements ResourceManager {
         Set<RegisteredAgent> allAgents = agentRegistry.all();
 
         if (allAgents.isEmpty()) {
-            return Optional.absent();
+            return Optional.empty();
         }
 
         final List<String> preferredHosts = actorConfig.getDeployConfig().getPreferredHosts();
@@ -144,11 +139,6 @@ final class ResourceManagerImpl implements ResourceManager {
 
     private Optional<RegisteredAgent> pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
                                                                      final List<String> preferredHosts) {
-        return from(allAgents).filter(new Predicate<RegisteredAgent>() {
-            @Override
-            public boolean apply(final RegisteredAgent input) {
-                return preferredHosts.contains(input.getSystemConfig().getHostName());
-            }
-        }).first();
+        return allAgents.stream().filter(input -> preferredHosts.contains(input.getSystemConfig().getHostName())).findFirst();
     }
 }

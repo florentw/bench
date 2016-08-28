@@ -30,7 +30,7 @@ public final class MemoryConfigTest {
 
     @Test
     public void null_parameters_are_invalid() {
-        MemoryConfig memoryConfig = new MemoryConfig(1L, new HashMap<String, String>());
+        MemoryConfig memoryConfig = new MemoryConfig(1L, new HashMap<>());
         NullPointerTester tester = new NullPointerTester();
 
         tester.testAllPublicConstructors(MemoryConfig.class);

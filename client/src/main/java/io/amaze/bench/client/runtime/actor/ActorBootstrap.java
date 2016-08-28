@@ -18,7 +18,7 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
-import io.amaze.bench.shared.helper.FileHelper;
+import io.amaze.bench.shared.helper.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public final class ActorBootstrap {
         String jsonTmpConfigFile = args[5];
 
         // Read and delete the temporary config file
-        String jsonConfig = FileHelper.readFileAndDelete(jsonTmpConfigFile);
+        String jsonConfig = Files.readAndDelete(jsonTmpConfigFile);
 
         OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(jmsServerHost, jmsServerPort);
 

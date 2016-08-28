@@ -23,12 +23,11 @@ import javax.validation.constraints.NotNull;
  * <p>
  * Created on 3/20/16.
  */
-public interface SystemConfigFactory {
+@FunctionalInterface
+interface SystemConfigFactory {
 
     /**
-     * Generate a SystemConfig object (best effort).<br/>
-     *
-     * @return A new SystemConfig object.
+     * Generate a {@link SystemConfig} object (best effort).
      */
     @NotNull
     SystemConfig create();

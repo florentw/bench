@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.orchestrator;
 
-import com.google.common.base.Optional;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -67,14 +67,14 @@ final class JMSMasterMessageListener implements MessageListener {
 
     private Optional<Message> readMessage(final javax.jms.Message jmsMessage) {
         try {
-            return Optional.of((Message) JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
+            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
             LOG.error("Error while reading JMS message  as AgentOutputMessage.", e);
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 
-    private void onMasterMessage(final io.amaze.bench.client.runtime.message.Message received) {
+    private void onMasterMessage(final Message received) {
         AgentOutputMessage masterMsg = (AgentOutputMessage) received.data();
         switch (masterMsg.getAction()) { // NOSONAR
             case REGISTER_AGENT:

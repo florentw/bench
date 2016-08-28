@@ -17,8 +17,6 @@ package io.amaze.bench.shared.jms;
 
 import com.google.common.testing.NullPointerTester;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -41,13 +39,10 @@ public final class JMSHelperTest {
     public static BytesMessage createTestBytesMessage(final byte[] data) throws JMSException {
         BytesMessage msg = mock(BytesMessage.class);
         when(msg.getBodyLength()).thenReturn((long) data.length);
-        when(msg.readBytes(any(byte[].class))).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                byte[] out = (byte[]) invocation.getArguments()[0];
-                System.arraycopy(data, 0, out, 0, out.length);
-                return null;
-            }
+        when(msg.readBytes(any(byte[].class))).thenAnswer(invocation -> {
+            byte[] out = (byte[]) invocation.getArguments()[0];
+            System.arraycopy(data, 0, out, 0, out.length);
+            return null;
         }).thenReturn(data.length);
         return msg;
     }

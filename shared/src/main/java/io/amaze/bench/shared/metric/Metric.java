@@ -25,6 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created on 2/24/16.
  */
 public final class Metric implements Serializable {
+
     private final String label;
     private final String firstUnit;
     private final String secondUnit;

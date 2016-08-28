@@ -45,7 +45,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
         return new ManagedActor() {
             @NotNull
             @Override
-            public String name() {
+            public String getName() {
                 return name;
             }
 

@@ -106,7 +106,7 @@ public final class AgentTest {
         agent.onActorCreationRequest(DUMMY_CONFIG);
 
         assertThat(agent.getActors().size(), is(1));
-        assertThat(agent.getActors().iterator().next().name(), is(DUMMY_ACTOR));
+        assertThat(agent.getActors().iterator().next().getName(), is(DUMMY_ACTOR));
 
         // Check managers interactions
         verify(embeddedManager).createActor(DUMMY_CONFIG);

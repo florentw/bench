@@ -38,7 +38,6 @@ public final class JMSHelper {
      * @param message JMS input message with a serialized payload
      * @param <T>     Type of the serialized object
      * @return The de-serialized object
-     * @throws IOException
      */
     public static <T extends Serializable> T objectFromMsg(@NotNull final BytesMessage message) throws IOException {
         checkNotNull(message);
@@ -57,7 +56,6 @@ public final class JMSHelper {
      *
      * @param object A serialized object
      * @return The byte buffer containing the serialized object
-     * @throws IOException
      */
     public static byte[] convertToBytes(@NotNull final Serializable object) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();

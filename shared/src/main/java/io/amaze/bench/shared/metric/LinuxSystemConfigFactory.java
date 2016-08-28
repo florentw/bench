@@ -16,7 +16,7 @@
 package io.amaze.bench.shared.metric;
 
 import com.google.common.base.Splitter;
-import io.amaze.bench.shared.helper.FileHelper;
+import io.amaze.bench.shared.helper.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,7 @@ final class LinuxSystemConfigFactory extends AbstractSystemConfigFactory {
 
     private String readFileContent(final String filePath) {
         try {
-            return FileHelper.readFile(filePath);
+            return Files.read(filePath);
         } catch (IOException e) {
             LOG.info("Could not read file: " + filePath, e);
             return null;

@@ -54,7 +54,7 @@ public final class AgentRegistryListenerLoggerTest {
     }
 
     @Test
-    public void agent_signoff() {
+    public void agent_sign_off() {
         loggerListener.onAgentSignOff(DUMMY_AGENT);
 
         verify(delegateListener).onAgentSignOff(DUMMY_AGENT);

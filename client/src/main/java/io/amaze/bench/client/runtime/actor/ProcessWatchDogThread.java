@@ -48,6 +48,7 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
         watchdogStartedLatch = new CountDownLatch(1);
 
         setName("WatchDog-" + name);
+        setDaemon(true);
     }
 
     @Override

@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static io.amaze.bench.shared.helper.NetworkHelper.LOCALHOST;
-import static io.amaze.bench.shared.helper.NetworkHelper.findFreePort;
+import static io.amaze.bench.shared.helper.Network.LOCALHOST;
+import static io.amaze.bench.shared.helper.Network.findFreePort;
 import static io.amaze.bench.shared.jms.FFMQServerTest.DUMMY_QUEUE;
 import static io.amaze.bench.shared.jms.FFMQServerTest.DUMMY_TOPIC;
 import static junit.framework.TestCase.assertNotNull;
@@ -113,7 +113,7 @@ public final class JMSClientServerTest {
             assertNotNull(server);
             assertThat(bytesMessages.size(), is(1));
             assertNotNull(bytesMessages.get(0));
-            assertThat((String) JMSHelper.objectFromMsg(bytesMessages.get(0)), is(DUMMY_PAYLOAD));
+            assertThat(JMSHelper.objectFromMsg(bytesMessages.get(0)), is(DUMMY_PAYLOAD));
         }
     }
 
@@ -164,7 +164,7 @@ public final class JMSClientServerTest {
 
             // Ensure messages are received in the same order they were sent
             for (int i = 0; i < 5; i++) {
-                assertThat((String) JMSHelper.objectFromMsg(bytesMessages.get(i)), is(i + ""));
+                assertThat(JMSHelper.objectFromMsg(bytesMessages.get(i)), is(i + ""));
             }
         }
     }
@@ -186,7 +186,7 @@ public final class JMSClientServerTest {
             assertNotNull(server);
             assertThat(bytesMessages.size(), is(1));
             assertNotNull(bytesMessages.get(0));
-            assertThat((String) JMSHelper.objectFromMsg(bytesMessages.get(0)), is(DUMMY_PAYLOAD));
+            assertThat(JMSHelper.objectFromMsg(bytesMessages.get(0)), is(DUMMY_PAYLOAD));
         }
     }
 
@@ -240,7 +240,7 @@ public final class JMSClientServerTest {
 
             // Ensure messages are received in the same order they were sent
             for (int i = 0; i < 5; i++) {
-                assertThat((String) JMSHelper.objectFromMsg(bytesMessages.get(i)), is(i + ""));
+                assertThat(JMSHelper.objectFromMsg(bytesMessages.get(i)), is(i + ""));
             }
         }
     }

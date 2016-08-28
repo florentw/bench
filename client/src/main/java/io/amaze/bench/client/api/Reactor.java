@@ -33,6 +33,7 @@ import java.io.Serializable;
  * @see Before
  * @see After
  */
+@FunctionalInterface
 public interface Reactor<I extends Serializable> {
 
     /**

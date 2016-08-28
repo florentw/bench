@@ -19,35 +19,34 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
  * Created on 3/16/16.
  */
-public final class FileHelper {
+public final class Files {
 
-    private FileHelper() {
+    private Files() {
         // Should not be instantiated
     }
 
-    public static String readFileAndDelete(final String path) throws IOException {
-        String content = readFile(path);
+    public static String readAndDelete(final String path) throws IOException {
+        String content = read(path);
 
-        File tmpConfigFile = new File(path);
-        tmpConfigFile.deleteOnExit();
-        if (!tmpConfigFile.delete()) {
+        File fileToDelete = new File(path);
+        fileToDelete.deleteOnExit();
+        if (!fileToDelete.delete()) {
             throw new IOException("Could not delete temporary file \"" + path + "\".");
         }
         return content;
     }
 
-    public static String readFile(final String path) throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
+    public static String read(final String path) throws IOException {
+        byte[] encoded = java.nio.file.Files.readAllBytes(Paths.get(path));
         return new String(encoded, Charset.forName("UTF-8"));
     }
 
-    public static void writeToFile(File dest, String content) throws IOException {
+    public static void writeTo(File dest, String content) throws IOException {
         try (PrintWriter writer = new PrintWriter(dest, "UTF-8")) {
             writer.print(content);
         }

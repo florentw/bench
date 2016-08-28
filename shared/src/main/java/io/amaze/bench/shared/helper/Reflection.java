@@ -23,11 +23,11 @@ import java.lang.reflect.Method;
 /**
  * Created on 2/28/16.
  */
-public final class ReflectionHelper {
+public final class Reflection {
 
     private static final String MSG_DECLARED_MORE_THAN_ONCE = "%s annotation is declared for more than one method of class %s";
 
-    private ReflectionHelper() {
+    private Reflection() {
         // Helper class
     }
 

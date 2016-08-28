@@ -1,6 +1,5 @@
 package io.amaze.bench.client.runtime.actor;
 
-import com.google.common.base.Predicate;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import org.junit.Before;
@@ -8,12 +7,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static com.google.common.collect.FluentIterable.from;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -35,14 +33,12 @@ public final class ActorLifecycleMessageTest {
         NullPointerTester tester = new NullPointerTester();
 
         List<? extends Constructor<?>> constructors = Arrays.asList(ActorLifecycleMessage.class.getConstructors());
-        Constructor<?> constructor = from(constructors).filter(new Predicate<Constructor<?>>() {
-            @Override
-            public boolean apply(@Nullable final Constructor<?> input) {
-                return input != null && input.getParameterTypes().length == 3;
-            }
-        }).first().orNull();
+        Optional<? extends Constructor<?>> constructor = constructors.stream() //
+                .filter(input -> input != null && input.getParameterTypes().length == 3) //
+                .findFirst();
 
-        tester.testConstructor(constructor);
+        assertThat(constructor.isPresent(), is(true));
+        tester.testConstructor(constructor.get());
         tester.testAllPublicInstanceMethods(msg);
     }
 

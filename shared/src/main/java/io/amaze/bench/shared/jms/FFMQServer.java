@@ -16,8 +16,6 @@
 package io.amaze.bench.shared.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 import net.timewalker.ffmq3.FFMQCoreSettings;
 import net.timewalker.ffmq3.listeners.ClientListener;
 import net.timewalker.ffmq3.listeners.tcp.io.TcpListener;
@@ -32,11 +30,12 @@ import javax.jms.JMSException;
 import javax.naming.NameAlreadyBoundException;
 import javax.validation.constraints.NotNull;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 
 /**
  * Created on 3/2/16.
@@ -144,15 +143,10 @@ public final class FFMQServer implements JMSServer {
             throw new IOException("Could not create DATA_DIR for FFMQServer " + tmpDir.getAbsolutePath());
         }
 
-        String[] tmpProperties = tmpDir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return (name.startsWith(QUEUE_PREFIX) || name.startsWith(TOPIC_PREFIX)) && //
-                        name.endsWith(PROP_SUFFIX);
-            }
-        });
+        String[] tmpProperties = tmpDir.list((dir, name) -> name.endsWith(PROP_SUFFIX) && //
+                (name.startsWith(QUEUE_PREFIX) || name.startsWith(TOPIC_PREFIX)));
 
-        for (String fileName : tmpProperties) {
+        for (String fileName : checkNotNull(tmpProperties)) {
             File tmpFileToDelete = new File(tmpDir.getAbsolutePath() + File.separator + fileName);
             if (!tmpFileToDelete.delete()) {
                 throw new IOException("Could not delete tmp file of FFMQServer " + tmpFileToDelete.getAbsolutePath());
@@ -202,12 +196,12 @@ public final class FFMQServer implements JMSServer {
 
         int count = 200;
         while (!listenerThread.hasFailed() && !localListener.isStarted() && count > 0) {
-            Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+            sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
             count--;
         }
 
         if (listenerThread.hasFailed() || !localListener.isStarted() || count == 0) {
-            throw Throwables.propagate(listenerThread.getException());
+            throw propagate(listenerThread.getException());
         }
 
         return localListener;

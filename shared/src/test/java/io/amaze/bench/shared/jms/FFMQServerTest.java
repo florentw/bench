@@ -16,7 +16,7 @@
 package io.amaze.bench.shared.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.shared.helper.NetworkHelper;
+import io.amaze.bench.shared.helper.Network;
 import io.amaze.bench.shared.test.JMSServerRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public final class FFMQServerTest {
         queuePropFile.createNewFile(); // NOSONAR
         topicPropFile.createNewFile(); // NOSONAR
 
-        new FFMQServer(JMSServerRule.DEFAULT_HOST, NetworkHelper.findFreePort());
+        new FFMQServer(JMSServerRule.DEFAULT_HOST, Network.findFreePort());
 
         assertThat(queuePropFile.exists(), is(false));
         assertThat(topicPropFile.exists(), is(false));

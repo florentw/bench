@@ -167,7 +167,7 @@ public final class BaseActorTest {
             assertThat(actorClient.getSentMessages().size(), is(1));
             List<Message<? extends Serializable>> msgToActor = actorClient.getSentMessages().get("hello");
             assertThat(msgToActor.size(), is(1));
-            assertThat((String) msgToActor.get(0).data(), is("world"));
+            assertThat(msgToActor.get(0).data(), is("world"));
         }
     }
 
