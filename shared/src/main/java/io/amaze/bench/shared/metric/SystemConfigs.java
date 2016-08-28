@@ -40,7 +40,8 @@ public final class SystemConfigs {
     private static SystemConfig create() {
         SystemInfo systemInfo = new SystemInfo();
         return new SystemConfig(getHostName(),
-                                systemInfo.getOperatingSystem().toCompactJSON(),
+                                systemInfo.getOperatingSystem().getVersion().toCompactJSON(),
+                                systemInfo.getOperatingSystem().getFileSystem().toCompactJSON(),
                                 systemInfo.getHardware().getProcessor().toCompactJSON(),
                                 systemInfo.getHardware().getMemory().toCompactJSON());
     }

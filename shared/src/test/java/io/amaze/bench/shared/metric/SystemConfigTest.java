@@ -33,6 +33,7 @@ public final class SystemConfigTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+
         tester.testConstructors(SystemConfig.class, NullPointerTester.Visibility.PACKAGE);
         tester.testAllPublicInstanceMethods(SystemConfigs.get());
     }
@@ -41,9 +42,11 @@ public final class SystemConfigTest {
     public void serialize_deserialize() {
         SystemConfig expected = SystemConfigs.get();
         SystemConfig actual = SerializableTester.reserialize(expected);
+
         assertThat(expected.getHostName(), is(actual.getHostName()));
         assertThat(expected.getMemoryJson(), is(actual.getMemoryJson()));
         assertThat(expected.getOperatingSystemJson(), is(actual.getOperatingSystemJson()));
+        assertThat(expected.getFileSystemJson(), is(actual.getFileSystemJson()));
         assertThat(expected.getProcessorJson(), is(actual.getProcessorJson()));
         assertThat(expected.toString(), is(actual.toString()));
     }

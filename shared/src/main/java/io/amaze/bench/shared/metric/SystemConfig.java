@@ -28,23 +28,25 @@ public final class SystemConfig implements Serializable {
 
     private final String hostName;
     private final String operatingSystemJson;
+    private final String fileSystemJson;
     private final String processorJson;
     private final String memoryJson;
 
     SystemConfig(final String hostName,
-                 final String operatingSystemJson,
+                 final String operatingSystemJson, final String fileSystemJson,
                  final String processorJson,
                  final String memoryJson) {
 
         this.hostName = checkNotNull(hostName);
         this.operatingSystemJson = checkNotNull(operatingSystemJson);
+        this.fileSystemJson = checkNotNull(fileSystemJson);
         this.processorJson = checkNotNull(processorJson);
         this.memoryJson = checkNotNull(memoryJson);
     }
 
     @VisibleForTesting
     public static SystemConfig createWithHostname(String hostName) {
-        return new SystemConfig(hostName, "", "", "");
+        return new SystemConfig(hostName, "", "", "", "");
     }
 
     public String getHostName() {
@@ -53,6 +55,10 @@ public final class SystemConfig implements Serializable {
 
     public String getOperatingSystemJson() {
         return operatingSystemJson;
+    }
+
+    public String getFileSystemJson() {
+        return fileSystemJson;
     }
 
     public String getProcessorJson() {
@@ -67,8 +73,9 @@ public final class SystemConfig implements Serializable {
     public String toString() {
         return "{\"SystemConfig\":{" + //
                 "\"hostName\":\"" + hostName + "\"" + ", " + //
-                "\"operatingSystemJson\":" + operatingSystemJson + ", " + //
-                "\"processorJson\":" + processorJson + ", " + //
-                "\"memoryJson\":" + memoryJson + "}}";
+                "\"operatingSystem\":" + operatingSystemJson + ", " + //
+                "\"fileSystem\":" + fileSystemJson + ", " + //
+                "\"processor\":" + processorJson + ", " + //
+                "\"memory\":" + memoryJson + "}}";
     }
 }
