@@ -224,7 +224,7 @@ public final class FFMQServer implements JMSServer {
 
     private static final class ListenerThread extends Thread {
 
-        private static final String LISTENER_THREAD_NAME = "jms-listener";
+        private static final String LISTENER_THREAD_NAME = "jms-listener-";
         private final ClientListener listener;
         private final String host;
         private final int port;
@@ -232,10 +232,12 @@ public final class FFMQServer implements JMSServer {
         private volatile JMSException exception;
 
         ListenerThread(@NotNull final String host, @NotNull final int port, @NotNull final ClientListener listener) {
-            this.host = host;
+            this.host = checkNotNull(host);
             this.port = port;
-            this.listener = listener;
-            setName(LISTENER_THREAD_NAME);
+            this.listener = checkNotNull(listener);
+
+            setName(LISTENER_THREAD_NAME + host + ":" + port);
+            setDaemon(true);
         }
 
         @Override

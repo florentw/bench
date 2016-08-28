@@ -22,6 +22,8 @@ import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 3/5/16.
  */
@@ -65,7 +67,10 @@ public final class AgentBootstrap {
         private final Agent agent;
 
         AgentShutdownHook(final Agent agent) {
-            this.agent = agent;
+            this.agent = checkNotNull(agent);
+
+            setName("shutdown-hook-" + agent);
+            setDaemon(true);
         }
 
         @Override

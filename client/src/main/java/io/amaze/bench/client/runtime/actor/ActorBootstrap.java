@@ -99,7 +99,10 @@ public final class ActorBootstrap {
         private final Actor actor;
 
         ActorShutdownThread(final Actor actor) {
-            this.actor = actor;
+            this.actor = checkNotNull(actor);
+
+            setName("shutdown-hook-" + actor);
+            setDaemon(true);
         }
 
         @Override
