@@ -17,6 +17,7 @@ package io.amaze.bench.shared.metric;
 
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -29,6 +30,7 @@ public final class SystemConfigsTest {
     public void creates_non_null_system_info() {
         SystemConfig systemConfig = SystemConfigs.get();
         assertNotNull(systemConfig);
+        assertFalse(systemConfig.getHostName().isEmpty());
     }
 
     @Test

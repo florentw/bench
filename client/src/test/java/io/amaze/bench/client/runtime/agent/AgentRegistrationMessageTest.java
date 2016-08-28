@@ -19,7 +19,7 @@ import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.metric.SystemConfig;
-import io.amaze.bench.shared.metric.SystemConfigTest;
+import io.amaze.bench.shared.metric.SystemConfigs;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public final class AgentRegistrationMessageTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(SystemConfig.class, SystemConfigTest.DUMMY_CONFIG);
+        tester.setDefault(SystemConfig.class, SystemConfigs.get());
         tester.testAllPublicConstructors(AgentRegistrationMessage.class);
         tester.testAllPublicStaticMethods(AgentRegistrationMessage.class);
     }
@@ -60,9 +60,11 @@ public final class AgentRegistrationMessageTest {
     public void equality() {
         AgentRegistrationMessage other = AgentRegistrationMessage.create("different");
 
-        new EqualsTester().addEqualityGroup(msg, msg).addEqualityGroup(msg.getName(), msg.getName()).addEqualityGroup(
-                msg.hashCode(),
-                msg.hashCode()).testEquals();
+        new EqualsTester() //
+                .addEqualityGroup(msg, msg) //
+                .addEqualityGroup(msg.getName(), msg.getName()) //
+                .addEqualityGroup(msg.hashCode(), msg.hashCode()) //
+                .testEquals();
 
         assertThat(msg, is(not(other)));
     }

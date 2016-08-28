@@ -16,33 +16,36 @@
 package io.amaze.bench.shared.metric;
 
 import com.google.common.testing.NullPointerTester;
+import com.google.common.testing.SerializableTester;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Created on 8/15/16.
+ * Created on 8/28/16.
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class SystemConfigTest {
 
-    private static final MemoryConfig MEMORY_CONFIG = new MemoryConfig(0, new HashMap<>());
-    public static final SystemConfig DUMMY_CONFIG = new SystemConfig("",
-                                                                     1,
-                                                                     "",
-                                                                     "",
-                                                                     "", MEMORY_CONFIG, new ArrayList<>());
-
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.testConstructors(SystemConfig.class, NullPointerTester.Visibility.PACKAGE);
+        tester.testAllPublicInstanceMethods(SystemConfigs.get());
+    }
 
-        tester.setDefault(MemoryConfig.class, MEMORY_CONFIG);
-        tester.testAllPublicConstructors(SystemConfig.class);
-        tester.testAllPublicInstanceMethods(DUMMY_CONFIG);
+    @Test
+    public void serialize_deserialize() {
+        SystemConfig expected = SystemConfigs.get();
+        SystemConfig actual = SerializableTester.reserialize(expected);
+        assertThat(expected.getHostName(), is(actual.getHostName()));
+        assertThat(expected.getMemoryJson(), is(actual.getMemoryJson()));
+        assertThat(expected.getOperatingSystemJson(), is(actual.getOperatingSystemJson()));
+        assertThat(expected.getProcessorJson(), is(actual.getProcessorJson()));
+        assertThat(expected.toString(), is(actual.toString()));
     }
 
 }

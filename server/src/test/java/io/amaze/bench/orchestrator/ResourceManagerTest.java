@@ -23,14 +23,12 @@ import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
 import io.amaze.bench.orchestrator.registry.RegisteredAgent;
-import io.amaze.bench.shared.metric.MemoryConfig;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
@@ -45,12 +43,12 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 4/3/16.
  */
-public final class ResourceManagerImplTest {
+public final class ResourceManagerTest {
 
     private static final String OTHER_DUMMY_AGENT = DUMMY_AGENT + "-other";
     private static final String OTHER_HOST = "other";
 
-    private ResourceManagerImpl resourceManager;
+    private ResourceManager resourceManager;
     private AgentRegistry agentRegistry;
     private OrchestratorServer orchestratorServer;
     private ActorConfig defaultActorConfig;
@@ -59,7 +57,7 @@ public final class ResourceManagerImplTest {
     public void before() {
         agentRegistry = new AgentRegistry();
         orchestratorServer = mock(OrchestratorServer.class);
-        resourceManager = new ResourceManagerImpl(orchestratorServer, agentRegistry);
+        resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
 
         defaultActorConfig = TestActor.DUMMY_CONFIG;
     }
@@ -67,7 +65,7 @@ public final class ResourceManagerImplTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.testAllPublicConstructors(ResourceManagerImpl.class);
+        tester.testAllPublicConstructors(ResourceManager.class);
         tester.testAllPublicInstanceMethods(resourceManager);
     }
 
@@ -189,11 +187,7 @@ public final class ResourceManagerImplTest {
     }
 
     private AgentRegistrationMessage registerDummyAgentOnOtherHost(final String agentName) {
-        SystemConfig sysInfoOtherHost = new SystemConfig(OTHER_HOST,
-                                                         1,
-                                                         "",
-                                                         "",
-                                                         "", new MemoryConfig(0, new HashMap<>()), new ArrayList<>());
+        SystemConfig sysInfoOtherHost = SystemConfig.createWithHostname(OTHER_HOST);
         AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentName, sysInfoOtherHost, 0);
         agentRegistry.getListenerForOrchestrator().onAgentRegistration(regMsgAgentOnOtherHost);
         return regMsgAgentOnOtherHost;

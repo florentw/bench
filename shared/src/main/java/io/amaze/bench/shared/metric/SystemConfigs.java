@@ -15,32 +15,44 @@
  */
 package io.amaze.bench.shared.metric;
 
-import io.amaze.bench.shared.helper.System;
+
+import oshi.json.SystemInfo;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Provides an instance of {@link SystemConfig}, populated with the configuration of the current box.
  */
 public final class SystemConfigs {
 
-    private static final SystemConfig SYSTEM_INFO = createSystemInfoInstance();
+    static final String UNKNOWN_STRING_VALUE = "[Unknown]";
+    private static final SystemConfig SYSTEM_CONFIG = create();
 
     private SystemConfigs() {
         // Should not be instantiated
     }
 
     public static SystemConfig get() {
-        return SYSTEM_INFO;
+        return SYSTEM_CONFIG;
     }
 
-    private static SystemConfig createSystemInfoInstance() {
-        SystemConfigFactory factory;
-        if (System.isLinux()) {
-            factory = new LinuxSystemConfigFactory();
-        } else {
-            factory = new UnknownSystemConfigFactory();
-        }
+    private static SystemConfig create() {
+        SystemInfo systemInfo = new SystemInfo();
+        return new SystemConfig(getHostName(),
+                                systemInfo.getOperatingSystem().toCompactJSON(),
+                                systemInfo.getHardware().getProcessor().toCompactJSON(),
+                                systemInfo.getHardware().getMemory().toCompactJSON());
+    }
 
-        return factory.create();
+    private static String getHostName() {
+        String hostName;
+        try {
+            hostName = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException ignore) { // NOSONAR
+            hostName = UNKNOWN_STRING_VALUE;
+        }
+        return hostName;
     }
 
 }

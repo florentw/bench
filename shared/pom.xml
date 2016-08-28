@@ -33,6 +33,16 @@
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.dblock</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>${oshi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dblock</groupId>
+            <artifactId>oshi-json</artifactId>
+            <version>${oshi.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -57,7 +57,7 @@ public final class ResourceManagerAgentTest {
     private JMSClient jmsClient;
 
     private JMSOrchestratorServer orchestratorServer;
-    private ResourceManagerImpl resourceManager;
+    private ResourceManager resourceManager;
 
     private Agent agent;
     private ActorRegistry actorRegistry;
@@ -78,7 +78,7 @@ public final class ResourceManagerAgentTest {
         orchestratorServer.startRegistryListeners(agentRegistry.getListenerForOrchestrator(),
                                                   actorRegistry.getListenerForOrchestrator());
 
-        resourceManager = new ResourceManagerImpl(orchestratorServer, agentRegistry);
+        resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
 
         JMSOrchestratorClientFactory factory = new JMSOrchestratorClientFactory(serverRule.getHost(),
                                                                                 serverRule.getPort());

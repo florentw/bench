@@ -15,10 +15,9 @@
  */
 package io.amaze.bench.shared.metric;
 
-import javax.validation.constraints.NotNull;
+import com.google.common.annotations.VisibleForTesting;
+
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -28,68 +27,48 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class SystemConfig implements Serializable {
 
     private final String hostName;
-    private final int procCount;
-    private final String procArch;
-    private final String osName;
-    private final String osVersion;
+    private final String operatingSystemJson;
+    private final String processorJson;
+    private final String memoryJson;
 
-    private final List<ProcessorConfig> processors;
-    private final MemoryConfig memoryConfig;
-
-    public SystemConfig(@NotNull final String hostName,
-                        @NotNull final int procCount,
-                        @NotNull final String procArch,
-                        @NotNull final String osName,
-                        @NotNull final String osVersion,
-                        @NotNull final MemoryConfig memoryConfig,
-                        @NotNull final List<ProcessorConfig> processors) {
+    SystemConfig(final String hostName,
+                 final String operatingSystemJson,
+                 final String processorJson,
+                 final String memoryJson) {
 
         this.hostName = checkNotNull(hostName);
-        this.procCount = procCount;
-        this.procArch = checkNotNull(procArch);
-        this.osName = checkNotNull(osName);
-        this.osVersion = checkNotNull(osVersion);
-        this.memoryConfig = checkNotNull(memoryConfig);
-        this.processors = checkNotNull(processors);
+        this.operatingSystemJson = checkNotNull(operatingSystemJson);
+        this.processorJson = checkNotNull(processorJson);
+        this.memoryJson = checkNotNull(memoryJson);
+    }
+
+    @VisibleForTesting
+    public static SystemConfig createWithHostname(String hostName) {
+        return new SystemConfig(hostName, "", "", "");
     }
 
     public String getHostName() {
         return hostName;
     }
 
-    public int getProcCount() {
-        return procCount;
+    public String getOperatingSystemJson() {
+        return operatingSystemJson;
     }
 
-    public String getProcArch() {
-        return procArch;
+    public String getProcessorJson() {
+        return processorJson;
     }
 
-    public String getOsName() {
-        return osName;
-    }
-
-    public String getOsVersion() {
-        return osVersion;
-    }
-
-    public MemoryConfig getMemoryConfig() {
-        return memoryConfig;
-    }
-
-    public List<ProcessorConfig> getProcessors() {
-        return processors;
+    public String getMemoryJson() {
+        return memoryJson;
     }
 
     @Override
     public String toString() {
         return "{\"SystemConfig\":{" + //
                 "\"hostName\":\"" + hostName + "\"" + ", " + //
-                "\"procCount\":\"" + procCount + "\"" + ", " + //
-                "\"procArch\":\"" + procArch + "\"" + ", " + //
-                "\"osName\":\"" + osName + "\"" + ", " + //
-                "\"osVersion\":\"" + osVersion + "\"" + ", " + //
-                "\"processors\":" + Arrays.toString(processors.toArray(new ProcessorConfig[0])) + ", " + //
-                "\"memoryConfig\":" + memoryConfig + "}}";
+                "\"operatingSystemJson\":" + operatingSystemJson + ", " + //
+                "\"processorJson\":" + processorJson + ", " + //
+                "\"memoryJson\":" + memoryJson + "}}";
     }
 }
