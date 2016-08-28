@@ -25,14 +25,14 @@ import org.junit.rules.ExpectedException;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static io.amaze.bench.client.runtime.actor.ActorValidatorImpl.*;
+import static io.amaze.bench.client.runtime.actor.ActorValidator.*;
 import static io.amaze.bench.client.runtime.actor.ActorValidators.get;
 import static junit.framework.TestCase.assertNotNull;
 
 /**
  * Created on 3/1/16.
  */
-public final class ActorValidatorImplTest {
+public final class ActorValidatorTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -40,8 +40,8 @@ public final class ActorValidatorImplTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.testAllPublicConstructors(ActorValidatorImpl.class);
-        tester.testAllPublicInstanceMethods(new ActorValidatorImpl());
+        tester.testAllPublicConstructors(ActorValidator.class);
+        tester.testAllPublicInstanceMethods(new ActorValidator());
     }
 
     @Test

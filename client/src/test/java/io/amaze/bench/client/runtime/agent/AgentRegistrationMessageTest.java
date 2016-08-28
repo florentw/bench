@@ -20,6 +20,7 @@ import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.metric.SystemConfigs;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,6 +77,11 @@ public final class AgentRegistrationMessageTest {
         assertThat(received.getCreationTime(), is(msg.getCreationTime()));
         assertThat(received.getName(), is(msg.getName()));
         assertNotNull(received.getSystemConfig());
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(msg.toString()));
     }
 
 }

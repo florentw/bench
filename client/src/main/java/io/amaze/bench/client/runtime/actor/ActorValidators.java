@@ -21,14 +21,12 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Provides a {@link ActorValidator} instance to use for loading {@link Reactor} classes.
- * <p>
- * Created on 3/2/16.
  *
  * @see ActorValidator
  */
 final class ActorValidators {
 
-    private static final ActorValidator impl = new ActorValidatorImpl();
+    private static final ActorValidator instance = new ActorValidator();
 
     private ActorValidators() {
         // Factory
@@ -39,7 +37,7 @@ final class ActorValidators {
      */
     @NotNull
     public static ActorValidator get() {
-        return impl;
+        return instance;
     }
 
 }

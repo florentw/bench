@@ -17,12 +17,14 @@ package io.amaze.bench.shared.metric;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 8/28/16.
@@ -49,6 +51,11 @@ public final class SystemConfigTest {
         assertThat(expected.getFileSystemJson(), is(actual.getFileSystemJson()));
         assertThat(expected.getProcessorJson(), is(actual.getProcessorJson()));
         assertThat(expected.toString(), is(actual.toString()));
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(SystemConfigs.get().toString()));
     }
 
 }
