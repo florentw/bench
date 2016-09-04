@@ -1,4 +1,4 @@
-package io.amaze.bench.client.api;
+package io.amaze.bench.api;
 
 import com.google.common.testing.SerializableTester;
 import org.junit.Test;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.api;
+package io.amaze.bench.api;
 
 /**
  * To be thrown by an Actor to notify the agent that it wishes to terminate gracefully.<br/>

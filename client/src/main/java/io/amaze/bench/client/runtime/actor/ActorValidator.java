@@ -15,8 +15,10 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.api.Actor;
-import io.amaze.bench.client.api.*;
+import io.amaze.bench.api.After;
+import io.amaze.bench.api.Before;
+import io.amaze.bench.api.Reactor;
+import io.amaze.bench.api.Sender;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Modifier;
@@ -38,6 +40,7 @@ final class ActorValidator {
     static final String MSG_PUBLIC_CONSTRUCTOR = "An actor class have at least one public constructor.";
     static final String MSG_ABSTRACT_CLASS = "An actor class must not be abstract";
     static final String MSG_IMPLEMENT_REACTOR = "An actor class must implement %s";
+    static final String MSG_MISSING_ANNOTATION = "An actor class must have annotation @%s";
 
     private static final String VALIDATION_MSG = "Validation failed for class \"%s\".";
     private static final String LOAD_MSG = "Could not load class \"%s\".";
@@ -118,8 +121,9 @@ final class ActorValidator {
         }
 
         void mustDeclareActor() {
-            if (inputActorClass.getAnnotation(io.amaze.bench.client.api.Actor.class) == null) {
-                causes.add(new IllegalArgumentException("An actor class must have annotation @" + Actor.class.getName()));
+            if (inputActorClass.getAnnotation(io.amaze.bench.api.Actor.class) == null) {
+                causes.add(new IllegalArgumentException(String.format(MSG_MISSING_ANNOTATION,
+                                                                      io.amaze.bench.api.Actor.class.getName())));
             }
         }
 

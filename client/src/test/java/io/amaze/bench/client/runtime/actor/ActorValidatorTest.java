@@ -16,8 +16,8 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.api.Actor;
-import io.amaze.bench.client.api.*;
+import io.amaze.bench.api.Actor;
+import io.amaze.bench.api.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 import static io.amaze.bench.client.runtime.actor.ActorValidator.*;
 import static io.amaze.bench.client.runtime.actor.ActorValidators.get;
+import static java.lang.String.format;
 import static junit.framework.TestCase.assertNotNull;
 
 /**
@@ -56,8 +57,8 @@ public final class ActorValidatorTest {
     public void empty_actor_class_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
         expectedException.expectMessage(MSG_PUBLIC_CONSTRUCTOR);
-        expectedException.expectMessage(String.format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName()));
-        expectedException.expectMessage("An actor class must have annotation @io.amaze.bench.client.api.Actor");
+        expectedException.expectMessage(format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName()));
+        expectedException.expectMessage(format(MSG_MISSING_ANNOTATION, Actor.class.getName()));
 
         get().loadAndValidate(EmptyActor.class.getName());
     }
@@ -81,7 +82,7 @@ public final class ActorValidatorTest {
     @Test
     public void actor_not_implementing_reactor_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
-        expectedException.expectMessage(String.format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName()));
+        expectedException.expectMessage(format(MSG_IMPLEMENT_REACTOR, Reactor.class.getName()));
 
         get().loadAndValidate(NoReactor.class.getName());
     }
@@ -89,7 +90,7 @@ public final class ActorValidatorTest {
     @Test
     public void actor_implementing_sender_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
-        expectedException.expectMessage("An actor class must not implement io.amaze.bench.client.api.Sender");
+        expectedException.expectMessage(format("An actor class must not implement %s", Sender.class.getName()));
 
         get().loadAndValidate(ImplementSender.class.getName());
     }
@@ -120,7 +121,7 @@ public final class ActorValidatorTest {
 
     }
 
-    @io.amaze.bench.client.api.Actor
+    @Actor
     private static final class NoReactor {
         public NoReactor() {
             // Dummy

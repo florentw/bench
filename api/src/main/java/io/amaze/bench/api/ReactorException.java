@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.api;
-
-
-import io.amaze.bench.shared.metric.Metric;
+package io.amaze.bench.api;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 2/28/16.
+ * A root type for errors to be thrown by an Actor while processing an incoming message.
+ *
+ * @see IrrecoverableException
+ * @see TerminationException
  */
-public interface MetricsCollector {
+public abstract class ReactorException extends Exception {
 
-    void putMetric(@NotNull String key, @NotNull Metric metric);
+    ReactorException() {
+        // To be overridden
+    }
 
+    ReactorException(@NotNull final String message) {
+        super(message);
+    }
+
+    ReactorException(@NotNull final String message, @NotNull final Throwable cause) {
+        super(message, cause);
+    }
 }

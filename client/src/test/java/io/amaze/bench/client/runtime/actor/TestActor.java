@@ -17,7 +17,7 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.amaze.bench.client.api.*;
+import io.amaze.bench.api.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -25,7 +25,7 @@ import java.util.*;
 /**
  * Created on 3/3/16.
  */
-@io.amaze.bench.client.api.Actor
+@io.amaze.bench.api.Actor
 public class TestActor implements Reactor<String> {
 
     public static final String DUMMY_ACTOR = "test-actor";
@@ -61,7 +61,7 @@ public class TestActor implements Reactor<String> {
     }
 
     private static DeployConfig createDeployConfig(final boolean forked) {
-        return new DeployConfig("", 0, forked, Collections.<String>emptyList());
+        return new DeployConfig("", 0, forked, Collections.emptyList());
     }
 
     private static ActorConfig createActorConfig() {

@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.api;
+package io.amaze.bench.api;
 
-import java.lang.annotation.*;
+
+import io.amaze.bench.shared.metric.Metric;
+
+import javax.validation.constraints.NotNull;
 
 /**
- * A class annotated with @{@link Actor} can use @{@link Before} to annotate one of its methods.<br/>
- * This method will be called as a post-initialization hook.<br/>
- * At most one method can be tagged with @{@link Before}.
- * <p/>
  * Created on 2/28/16.
  */
-@Target(value = {ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface Before {
+public interface MetricsCollector {
+
+    void put(@NotNull String key, @NotNull Metric metric);
 
 }

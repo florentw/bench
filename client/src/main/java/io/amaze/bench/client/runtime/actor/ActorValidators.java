@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.api.Reactor;
+import io.amaze.bench.api.Reactor;
 
 import javax.validation.constraints.NotNull;
 

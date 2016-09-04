@@ -16,10 +16,10 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.client.api.IrrecoverableException;
-import io.amaze.bench.client.api.Reactor;
-import io.amaze.bench.client.api.ReactorException;
-import io.amaze.bench.client.api.TerminationException;
+import io.amaze.bench.api.IrrecoverableException;
+import io.amaze.bench.api.Reactor;
+import io.amaze.bench.api.ReactorException;
+import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;

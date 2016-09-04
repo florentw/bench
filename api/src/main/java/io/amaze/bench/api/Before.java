@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.api;
+package io.amaze.bench.api;
 
-import javax.validation.constraints.NotNull;
+import java.lang.annotation.*;
 
 /**
- * A root type for errors to be thrown by an Actor while processing an incoming message.
- *
- * @see IrrecoverableException
- * @see TerminationException
+ * A class annotated with @{@link Actor} can use @{@link Before} to annotate one of its methods.<br/>
+ * This method will be called as a post-initialization hook.<br/>
+ * At most one method can be tagged with @{@link Before}.
+ * <p/>
+ * Created on 2/28/16.
  */
-public abstract class ReactorException extends Exception {
+@Target(value = {ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface Before {
 
-    ReactorException() {
-        // To be overridden
-    }
-
-    ReactorException(@NotNull final String message) {
-        super(message);
-    }
-
-    ReactorException(@NotNull final String message, @NotNull final Throwable cause) {
-        super(message, cause);
-    }
 }

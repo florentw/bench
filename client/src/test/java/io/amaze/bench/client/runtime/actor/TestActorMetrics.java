@@ -16,10 +16,10 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.Config;
-import io.amaze.bench.client.api.IrrecoverableException;
-import io.amaze.bench.client.api.MetricsCollector;
-import io.amaze.bench.client.api.Sender;
-import io.amaze.bench.client.api.TerminationException;
+import io.amaze.bench.api.IrrecoverableException;
+import io.amaze.bench.api.MetricsCollector;
+import io.amaze.bench.api.Sender;
+import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.shared.metric.Metric;
 
 import javax.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created on 3/31/16.
  */
-@io.amaze.bench.client.api.Actor
+@io.amaze.bench.api.Actor
 public final class TestActorMetrics extends TestActor {
 
     static final String PRODUCE_METRICS_MSG = "PRODUCE_METRICS_MSG";
@@ -55,8 +55,8 @@ public final class TestActorMetrics extends TestActor {
             throws IrrecoverableException, TerminationException {
 
         if (message.equals(PRODUCE_METRICS_MSG)) {
-            metricsCollector.putMetric(DUMMY_METRIC_A_KEY, DUMMY_METRIC_A);
-            metricsCollector.putMetric(DUMMY_METRIC_B_KEY, DUMMY_METRIC_B);
+            metricsCollector.put(DUMMY_METRIC_A_KEY, DUMMY_METRIC_A);
+            metricsCollector.put(DUMMY_METRIC_B_KEY, DUMMY_METRIC_B);
         }
 
         super.onMessage(from, message);

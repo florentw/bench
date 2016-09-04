@@ -16,7 +16,7 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.*;
-import io.amaze.bench.client.api.*;
+import io.amaze.bench.api.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;

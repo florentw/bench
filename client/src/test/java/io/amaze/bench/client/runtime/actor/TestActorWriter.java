@@ -17,10 +17,10 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
-import io.amaze.bench.client.api.After;
-import io.amaze.bench.client.api.IrrecoverableException;
-import io.amaze.bench.client.api.Sender;
-import io.amaze.bench.client.api.TerminationException;
+import io.amaze.bench.api.After;
+import io.amaze.bench.api.IrrecoverableException;
+import io.amaze.bench.api.Sender;
+import io.amaze.bench.api.TerminationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ import static io.amaze.bench.shared.helper.Files.writeTo;
 /**
  * Created on 3/15/16.
  */
-@io.amaze.bench.client.api.Actor
+@io.amaze.bench.api.Actor
 public final class TestActorWriter extends TestActor {
 
     static final String INIT_FILE_CONFIG = "init_file";

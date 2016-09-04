@@ -17,7 +17,6 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
-import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.shared.helper.Files;
 import io.amaze.bench.shared.jms.JMSException;
@@ -37,6 +36,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
@@ -113,7 +114,7 @@ public final class ForkedActorManagerTest {
         actor.close();
 
         // We do not check the fact that the shutdown hook is actually called here
-        Uninterruptibles.joinUninterruptibly(watchDogThread);
+        joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasProcessExited(), is(true));
@@ -135,7 +136,7 @@ public final class ForkedActorManagerTest {
         actor.close();
 
         // We do not check the fact that the shutdown hook is actually called here
-        Uninterruptibles.joinUninterruptibly(watchDogThread);
+        joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasProcessExited(), is(true));
@@ -157,7 +158,7 @@ public final class ForkedActorManagerTest {
         actorManager.close();
 
         // We do not check the fact that the shutdown hook is actually called here
-        Uninterruptibles.joinUninterruptibly(watchDogThread);
+        joinUninterruptibly(watchDogThread);
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasProcessExited(), is(true));
@@ -182,16 +183,14 @@ public final class ForkedActorManagerTest {
         watchdog.awaitUntilStarted();
         watchdog.close();
 
-        Uninterruptibles.joinUninterruptibly(watchdog);
+        joinUninterruptibly(watchdog);
 
         assertThat(watchdog.hasProcessExited(), is(false));
     }
 
     private ActorConfig configWithInitRdv(final String className, final File rdvFile) {
 
-        DeployConfig deployConfig = new DeployConfig(server.getHost(),
-                                                     server.getPort(),
-                                                     true, Collections.emptyList());
+        DeployConfig deployConfig = new DeployConfig(server.getHost(), server.getPort(), true, Collections.emptyList());
 
         String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
 
@@ -217,7 +216,7 @@ public final class ForkedActorManagerTest {
                 return;
             }
             LOG.debug("Condition not met yet, sleeping for 500ms");
-            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+            sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
         }
 
         fail("Condition not verified on time: " + file.getAbsolutePath() + " did not contain " + expectedContent + " within " + timeoutMs + "ms");

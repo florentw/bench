@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.client.runtime.orchestrator;
 
-import io.amaze.bench.client.api.Reactor;
+import io.amaze.bench.api.Reactor;
 import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.shared.jms.JMSHelper;
