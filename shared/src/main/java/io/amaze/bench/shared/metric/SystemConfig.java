@@ -17,6 +17,7 @@ package io.amaze.bench.shared.metric;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,10 +33,11 @@ public final class SystemConfig implements Serializable {
     private final String processorJson;
     private final String memoryJson;
 
-    SystemConfig(final String hostName,
-                 final String operatingSystemJson, final String fileSystemJson,
-                 final String processorJson,
-                 final String memoryJson) {
+    SystemConfig(@NotNull final String hostName,
+                 @NotNull final String operatingSystemJson,
+                 @NotNull final String fileSystemJson,
+                 @NotNull final String processorJson,
+                 @NotNull final String memoryJson) {
 
         this.hostName = checkNotNull(hostName);
         this.operatingSystemJson = checkNotNull(operatingSystemJson);
@@ -70,6 +72,7 @@ public final class SystemConfig implements Serializable {
     }
 
     @Override
+    @NotNull
     public String toString() {
         return "{\"SystemConfig\":{" + //
                 "\"hostName\":\"" + hostName + "\"" + ", " + //

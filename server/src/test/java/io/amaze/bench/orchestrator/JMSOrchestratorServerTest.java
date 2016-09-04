@@ -16,6 +16,7 @@
 package io.amaze.bench.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.*;
  */
 public final class JMSOrchestratorServerTest {
 
-    private static final String DUMMY_MSG = "dummy-msg";
+    private static final ActorInputMessage DUMMY_MSG = new ActorInputMessage(ActorInputMessage.Command.INIT, "", "");
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -66,6 +67,7 @@ public final class JMSOrchestratorServerTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(ActorInputMessage.class, DUMMY_MSG);
         tester.testAllPublicConstructors(JMSOrchestratorServer.class);
         tester.testAllPublicInstanceMethods(server);
     }

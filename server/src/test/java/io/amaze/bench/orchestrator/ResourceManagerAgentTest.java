@@ -16,18 +16,15 @@
 package io.amaze.bench.orchestrator;
 
 import io.amaze.bench.client.runtime.actor.ActorConfig;
-import io.amaze.bench.client.runtime.actor.ActorManagers;
+import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.Agent;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
-import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
+import io.amaze.bench.orchestrator.io.amaze.bench.util.BenchRule;
 import io.amaze.bench.orchestrator.registry.*;
 import io.amaze.bench.orchestrator.registry.RegisteredActor.State;
-import io.amaze.bench.shared.jms.JMSClient;
-import io.amaze.bench.shared.jms.JMSServer;
 import io.amaze.bench.shared.test.IntegrationTest;
-import io.amaze.bench.shared.test.JMSServerRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,6 +37,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static io.amaze.bench.client.runtime.actor.ActorInputMessage.Command;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_JSON_CONFIG;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,40 +50,31 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public final class ResourceManagerAgentTest {
 
-    @Rule
-    public final JMSServerRule serverRule = new JMSServerRule();
+    private static final int TEST_TIMEOUT_SEC = 5;
 
-    private JMSClient jmsClient;
+    @Rule
+    public final BenchRule benchRule = new BenchRule();
 
     private JMSOrchestratorServer orchestratorServer;
     private ResourceManager resourceManager;
 
-    private Agent agent;
     private ActorRegistry actorRegistry;
     private AgentRegistry agentRegistry;
+
+    private Agent agent;
     private AgentSync agentSync;
 
     @Before
-    public void before() throws InterruptedException {
-        jmsClient = serverRule.createClient();
-        JMSServer jmsServer = serverRule.getServer();
+    public void before() {
+        orchestratorServer = benchRule.getOrchestratorServer();
+        resourceManager = benchRule.getResourceManager();
 
-        orchestratorServer = new JMSOrchestratorServer(jmsServer, jmsClient);
-        agentRegistry = new AgentRegistry();
+        actorRegistry = benchRule.getActorRegistry();
+        agentRegistry = benchRule.getAgentRegistry();
+        agentSync = registerAgentSync();
 
-        actorRegistry = new ActorRegistry();
-        agentSync = getAgentSync();
-
-        orchestratorServer.startRegistryListeners(agentRegistry.getListenerForOrchestrator(),
-                                                  actorRegistry.getListenerForOrchestrator());
-
-        resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
-
-        JMSOrchestratorClientFactory factory = new JMSOrchestratorClientFactory(serverRule.getHost(),
-                                                                                serverRule.getPort());
-        agent = new Agent(factory, new ActorManagers());
-
-        agentSync.agentStarted.await();
+        agent = benchRule.createAgent();
+        awaitUninterruptibly(agentSync.agentStarted);
     }
 
     @Test
@@ -99,18 +89,9 @@ public final class ResourceManagerAgentTest {
     @Test
     public void create_embedded_actor_on_agent() throws InterruptedException {
         List<String> preferredHosts = new ArrayList<>();
-        ActorSync sync = getActorSync();
-        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR,
-                                                  TestActor.class.getName(),
-                                                  new DeployConfig(serverRule.getHost(),
-                                                                   serverRule.getPort(),
-                                                                   false,
-                                                                   preferredHosts),
-                                                  DUMMY_JSON_CONFIG);
+        ActorSync sync = createActorWith(preferredHosts);
 
-        resourceManager.createActor(actorConfig);
-
-        assertTrue(sync.actorCreated.await(2, TimeUnit.SECONDS));
+        sync.assertActorCreated();
         assertThat(actorRegistry.all().size(), is(1));
 
         RegisteredActor actor = actorRegistry.byName(DUMMY_ACTOR);
@@ -120,26 +101,36 @@ public final class ResourceManagerAgentTest {
     }
 
     @Test
+    public void init_embedded_actor_on_agent() throws InterruptedException {
+        List<String> preferredHosts = new ArrayList<>();
+        ActorSync sync = createActorWith(preferredHosts);
+        sync.assertActorCreated();
+
+        ActorInputMessage initMessage = new ActorInputMessage(Command.INIT, //
+                                                              agent.getName(), //
+                                                              "");
+        orchestratorServer.sendToActor(DUMMY_ACTOR, initMessage);
+
+        sync.assertActorInitialized();
+
+        RegisteredActor actor = actorRegistry.byName(DUMMY_ACTOR);
+        assertThat(actor.getAgent(), is(agent.getName()));
+        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getState(), is(State.INITIALIZED));
+    }
+
+    @Test
     public void create_and_close_embedded_actor_on_agent() throws InterruptedException {
         // Given
         List<String> preferredHosts = new ArrayList<>();
-        ActorSync sync = getActorSync();
-        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR,
-                                                  TestActor.class.getName(),
-                                                  new DeployConfig(serverRule.getHost(),
-                                                                   serverRule.getPort(),
-                                                                   false,
-                                                                   preferredHosts),
-                                                  DUMMY_JSON_CONFIG);
-
-        resourceManager.createActor(actorConfig);
-        assertTrue(sync.actorCreated.await(2, TimeUnit.SECONDS));
+        ActorSync sync = createActorWith(preferredHosts);
+        sync.assertActorCreated();
 
         // When
         resourceManager.closeActor(DUMMY_ACTOR);
 
         // Then
-        assertTrue(sync.actorClosed.await(2, TimeUnit.SECONDS));
+        sync.assertActorClosed();
         assertThat(actorRegistry.all().size(), is(0));
     }
 
@@ -147,26 +138,38 @@ public final class ResourceManagerAgentTest {
     public void closing_agent_unregisters() throws Exception {
         agent.close();
 
-        assertTrue(agentSync.agentClosed.await(2, TimeUnit.SECONDS));
+        assertTrue(agentSync.agentClosed.await(TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
     }
 
     @After
     public void after() throws Exception {
         resourceManager.close();
         agent.close();
-        jmsClient.close();
         orchestratorServer.close();
     }
 
-    private AgentSync getAgentSync() {
-        AgentSync sync = new AgentSync();
-        agentRegistry.addListener(sync);
+    private ActorSync createActorWith(final List<String> preferredHosts) {
+        ActorSync sync = new ActorSync();
+        actorRegistry.addListener(sync);
+        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR,
+                                                  TestActor.class.getName(),
+                                                  deployConfig(preferredHosts),
+                                                  DUMMY_JSON_CONFIG);
+
+        resourceManager.createActor(actorConfig);
         return sync;
     }
 
-    private ActorSync getActorSync() {
-        ActorSync sync = new ActorSync();
-        actorRegistry.addListener(sync);
+    private DeployConfig deployConfig(final List<String> preferredHosts) {
+        return new DeployConfig(benchRule.getJmsServerRule().getHost(),
+                                benchRule.getJmsServerRule().getPort(),
+                                false,
+                                preferredHosts);
+    }
+
+    private AgentSync registerAgentSync() {
+        AgentSync sync = new AgentSync();
+        agentRegistry.addListener(sync);
         return sync;
     }
 
@@ -209,6 +212,18 @@ public final class ResourceManagerAgentTest {
         @Override
         public void onActorClosed(@NotNull final String name) {
             actorClosed.countDown();
+        }
+
+        void assertActorInitialized() throws InterruptedException {
+            assertTrue(awaitUninterruptibly(actorInitialized, TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
+        }
+
+        void assertActorCreated() throws InterruptedException {
+            assertTrue(awaitUninterruptibly(actorCreated, TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
+        }
+
+        void assertActorClosed() throws InterruptedException {
+            assertTrue(awaitUninterruptibly(actorClosed, TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
         }
     }
 

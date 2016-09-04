@@ -51,8 +51,7 @@ public final class JMSServerRule extends ExternalResource {
         }
     }
 
-    @Override
-    protected void before() {
+    public void init() {
         port = Network.findFreePort();
         try {
             server = new FFMQServer(DEFAULT_HOST, port);
@@ -61,8 +60,7 @@ public final class JMSServerRule extends ExternalResource {
         }
     }
 
-    @Override
-    protected void after() {
+    public void close() {
         if (server != null) {
             try {
                 server.close();
@@ -70,5 +68,15 @@ public final class JMSServerRule extends ExternalResource {
                 propagate(e);
             }
         }
+    }
+
+    @Override
+    protected void before() {
+        init();
+    }
+
+    @Override
+    protected void after() {
+        close();
     }
 }

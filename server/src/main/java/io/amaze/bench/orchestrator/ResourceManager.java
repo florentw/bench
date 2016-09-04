@@ -44,7 +44,8 @@ public final class ResourceManager implements AutoCloseable {
     private final Map<String, RegisteredAgent> actorsToAgents = new ConcurrentHashMap<>();
     private final Random rand = new Random();
 
-    ResourceManager(@NotNull final OrchestratorServer orchestratorServer, @NotNull final AgentRegistry agentRegistry) {
+    public ResourceManager(@NotNull final OrchestratorServer orchestratorServer,
+                           @NotNull final AgentRegistry agentRegistry) {
         this.orchestratorServer = checkNotNull(orchestratorServer);
         this.agentRegistry = checkNotNull(agentRegistry);
     }

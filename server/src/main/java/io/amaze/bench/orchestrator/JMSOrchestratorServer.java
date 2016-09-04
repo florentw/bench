@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.orchestrator;
 
+import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
@@ -23,7 +24,6 @@ import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
@@ -33,12 +33,12 @@ import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 /**
  * Created on 3/8/16.
  */
-final class JMSOrchestratorServer implements OrchestratorServer {
+public final class JMSOrchestratorServer implements OrchestratorServer {
 
     private final JMSServer server;
     private final JMSClient client;
 
-    JMSOrchestratorServer(@NotNull final JMSServer server, @NotNull final JMSClient client) {
+    public JMSOrchestratorServer(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         this.server = checkNotNull(server);
         this.client = checkNotNull(client);
 
@@ -86,23 +86,23 @@ final class JMSOrchestratorServer implements OrchestratorServer {
     }
 
     @Override
-    public void sendToActor(@NotNull final String actorName, @NotNull final Serializable message) {
-        checkNotNull(actorName);
+    public void sendToAgent(@NotNull final AgentInputMessage message) {
         checkNotNull(message);
 
         try {
-            client.sendToQueue(actorName, message);
+            client.sendToTopic(AGENTS_ACTOR_NAME, message);
         } catch (JMSException e) {
             throw propagate(e);
         }
     }
 
     @Override
-    public void sendToAgent(@NotNull final AgentInputMessage message) {
+    public void sendToActor(@NotNull final String actorName, @NotNull final ActorInputMessage message) {
+        checkNotNull(actorName);
         checkNotNull(message);
 
         try {
-            client.sendToTopic(AGENTS_ACTOR_NAME, message);
+            client.sendToQueue(actorName, message);
         } catch (JMSException e) {
             throw propagate(e);
         }

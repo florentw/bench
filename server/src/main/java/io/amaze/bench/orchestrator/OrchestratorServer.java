@@ -15,12 +15,12 @@
  */
 package io.amaze.bench.orchestrator;
 
+import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * Facade to interact with the underlying messaging system for the orchestration server.
@@ -61,19 +61,19 @@ interface OrchestratorServer extends AutoCloseable {
     void deleteActorQueue(@NotNull String actorName);
 
     /**
-     * Will send the given message to the specified actor using the underlying messaging system.
-     *
-     * @param actorName The actor name to send the message to
-     * @param message   Contents of the message
-     */
-    void sendToActor(@NotNull String actorName, @NotNull Serializable message);
-
-    /**
      * Will send the given message to the specified agent using the underlying messaging system.
      *
      * @param message Contents of the message, {@link AgentInputMessage}
      */
     void sendToAgent(@NotNull AgentInputMessage message);
+
+    /**
+     * Will send the given message to the specified actor using the underlying messaging system.
+     *
+     * @param actorName The actor name to send the message to
+     * @param message   Contents of the message, {@link ActorInputMessage}
+     */
+    void sendToActor(@NotNull String actorName, @NotNull ActorInputMessage message);
 
     /**
      * Will release resources on the underlying messaging system.

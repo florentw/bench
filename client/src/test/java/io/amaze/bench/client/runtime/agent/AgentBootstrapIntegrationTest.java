@@ -44,6 +44,7 @@ public final class AgentBootstrapIntegrationTest {
 
     @Rule
     public final JMSServerRule server = new JMSServerRule();
+
     private Thread agentBootstrapThread;
     private JMSClient client;
 
