@@ -17,6 +17,7 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
+import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
@@ -48,6 +49,18 @@ public final class ActorConfigTest {
         test.setDefault(JMSEndpoint.class, new JMSEndpoint("test", 10));
         test.testAllPublicConstructors(ActorConfig.class);
         test.testAllPublicConstructors(DeployConfig.class);
+    }
+
+    @Test
+    public void serializable() {
+        ActorConfig expected = DUMMY_CONFIG;
+
+        ActorConfig actual = SerializableTester.reserializeAndAssert(expected);
+
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getActorJsonConfig(), is(expected.getActorJsonConfig()));
+        assertThat(actual.getClassName(), is(expected.getClassName()));
+        assertThat(actual.getDeployConfig(), is(expected.getDeployConfig()));
     }
 
     @Test
