@@ -29,8 +29,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Acts as entry point for a forked actor JVM, created by a {@link ForkedActorManager}.
- * <p>
- * Created on 3/13/16.
  *
  * @see ForkedActorManager
  */
@@ -48,8 +46,8 @@ public final class ActorBootstrap {
 
     /**
      * @param args [agentName] [actorName] [className] [jmsServerHost] [jmsServerPort] [temporaryConfigFile]
-     * @throws ValidationException
-     * @throws IOException
+     * @throws ValidationException if an invalid actor is being created
+     * @throws IOException         if an error occurs while reading the actors configuration file
      */
     public static void main(final String[] args) throws ValidationException, IOException {
         checkNotNull(args);
@@ -101,7 +99,7 @@ public final class ActorBootstrap {
         ActorShutdownThread(final Actor actor) {
             this.actor = checkNotNull(actor);
 
-            setName("shutdown-hook-" + actor);
+            setName("actor-shutdown-hook-" + actor);
             setDaemon(true);
         }
 

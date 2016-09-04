@@ -21,6 +21,9 @@ import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -36,17 +39,18 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/19/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class JMSActorMessageListenerTest {
 
     private static final String DUMMY_PAYLOAD = "hello";
 
-    private Actor mockActor;
+    @Mock
+    private Actor actor;
     private JMSActorMessageListener listener;
 
     @Before
     public void before() {
-        mockActor = mock(Actor.class);
-        listener = new JMSActorMessageListener(mockActor);
+        listener = new JMSActorMessageListener(actor);
     }
 
     @Test
@@ -59,7 +63,7 @@ public final class JMSActorMessageListenerTest {
     @Test
     public void invalid_jms_message_does_not_throw() {
         listener.onMessage(mock(Message.class));
-        verifyNoMoreInteractions(mockActor);
+        verifyNoMoreInteractions(actor);
     }
 
     @Test
@@ -71,8 +75,8 @@ public final class JMSActorMessageListenerTest {
 
         listener.onMessage(msg);
 
-        verify(mockActor).init();
-        verifyNoMoreInteractions(mockActor);
+        verify(actor).init();
+        verifyNoMoreInteractions(actor);
     }
 
     @Test
@@ -84,8 +88,8 @@ public final class JMSActorMessageListenerTest {
 
         listener.onMessage(msg);
 
-        verify(mockActor).close();
-        verifyNoMoreInteractions(mockActor);
+        verify(actor).close();
+        verifyNoMoreInteractions(actor);
     }
 
     @Test
@@ -97,8 +101,8 @@ public final class JMSActorMessageListenerTest {
 
         listener.onMessage(msg);
 
-        verify(mockActor).dumpAndFlushMetrics();
-        verifyNoMoreInteractions(mockActor);
+        verify(actor).dumpAndFlushMetrics();
+        verifyNoMoreInteractions(actor);
     }
 
     @Test(expected = NullPointerException.class)
@@ -120,7 +124,7 @@ public final class JMSActorMessageListenerTest {
 
         listener.onMessage(msg);
 
-        verify(mockActor).onMessage(argThat(is(DUMMY_ACTOR)), argThat(is(DUMMY_PAYLOAD)));
-        verifyNoMoreInteractions(mockActor);
+        verify(actor).onMessage(argThat(is(DUMMY_ACTOR)), argThat(is(DUMMY_PAYLOAD)));
+        verifyNoMoreInteractions(actor);
     }
 }

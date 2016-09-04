@@ -26,6 +26,9 @@ import io.amaze.bench.orchestrator.registry.RegisteredAgent;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +46,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 4/3/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class ResourceManagerTest {
 
     private static final String OTHER_DUMMY_AGENT = DUMMY_AGENT + "-other";
@@ -50,13 +54,13 @@ public final class ResourceManagerTest {
 
     private ResourceManager resourceManager;
     private AgentRegistry agentRegistry;
+    @Mock
     private OrchestratorServer orchestratorServer;
     private ActorConfig defaultActorConfig;
 
     @Before
     public void before() {
         agentRegistry = new AgentRegistry();
-        orchestratorServer = mock(OrchestratorServer.class);
         resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
 
         defaultActorConfig = TestActor.DUMMY_CONFIG;

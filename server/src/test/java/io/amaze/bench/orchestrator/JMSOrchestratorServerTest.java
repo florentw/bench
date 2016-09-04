@@ -29,6 +29,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
 import java.io.Serializable;
@@ -45,6 +48,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 4/3/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class JMSOrchestratorServerTest {
 
     private static final ActorInputMessage DUMMY_MSG = new ActorInputMessage(ActorInputMessage.Command.INIT, "", "");
@@ -53,14 +57,13 @@ public final class JMSOrchestratorServerTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     private JMSOrchestratorServer server;
+    @Mock
     private JMSServer jmsServer;
+    @Mock
     private JMSClient jmsClient;
 
     @Before
     public void before() {
-        jmsServer = mock(JMSServer.class);
-        jmsClient = mock(JMSClient.class);
-
         server = new JMSOrchestratorServer(jmsServer, jmsClient);
     }
 

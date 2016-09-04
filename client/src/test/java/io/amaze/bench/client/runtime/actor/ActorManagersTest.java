@@ -19,18 +19,24 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created on 4/9/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class ActorManagersTest {
 
     private ActorManagers actorManagers;
+
+    @Mock
+    private OrchestratorClientFactory clientFactory;
 
     @Before
     public void before() {
@@ -46,7 +52,7 @@ public final class ActorManagersTest {
 
     @Test
     public void can_supply_embedded_manager() {
-        try (ActorManager embedded = actorManagers.createEmbedded(DUMMY_AGENT, mock(OrchestratorClientFactory.class))) {
+        try (ActorManager embedded = actorManagers.createEmbedded(DUMMY_AGENT, clientFactory)) {
             assertNotNull(embedded);
             assertTrue(embedded instanceof EmbeddedActorManager);
         }

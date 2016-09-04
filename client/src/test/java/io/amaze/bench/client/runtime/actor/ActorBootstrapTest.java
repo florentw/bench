@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +34,7 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 3/14/16.
@@ -86,7 +84,7 @@ public final class ActorBootstrapTest {
         Actor actor = actorBootstrap.createActor(TestActor.DUMMY_ACTOR,
                                                  TestActor.class.getName(),
                                                  TestActor.DUMMY_JSON_CONFIG);
-        actor = Mockito.spy(actor);
+        actor = spy(actor);
 
         ActorBootstrap.ActorShutdownThread thread = new ActorBootstrap.ActorShutdownThread(actor);
         thread.start();

@@ -23,6 +23,9 @@ import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -36,14 +39,15 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/19/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class JMSAgentMessageListenerTest {
 
+    @Mock
     private AgentClientListener agentListener;
     private JMSAgentMessageListener listener;
 
     @Before
     public void before() {
-        agentListener = mock(AgentClientListener.class);
         listener = new JMSAgentMessageListener(DUMMY_AGENT, agentListener);
     }
 

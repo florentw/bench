@@ -24,6 +24,9 @@ import io.amaze.bench.shared.jms.JMSException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
 
@@ -34,16 +37,19 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 4/24/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class JMSOrchestratorAgentTest {
 
     private static final String TEST_AGENT = "agent1";
 
+    @Mock
     private JMSClient jmsClient;
+    @Mock
+    private AgentClientListener agentClientListener;
     private JMSOrchestratorAgent client;
 
     @Before
     public void before() {
-        jmsClient = mock(JMSClient.class);
         client = new JMSOrchestratorAgent(jmsClient);
     }
 
@@ -72,7 +78,7 @@ public final class JMSOrchestratorAgentTest {
 
     @Test
     public void start_agent_listener() throws JMSException {
-        client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
+        client.startAgentListener(TEST_AGENT, agentClientListener);
 
         verify(jmsClient).addTopicListener(eq(Constants.AGENTS_ACTOR_NAME), any(MessageListener.class));
         verify(jmsClient).startListening();
@@ -84,7 +90,7 @@ public final class JMSOrchestratorAgentTest {
 
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
-        client.startAgentListener(TEST_AGENT, mock(AgentClientListener.class));
+        client.startAgentListener(TEST_AGENT, agentClientListener);
     }
 
     @Test

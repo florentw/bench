@@ -20,6 +20,9 @@ import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Set;
 
@@ -27,17 +30,21 @@ import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Created on 4/2/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class AgentRegistryTest {
 
     private static final AgentRegistrationMessage REG_MSG = AgentRegistrationMessage.create(DUMMY_AGENT);
 
     private AgentRegistry registry;
     private AgentRegistryListener orchestratorListener;
+
+    @Mock
     private AgentRegistryListener clientListener;
 
     @Before
@@ -45,7 +52,6 @@ public final class AgentRegistryTest {
         registry = new AgentRegistry();
         orchestratorListener = registry.getListenerForOrchestrator();
 
-        clientListener = mock(AgentRegistryListener.class);
         registry.addListener(clientListener);
     }
 

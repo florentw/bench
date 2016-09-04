@@ -27,6 +27,9 @@ import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -40,18 +43,18 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/29/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class JMSMasterMessageListenerTest {
 
-    private AgentRegistryListener agentRegistryLstnr;
-    private ActorRegistryListener actorRegistryLstnr;
+    @Mock
+    private AgentRegistryListener agentRegistryListener;
+    @Mock
+    private ActorRegistryListener actorRegistryListener;
     private JMSMasterMessageListener messageListener;
 
     @Before
     public void before() {
-        agentRegistryLstnr = mock(AgentRegistryListener.class);
-        actorRegistryLstnr = mock(ActorRegistryListener.class);
-
-        messageListener = new JMSMasterMessageListener(agentRegistryLstnr, actorRegistryLstnr);
+        messageListener = new JMSMasterMessageListener(agentRegistryListener, actorRegistryListener);
     }
 
     @Test
@@ -65,8 +68,8 @@ public final class JMSMasterMessageListenerTest {
     public void corrupted_message_does_nothing() throws IOException, ClassNotFoundException, JMSException {
         messageListener.onMessage(mock(javax.jms.Message.class));
 
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -76,8 +79,8 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -88,9 +91,9 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(agentRegistryLstnr).onAgentRegistration(regMsg);
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verify(agentRegistryListener).onAgentRegistration(regMsg);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -100,9 +103,9 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(agentRegistryLstnr).onAgentSignOff(DUMMY_AGENT);
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verify(agentRegistryListener).onAgentSignOff(DUMMY_AGENT);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -113,9 +116,9 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -126,9 +129,9 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -140,9 +143,9 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorFailed(DUMMY_ACTOR, null);
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verify(actorRegistryListener).onActorFailed(DUMMY_ACTOR, null);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -154,9 +157,9 @@ public final class JMSMasterMessageListenerTest {
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryLstnr).onActorClosed(DUMMY_ACTOR);
-        verifyNoMoreInteractions(agentRegistryLstnr);
-        verifyNoMoreInteractions(actorRegistryLstnr);
+        verify(actorRegistryListener).onActorClosed(DUMMY_ACTOR);
+        verifyNoMoreInteractions(agentRegistryListener);
+        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     private BytesMessage toBytesMessage(final AgentOutputMessage masterMsg) throws IOException, JMSException {

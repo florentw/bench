@@ -25,7 +25,11 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 3/5/16.
+ * Main entry point for agents to boot.
+ * <ul>
+ * <li>Contains the {@link #main(String[])} method</li>
+ * <li>Registers a shutdown hook to be able to close properly the agent upon receiving a termination signal</li>
+ * </ul>
  */
 public final class AgentBootstrap {
 
@@ -69,7 +73,7 @@ public final class AgentBootstrap {
         AgentShutdownHook(final Agent agent) {
             this.agent = checkNotNull(agent);
 
-            setName("shutdown-hook-" + agent);
+            setName("agent-shutdown-hook-" + agent);
             setDaemon(true);
         }
 

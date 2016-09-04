@@ -22,6 +22,9 @@ import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -38,6 +41,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/3/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class AgentTest {
 
     public static final String DUMMY_AGENT = "DUMMY_AGENT";
@@ -46,6 +50,7 @@ public final class AgentTest {
     private RecorderOrchestratorActor actorClient;
 
     private ActorManager embeddedManager;
+    @Mock
     private ActorManager forkedManager;
     private Agent agent;
 
@@ -56,7 +61,6 @@ public final class AgentTest {
 
         DummyClientFactory clientFactory = new DummyClientFactory(agentClient, actorClient);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory)));
-        forkedManager = mock(ActorManager.class);
 
         ActorManagerFactory managerFactory = new ActorManagerFactory() {
             @Override

@@ -19,21 +19,26 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Created on 3/30/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class AgentRegistryListenerLoggerTest {
 
+    @Mock
     private AgentRegistryListener delegateListener;
     private AgentRegistryListenerLogger loggerListener;
 
     @Before
     public void before() {
-        delegateListener = mock(AgentRegistryListener.class);
         loggerListener = new AgentRegistryListenerLogger(delegateListener);
     }
 
