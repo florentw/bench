@@ -49,9 +49,9 @@ public final class FFMQClient implements JMSClient {
     private final Session session;
     private final Connection conn;
 
-    public FFMQClient(@NotNull final String host, @NotNull final int port) throws JMSException {
+    public FFMQClient(@NotNull final JMSEndpoint endpoint) throws JMSException {
         try {
-            context = initContext(host, port);
+            context = initContext(endpoint);
             conn = initConnection();
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         } catch (Exception e) {
@@ -200,11 +200,11 @@ public final class FFMQClient implements JMSClient {
         return connFactory.createConnection();
     }
 
-    private InitialContext initContext(@NotNull final String host, @NotNull final int port) throws NamingException {
+    private InitialContext initContext(@NotNull final JMSEndpoint endpoint) throws NamingException {
         InitialContext localContext;
         Hashtable<String, Object> env = new Hashtable<>(); // NOSONAR - No choice here...
         env.put(Context.INITIAL_CONTEXT_FACTORY, FFMQConstants.JNDI_CONTEXT_FACTORY);
-        env.put(Context.PROVIDER_URL, String.format("tcp://%s:%d", host, port));
+        env.put(Context.PROVIDER_URL, String.format("tcp://%s:%d", endpoint.getHost(), endpoint.getPort()));
         localContext = new InitialContext(env);
         return localContext;
     }

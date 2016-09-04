@@ -18,7 +18,8 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
-import io.amaze.bench.shared.helper.Files;
+import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.shared.util.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,20 +137,19 @@ final class ForkedActorManager extends AbstractActorManager {
 
         String name = actorConfig.getName();
 
-        String jmsServerHost = actorConfig.getDeployConfig().getJmsServerHost();
-        int jmsServerPort = actorConfig.getDeployConfig().getJmsServerPort();
+        JMSEndpoint jmsServer = actorConfig.getDeployConfig().getJmsEndpoint();
 
         String[] cmd = { //
                 JAVA_HOME.value() + JAVA_CMD_PATH, //
                 "-cp", //
                 JAVA_CLASS_PATH.value(), // Use the current classpath
-                ActorBootstrap.class.getName(),  // Main class
-                getAgent(),                      // arg[0]
-                name,                            // arg[1]
-                actorConfig.getClassName(),      // arg[2]
-                jmsServerHost,                   // arg[3]
-                Integer.toString(jmsServerPort), // arg[4]
-                configFileName                   // arg[5]
+                ActorBootstrap.class.getName(),        // Main class
+                getAgent(),                            // arg[0]
+                name,                                  // arg[1]
+                actorConfig.getClassName(),            // arg[2]
+                jmsServer.getHost(),                   // arg[3]
+                Integer.toString(jmsServer.getPort()), // arg[4]
+                configFileName                         // arg[5]
         };
 
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";

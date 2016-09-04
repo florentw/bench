@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static io.amaze.bench.shared.helper.Network.LOCALHOST;
-import static io.amaze.bench.shared.helper.Network.findFreePort;
 import static io.amaze.bench.shared.jms.FFMQServerTest.DUMMY_QUEUE;
 import static io.amaze.bench.shared.jms.FFMQServerTest.DUMMY_TOPIC;
+import static io.amaze.bench.shared.util.Network.LOCALHOST;
+import static io.amaze.bench.shared.util.Network.findFreePort;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,26 +58,26 @@ public final class JMSClientServerTest {
 
     @Test
     public void start_close_client() throws Exception {
-        try (JMSClient client = new FFMQClient(server.getHost(), server.getPort())) {
+        try (JMSClient client = new FFMQClient(server.getEndpoint())) {
             TestCase.assertNotNull(client);
         }
     }
 
     @Test(expected = JMSException.class)
     public void start_client_with_wrong_endpoint_throws() throws Exception {
-        new FFMQClient(LOCALHOST, findFreePort());
+        new FFMQClient(new JMSEndpoint(LOCALHOST, findFreePort()));
     }
 
     @Test
     public void close_client_after_server_closed_does_not_throw() throws Exception {
-        JMSClient client = new FFMQClient(server.getHost(), server.getPort());
+        JMSClient client = new FFMQClient(server.getEndpoint());
         server.getServer().close();
         client.close();
     }
 
     @Test
     public void close_client_twice_does_not_throw() throws Exception {
-        JMSClient client = new FFMQClient(server.getHost(), server.getPort());
+        JMSClient client = new FFMQClient(server.getEndpoint());
         server.getServer().close();
         client.close();
         client.close();

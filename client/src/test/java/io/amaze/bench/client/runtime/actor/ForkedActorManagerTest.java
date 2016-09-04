@@ -18,10 +18,10 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.Constants;
-import io.amaze.bench.shared.helper.Files;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
+import io.amaze.bench.shared.util.Files;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -190,7 +190,7 @@ public final class ForkedActorManagerTest {
 
     private ActorConfig configWithInitRdv(final String className, final File rdvFile) {
 
-        DeployConfig deployConfig = new DeployConfig(server.getHost(), server.getPort(), true, Collections.emptyList());
+        DeployConfig deployConfig = new DeployConfig(server.getEndpoint(), true, Collections.emptyList());
 
         String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
 

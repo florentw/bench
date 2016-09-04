@@ -17,6 +17,7 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Test;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
@@ -41,6 +42,7 @@ public final class ActorConfigTest {
     public void null_parameters_for_constructor() {
         NullPointerTester test = new NullPointerTester();
         test.setDefault(DeployConfig.class, DUMMY_CONFIG.getDeployConfig());
+        test.setDefault(JMSEndpoint.class, new JMSEndpoint("test", 10));
         test.testAllPublicConstructors(ActorConfig.class);
         test.testAllPublicConstructors(DeployConfig.class);
     }

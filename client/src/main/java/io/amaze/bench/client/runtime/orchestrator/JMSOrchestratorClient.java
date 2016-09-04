@@ -19,12 +19,12 @@ import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 
@@ -40,12 +40,11 @@ abstract class JMSOrchestratorClient implements OrchestratorClient {
         this.client = checkNotNull(client);
     }
 
-    JMSOrchestratorClient(@NotNull final String host, @NotNull final int port) {
-        checkNotNull(host);
-        checkArgument(port > 0);
+    JMSOrchestratorClient(@NotNull final JMSEndpoint endpoint) {
+        checkNotNull(endpoint);
 
         try {
-            client = new FFMQClient(host, port);
+            client = new FFMQClient(endpoint);
         } catch (JMSException e) {
             throw propagate(e);
         }

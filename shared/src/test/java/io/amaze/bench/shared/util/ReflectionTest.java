@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.shared.helper;
+package io.amaze.bench.shared.util;
 
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
-import static io.amaze.bench.shared.helper.Reflection.findAtMostOneAnnotatedMethod;
+import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;

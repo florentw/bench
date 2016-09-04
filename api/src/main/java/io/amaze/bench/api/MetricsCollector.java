@@ -21,8 +21,10 @@ import io.amaze.bench.shared.metric.Metric;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 2/28/16.
+ * Interface that can be injected in an Actor's constructor.<br/>
+ * It allows the actor to produce metrics, that will be sent to the master for collection.
  */
+@FunctionalInterface
 public interface MetricsCollector {
 
     void put(@NotNull String key, @NotNull Metric metric);

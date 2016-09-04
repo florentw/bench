@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.shared.helper;
+package io.amaze.bench.shared.util;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;

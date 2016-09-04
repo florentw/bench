@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.shared.helper;
+package io.amaze.bench.shared.util;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.junit.Assert.assertTrue;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 
 /**
- * Created on 8/28/16.
+ * Created on 3/20/16.
  */
-@RunWith(MockitoJUnitRunner.class)
-public final class NetworkTest {
+public final class System {
 
-    @Test
-    public void find_positive_port() {
-        assertTrue(Network.findFreePort() > 0);
+    private static final String OS_NAME_LINUX = "Linux";
+
+    private System() {
+        // Should not be instantiated
+    }
+
+    public static boolean isLinux() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        return osBean.getName().contains(OS_NAME_LINUX);
     }
 
 }

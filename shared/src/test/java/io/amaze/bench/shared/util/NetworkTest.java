@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.shared.helper;
+package io.amaze.bench.shared.util;
 
-import com.google.common.base.Throwables;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import java.net.ServerSocket;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Created on 3/19/16.
+ * Created on 8/28/16.
  */
-public final class Network {
+@RunWith(MockitoJUnitRunner.class)
+public final class NetworkTest {
 
-    public static final String LOCALHOST = "localhost";
-
-    private Network() {
-        // Helper class
-    }
-
-    public static int findFreePort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        } catch (Exception e) {
-            throw Throwables.propagate(e);
-        }
+    @Test
+    public void find_positive_port() {
+        assertTrue(Network.findFreePort() > 0);
     }
 
 }

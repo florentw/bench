@@ -54,7 +54,8 @@ public final class AgentBootstrapIntegrationTest {
             @Override
             public void run() {
                 try {
-                    AgentBootstrap.main(new String[]{server.getHost(), "" + server.getPort()});
+                    AgentBootstrap.main(new String[]{server.getEndpoint().getHost(), //
+                            Integer.toString(server.getEndpoint().getPort())});
                 } catch (Exception e) {
                     Throwables.propagate(e);
                 }

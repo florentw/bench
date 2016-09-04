@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public final class AgentBootstrap {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
 
-        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(host, port);
+        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(new JMSEndpoint(host, port));
 
         Agent agent = createAgent(clientFactory);
         registerShutdownHook(agent);

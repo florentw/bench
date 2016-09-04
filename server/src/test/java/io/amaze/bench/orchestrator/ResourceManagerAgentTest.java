@@ -161,8 +161,7 @@ public final class ResourceManagerAgentTest {
     }
 
     private DeployConfig deployConfig(final List<String> preferredHosts) {
-        return new DeployConfig(benchRule.getJmsServerRule().getHost(),
-                                benchRule.getJmsServerRule().getPort(),
+        return new DeployConfig(benchRule.getJmsServerRule().getEndpoint(),
                                 false,
                                 preferredHosts);
     }

@@ -18,7 +18,8 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
-import io.amaze.bench.shared.helper.Files;
+import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.shared.util.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +55,8 @@ public final class ActorBootstrap {
 
         if (args.length != 6) {
             LOG.error("Usage:");
-            LOG.error(
-                    "ActorBootstrap <agentName> <actorName> <className> <jmsServerHost> <jmsServerPort> <temporaryConfigFile>");
+            LOG.error("ActorBootstrap <agentName> <actorName> <className> " + //
+                              "<jmsServerHost> <jmsServerPort> <temporaryConfigFile>");
             throw new IllegalArgumentException();
         }
 
@@ -69,7 +70,8 @@ public final class ActorBootstrap {
         // Read and delete the temporary config file
         String jsonConfig = Files.readAndDelete(jsonTmpConfigFile);
 
-        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(jmsServerHost, jmsServerPort);
+        JMSEndpoint serverEndpoint = new JMSEndpoint(jmsServerHost, jmsServerPort);
+        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(serverEndpoint);
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(agentName, clientFactory);
         Actor actor = actorBootstrap.createActor(actorName, className, jsonConfig);

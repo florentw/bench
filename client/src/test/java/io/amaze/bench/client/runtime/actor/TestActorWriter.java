@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 
-import static io.amaze.bench.shared.helper.Files.writeTo;
+import static io.amaze.bench.shared.util.Files.writeTo;
 
 /**
  * Created on 3/15/16.

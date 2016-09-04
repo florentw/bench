@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.client.runtime.orchestrator;
 
+import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -25,9 +27,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSOrchestratorClientFactoryTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void port_must_be_greater_than_zero() {
-        new JMSOrchestratorClientFactory("", -1);
+    @Test
+    public void null_parameters_are_invalid() {
+        JMSOrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(new JMSEndpoint("", 1));
+        NullPointerTester tester = new NullPointerTester();
+        tester.testAllPublicConstructors(JMSOrchestratorClientFactory.class);
+        tester.testAllPublicInstanceMethods(clientFactory);
     }
 
 }

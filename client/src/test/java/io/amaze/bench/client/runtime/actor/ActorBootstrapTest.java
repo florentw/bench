@@ -22,7 +22,7 @@ import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
-import io.amaze.bench.shared.helper.Files;
+import io.amaze.bench.shared.util.Files;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

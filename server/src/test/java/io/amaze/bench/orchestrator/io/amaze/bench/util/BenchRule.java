@@ -90,7 +90,7 @@ public final class BenchRule extends ExternalResource {
 
         resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
 
-        orchestratorClientFactory = new JMSOrchestratorClientFactory(jmsServerRule.getHost(), jmsServerRule.getPort());
+        orchestratorClientFactory = new JMSOrchestratorClientFactory(jmsServerRule.getEndpoint());
     }
 
     @Override

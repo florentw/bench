@@ -59,15 +59,15 @@ public final class FFMQServer implements JMSServer {
     private final ClientListener tcpListener;
     private final Object queuesLock = new Object();
 
-    public FFMQServer(@NotNull final String host, final int port) throws io.amaze.bench.shared.jms.JMSException {
-        checkNotNull(host);
+    public FFMQServer(@NotNull JMSEndpoint endpoint) throws io.amaze.bench.shared.jms.JMSException {
+        checkNotNull(endpoint);
 
         try {
             purgeQueuesAnTopicsProperties();
 
             Settings settings = createSettings(DATA_DIR_PATH);
             engine = initEngine(settings);
-            tcpListener = startListenerSynchronously(host, port, settings);
+            tcpListener = startListenerSynchronously(endpoint, settings);
         } catch (Exception e) {
             throw new io.amaze.bench.shared.jms.JMSException(e);
         }
@@ -186,12 +186,10 @@ public final class FFMQServer implements JMSServer {
         }
     }
 
-    private ClientListener startListenerSynchronously(@NotNull final String host,
-                                                      @NotNull final int port,
-                                                      @NotNull final Settings settings) {
+    private ClientListener startListenerSynchronously(final JMSEndpoint endpoint, final Settings settings) {
 
-        ClientListener localListener = new TcpListener(engine, host, port, settings, null);
-        ListenerThread listenerThread = new ListenerThread(host, port, localListener);
+        ClientListener localListener = new TcpListener(engine, endpoint.getHost(), endpoint.getPort(), settings, null);
+        ListenerThread listenerThread = new ListenerThread(endpoint, localListener);
         listenerThread.start();
 
         int count = 200;
@@ -226,17 +224,15 @@ public final class FFMQServer implements JMSServer {
 
         private static final String LISTENER_THREAD_NAME = "jms-listener-";
         private final ClientListener listener;
-        private final String host;
-        private final int port;
+        private final JMSEndpoint endpoint;
 
         private volatile JMSException exception;
 
-        ListenerThread(@NotNull final String host, @NotNull final int port, @NotNull final ClientListener listener) {
-            this.host = checkNotNull(host);
-            this.port = port;
+        ListenerThread(@NotNull final JMSEndpoint endpoint, @NotNull final ClientListener listener) {
+            this.endpoint = checkNotNull(endpoint);
             this.listener = checkNotNull(listener);
 
-            setName(LISTENER_THREAD_NAME + host + ":" + port);
+            setName(LISTENER_THREAD_NAME + this.endpoint.getHost() + ":" + this.endpoint.getPort());
             setDaemon(true);
         }
 
@@ -245,7 +241,7 @@ public final class FFMQServer implements JMSServer {
             try {
                 listener.start();
             } catch (JMSException e) {
-                LOG.error("Error while starting TCP listener on " + host + ":" + port, e);
+                LOG.error("Error while starting TCP listener on " + endpoint, e);
                 exception = e;
             }
         }

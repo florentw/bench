@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.shared.test;
 
-import io.amaze.bench.shared.helper.Network;
 import io.amaze.bench.shared.jms.*;
+import io.amaze.bench.shared.util.Network;
 import org.junit.rules.ExternalResource;
 
 import static com.google.common.base.Throwables.propagate;
@@ -29,14 +29,10 @@ public final class JMSServerRule extends ExternalResource {
     public static final String DEFAULT_HOST = Network.LOCALHOST;
 
     private JMSServer server;
-    private int port;
+    private JMSEndpoint endpoint;
 
-    public String getHost() {
-        return DEFAULT_HOST;
-    }
-
-    public int getPort() {
-        return port;
+    public JMSEndpoint getEndpoint() {
+        return endpoint;
     }
 
     public JMSServer getServer() {
@@ -45,16 +41,17 @@ public final class JMSServerRule extends ExternalResource {
 
     public JMSClient createClient() {
         try {
-            return new FFMQClient(DEFAULT_HOST, port);
+            return new FFMQClient(endpoint);
         } catch (JMSException e) {
             throw propagate(e);
         }
     }
 
     public void init() {
-        port = Network.findFreePort();
+        int port = Network.findFreePort();
         try {
-            server = new FFMQServer(DEFAULT_HOST, port);
+            endpoint = new JMSEndpoint(DEFAULT_HOST, port);
+            server = new FFMQServer(endpoint);
         } catch (JMSException e) {
             propagate(e);
         }

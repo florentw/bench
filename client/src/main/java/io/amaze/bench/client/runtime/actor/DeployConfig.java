@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
+import io.amaze.bench.shared.jms.JMSEndpoint;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collections;
@@ -28,18 +30,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class DeployConfig implements Serializable {
 
-    private final String jmsServerHost;
-    private final int jmsServerPort;
+    private final JMSEndpoint jmsServerEndpoint;
     private final boolean forked;
     private final List<String> preferredHosts;
 
-    public DeployConfig(@NotNull final String jmsServerHost,
-                        @NotNull final int jmsServerPort,
+    public DeployConfig(@NotNull final JMSEndpoint jmsServerEndpoint,
                         final boolean forked,
                         @NotNull final List<String> preferredHosts) {
 
-        this.jmsServerHost = checkNotNull(jmsServerHost);
-        this.jmsServerPort = checkNotNull(jmsServerPort);
+        this.jmsServerEndpoint = checkNotNull(jmsServerEndpoint);
         this.forked = forked;
         this.preferredHosts = checkNotNull(preferredHosts);
     }
@@ -55,7 +54,7 @@ public final class DeployConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(jmsServerHost, jmsServerPort, forked, preferredHosts);
+        return Objects.hash(jmsServerEndpoint, forked, preferredHosts);
     }
 
     @Override
@@ -67,27 +66,21 @@ public final class DeployConfig implements Serializable {
             return false;
         }
         DeployConfig that = (DeployConfig) o;
-        return jmsServerPort == that.jmsServerPort && //
+        return Objects.equals(jmsServerEndpoint, that.jmsServerEndpoint) && //
                 forked == that.forked && //
-                Objects.equals(jmsServerHost, that.jmsServerHost) && //
                 Objects.equals(preferredHosts, that.preferredHosts);
     }
 
     @Override
     public String toString() {
         return "{\"DeployConfig\":{" + //
-                "\"jmsServerHost\":\"" + jmsServerHost + "\"" + ", " + //
-                "\"jmsServerPort\":\"" + jmsServerPort + "\"" + ", " + //
+                "\"jmsServer\":" + jmsServerEndpoint + ", " + //
                 "\"forked\":\"" + forked + "\"" + ", " + //
                 "\"preferredHosts\":\"" + preferredHosts + "\"}}";
     }
 
-    String getJmsServerHost() {
-        return jmsServerHost;
-    }
-
-    int getJmsServerPort() {
-        return jmsServerPort;
+    JMSEndpoint getJmsEndpoint() {
+        return jmsServerEndpoint;
     }
 
 }

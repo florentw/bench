@@ -16,8 +16,8 @@
 package io.amaze.bench.shared.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.shared.helper.Network;
 import io.amaze.bench.shared.test.JMSServerRule;
+import io.amaze.bench.shared.util.Network;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -59,7 +59,7 @@ public final class FFMQServerTest {
         expectedException.expect(JMSException.class);
         expectedException.expectMessage("Cannot create server socket");
 
-        new FFMQServer(JMSServerRule.DEFAULT_HOST, server.getPort());
+        new FFMQServer(server.getEndpoint());
     }
 
     @Test
@@ -71,7 +71,8 @@ public final class FFMQServerTest {
         queuePropFile.createNewFile(); // NOSONAR
         topicPropFile.createNewFile(); // NOSONAR
 
-        new FFMQServer(JMSServerRule.DEFAULT_HOST, Network.findFreePort());
+        JMSEndpoint endpoint = new JMSEndpoint(JMSServerRule.DEFAULT_HOST, Network.findFreePort());
+        new FFMQServer(endpoint);
 
         assertThat(queuePropFile.exists(), is(false));
         assertThat(topicPropFile.exists(), is(false));

@@ -20,6 +20,7 @@ import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.After;
 import org.junit.Before;
@@ -58,14 +59,9 @@ public final class JMSOrchestratorAgentTest {
         client.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void port_must_be_greater_than_zero() {
-        new JMSOrchestratorAgent("", -1);
-    }
-
     @Test(expected = RuntimeException.class)
     public void invalid_hostname_throws() {
-        new JMSOrchestratorAgent("dummyhost", 1);
+        new JMSOrchestratorAgent(new JMSEndpoint("dummyhost", 1));
     }
 
     @Test
