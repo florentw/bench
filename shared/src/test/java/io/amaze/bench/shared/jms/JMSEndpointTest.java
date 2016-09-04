@@ -24,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 9/4/16.
@@ -40,7 +41,7 @@ public final class JMSEndpointTest {
     public void toString_yields_valid_json() {
         JMSEndpoint endpoint = createEndpoint();
 
-        Json.isValid(endpoint.toString());
+        assertTrue(Json.isValid(endpoint.toString()));
     }
 
     @Test

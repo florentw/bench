@@ -18,10 +18,13 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
 import static io.amaze.bench.client.runtime.actor.TestActor.configForActor;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created on 4/6/16.
@@ -45,6 +48,11 @@ public final class ActorConfigTest {
         test.setDefault(JMSEndpoint.class, new JMSEndpoint("test", 10));
         test.testAllPublicConstructors(ActorConfig.class);
         test.testAllPublicConstructors(DeployConfig.class);
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertThat(Json.isValid(DUMMY_CONFIG.toString()), is(true));
     }
 
 }
