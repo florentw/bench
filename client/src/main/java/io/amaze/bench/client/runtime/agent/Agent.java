@@ -150,7 +150,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
     private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {
         try {
-            ActorManager manager = actorManager(actorConfig.getDeployConfig());
+            ActorManager manager = actorManager(actorConfig);
             return Optional.of(manager.createActor(actorConfig));
 
         } catch (Exception e) {
@@ -160,8 +160,8 @@ public class Agent implements AgentClientListener, AutoCloseable {
         }
     }
 
-    private ActorManager actorManager(@NotNull final DeployConfig deployConfig) {
-        if (deployConfig.isForked()) {
+    private ActorManager actorManager(@NotNull final ActorConfig actorConfig) {
+        if (actorConfig.getDeployConfig().isForked()) {
             return forkedManager;
         } else {
             return embeddedManager;

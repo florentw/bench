@@ -16,13 +16,15 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.metric.Metric;
+import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.shared.metric.Metric;
-import io.amaze.bench.shared.metric.MetricsSink;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.*;
+import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_A;
+import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_B;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +62,7 @@ public final class BaseActorTest {
     @Test
     public void null_parameters_are_invalid() throws ValidationException {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(MetricsSink.class, MetricsSink.create());
+        tester.setDefault(Metrics.class, MetricsInternal.create());
         tester.setDefault(Method.class, BaseActorTest.class.getMethods()[0]);
         try (BaseActor actor = defaultTestActor()) {
             tester.testAllPublicInstanceMethods(actor);
@@ -248,10 +252,12 @@ public final class BaseActorTest {
             assertThat(msgsToMetrics.size(), is(1));
 
             // Check dump message sent
-            Map<String, Metric> metricsMap = (Map<String, Metric>) msgsToMetrics.get(0).data(); // NOSONAR
+            Map<Metric, List<MetricValue>> metricsMap = (Map<Metric, List<MetricValue>>) msgsToMetrics.get(0).data(); // NOSONAR
             assertThat(metricsMap.size(), is(2));
-            assertThat(metricsMap.get(TestActorMetrics.DUMMY_METRIC_A_KEY), is(TestActorMetrics.DUMMY_METRIC_A));
-            assertThat(metricsMap.get(TestActorMetrics.DUMMY_METRIC_B_KEY), is(TestActorMetrics.DUMMY_METRIC_B));
+            assertThat(metricsMap.get(DUMMY_METRIC_A).size(), is(1));
+            assertThat(metricsMap.get(DUMMY_METRIC_A).get(0).getValue(), is(10));
+            assertThat(metricsMap.get(DUMMY_METRIC_B).size(), is(1));
+            assertThat(metricsMap.get(DUMMY_METRIC_B).get(0).getValue(), is(1));
         }
     }
 

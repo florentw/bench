@@ -16,11 +16,15 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.*;
-import io.amaze.bench.api.*;
+import io.amaze.bench.api.After;
+import io.amaze.bench.api.Before;
+import io.amaze.bench.api.Reactor;
+import io.amaze.bench.api.Sender;
+import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
-import io.amaze.bench.shared.metric.MetricsSink;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
@@ -74,12 +78,12 @@ public final class ActorFactory {
         Method beforeMethod = findAtMostOneAnnotatedMethod(clazz, Before.class);
         Method afterMethod = findAtMostOneAnnotatedMethod(clazz, After.class);
 
-        MetricsSink metricsSink = MetricsSink.create();
+        MetricsInternal metrics = MetricsInternal.create();
 
         OrchestratorActor client = clientFactory.createForActor();
-        Reactor reactor = createReactor(name, metricsSink, clazz, client, config);
+        Reactor reactor = createReactor(name, metrics, clazz, client, config);
 
-        return new BaseActor(name, agent, metricsSink, beforeMethod, afterMethod, reactor, client);
+        return new BaseActor(name, agent, metrics, beforeMethod, afterMethod, reactor, client);
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
@@ -93,8 +97,7 @@ public final class ActorFactory {
     /**
      * Inject dependencies to create a reactor.
      */
-    private Reactor createReactor(final String actorName,
-                                  final MetricsSink sink,
+    private Reactor createReactor(final String actorName, final Metrics metrics,
                                   final Class<? extends Reactor> clazz,
                                   final OrchestratorActor client,
                                   final Config config) {
@@ -110,7 +113,7 @@ public final class ActorFactory {
             client.sendToActor(to, new Message<>(actorName, message));
         });
 
-        pico.addComponent((MetricsCollector) sink::add);
+        pico.addComponent(metrics);
 
         pico.addComponent(clazz);
 

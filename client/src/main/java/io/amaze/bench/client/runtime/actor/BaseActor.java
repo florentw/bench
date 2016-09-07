@@ -20,11 +20,12 @@ import io.amaze.bench.api.IrrecoverableException;
 import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.TerminationException;
+import io.amaze.bench.api.metric.Metric;
+import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
-import io.amaze.bench.shared.metric.Metric;
-import io.amaze.bench.shared.metric.MetricsSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,7 +54,7 @@ public class BaseActor implements Actor {
 
     private final String name;
     private final String agentName;
-    private final MetricsSink sink;
+    private final MetricsInternal metrics;
     private final Method beforeMethod;
     private final Method afterMethod;
     private final Reactor instance;
@@ -61,8 +63,7 @@ public class BaseActor implements Actor {
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public BaseActor(@NotNull final String name,
-                     @NotNull final String agentName,
-                     @NotNull final MetricsSink sink,
+                     @NotNull final String agentName, @NotNull final MetricsInternal metrics,
                      final Method beforeMethod,
                      final Method afterMethod,
                      @NotNull final Reactor instance,
@@ -70,7 +71,7 @@ public class BaseActor implements Actor {
 
         this.name = checkNotNull(name);
         this.agentName = checkNotNull(agentName);
-        this.sink = checkNotNull(sink);
+        this.metrics = checkNotNull(metrics);
         this.beforeMethod = beforeMethod;
         this.afterMethod = afterMethod;
         this.instance = checkNotNull(instance);
@@ -117,8 +118,8 @@ public class BaseActor implements Actor {
 
     @Override
     public final void dumpAndFlushMetrics() {
-        Map<String, Metric> metrics = sink.getMetricsAndFlush();
-        client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metrics));
+        Map<Metric, List<MetricValue>> metricValues = this.metrics.fetchAndFlush();
+        client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metricValues));
     }
 
     @Override

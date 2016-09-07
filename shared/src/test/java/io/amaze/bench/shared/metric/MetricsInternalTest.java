@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.api;
-
-
-import io.amaze.bench.shared.metric.Metric;
-
-import javax.validation.constraints.NotNull;
-
-/**
- * Interface that can be injected in an Actor's constructor.<br/>
- * It allows the actor to produce metrics, that will be sent to the master for collection.
- */
-@FunctionalInterface
-public interface MetricsCollector {
-
-    void put(@NotNull String key, @NotNull Metric metric);
-
-}
+package io.amaze.bench.shared.metric;

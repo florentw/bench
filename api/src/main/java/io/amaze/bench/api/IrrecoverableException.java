@@ -30,7 +30,6 @@ public final class IrrecoverableException extends ReactorException {
     }
 
     public IrrecoverableException(@NotNull final String message, @NotNull final Throwable cause) {
-
         super(checkNotNull(message), checkNotNull(cause));
     }
 }
