@@ -13,34 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.runtime.actor.sys;
+package io.amaze.bench.actor;
 
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.amaze.bench.actor.AbstractWatcherActor.MSG_PERIOD_LESS_THAN_ONE_SEC;
+import static java.lang.String.format;
 
 /**
  * Created on 9/4/16.
  */
 public final class SystemWatcherInput implements Serializable {
 
+    private static final int NA = 1;
     private final Command command;
-    private final long intervalSeconds;
+    private final long periodSeconds;
 
-    public SystemWatcherInput(final Command command, final long intervalSeconds) {
-        checkArgument(intervalSeconds > 0, "Interval can't be less than 1 second, was " + intervalSeconds);
+    private SystemWatcherInput(final Command command, final long periodSeconds) {
+        checkArgument(periodSeconds > 0, format(MSG_PERIOD_LESS_THAN_ONE_SEC, periodSeconds));
 
         this.command = checkNotNull(command);
-        this.intervalSeconds = intervalSeconds;
+        this.periodSeconds = periodSeconds;
+    }
+
+    public static SystemWatcherInput start(final long periodSeconds) {
+        return new SystemWatcherInput(Command.START, periodSeconds);
+    }
+
+    public static SystemWatcherInput setPeriod(final long periodSeconds) {
+        return new SystemWatcherInput(Command.SET_PERIOD, periodSeconds);
+    }
+
+    public static SystemWatcherInput stop() {
+        return new SystemWatcherInput(Command.STOP, NA);
     }
 
     public Command getCommand() {
         return command;
     }
 
-    public long getIntervalSeconds() {
-        return intervalSeconds;
+    public long getPeriodSeconds() {
+        return periodSeconds;
     }
 
     public enum Command {

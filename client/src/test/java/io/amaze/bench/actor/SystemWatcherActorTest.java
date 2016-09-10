@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.runtime.actor.sys;
+package io.amaze.bench.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.ReactorException;
@@ -33,7 +33,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static io.amaze.bench.client.runtime.actor.sys.SystemWatcherActor.*;
+import static io.amaze.bench.actor.SystemWatcherActor.*;
+import static io.amaze.bench.actor.SystemWatcherInput.start;
+import static io.amaze.bench.actor.SystemWatcherInput.stop;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
@@ -65,6 +67,16 @@ public final class SystemWatcherActorTest {
     }
 
     @Test
+    public void null_parameters_are_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+        SystemWatcherInput watcherInput = start(10);
+        tester.setDefault(SystemWatcherInput.class, watcherInput);
+
+        tester.testAllPublicConstructors(SystemWatcherActor.class);
+        tester.testAllPublicInstanceMethods(watcherActor);
+    }
+
+    @Test
     public void create_actor_using_public_constructor_does_not_throw() {
         SystemWatcherActor actorWithExecutor = new SystemWatcherActor(metrics);
         actorWithExecutor.closeThreads();
@@ -78,7 +90,7 @@ public final class SystemWatcherActorTest {
         when(metrics.sinkFor(METRIC_SWAP_USED)).thenReturn(sink);
         SystemWatcherActor actorWithExecutor = new SystemWatcherActor(metrics);
 
-        actorWithExecutor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.START, 1));
+        actorWithExecutor.onMessage("test", start(1));
         sleepUninterruptibly(5, TimeUnit.SECONDS);
 
         verify(sink, atLeastOnce()).timed(anyLong(), any(Number.class));
@@ -87,18 +99,8 @@ public final class SystemWatcherActorTest {
     }
 
     @Test
-    public void null_parameters_are_invalid() {
-        NullPointerTester tester = new NullPointerTester();
-        SystemWatcherInput watcherInput = new SystemWatcherInput(SystemWatcherInput.Command.START, 10);
-        tester.setDefault(SystemWatcherInput.class, watcherInput);
-
-        tester.testAllPublicConstructors(SystemWatcherActor.class);
-        tester.testAllPublicInstanceMethods(watcherActor);
-    }
-
-    @Test
     public void schedule_periodic_task_on_start_message() throws ReactorException {
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.START, 10));
+        watcherActor.onMessage("test", start(10));
 
         verify(metrics).sinkFor(METRIC_LOAD_AVERAGE);
         verify(metrics).sinkFor(METRIC_CPU_USAGE);
@@ -112,9 +114,9 @@ public final class SystemWatcherActorTest {
     @Test
     public void reschedule_periodic_task_on_set_period_message() throws ReactorException {
         ScheduledFuture mockedFuture = mockedFuture();
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.START, 10));
+        watcherActor.onMessage("test", start(10));
 
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.SET_PERIOD, 20));
+        watcherActor.onMessage("test", start(20));
 
         InOrder inOrder = inOrder(scheduler, mockedFuture);
         inOrder.verify(scheduler).scheduleAtFixedRate(any(Runnable.class), eq(0L), eq(10L), eq(TimeUnit.SECONDS));
@@ -127,9 +129,9 @@ public final class SystemWatcherActorTest {
     public void cancel_previous_task_on_stop_message()
             throws ReactorException, ExecutionException, InterruptedException {
         ScheduledFuture mockedFuture = mockedFuture();
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.START, 10));
+        watcherActor.onMessage("test", start(10));
 
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.STOP, 1));
+        watcherActor.onMessage("test", stop());
 
         InOrder inOrder = inOrder(scheduler, mockedFuture);
         inOrder.verify(scheduler).scheduleAtFixedRate(any(Runnable.class), eq(0L), eq(10L), eq(TimeUnit.SECONDS));
@@ -143,9 +145,9 @@ public final class SystemWatcherActorTest {
         ScheduledFuture mockedFuture = mockedFuture();
         ExecutionException executionException = new ExecutionException(new RuntimeException());
         when(mockedFuture.get()).thenThrow(executionException);
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.START, 10));
+        watcherActor.onMessage("test", start(10));
 
-        watcherActor.onMessage("test", new SystemWatcherInput(SystemWatcherInput.Command.STOP, 1));
+        watcherActor.onMessage("test", stop());
 
         InOrder inOrder = inOrder(scheduler, mockedFuture);
         inOrder.verify(scheduler).scheduleAtFixedRate(any(Runnable.class), eq(0L), eq(10L), eq(TimeUnit.SECONDS));

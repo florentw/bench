@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.runtime.actor.sys;
+package io.amaze.bench.actor;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static io.amaze.bench.client.runtime.actor.sys.SystemWatcherInput.Command;
+import static io.amaze.bench.actor.SystemWatcherInput.Command;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -32,26 +32,26 @@ import static org.hamcrest.core.Is.is;
 public final class SystemWatcherInputTest {
 
     private static final long PERIOD_SECONDS = 10L;
-    private static final SystemWatcherInput DUMMY_INPUT = new SystemWatcherInput(Command.SET_PERIOD, PERIOD_SECONDS);
+    private static final SystemWatcherInput DUMMY_INPUT = SystemWatcherInput.setPeriod(PERIOD_SECONDS);
 
     @Test
     public void serializable() {
         SystemWatcherInput actual = SerializableTester.reserialize(DUMMY_INPUT);
 
         assertThat(actual.getCommand(), is(Command.SET_PERIOD));
-        assertThat(actual.getIntervalSeconds(), is(PERIOD_SECONDS));
+        assertThat(actual.getPeriodSeconds(), is(PERIOD_SECONDS));
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
 
-        tester.testConstructorParameter(SystemWatcherInput.class.getConstructors()[0], 1);
         tester.testAllPublicInstanceMethods(DUMMY_INPUT);
+        tester.testAllPublicStaticMethods(SystemWatcherInput.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void period_cant_be_less_than_one_second() {
-        new SystemWatcherInput(Command.SET_PERIOD, 0);
+        SystemWatcherInput.setPeriod(0);
     }
 }

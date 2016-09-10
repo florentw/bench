@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.runtime.actor.sys;
+package io.amaze.bench.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.amaze.bench.api.*;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 import oshi.json.SystemInfo;
 
 import javax.validation.constraints.NotNull;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static io.amaze.bench.api.metric.Metric.metric;
 
 /**
@@ -42,38 +41,30 @@ import static io.amaze.bench.api.metric.Metric.metric;
  * </ul>
  */
 @Actor
-public final class SystemWatcherActor implements Reactor<SystemWatcherInput> {
+public final class SystemWatcherActor extends AbstractWatcherActor implements Reactor<SystemWatcherInput> {
 
     public static final Metric METRIC_LOAD_AVERAGE = metric("sys.LoadAverage", "none") //
             .label("Load Average").build();
     public static final Metric METRIC_CPU_USAGE = metric("sys.cpu.Usage", "%") //
             .label("CPU Usage").minValue(0d).maxValue(1d).build();
-    public static final Metric METRIC_SWAP_USED = metric("sys.mem.SwapUsed", "bytes") //
+    public static final Metric METRIC_SWAP_USED = metric("sys.mem.SwapUsed", UNIT_BYTES) //
             .label("Swap used").build();
-    public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.AvailableMemory", "bytes") //
+    public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.AvailableMemory", UNIT_BYTES) //
             .label("Available RAM").build();
 
-    private final ScheduledExecutorService scheduler;
     private final SystemWatcherThread watcherThread;
 
-    private volatile ScheduledFuture<?> scheduledTask;
+    private volatile ScheduledFuture<?> currentTaskHandle;
 
     public SystemWatcherActor(final Metrics metrics) {
-        this(metrics, initScheduler());
+        super("SystemWatcher-%d");
+        watcherThread = watcherThread(metrics);
     }
 
     @VisibleForTesting
     SystemWatcherActor(final Metrics metrics, final ScheduledExecutorService scheduler) {
-        this.scheduler = scheduler;
-        SystemInfo systemInfo = new SystemInfo();
-        watcherThread = new SystemWatcherThread(systemInfo, checkNotNull(metrics));
-    }
-
-    private static ScheduledExecutorService initScheduler() {
-        ThreadFactoryBuilder builder = new ThreadFactoryBuilder();
-        builder.setDaemon(true);
-        builder.setNameFormat("SystemWatcher-%d");
-        return Executors.newScheduledThreadPool(1, builder.build());
+        super(scheduler);
+        watcherThread = watcherThread(metrics);
     }
 
     @Override
@@ -85,35 +76,31 @@ public final class SystemWatcherActor implements Reactor<SystemWatcherInput> {
         switch (message.getCommand()) {
             case START:
             case SET_PERIOD:
-                rescheduleTask(message);
+                currentTaskHandle = reschedule(currentTaskHandle, watcherThread, message.getPeriodSeconds());
                 break;
             case STOP:
                 cancelTask();
                 break;
             default:
-                throw new IrrecoverableException("Unsupported operation.");
+                throw new IrrecoverableException(MSG_UNSUPPORTED_COMMAND);
         }
     }
 
     @After
     public void closeThreads() {
         cancelTask();
-        scheduler.shutdownNow();
+        closeScheduler();
     }
 
-    private synchronized void cancelTask() {
-        if (scheduledTask != null) {
-            scheduledTask.cancel(true);
-            try {
-                getUninterruptibly(scheduledTask);
-            } catch (CancellationException | ExecutionException ignored) { // NOSONAR
-            }
+    private SystemWatcherThread watcherThread(final Metrics metrics) {
+        SystemInfo systemInfo = new SystemInfo();
+        return new SystemWatcherThread(systemInfo, checkNotNull(metrics));
+    }
+
+    private void cancelTask() {
+        if (currentTaskHandle != null) {
+            cancel(currentTaskHandle);
         }
-    }
-
-    private synchronized void rescheduleTask(final SystemWatcherInput message) {
-        cancelTask();
-        scheduledTask = scheduler.scheduleAtFixedRate(watcherThread, 0, message.getIntervalSeconds(), TimeUnit.SECONDS);
     }
 
     private static final class SystemWatcherThread implements Runnable {
