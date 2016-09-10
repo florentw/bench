@@ -50,13 +50,13 @@ public final class BaseActorTest {
 
     private RecorderOrchestratorActor actorClient;
     private DummyClientFactory clientFactory;
-    private ActorFactory factory;
+    private Actors factory;
 
     @Before
     public void before() {
         actorClient = spy(new RecorderOrchestratorActor());
         clientFactory = new DummyClientFactory(null, actorClient);
-        factory = new ActorFactory(DUMMY_AGENT, clientFactory);
+        factory = new Actors(DUMMY_AGENT, clientFactory);
     }
 
     @Test
@@ -264,7 +264,7 @@ public final class BaseActorTest {
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
         clientFactory = new DummyClientFactory(null, actorClient);
-        factory = new ActorFactory(DUMMY_AGENT, clientFactory);
+        factory = new Actors(DUMMY_AGENT, clientFactory);
 
         doThrow(new RuntimeException()).when(actorClient).close();
 

@@ -17,7 +17,6 @@ package io.amaze.bench.client.runtime.actor.sys;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.api.*;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
@@ -27,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static io.amaze.bench.api.metric.Metric.metric;
 
 /**
@@ -44,11 +44,14 @@ import static io.amaze.bench.api.metric.Metric.metric;
 @Actor
 public final class SystemWatcherActor implements Reactor<SystemWatcherInput> {
 
-    static final Metric METRIC_LOAD_AVERAGE = metric("sys.LoadAverage", "none").label("Load Average").build();
-    static final Metric METRIC_CPU_USAGE = metric("sys.cpu.Usage", "%").label("CPU Usage").build();
-    static final Metric METRIC_SWAP_USED = metric("sys.mem.SwapUsed", "bytes").label("Swap used").build();
-    static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.AvailableMemory",
-                                                      "bytes").label("Available RAM").build();
+    public static final Metric METRIC_LOAD_AVERAGE = metric("sys.LoadAverage", "none") //
+            .label("Load Average").build();
+    public static final Metric METRIC_CPU_USAGE = metric("sys.cpu.Usage", "%") //
+            .label("CPU Usage").minValue(0d).maxValue(1d).build();
+    public static final Metric METRIC_SWAP_USED = metric("sys.mem.SwapUsed", "bytes") //
+            .label("Swap used").build();
+    public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.AvailableMemory", "bytes") //
+            .label("Available RAM").build();
 
     private final ScheduledExecutorService scheduler;
     private final SystemWatcherThread watcherThread;
@@ -102,7 +105,7 @@ public final class SystemWatcherActor implements Reactor<SystemWatcherInput> {
         if (scheduledTask != null) {
             scheduledTask.cancel(true);
             try {
-                Uninterruptibles.getUninterruptibly(scheduledTask);
+                getUninterruptibly(scheduledTask);
             } catch (CancellationException | ExecutionException ignored) { // NOSONAR
             }
         }
@@ -145,14 +148,8 @@ public final class SystemWatcherActor implements Reactor<SystemWatcherInput> {
             produceIfValid(swapUsed, now, swapUsedSink);
         }
 
-        private void produceIfValid(final long value, final long now, final Metrics.Sink sink) {
-            if (value >= 0) {
-                sink.timed(now, value);
-            }
-        }
-
-        private void produceIfValid(final double value, final long now, final Metrics.Sink sink) {
-            if (value >= 0) {
+        private <T extends Number> void produceIfValid(final T value, final long now, final Metrics.Sink sink) {
+            if (value.doubleValue() >= 0) {
                 sink.timed(now, value);
             }
         }

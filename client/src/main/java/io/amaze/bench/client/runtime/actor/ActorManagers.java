@@ -22,22 +22,41 @@ import javax.validation.constraints.NotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 4/6/16.
+ * /**
+ * Factory to create flavors of {@link ActorManager}:
+ * <ul>
+ * <li>{@link EmbeddedActorManager} a manager that will spawn instances of actor inside the current JVM.</li>
+ * <li>{@link ForkedActorManager} will fork a new JVM to spawn each actor.</li>
+ * </ul>
+ *
+ * @see ActorManager
  */
-public final class ActorManagers implements ActorManagerFactory {
+public class ActorManagers {
 
+    /**
+     * Will create a new instance of {@link ActorManager} that will instantiate actors in the current JVM.
+     *
+     * @param agentName The host agent name.
+     * @param factory   An {@link OrchestratorClientFactory} to be used to create
+     *                  {@link io.amaze.bench.client.runtime.orchestrator.OrchestratorActor} instances.
+     * @return An instantiated {@link EmbeddedActorManager}
+     */
     @NotNull
-    @Override
     public ActorManager createEmbedded(@NotNull final String agentName,
                                        @NotNull final OrchestratorClientFactory factory) {
         checkNotNull(agentName);
         checkNotNull(factory);
 
-        return new EmbeddedActorManager(agentName, new ActorFactory(agentName, factory));
+        return new EmbeddedActorManager(agentName, new Actors(agentName, factory));
     }
 
+    /**
+     * Will create a new instance of {@link ActorManager} that will instantiate each actor in a new JVM.
+     *
+     * @param agentName The host agent name.
+     * @return An instantiated {@link ForkedActorManager}
+     */
     @NotNull
-    @Override
     public ActorManager createForked(@NotNull final String agentName) {
         checkNotNull(agentName);
 

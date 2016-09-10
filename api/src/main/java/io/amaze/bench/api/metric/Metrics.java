@@ -46,13 +46,6 @@ public interface Metrics extends Serializable {
         Sink add(@NotNull Number value);
 
         /**
-         * Add an arbitrary list of {@link Number} values to this sink.
-         *
-         * @return This instance for chaining calls.
-         */
-        Sink add(@NotNull Number... values);
-
-        /**
          * Add an arbitrary timed value to this sink.
          *
          * @param timeStamp Java timestamp

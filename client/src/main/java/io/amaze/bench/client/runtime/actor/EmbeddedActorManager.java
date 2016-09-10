@@ -27,9 +27,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EmbeddedActorManager extends AbstractActorManager {
 
-    private final ActorFactory factory;
+    private final Actors factory;
 
-    public EmbeddedActorManager(@NotNull final String agent, @NotNull final ActorFactory factory) {
+    public EmbeddedActorManager(@NotNull final String agent, @NotNull final Actors factory) {
         super(agent);
         this.factory = checkNotNull(factory);
     }

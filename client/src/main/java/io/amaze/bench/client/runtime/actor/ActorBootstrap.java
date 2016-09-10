@@ -90,8 +90,8 @@ public final class ActorBootstrap {
                       final String className, //
                       final String jsonConfig) throws ValidationException, IOException {
 
-        ActorFactory actorFactory = new ActorFactory(agentName, clientFactory);
-        return actorFactory.create(name, className, jsonConfig);
+        Actors actors = new Actors(agentName, clientFactory);
+        return actors.create(name, className, jsonConfig);
     }
 
     static final class ActorShutdownThread extends Thread {

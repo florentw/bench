@@ -49,7 +49,7 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
  * @see Actor
  * @see Reactor
  */
-public final class ActorFactory {
+public final class Actors {
 
     private static final ConfigParseOptions DEFAULT_CONFIG_PARSE_OPTIONS = //
             ConfigParseOptions.defaults() //
@@ -60,7 +60,7 @@ public final class ActorFactory {
     private final ConfigParseOptions configParseOptions;
     private final String agent;
 
-    public ActorFactory(@NotNull final String agent, @NotNull final OrchestratorClientFactory clientFactory) {
+    public Actors(@NotNull final String agent, @NotNull final OrchestratorClientFactory clientFactory) {
         this.agent = checkNotNull(agent);
         this.clientFactory = checkNotNull(clientFactory);
 
@@ -83,7 +83,7 @@ public final class ActorFactory {
         OrchestratorActor client = clientFactory.createForActor();
         Reactor reactor = createReactor(name, metrics, clazz, client, config);
 
-        return new BaseActor(name, agent, metrics, beforeMethod, afterMethod, reactor, client);
+        return new BaseActor(name, agent, metrics, reactor, client, beforeMethod, afterMethod);
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {

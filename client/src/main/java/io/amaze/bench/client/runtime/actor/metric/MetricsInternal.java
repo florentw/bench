@@ -28,6 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Internal implementation of {@link Metrics} interface provided to actors.
+ *
+ * @see MetricSink
  */
 public final class MetricsInternal implements Metrics {
 
@@ -42,23 +44,27 @@ public final class MetricsInternal implements Metrics {
     }
 
     @Override
-    public synchronized MetricSink sinkFor(final Metric metric) {
+    public Sink sinkFor(final Metric metric) {
         checkNotNull(metric);
-
-        if (!values.containsKey(metric)) {
-            values.put(metric, new ArrayList<>());
+        synchronized (values) {
+            if (!values.containsKey(metric)) {
+                values.put(metric, new ArrayList<>());
+            }
+            return new MetricSink(values, values.get(metric));
         }
-        return new MetricSink(values.get(metric));
     }
 
-    public synchronized Map<Metric, List<MetricValue>> fetchAndFlush() {
-        Map<Metric, List<MetricValue>> copy = ImmutableMap.copyOf(values);
-        flush();
-        return copy;
+    public Map<Metric, List<MetricValue>> dumpAndFlush() {
+        synchronized (values) {
+            Map<Metric, List<MetricValue>> copy = ImmutableMap.copyOf(values);
+            flush();
+            return copy;
+        }
     }
 
-    public synchronized void flush() {
-        values.clear();
+    public void flush() {
+        synchronized (values) {
+            values.clear();
+        }
     }
-
 }

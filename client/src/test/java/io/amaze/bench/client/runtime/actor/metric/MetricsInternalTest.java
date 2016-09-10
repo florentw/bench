@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
+import static io.amaze.bench.api.metric.Metric.metric;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  */
 public final class MetricsInternalTest {
 
-    private static final Metric DUMMY_METRIC = Metric.metric("elapsed", "ms").build();
+    private static final Metric DUMMY_METRIC = metric("elapsed", "ms").build();
 
     private MetricsInternal metrics;
 
@@ -57,7 +58,7 @@ public final class MetricsInternalTest {
 
         sink.add(10);
 
-        Map<Metric, List<MetricValue>> values = metrics.fetchAndFlush();
+        Map<Metric, List<MetricValue>> values = metrics.dumpAndFlush();
         assertThat(values.size(), is(1));
         assertThat(values.get(DUMMY_METRIC).size(), is(1));
         assertThat(values.get(DUMMY_METRIC).get(0).getValue(), is(10));
@@ -65,12 +66,12 @@ public final class MetricsInternalTest {
 
     @Test
     public void call_to_timed_adds_a_metric() {
-        MetricSink sink = this.metrics.sinkFor(DUMMY_METRIC);
+        MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
 
         sink.timed(10);
         sink.timed(1337L, 11);
 
-        Map<Metric, List<MetricValue>> values = metrics.fetchAndFlush();
+        Map<Metric, List<MetricValue>> values = metrics.dumpAndFlush();
         assertThat(values.size(), is(1));
         assertThat(values.get(DUMMY_METRIC).size(), is(2));
         assertThat(values.get(DUMMY_METRIC).get(0).getValue(), is(10));
@@ -84,7 +85,7 @@ public final class MetricsInternalTest {
         metrics.sinkFor(DUMMY_METRIC).add(10);
         metrics.sinkFor(DUMMY_METRIC).add(11);
 
-        Map<Metric, List<MetricValue>> values = metrics.fetchAndFlush();
+        Map<Metric, List<MetricValue>> values = metrics.dumpAndFlush();
         assertThat(values.size(), is(1));
         assertThat(values.get(DUMMY_METRIC).size(), is(2));
         assertThat(values.get(DUMMY_METRIC).get(0).getValue(), is(10));
@@ -93,14 +94,14 @@ public final class MetricsInternalTest {
 
     @Test
     public void call_to_get_and_flush_clears() {
-        MetricSink sink = this.metrics.sinkFor(DUMMY_METRIC);
+        MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
         sink.add(10);
 
         // When
-        metrics.fetchAndFlush();
+        metrics.dumpAndFlush();
 
         // Then
-        assertTrue(metrics.fetchAndFlush().isEmpty());
+        assertTrue(metrics.dumpAndFlush().isEmpty());
     }
 
     @Test

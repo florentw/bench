@@ -35,7 +35,7 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
  * @see ActorValidators
  * @see Reactor
  */
-final class ActorValidator {
+public final class ActorValidator {
 
     static final String MSG_PUBLIC_CONSTRUCTOR = "An actor class have at least one public constructor.";
     static final String MSG_ABSTRACT_CLASS = "An actor class must not be abstract";
@@ -59,7 +59,7 @@ final class ActorValidator {
      * @throws ValidationException If routine checks failed after loading the class.
      */
     @NotNull
-    Class<? extends Reactor> loadAndValidate(@NotNull final String className) throws ValidationException {
+    public Class<? extends Reactor> loadAndValidate(@NotNull final String className) throws ValidationException {
         checkNotNull(className);
 
         Class<?> clazz = loadClass(className);

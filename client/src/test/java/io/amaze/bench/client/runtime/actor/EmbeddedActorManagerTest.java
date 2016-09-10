@@ -36,21 +36,21 @@ public final class EmbeddedActorManagerTest {
 
     private RecorderOrchestratorActor client;
     private ActorManager actorManager;
-    private ActorFactory actorFactory;
+    private Actors actors;
 
     @Before
     public void before() {
         client = Mockito.spy(new RecorderOrchestratorActor());
 
         DummyClientFactory factory = new DummyClientFactory(null, client);
-        actorFactory = new ActorFactory(DUMMY_AGENT, factory);
-        actorManager = new EmbeddedActorManager(DUMMY_AGENT, actorFactory);
+        actors = new Actors(DUMMY_AGENT, factory);
+        actorManager = new EmbeddedActorManager(DUMMY_AGENT, actors);
     }
 
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(ActorFactory.class, actorFactory);
+        tester.setDefault(Actors.class, actors);
         tester.testAllPublicConstructors(EmbeddedActorManager.class);
         tester.testAllPublicInstanceMethods(actorManager);
     }

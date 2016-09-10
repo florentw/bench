@@ -63,11 +63,12 @@ public class BaseActor implements Actor {
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public BaseActor(@NotNull final String name,
-                     @NotNull final String agentName, @NotNull final MetricsInternal metrics,
-                     final Method beforeMethod,
-                     final Method afterMethod,
+                     @NotNull final String agentName,
+                     @NotNull final MetricsInternal metrics,
                      @NotNull final Reactor instance,
-                     @NotNull final OrchestratorActor client) {
+                     @NotNull final OrchestratorActor client,
+                     final Method beforeMethod,
+                     final Method afterMethod) {
 
         this.name = checkNotNull(name);
         this.agentName = checkNotNull(agentName);
@@ -118,7 +119,7 @@ public class BaseActor implements Actor {
 
     @Override
     public final void dumpAndFlushMetrics() {
-        Map<Metric, List<MetricValue>> metricValues = this.metrics.fetchAndFlush();
+        Map<Metric, List<MetricValue>> metricValues = this.metrics.dumpAndFlush();
         client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metricValues));
     }
 

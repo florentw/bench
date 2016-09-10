@@ -18,6 +18,8 @@ package io.amaze.bench.client.runtime.actor.sys;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.client.runtime.actor.ActorValidators;
+import io.amaze.bench.client.runtime.actor.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +57,11 @@ public final class SystemWatcherActorTest {
     @Before
     public void init() {
         watcherActor = new SystemWatcherActor(metrics, scheduler);
+    }
+
+    @Test
+    public void actor_class_is_valid() throws ValidationException {
+        ActorValidators.get().loadAndValidate(SystemWatcherActor.class.getName());
     }
 
     @Test

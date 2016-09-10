@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -52,30 +51,25 @@ public final class AgentTest {
     private ActorManager embeddedManager;
     @Mock
     private ActorManager forkedManager;
+    @Mock
+    private ActorManagers actorManagers;
+
     private Agent agent;
+    private OrchestratorClientFactory clientFactory;
 
     @Before
     public void before() {
         agentClient = new RecorderOrchestratorAgent();
         actorClient = new RecorderOrchestratorActor();
 
-        DummyClientFactory clientFactory = new DummyClientFactory(agentClient, actorClient);
-        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new ActorFactory(DUMMY_AGENT, clientFactory)));
+        clientFactory = new DummyClientFactory(agentClient, actorClient);
+        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new Actors(DUMMY_AGENT, clientFactory)));
 
-        ActorManagerFactory managerFactory = new ActorManagerFactory() {
-            @Override
-            public ActorManager createEmbedded(@NotNull final String agentName,
-                                               @NotNull final OrchestratorClientFactory factory) {
-                return embeddedManager;
-            }
+        when(actorManagers.createEmbedded(anyString(),
+                                          any(OrchestratorClientFactory.class))).thenReturn(embeddedManager);
+        when(actorManagers.createForked(anyString())).thenReturn(forkedManager);
 
-            @Override
-            public ActorManager createForked(@NotNull final String agentName) {
-                return forkedManager;
-            }
-        };
-
-        agent = new Agent(clientFactory, managerFactory);
+        agent = new Agent(clientFactory, actorManagers);
     }
 
     @After
@@ -84,21 +78,29 @@ public final class AgentTest {
     }
 
     @Test
-    public void null_parameters_invalid() {
+    public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.testAllPublicConstructors(Agent.class);
         tester.testAllPublicInstanceMethods(agent);
     }
 
     @Test
-    public void start_agent_registers_properly() throws Exception {
+    public void agent_is_created_properly() {
+        // Smoke tests
         assertNotNull(agent);
         assertNotNull(agent.getName());
 
+        // Check ActorManagers created
+        verify(actorManagers).createEmbedded(agent.getName(), clientFactory);
+        verify(actorManagers).createForked(agent.getName());
+        verifyNoMoreInteractions(actorManagers);
+
         // Check listeners
         assertThat(agentClient.isAgentListenerStarted(), is(true));
+    }
 
-        // Check actor registration message
+    @Test
+    public void start_agent_registers_properly() throws Exception {
         assertThat(agentClient.getSentMessages().size(), is(1));
         assertThat(messagesToMaster().size(), is(1));
         assertTrue(firstMessage(messagesToMaster()) instanceof AgentRegistrationMessage);

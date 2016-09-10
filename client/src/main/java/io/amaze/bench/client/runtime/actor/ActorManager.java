@@ -19,13 +19,25 @@ package io.amaze.bench.client.runtime.actor;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 2/29/16.
+ * Responsible of the lifecycle of actors as viewed from the point of view of the
+ * {@link io.amaze.bench.client.runtime.agent.Agent}.
  */
 public interface ActorManager extends AutoCloseable {
 
+    /**
+     * Creates an instance of actor with using the provided {@link ActorConfig}.
+     *
+     * @param actorConfig Configuration of the actor to be used by the {@link ActorManager},
+     *                    contains the {@link DeployConfig} and the json configuration to be passed to instance.
+     * @return An instance of {@link ManagedActor} that represents a handle on a actor, and can be used to kill it.
+     * @throws ValidationException If the actor is invalid.
+     */
     @NotNull
     ManagedActor createActor(@NotNull ActorConfig actorConfig) throws ValidationException;
 
+    /**
+     * Release resources handled by the {@link ActorManager}.
+     */
     @Override
     void close();
 

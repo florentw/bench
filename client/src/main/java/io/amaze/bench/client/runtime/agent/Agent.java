@@ -51,8 +51,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
     private final String name;
 
-    public Agent(@NotNull final OrchestratorClientFactory clientFactory,
-                 @NotNull final ActorManagerFactory actorManagers) {
+    public Agent(@NotNull final OrchestratorClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 

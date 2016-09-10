@@ -22,7 +22,7 @@ public final class MetricTimedValue extends MetricValue {
 
     private final long timestamp;
 
-    public MetricTimedValue(final long timestamp, final Number value) {
+    MetricTimedValue(final long timestamp, final Number value) {
         super(value);
         this.timestamp = timestamp;
     }

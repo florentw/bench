@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
  *
  * @see ActorValidator
  */
-final class ActorValidators {
+public final class ActorValidators {
 
     private static final ActorValidator instance = new ActorValidator();
 

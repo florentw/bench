@@ -15,28 +15,34 @@
  */
 package io.amaze.bench.client.runtime.actor.metric;
 
+import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class MetricSink implements Metrics.Sink {
+/**
+ * Internal implementation of API interface {@link io.amaze.bench.api.metric.Metrics.Sink}
+ *
+ * @see MetricsInternal
+ */
+final class MetricSink implements Metrics.Sink {
+
     private final Collection<MetricValue> metricsValues;
+    private final Map<Metric, List<MetricValue>> valuesList;
 
-    MetricSink(final Collection<MetricValue> values) {
-        this.metricsValues = values;
+    MetricSink(final Map<Metric, List<MetricValue>> valuesList, final List<MetricValue> metricsValues) {
+        this.valuesList = checkNotNull(valuesList);
+        this.metricsValues = checkNotNull(metricsValues);
     }
 
     @Override
     public Metrics.Sink add(@NotNull final Number value) {
-        metricsValues.add(new MetricValue(value));
-        return this;
-    }
-
-    @Override
-    public Metrics.Sink add(@NotNull final Number... values) {
-        for (Number value : values) {
+        synchronized (valuesList) {
             metricsValues.add(new MetricValue(value));
         }
         return this;
@@ -44,13 +50,17 @@ public final class MetricSink implements Metrics.Sink {
 
     @Override
     public Metrics.Sink timed(@NotNull final long timeStamp, @NotNull final Number value) {
-        metricsValues.add(new MetricTimedValue(timeStamp, value));
+        synchronized (valuesList) {
+            metricsValues.add(new MetricTimedValue(timeStamp, value));
+        }
         return this;
     }
 
     @Override
     public Metrics.Sink timed(@NotNull final Number value) {
-        metricsValues.add(new MetricTimedValue(System.currentTimeMillis(), value));
+        synchronized (valuesList) {
+            metricsValues.add(new MetricTimedValue(System.currentTimeMillis(), value));
+        }
         return this;
     }
 }

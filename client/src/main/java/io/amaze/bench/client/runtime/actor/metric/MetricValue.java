@@ -24,11 +24,11 @@ public class MetricValue implements Serializable {
 
     private final Number value;
 
-    public MetricValue(final Number value) {
+    MetricValue(final Number value) {
         this.value = value;
     }
 
-    public Number getValue() {
+    public final Number getValue() {
         return value;
     }
 }

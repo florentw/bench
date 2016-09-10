@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
@@ -53,7 +53,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private static final String TMP_CONFIG_FILE_PREFIX = "actor-config";
     private static final String TMP_CONFIG_FILE_SUFFIX = ".json";
 
-    private final Map<String, ProcessWatchDogThread> processes = new ConcurrentHashMap<>();
+    private final Map<String, ProcessWatchDogThread> processes = new HashMap<>();
     private final File localLogDir;
 
     ForkedActorManager(@NotNull final String agent, @NotNull final File localLogDir) {
@@ -82,36 +82,26 @@ final class ForkedActorManager extends AbstractActorManager {
         watchDog.start();
         watchDog.awaitUntilStarted();
 
-        processes.put(actor, watchDog);
+        synchronized (processes) {
+            processes.put(actor, watchDog);
+        }
 
-        return new ManagedActor() {
-            @NotNull
-            @Override
-            public String getName() {
-                return actor;
-            }
-
-            @Override
-            public void close() {
-                ProcessWatchDogThread thread = processes.remove(actor);
-                if (thread == null) {
-                    return;
-                }
-
-                terminateProcess(thread);
-            }
-        };
+        return new ForkedManagedActor(actor);
     }
 
     @Override
     public void close() {
-        processes.values().forEach(this::terminateProcess);
-        processes.clear();
+        synchronized (processes) {
+            processes.values().forEach(this::terminateProcess);
+            processes.clear();
+        }
     }
 
     @VisibleForTesting
     Map<String, ProcessWatchDogThread> getProcesses() {
-        return ImmutableMap.copyOf(processes);
+        synchronized (processes) {
+            return ImmutableMap.copyOf(processes);
+        }
     }
 
     private Process createActorProcess(final ActorConfig actorConfig) {
@@ -162,6 +152,40 @@ final class ForkedActorManager extends AbstractActorManager {
         LOG.info("Started process with command " + builder.command() + ", logging to " + actorLogFileName);
 
         return builder.start();
+    }
+
+    private final class ForkedManagedActor implements ManagedActor {
+        private final String actor;
+
+        ForkedManagedActor(final String actor) {
+            this.actor = actor;
+        }
+
+        @NotNull
+        @Override
+        public String getName() {
+            return actor;
+        }
+
+        @Override
+        public void close() {
+            ProcessWatchDogThread thread = removeFromProcesses();
+            if (thread == null) {
+                return;
+            }
+
+            terminateProcess(thread);
+        }
+
+        private ProcessWatchDogThread removeFromProcesses() {
+            synchronized (processes) {
+                ProcessWatchDogThread thread = processes.remove(actor);
+                if (thread == null) {
+                    return null;
+                }
+                return thread;
+            }
+        }
     }
 
 }
