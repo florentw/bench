@@ -26,7 +26,7 @@ import java.net.UnknownHostException;
  */
 public final class SystemConfigs {
 
-    static final String UNKNOWN_STRING_VALUE = "[Unknown]";
+    private static final String UNKNOWN_STRING_VALUE = "[Unknown]";
     private static final SystemConfig SYSTEM_CONFIG = create();
 
     private SystemConfigs() {
