@@ -14,12 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.amaze</groupId>
-            <artifactId>bench-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>jms</artifactId>
             <version>${javax.jms.version}</version>
@@ -41,13 +35,14 @@
         </dependency>
         <dependency>
             <groupId>com.github.dblock</groupId>
-            <artifactId>oshi-core</artifactId>
+            <artifactId>oshi-json</artifactId>
             <version>${oshi.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.dblock</groupId>
-            <artifactId>oshi-json</artifactId>
+            <artifactId>oshi-core</artifactId>
             <version>${oshi.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

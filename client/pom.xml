@@ -39,6 +39,16 @@
             <artifactId>config</artifactId>
             <version>${config.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.dblock</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>${oshi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dblock</groupId>
+            <artifactId>oshi-json</artifactId>
+            <version>${oshi.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.amaze</groupId>

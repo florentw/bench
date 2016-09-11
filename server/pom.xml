@@ -23,10 +23,11 @@
             <artifactId>bench-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>io.amaze</groupId>
-            <artifactId>bench-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+            <version>${javax.jms.version}</version>
         </dependency>
 
         <dependency>
