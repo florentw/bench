@@ -58,7 +58,7 @@ public final class ProcessWatcherActorInputTest {
 
         assertThat(actual.getCommand(), is(expected.getCommand()));
         assertThat(actual.getMetricKeyPrefix(), is(expected.getMetricKeyPrefix()));
-        assertThat(actual.getMetricLabel(), is(expected.getMetricLabel()));
+        assertThat(actual.getMetricLabelSuffix(), is(expected.getMetricLabelSuffix()));
         assertThat(actual.getPeriodSeconds(), is(expected.getPeriodSeconds()));
         assertThat(actual.getPid(), is(expected.getPid()));
     }

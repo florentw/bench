@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 
 /**
- * Created on 9/10/16.
+ * Base class for watcher actors, contains interactions with the {@link ScheduledExecutorService}.
  */
 abstract class AbstractWatcherActor {
 
@@ -47,6 +47,10 @@ abstract class AbstractWatcherActor {
         builder.setDaemon(true);
         builder.setNameFormat(nameFormat);
         return Executors.newScheduledThreadPool(1, builder.build());
+    }
+
+    final synchronized void submit(final Runnable taskToSubmit) {
+        scheduler.schedule(taskToSubmit, 0, TimeUnit.SECONDS);
     }
 
     final synchronized void cancel(final ScheduledFuture<?> scheduledTask) {

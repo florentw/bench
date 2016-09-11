@@ -16,9 +16,9 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.api.IrrecoverableException;
 import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.ReactorException;
+import io.amaze.bench.api.RecoverableException;
 import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.ACTOR_LIFECYCLE;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
@@ -131,7 +130,19 @@ public class BaseActor implements Actor {
         try {
             instance.onMessage(from, message);
 
-        } catch (IrrecoverableException e) {
+        } catch (RecoverableException e) {
+            /*
+             * Recoverable exception, the Reactor code is supposed to be fine, just log the exception.
+             */
+            LOG.warn(this + " Recoverable exception caught on message:" + message + ", from:" + from, e);
+
+        } catch (TerminationException ignored) { // NOSONAR
+            /*
+             * This is a graceful termination, just perform a regular close on the actor.
+             */
+            close();
+
+        } catch (RuntimeException | ReactorException e) { // Irrecoverable exceptions
             /*
              * In the case of a non-recoverable error of the actor, we need to clean-up by calling after,
              * and notifying the failure.
@@ -143,15 +154,6 @@ public class BaseActor implements Actor {
             }
 
             actorFailure(e);
-
-        } catch (TerminationException ignored) { // NOSONAR
-            /*
-             * This is a graceful termination, just perform a regular close on the actor.
-             */
-            close();
-
-        } catch (ReactorException e) {
-            throw propagate(e);
         }
     }
 

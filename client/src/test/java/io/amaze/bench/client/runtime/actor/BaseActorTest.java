@@ -38,6 +38,7 @@ import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_A;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_B;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -184,22 +185,25 @@ public final class BaseActorTest {
     }
 
     @Test
-    public void actor_throws_on_received_message() throws Exception {
+    public void recoverableException_is_swallowed_and_actor_not_closed() throws Exception {
         try (BaseActor actor = defaultTestActor()) {
 
-            actor.onMessage(DUMMY_ACTOR, FAIL_MSG);
+            actor.onMessage(DUMMY_ACTOR, RECOVERABLE_EXCEPTION_MSG);
 
-            // Assert after method was called
-            assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+            assertFalse(((TestActor) actor.getInstance()).isAfterCalled());
+            // Check good no message sent
+            assertTrue(actorClient.getSentMessages().isEmpty());
         }
+    }
+
+    @Test
+    public void actor_throws_IrrecoverableException_on_received_message() throws Exception {
+        verifyIrrecoverableExceptions(FAIL_MSG);
+    }
+
+    @Test
+    public void actor_throws_RuntimeException_on_received_message() throws Exception {
+        verifyIrrecoverableExceptions(RUNTIME_EXCEPTION_MSG);
     }
 
     @Test
@@ -344,8 +348,26 @@ public final class BaseActorTest {
 
         verify(actorClient).close();
 
-        // Check no messages sents
+        // Check no messages sent
         assertTrue(actorClient.getSentMessages().isEmpty());
+    }
+
+    private void verifyIrrecoverableExceptions(String messageToActor) throws ValidationException {
+        try (BaseActor actor = defaultTestActor()) {
+
+            actor.onMessage(DUMMY_ACTOR, messageToActor);
+
+            // Assert after method was called
+            assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
+
+            // Check good flow of messages
+            assertThat(actorClient.getSentMessages().size(), is(1));
+            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
+
+            // Check failed message sent
+            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
+            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+        }
     }
 
     private BaseActor createActor(final Class<?> actorClass) throws ValidationException {

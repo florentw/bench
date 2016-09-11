@@ -16,9 +16,8 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.typesafe.config.Config;
-import io.amaze.bench.api.IrrecoverableException;
+import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.Sender;
-import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 
@@ -48,8 +47,7 @@ public final class TestActorMetrics extends TestActor {
     }
 
     @Override
-    public void onMessage(@NotNull final String from, @NotNull final String message)
-            throws IrrecoverableException, TerminationException {
+    public void onMessage(@NotNull final String from, @NotNull final String message) throws ReactorException {
 
         if (message.equals(PRODUCE_METRICS_MSG)) {
             metrics.sinkFor(DUMMY_METRIC_A).add(10);

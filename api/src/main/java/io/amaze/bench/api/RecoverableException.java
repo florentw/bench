@@ -15,18 +15,26 @@
  */
 package io.amaze.bench.api;
 
+import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * To be thrown by an Actor to notify the agent that it wishes to terminate gracefully.<br/>
- * To notify of irrecoverable exceptions, {@link IrrecoverableException} should be used instead.
- * To notify of recoverable exceptions, {@link RecoverableException} should be used instead.
+ * To be thrown by an Actor when a recoverable error happens. A recoverable error means,<br/>
+ * that the actor can still process new messages seamlessly.<br/>
+ *
+ * It can notify the agent of the failure, that can perform additional actions to help troubleshoot the issue.
  *
  * @see IrrecoverableException An exception that can be thrown to notify the agent of a fatal error.
- * @see RecoverableException An exception that can be recovered from by the actor
  */
-public final class TerminationException extends ReactorException {
+public final class RecoverableException extends ReactorException {
 
-    public TerminationException() {
-        super();
+    public RecoverableException(@NotNull final String message) {
+        super(checkNotNull(message));
     }
 
+    public RecoverableException(@NotNull final String message, @NotNull final Throwable cause) {
+        super(checkNotNull(message), checkNotNull(cause));
+    }
 }
+

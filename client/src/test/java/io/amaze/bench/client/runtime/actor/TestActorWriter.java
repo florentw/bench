@@ -19,8 +19,8 @@ import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
 import io.amaze.bench.api.After;
 import io.amaze.bench.api.IrrecoverableException;
+import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.Sender;
-import io.amaze.bench.api.TerminationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +56,7 @@ public final class TestActorWriter extends TestActor {
     }
 
     @Override
-    public void onMessage(@NotNull final String from, @NotNull final String message)
-            throws IrrecoverableException, TerminationException {
-
+    public void onMessage(@NotNull final String from, @NotNull final String message) throws ReactorException {
         super.onMessage(from, message);
     }
 

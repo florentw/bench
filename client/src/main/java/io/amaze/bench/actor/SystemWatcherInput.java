@@ -23,7 +23,9 @@ import static io.amaze.bench.actor.AbstractWatcherActor.MSG_PERIOD_LESS_THAN_ONE
 import static java.lang.String.format;
 
 /**
- * Created on 9/4/16.
+ * Input message for {@link SystemWatcherActor}. Static methods are provided to create the messages.
+ *
+ * @see SystemWatcherActor
  */
 public final class SystemWatcherInput implements Serializable {
 
@@ -50,15 +52,15 @@ public final class SystemWatcherInput implements Serializable {
         return new SystemWatcherInput(Command.STOP, NA);
     }
 
-    public Command getCommand() {
-        return command;
-    }
-
-    public long getPeriodSeconds() {
+    long getPeriodSeconds() {
         return periodSeconds;
     }
 
-    public enum Command {
+    Command getCommand() {
+        return command;
+    }
+
+    enum Command {
         SET_PERIOD, START, STOP
     }
 

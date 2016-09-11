@@ -17,28 +17,58 @@ package io.amaze.bench.actor;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.api.*;
-import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 import oshi.json.SystemInfo;
-import oshi.json.software.os.OSProcess;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.api.metric.Metric.metric;
-import static java.lang.String.format;
 
 /**
- * Created on 9/10/16.
+ * An actor that monitors specific processes' metrics using polling.<br/>
+ * The polling period is customizable, but must be at least one second.<br/>
+ * It also allows getting differential metrics using a stopwatch mechanism.<br/>
+ * <br/>
+ * Using sampling you can get the following metrics about a specific process:
+ * <ul>
+ * <li><strong>Virtual Memory Size (VSZ):</strong> It includes all memory
+ * that the process can access, including memory that is swapped out
+ * and memory that is from shared libraries</li>
+ * <li><strong>Resident Set Size (RSS):</strong> Returns the Resident Set Size (RSS). It is used to show how much
+ * memory is allocated to that process and is in RAM. It does not
+ * include memory that is swapped out. It does include memory from
+ * shared libraries as long as the pages from those libraries are
+ * actually in memory. It does include all stack and heap memory.</li>
+ * <li><strong>CPU Kernel time:</strong> Returns the number of milliseconds the process has executed in
+ * kernel mode</li>
+ * <li><strong>CPU User time:</strong> Returns the number of milliseconds the process has executed in
+ * user mode</li>
+ * <li><strong>Thread count:</strong> Number of threads in the process</li>
+ * </ul>
+ *
+ * In stopwatch mode, process metrics are read when started and when stopped, a delta of each metric is then produced.
+ * The following metrics are then available for a given stopwatch:
+ * <ul>
+ * <li><strong>Virtual Memory Size (VSZ):</strong> Before, after and delta.</li>
+ * <li><strong>Resident Set Size (RSS):</strong> Before, after and delta.</li>
+ * <li><strong>CPU Kernel time:</strong> Before, after and delta.</li>
+ * <li><strong>CPU User time:</strong> Before, after and delta.</li>
+ * <li><strong>Elapsed:</strong> Elapsed time of the stopwatch</li>
+ * </ul>
+ *
+ * @see ProcessWatcherActorInput Actor input message
  */
 @Actor
 public final class ProcessWatcherActor extends AbstractWatcherActor implements Reactor<ProcessWatcherActorInput> {
 
-    private final Map<ProcessWatcherActorInput, ScheduledFuture> samplingProcesses = new HashMap<>();
+    private final Map<ProcessWatcherActorInput, ScheduledFuture> samplerFutures = new HashMap<>();
+    private final Map<StopWatchKey, StopwatchThread> stopWatches = new HashMap<>();
+
     private final SystemInfo systemInfo = new SystemInfo();
     private final Metrics metrics;
 
@@ -66,6 +96,12 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
             case STOP_SAMPLING:
                 stopSampling(message);
                 break;
+            case START_STOPWATCH:
+                startStopwatch(message);
+                break;
+            case STOP_STOPWATCH:
+                stopStopwatch(message);
+                break;
             default:
                 throw new IrrecoverableException(MSG_UNSUPPORTED_COMMAND);
         }
@@ -77,87 +113,78 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
         closeScheduler();
     }
 
+    private void startStopwatch(final ProcessWatcherActorInput message) throws RecoverableException {
+        StopWatchKey stopWatchKey = new StopWatchKey(message.getPid(), message.getMetricKeyPrefix());
+        StopwatchThread stopWatchThread = new StopwatchThread(metrics, systemInfo, message);
+        synchronized (stopWatches) {
+            if (stopWatches.get(stopWatchKey) != null) {
+                throw new RecoverableException("Stopwatch already started.");
+            }
+
+            stopWatches.put(stopWatchKey, stopWatchThread);
+        }
+        submit(stopWatchThread);
+    }
+
+    private void stopStopwatch(final ProcessWatcherActorInput message) throws RecoverableException {
+        StopWatchKey stopWatchKey = new StopWatchKey(message.getPid(), message.getMetricKeyPrefix());
+        synchronized (stopWatches) {
+            StopwatchThread thread = stopWatches.remove(stopWatchKey);
+            if (thread == null) {
+                throw new RecoverableException("Stopwatch already stopped.");
+            }
+            thread.stop();
+        }
+    }
+
     private void stopSampling(final ProcessWatcherActorInput message) {
-        synchronized (samplingProcesses) {
-            ScheduledFuture future = samplingProcesses.remove(message);
+        synchronized (samplerFutures) {
+            ScheduledFuture future = samplerFutures.remove(message);
             cancel(future);
         }
     }
 
     private void cancelTasks() {
-        synchronized (samplingProcesses) {
-            samplingProcesses.values().forEach(this::cancel);
-            samplingProcesses.clear();
+        synchronized (samplerFutures) {
+            samplerFutures.values().forEach(this::cancel);
+            samplerFutures.clear();
         }
     }
 
     private void resetSampling(final ProcessWatcherActorInput message) {
-        synchronized (samplingProcesses) {
-            ScheduledFuture previousFuture = samplingProcesses.remove(message);
-            ProcessWatcherThread watcherThread = new ProcessWatcherThread(metrics, systemInfo, message);
+        synchronized (samplerFutures) {
+            ScheduledFuture previousFuture = samplerFutures.remove(message);
+            ProcessSamplingThread watcherThread = new ProcessSamplingThread(metrics, systemInfo, message);
             ScheduledFuture future = reschedule(previousFuture, watcherThread, message.getPeriodSeconds());
-            samplingProcesses.put(message, future);
+            samplerFutures.put(message, future);
         }
     }
 
-    private static final class ProcessWatcherThread implements Runnable {
-        private final SystemInfo systemInfo;
-        private final ProcessWatcherActorInput message;
+    static final class StopWatchKey {
+        private final int pid;
+        private final String metricKeyPrefix;
 
-        private final Metrics.Sink virtualSizeSink;
-        private final Metrics.Sink residentSetSink;
-        private final Metrics.Sink kernelTimeSink;
-        private final Metrics.Sink userTimeSink;
-        private final Metrics.Sink threadCountSink;
-
-        private ProcessWatcherThread(final Metrics metrics,
-                                     final SystemInfo systemInfo,
-                                     final ProcessWatcherActorInput message) {
-            this.systemInfo = systemInfo;
-            this.message = message;
-
-            virtualSizeSink = metrics.sinkFor(virtualSize(message));
-            residentSetSink = metrics.sinkFor(residentSet(message));
-            kernelTimeSink = metrics.sinkFor(kernelTime(message));
-            userTimeSink = metrics.sinkFor(userTime(message));
-            threadCountSink = metrics.sinkFor(threadCount(message));
+        StopWatchKey(int pid, String metricKeyPrefix) {
+            this.pid = pid;
+            this.metricKeyPrefix = metricKeyPrefix;
         }
 
         @Override
-        public void run() {
-            OSProcess process = systemInfo.getOperatingSystem().getProcess(message.getPid());
-
-            long now = System.currentTimeMillis();
-            virtualSizeSink.timed(now, process.getVirtualSize());
-            residentSetSink.timed(now, process.getResidentSetSize());
-            kernelTimeSink.timed(now, process.getKernelTime());
-            userTimeSink.timed(now, process.getUserTime());
-            threadCountSink.timed(now, process.getThreadCount());
+        public int hashCode() {
+            return Objects.hash(pid, metricKeyPrefix);
         }
 
-        private Metric virtualSize(final ProcessWatcherActorInput message) {
-            return metric(format("proc.%s.mem.virtualSize", message.getMetricKeyPrefix()), UNIT_BYTES) //
-                    .label("Virtual memory usage " + message.getMetricLabel()).minValue(0).build();
-        }
-
-        private Metric residentSet(final ProcessWatcherActorInput message) {
-            return metric(format("proc.%s.mem.residentRet", message.getMetricKeyPrefix()), UNIT_BYTES) //
-                    .label(format("RAM usage %s", message.getMetricLabel())).minValue(0).build();
-        }
-
-        private Metric kernelTime(final ProcessWatcherActorInput message) {
-            return metric(format("proc.%s.cpu.kernelTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
-                    .label(format("CPU sys time %s", message.getMetricLabel())).minValue(0).build();
-        }
-
-        private Metric userTime(final ProcessWatcherActorInput message) {
-            return metric(format("proc.%s.cpu.userTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
-                    .label(format("CPU user time %s", message.getMetricLabel())).minValue(0).build();
-        }
-
-        private Metric threadCount(final ProcessWatcherActorInput message) {
-            return metric(format("proc.%s.thread.count", message.getMetricKeyPrefix()), "threads") //
-                    .label("Thread count " + message.getMetricLabel()).minValue(0).build();
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            StopWatchKey that = (StopWatchKey) o;
+            return Objects.equals(pid, that.pid) && //
+                    Objects.equals(metricKeyPrefix, that.metricKeyPrefix);
         }
     }
 }

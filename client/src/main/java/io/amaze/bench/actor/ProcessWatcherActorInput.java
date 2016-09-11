@@ -15,34 +15,36 @@
  */
 package io.amaze.bench.actor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.actor.AbstractWatcherActor.MSG_PERIOD_LESS_THAN_ONE_SEC;
-import static io.amaze.bench.actor.ProcessWatcherActorInput.Command.START_SAMPLING;
-import static io.amaze.bench.actor.ProcessWatcherActorInput.Command.STOP_SAMPLING;
+import static io.amaze.bench.actor.ProcessWatcherActorInput.Command.*;
 import static java.lang.String.format;
 
 /**
- * Created on 9/10/16.
+ * Input message for {@link ProcessWatcherActor}. Static methods are provided to create the messages.
+ *
+ * @see ProcessWatcherActor
  */
 public final class ProcessWatcherActorInput implements Serializable {
 
     private static final String NA = "n/a";
+    private static final int NA_PERIOD = 1;
 
     private final Command command;
     private final int pid;
     private final long periodSeconds;
     private final String metricKeyPrefix;
-    private final String metricLabel;
+    private final String metricLabelSuffix;
 
     private ProcessWatcherActorInput(final Command command,
                                      final int pid,
                                      final long periodSeconds,
-                                     final String metricKeyPrefix,
-                                     final String metricLabel) {
+                                     final String metricKeyPrefix, final String metricLabelSuffix) {
 
         checkArgument(!metricKeyPrefix.trim().isEmpty(), "Key cannot be empty.");
         checkArgument(pid > 0, format("Invalid PID %d", pid));
@@ -53,42 +55,46 @@ public final class ProcessWatcherActorInput implements Serializable {
         this.periodSeconds = periodSeconds;
 
         this.metricKeyPrefix = checkNotNull(metricKeyPrefix);
-        this.metricLabel = checkNotNull(metricLabel);
+        this.metricLabelSuffix = checkNotNull(metricLabelSuffix);
     }
 
-    public static ProcessWatcherActorInput startSampling(int pid, long periodSeconds, String metricKeyPrefix) {
-        return new ProcessWatcherActorInput(START_SAMPLING, pid, periodSeconds, metricKeyPrefix, "pid:" + pid);
+    public static ProcessWatcherActorInput startSampling(final int pid,
+                                                         final long periodSeconds,
+                                                         @NotNull final String metricKeyPrefix) {
+        return new ProcessWatcherActorInput(START_SAMPLING,
+                                            pid,
+                                            periodSeconds,
+                                            metricKeyPrefix,
+                                            defaultLabelSuffix(pid));
     }
 
-    public static ProcessWatcherActorInput startSampling(int pid,
-                                                         long periodSeconds,
-                                                         String metricKeyPrefix,
-                                                         String metricLabel) {
-        return new ProcessWatcherActorInput(START_SAMPLING, pid, periodSeconds, metricKeyPrefix, metricLabel);
+    public static ProcessWatcherActorInput startSampling(final int pid,
+                                                         final long periodSeconds,
+                                                         @NotNull final String metricKeyPrefix,
+                                                         @NotNull final String metricLabelSuffix) {
+        return new ProcessWatcherActorInput(START_SAMPLING, pid, periodSeconds, metricKeyPrefix, metricLabelSuffix);
     }
 
-    public static ProcessWatcherActorInput stopSampling(int pid) {
-        return new ProcessWatcherActorInput(STOP_SAMPLING, pid, 1, NA, NA);
+    public static ProcessWatcherActorInput stopSampling(final int pid) {
+        return new ProcessWatcherActorInput(STOP_SAMPLING, pid, NA_PERIOD, NA, NA);
     }
 
-    public Command getCommand() {
-        return command;
+    public static ProcessWatcherActorInput startStopwatch(int pid,
+                                                          @NotNull final String metricKeyPrefix,
+                                                          @NotNull final String metricLabelSuffix) {
+        return new ProcessWatcherActorInput(START_STOPWATCH, pid, NA_PERIOD, metricKeyPrefix, metricLabelSuffix);
     }
 
-    public int getPid() {
-        return pid;
+    public static ProcessWatcherActorInput startStopwatch(final int pid, @NotNull final String metricKeyPrefix) {
+        return new ProcessWatcherActorInput(START_STOPWATCH, pid, NA_PERIOD, metricKeyPrefix, defaultLabelSuffix(pid));
     }
 
-    public long getPeriodSeconds() {
-        return periodSeconds;
+    public static ProcessWatcherActorInput stopStopwatch(final int pid, @NotNull final String keyPrefix) {
+        return new ProcessWatcherActorInput(STOP_STOPWATCH, pid, NA_PERIOD, keyPrefix, NA);
     }
 
-    public String getMetricKeyPrefix() {
-        return metricKeyPrefix;
-    }
-
-    public String getMetricLabel() {
-        return metricLabel;
+    private static String defaultLabelSuffix(final int pid) {
+        return "pid:" + pid;
     }
 
     @Override
@@ -108,7 +114,28 @@ public final class ProcessWatcherActorInput implements Serializable {
         return pid == that.pid;
     }
 
+    Command getCommand() {
+        return command;
+    }
+
+    int getPid() {
+        return pid;
+    }
+
+    long getPeriodSeconds() {
+        return periodSeconds;
+    }
+
+    String getMetricKeyPrefix() {
+        return metricKeyPrefix;
+    }
+
+    String getMetricLabelSuffix() {
+        return metricLabelSuffix;
+    }
+
     enum Command {
-        START_SAMPLING, STOP_SAMPLING
+        START_SAMPLING, STOP_SAMPLING, //
+        START_STOPWATCH, STOP_STOPWATCH
     }
 }

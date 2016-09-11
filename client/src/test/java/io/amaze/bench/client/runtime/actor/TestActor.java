@@ -32,6 +32,8 @@ public class TestActor implements Reactor<String> {
     public static final String DUMMY_ACTOR = "test-actor";
     public static final String DUMMY_JSON_CONFIG = "{}";
     static final String FAIL_MSG = "DO_FAIL";
+    static final String RECOVERABLE_EXCEPTION_MSG = "THROW_RECOVERABLE";
+    static final String RUNTIME_EXCEPTION_MSG = "THROW_RUNTIME";
     static final String TERMINATE_MSG = "TERMINATE";
 
     private static final DeployConfig DUMMY_DEPLOY_CONFIG = createDeployConfig(false);
@@ -75,12 +77,17 @@ public class TestActor implements Reactor<String> {
     }
 
     @Override
-    public void onMessage(@NotNull final String from, @NotNull final String message)
-            throws IrrecoverableException, TerminationException {
-        if (message.equals(FAIL_MSG)) {
-            throw new IrrecoverableException("Provoked failure.");
-        } else if (message.equals(TERMINATE_MSG)) {
-            throw new TerminationException();
+    public void onMessage(@NotNull final String from, @NotNull final String message) throws ReactorException {
+        switch (message) {
+            case FAIL_MSG:
+                throw new IrrecoverableException("Provoked failure.");
+            case RECOVERABLE_EXCEPTION_MSG:
+                throw new RecoverableException("Provoked recoverable exception.", new IllegalArgumentException());
+            case TERMINATE_MSG:
+                throw new TerminationException();
+            case RUNTIME_EXCEPTION_MSG:
+                throw new IllegalArgumentException();
+            default:
         }
 
         List<String> msgs = receivedMessages.get(from);
