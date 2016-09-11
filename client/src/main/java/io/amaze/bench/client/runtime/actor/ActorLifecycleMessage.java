@@ -21,9 +21,9 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This message class represents actor lifecycle notifications.<br/>
- * It is meant to be sent by an agent to the master.<br/>
- * <p/>
+ * This message class represents actor lifecycle notifications.<br>
+ * It is meant to be sent by an agent to the master.<br>
+ * <p>
  * Created on 3/6/16.
  */
 public final class ActorLifecycleMessage implements Serializable {

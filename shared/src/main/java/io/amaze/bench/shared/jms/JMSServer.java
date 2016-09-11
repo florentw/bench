@@ -18,14 +18,14 @@ package io.amaze.bench.shared.jms;
 import javax.validation.constraints.NotNull;
 
 /**
- * Abstraction facade for a JMS server implementation.<br/>
- * Implementations must start the underlying JMS server in the constructor and stop it in the {@link #close()} method.<br/>
+ * Abstraction facade for a JMS server implementation.<br>
+ * Implementations must start the underlying JMS server in the constructor and stop it in the {@link #close()} method.<br>
  * Allows to manage the server (queues and topics management).
  */
 public interface JMSServer extends AutoCloseable {
 
     /**
-     * Create a non-persistent JMS queue via the underling server implementation.<br/>
+     * Create a non-persistent JMS queue via the underling server implementation.<br>
      * Will throw if a queue with the same name already exist.
      *
      * @param name Name of the JMS queue to be created.
@@ -34,7 +34,7 @@ public interface JMSServer extends AutoCloseable {
     void createQueue(@NotNull String name) throws JMSException;
 
     /**
-     * Create a non-persistent JMS topic via the underling server implementation.<br/>
+     * Create a non-persistent JMS topic via the underling server implementation.<br>
      * Will throw if a queue with the same name already exist.
      *
      * @param name Name of the JMS topic to be created.
@@ -43,18 +43,20 @@ public interface JMSServer extends AutoCloseable {
     void createTopic(@NotNull String name) throws JMSException;
 
     /**
-     * Deletes a previously created JMS queue via the underling server implementation.<br/>
+     * Deletes a previously created JMS queue via the underling server implementation.<br>
      * If the queue does not exist, nothing happens.
      *
      * @param queue Name of the JMS queue to be deleted.
+     * @return true if delete was successful, false otherwise
      */
     boolean deleteQueue(@NotNull String queue);
 
     /**
-     * Deletes a previously created JMS topic via the underling server implementation.<br/>
+     * Deletes a previously created JMS topic via the underling server implementation.<br>
      * If the topic does not exist, nothing happens.
      *
      * @param topic Name of the JMS topic to be deleted.
+     * @return true if delete was successful, false otherwise
      */
     boolean deleteTopic(@NotNull String topic);
 

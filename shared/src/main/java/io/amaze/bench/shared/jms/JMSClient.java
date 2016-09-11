@@ -21,8 +21,8 @@ import java.io.Serializable;
 
 /**
  * Abstraction of a JMS client providing a way to listen for messages on queues, topics.
- * It also allows to send messages to a queue or a topic.<br/>
- * A call to {@link #startListening()} can only be done once, and only after calling listener registration methods:<br/>
+ * It also allows to send messages to a queue or a topic.<br>
+ * A call to {@link #startListening()} can only be done once, and only after calling listener registration methods:<br>
  * <ul>
  * <li>{@link #addQueueListener(String, MessageListener)}</li>
  * <li>or {@link #addTopicListener(String, MessageListener)}</li>
@@ -31,17 +31,17 @@ import java.io.Serializable;
 public interface JMSClient extends AutoCloseable {
 
     /**
-     * Starts the previously registered queue and topic listeners.<br/>
-     * The provided {@link javax.jms.MessageListener} instances will then be called upon reception off events.<br/>
-     * This method need to be called only once, and once called, no other listeners can be added.<br/>
+     * Starts the previously registered queue and topic listeners.<br>
+     * The provided {@link javax.jms.MessageListener} instances will then be called upon reception off events.<br>
+     * This method need to be called only once, and once called, no other listeners can be added.<br>
      *
      * @throws JMSException When an error happens while registering JMS listener
      */
     void startListening() throws JMSException;
 
     /**
-     * Registers a queue listener with the given {@link MessageListener}.<br/>
-     * The listener object will then be notified of any new message once {@link #startListening()} is called.<br/>
+     * Registers a queue listener with the given {@link MessageListener}.<br>
+     * The listener object will then be notified of any new message once {@link #startListening()} is called.<br>
      * Calls to this method after {@link #startListening()} was invoked will have no effect.
      *
      * @param listenerQueueName JMS queue to listen to
@@ -51,8 +51,8 @@ public interface JMSClient extends AutoCloseable {
     void addQueueListener(@NotNull String listenerQueueName, @NotNull MessageListener listener) throws JMSException;
 
     /**
-     * Registers a topic listener with the given {@link MessageListener}.<br/>
-     * The listener object will then be notified of any new message once {@link #startListening()} is called.<br/>
+     * Registers a topic listener with the given {@link MessageListener}.<br>
+     * The listener object will then be notified of any new message once {@link #startListening()} is called.<br>
      * Calls to this method after {@link #startListening()} was invoked will have no effect.
      *
      * @param listenerTopicName JMS topic to listen to

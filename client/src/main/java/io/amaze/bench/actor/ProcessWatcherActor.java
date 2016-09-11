@@ -30,10 +30,10 @@ import java.util.concurrent.ScheduledFuture;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * An actor that monitors specific processes' metrics using polling.<br/>
- * The polling period is customizable, but must be at least one second.<br/>
- * It also allows getting differential metrics using a stopwatch mechanism.<br/>
- * <br/>
+ * An actor that monitors specific processes' metrics using polling.<br>
+ * The polling period is customizable, but must be at least one second.<br>
+ * It also allows getting differential metrics using a stopwatch mechanism.<br>
+ * <br>
  * Using sampling you can get the following metrics about a specific process:
  * <ul>
  * <li><strong>Virtual Memory Size (VSZ):</strong> It includes all memory

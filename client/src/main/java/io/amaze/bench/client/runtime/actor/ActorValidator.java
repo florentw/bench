@@ -50,8 +50,8 @@ public final class ActorValidator {
     }
 
     /**
-     * Attempts to load the {@link Reactor} class using the current classpath,<br/>
-     * a set of checks is then performed on the resulting Class,<br/>
+     * Attempts to load the {@link Reactor} class using the current classpath,<br>
+     * a set of checks is then performed on the resulting Class,<br>
      * if one or more checks fail, a {@link ValidationException} is thrown.
      *
      * @param className Fully qualified name of the class implementing {@link Reactor}.

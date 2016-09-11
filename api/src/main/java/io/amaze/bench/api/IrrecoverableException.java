@@ -20,8 +20,8 @@ import javax.validation.constraints.NotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * To be thrown by an Actor when a non-recoverable error happens.<br/>
- * It means that the actor cannot process further messages and needs to be terminated.<br/>
+ * To be thrown by an Actor when a non-recoverable error happens.<br>
+ * It means that the actor cannot process further messages and needs to be terminated.<br>
  *
  * Note that when thrown, the agent will attempt to call its {@link After} method if any before destroying the actor.
  *

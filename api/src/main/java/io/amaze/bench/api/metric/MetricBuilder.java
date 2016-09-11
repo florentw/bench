@@ -20,17 +20,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Utility to help create a new instance instance {@link Metric}.
- * <br/>
- * Example:<br/>
+ * <br>
+ * Example:<br>
  * To express a metric that is a throughput in events/seconds you could have:
- * <pre>
+ * <pre> {@code
  * Metric.metric("logging.events", "events")
  *     .secondUnit("seconds")
  *     .label("Logging throughput")
  *     .minValue(0)
  *     .maxValue(1000)
  *     .build();
- * </pre>
+ * } </pre>
  */
 public final class MetricBuilder {
 
@@ -54,6 +54,7 @@ public final class MetricBuilder {
 
     /**
      * @param secondUnit Name of the optional second unit. (as in meters per sec)
+     * @return The builder instance
      */
     public MetricBuilder secondUnit(final String secondUnit) {
         this.secondUnit = checkNotNull(secondUnit);
@@ -62,6 +63,7 @@ public final class MetricBuilder {
 
     /**
      * @param label An optional displayable name for this metric.
+     * @return The builder instance
      */
     public MetricBuilder label(final String label) {
         this.label = checkNotNull(label);
@@ -70,6 +72,7 @@ public final class MetricBuilder {
 
     /**
      * @param minValue The optional minimum value that can be taken by values of this metric.
+     * @return The builder instance
      */
     public MetricBuilder minValue(final Number minValue) {
         this.minValue = checkNotNull(minValue);
@@ -78,12 +81,18 @@ public final class MetricBuilder {
 
     /**
      * @param maxValue The optional maximum value that can be taken by values of this metric.
+     * @return The builder instance
      */
     public MetricBuilder maxValue(final Number maxValue) {
         this.maxValue = checkNotNull(maxValue);
         return this;
     }
 
+    /**
+     * Builds the metric using previously set attributes.
+     *
+     * @return An instance of {@link Metric}.
+     */
     public Metric build() {
         return new Metric(key, firstUnit, label, secondUnit, minValue, maxValue);
     }

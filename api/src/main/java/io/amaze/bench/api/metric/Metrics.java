@@ -28,12 +28,13 @@ import java.io.Serializable;
 public interface Metrics extends Serializable {
 
     /**
+     * @param metric Metric for which to get a {@link Sink} instance for.
      * @return A sink instance of this particular {@link Metric}.
      */
     Sink sinkFor(Metric metric);
 
     /**
-     * Offers a facade to produce metrics values.<br/>
+     * Offers a facade to produce metrics values.<br>
      * Metrics produced through the {@link Sink} instance are then collected and centralized.
      */
     interface Sink {
@@ -41,6 +42,7 @@ public interface Metrics extends Serializable {
         /**
          * Add an arbitrary {@link Number} value to this sink.
          *
+         * @param value Value to be added
          * @return This instance for chaining calls.
          */
         Sink add(@NotNull Number value);
@@ -49,14 +51,16 @@ public interface Metrics extends Serializable {
          * Add an arbitrary timed value to this sink.
          *
          * @param timeStamp Java timestamp
+         * @param value     Value to be added
          * @return This instance for chaining calls.
          */
         Sink timed(@NotNull long timeStamp, @NotNull Number value);
 
         /**
-         * Add an arbitrary {@link Number} value to this sink.<br/>
+         * Add an arbitrary {@link Number} value to this sink.<br>
          * The current timestamp will be assigned behind the scenes.
          *
+         * @param value Value to be added
          * @return This instance for chaining calls.
          */
         Sink timed(@NotNull Number value);

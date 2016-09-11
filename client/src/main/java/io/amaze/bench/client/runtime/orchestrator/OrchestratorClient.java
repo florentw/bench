@@ -23,9 +23,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * Facade to interact with the underlying messaging system for an orchestration client (an {@link Agent}).<br/>
+ * Facade to interact with the underlying messaging system for an orchestration client (an {@link Agent}).<br>
  * The alter-ego of this interface is OrchestratorServer on the orchestration server side.
- * <p>
  *
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory
  * @see Agent

@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 interface OrchestratorServer extends AutoCloseable {
 
     /**
-     * Register the given listeners to be plugged to the underlying message system.<br/>
+     * Register the given listeners to be plugged to the underlying message system.<br>
      * <ul>
      * <li>{@link AgentRegistryListener} will then be notified of Agent related events</li>
      * <li>{@link ActorRegistryListener} will be notified of Actor related events</li>
@@ -44,8 +44,8 @@ interface OrchestratorServer extends AutoCloseable {
                                 @NotNull ActorRegistryListener actorsListener);
 
     /**
-     * Will create an endpoint for the actor to receive messages.<br/>
-     * In practice a message queue is created in the underlying implementation.<br/>
+     * Will create an endpoint for the actor to receive messages.<br>
+     * In practice a message queue is created in the underlying implementation.<br>
      * The actor can then consume incoming messages from the queue.
      *
      * @param actorName The actor name, that will uniquely identify the queue in the system.
@@ -53,7 +53,7 @@ interface OrchestratorServer extends AutoCloseable {
     void createActorQueue(@NotNull String actorName);
 
     /**
-     * Deletes the endpoint queue created for an actor to receive messages.<br/>
+     * Deletes the endpoint queue created for an actor to receive messages.<br>
      * The queue should have been previously created using {@link #createActorQueue}
      *
      * @param actorName The actor unique name.

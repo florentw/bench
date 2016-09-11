@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 public interface ManagedActor {
 
     /**
-     * Return the name of the actor
+     * @return the name of the actor
      */
     @NotNull
     String getName();

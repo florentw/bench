@@ -36,8 +36,8 @@ import static com.google.common.util.concurrent.Uninterruptibles.joinUninterrupt
 import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
 
 /**
- * Forks a new JVM to host the actor.<br/>
- * The main class that will be spawn is {@link ActorBootstrap}.<br/>
+ * Forks a new JVM to host the actor.<br>
+ * The main class that will be spawn is {@link ActorBootstrap}.<br>
  * <p>
  * A watchdog thread waits for the process termination to avoid zombies.
  * <p>

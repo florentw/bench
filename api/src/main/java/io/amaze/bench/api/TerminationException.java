@@ -16,7 +16,7 @@
 package io.amaze.bench.api;
 
 /**
- * To be thrown by an Actor to notify the agent that it wishes to terminate gracefully.<br/>
+ * To be thrown by an Actor to notify the agent that it wishes to terminate gracefully.<br>
  * To notify of irrecoverable exceptions, {@link IrrecoverableException} should be used instead.
  * To notify of recoverable exceptions, {@link RecoverableException} should be used instead.
  *

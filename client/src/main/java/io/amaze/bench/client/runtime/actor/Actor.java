@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * Wrapper interface for a {@link Reactor} instance.<br/>
+ * Wrapper interface for a {@link Reactor} instance.<br>
  * Used by the Manager as an internal interface with an embedded {@link Reactor} instance.
  */
 public interface Actor extends AutoCloseable {
@@ -37,21 +37,21 @@ public interface Actor extends AutoCloseable {
     String name();
 
     /**
-     * Initializes the actor by invoking the method annotated with @{@link Before} if any.<br/>
-     * Will send failure messages to the master.<br/>
-     * Send "initialized" lifecycle notification if successful.<br/>
+     * Initializes the actor by invoking the method annotated with @{@link Before} if any.<br>
+     * Will send failure messages to the master.<br>
+     * Send "initialized" lifecycle notification if successful.<br>
      */
     void init();
 
     /**
-     * Dump the actor's accumulated getMetricsAndFlush and sends a message to the getMetricsAndFlush actor for collection.<br/>
-     * Will send failure messages to the master.<br/>
+     * Dump the actor's accumulated getMetricsAndFlush and sends a message to the getMetricsAndFlush actor for collection.<br>
+     * Will send failure messages to the master.<br>
      */
     void dumpAndFlushMetrics();
 
     /**
-     * Hook for the actor to receive messages.<br/>
-     * Will send failure messages to the master.<br/>
+     * Hook for the actor to receive messages.<br>
+     * Will send failure messages to the master.<br>
      *
      * @param from    Source actor
      * @param message Payload
@@ -59,9 +59,9 @@ public interface Actor extends AutoCloseable {
     void onMessage(@NotNull String from, @NotNull Serializable message);
 
     /**
-     * Closes the actor and invokes the {@link Reactor} method annotated with @{@link After}.<br/>
-     * Will send failure messages to the master.<br/>
-     * Send "closed" lifecycle notification if successful.<br/>
+     * Closes the actor and invokes the {@link Reactor} method annotated with @{@link After}.<br>
+     * Will send failure messages to the master.<br>
+     * Send "closed" lifecycle notification if successful.<br>
      */
     @Override
     void close();

@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.api.metric.Metric.metric;
 
 /**
- * An actor that monitors the system status using polling.<br/>
+ * An actor that monitors the system status using polling.<br>
  * The polling period is customizable, but must be at least one second.
  *
  * It will produce the following metrics:

@@ -27,7 +27,7 @@ import io.amaze.bench.shared.test.JMSServerRule;
 import org.junit.rules.ExternalResource;
 
 /**
- * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.<br/>
+ * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.<br>
  * Created on 9/1/16.
  */
 public final class BenchRule extends ExternalResource {

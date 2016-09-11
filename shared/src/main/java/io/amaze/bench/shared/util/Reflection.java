@@ -32,7 +32,7 @@ public final class Reflection {
     }
 
     /**
-     * Helper to find a method annotated with the given annotation. If not method is annotated, null is returned.<br/>
+     * Helper to find a method annotated with the given annotation. If not method is annotated, null is returned.<br>
      * If more than one method in the input class in annotated, a {@link java.lang.IllegalArgumentException} is thrown.
      *
      * @param clazz      An input class to look for annotated methods in

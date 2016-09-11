@@ -18,18 +18,17 @@ package io.amaze.bench.api;
 import java.lang.annotation.*;
 
 /**
- * Annotation for actor implementation classes.<br/>
+ * Annotation to be used on actor classes.<br>
  * <ul>
- * <li>An class annotated with @Actor must implement the {@link Reactor} interface.<br/></li>
- * <li>The {@link Reactor} interface must be parametrized with the type of messages it will take as input.<br/></li>
+ * <li>An class annotated with @{@link Actor} must implement the {@link Reactor} interface.<br></li>
+ * <li>The {@link Reactor} interface must be parametrized with the type of messages it will take as input.<br></li>
+ * <li>An actor class must have a public constructor that will be used to inject its dependencies.</li>
  * <li>An actor can declare one of its method as a setup routine, by it annotating with @{@link Before}</li>
  * <li>An actor can declare one of its method as a teardown routine, by it annotating with @{@link After}</li>
  * </ul>
- * <p/>
- * Created on 2/28/16.
  *
- * @see Reactor
- * @see Sender
+ * @see Reactor To be implemented by classes annotated with @{@link Actor}.
+ * @see Sender Can be passed in the public constructor of a class annotated with @{@link Actor}.
  */
 @Target(value = {ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

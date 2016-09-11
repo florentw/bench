@@ -36,7 +36,7 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
 
 
 /**
- * Provides instantiation service for actors objects of type {@link Actor}.<br/>
+ * Provides instantiation service for actors objects of type {@link Actor}.<br>
  * Actor's creation follows this process:
  * <ul>
  * <li>Loading the reactor class and checking validity</li>

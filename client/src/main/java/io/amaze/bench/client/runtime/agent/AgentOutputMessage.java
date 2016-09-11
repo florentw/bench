@@ -23,8 +23,7 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Represents a message sent to the OrchestratorServer master from an {@link Agent}.<br/>
- * Created on 3/3/16.
+ * Represents a message sent to the OrchestratorServer master from an {@link Agent}.
  *
  * @see Agent
  * @see ActorLifecycleMessage
@@ -58,7 +57,7 @@ public final class AgentOutputMessage implements java.io.Serializable {
 
     /**
      * Types of the object returned by {@link #getData()} when the value is:
-     * <li>
+     * <ul>
      * <li>{@link #REGISTER_AGENT}: A {@link AgentRegistrationMessage} is returned
      * <li>{@link #UNREGISTER_AGENT}: A {@link String} is returned (the name of the agent signing off).</li>
      * <li>{@link #ACTOR_LIFECYCLE}: A {@link ActorLifecycleMessage}</li>

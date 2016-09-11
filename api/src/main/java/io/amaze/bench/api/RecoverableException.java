@@ -20,8 +20,8 @@ import javax.validation.constraints.NotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * To be thrown by an Actor when a recoverable error happens. A recoverable error means,<br/>
- * that the actor can still process new messages seamlessly.<br/>
+ * To be thrown by an Actor when a recoverable error happens. A recoverable error means,<br>
+ * that the actor can still process new messages seamlessly.<br>
  *
  * It can notify the agent of the failure, that can perform additional actions to help troubleshoot the issue.
  *
