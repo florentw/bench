@@ -61,7 +61,6 @@ public final class DeployConfigTest {
 
         DeployConfig actual = SerializableTester.reserializeAndAssert(expected);
 
-        assertThat(actual.getJmsEndpoint(), is(expected.getJmsEndpoint()));
         assertThat(actual.getPreferredHosts(), is(expected.getPreferredHosts()));
         assertThat(actual.isForked(), is(expected.isForked()));
     }
@@ -71,7 +70,7 @@ public final class DeployConfigTest {
     }
 
     private DeployConfig createDeployConfig() {
-        return new DeployConfig(createEndpoint(), true, new ArrayList<>());
+        return new DeployConfig(true, new ArrayList<>());
     }
 
 }

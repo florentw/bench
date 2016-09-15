@@ -20,13 +20,14 @@ import io.amaze.bench.api.Before;
 import io.amaze.bench.api.Reactor;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 import java.io.Serializable;
 
 /**
  * Wrapper interface for a {@link Reactor} instance.<br>
  * Used by the Manager as an internal interface with an embedded {@link Reactor} instance.
  */
-public interface Actor extends AutoCloseable {
+public interface RuntimeActor extends Closeable {
 
     /**
      * The actor's name must be unique across the cluster.

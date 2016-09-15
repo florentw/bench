@@ -40,7 +40,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
         checkNotNull(actorConfig);
 
         final String name = actorConfig.getName();
-        final Actor actor = factory.create(name, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
+        final RuntimeActor actor = factory.create(name, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
 
         return new ManagedActor() {
             @NotNull

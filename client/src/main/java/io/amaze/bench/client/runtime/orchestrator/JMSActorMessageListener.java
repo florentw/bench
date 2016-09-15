@@ -16,8 +16,8 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import io.amaze.bench.api.Reactor;
-import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
+import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +37,17 @@ final class JMSActorMessageListener implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMSActorMessageListener.class);
 
-    private final Actor actor;
+    private final RuntimeActor actor;
 
-    JMSActorMessageListener(@NotNull final Actor actor) {
+    JMSActorMessageListener(@NotNull final RuntimeActor actor) {
         this.actor = checkNotNull(actor);
     }
 
     @Override
-    public void onMessage(@NotNull final Message message) {
-        checkNotNull(message);
+    public void onMessage(@NotNull final Message jmsMessage) {
+        checkNotNull(jmsMessage);
 
-        Optional<ActorInputMessage> msg = readInputMessage(message);
+        Optional<ActorInputMessage> msg = readInputMessageFrom(jmsMessage);
         if (!msg.isPresent()) {
             return;
         }
@@ -70,11 +70,11 @@ final class JMSActorMessageListener implements MessageListener {
         }
     }
 
-    private Optional<ActorInputMessage> readInputMessage(@NotNull final Message message) {
+    private Optional<ActorInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
         try {
-            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) message));
+            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Invalid ActorInputMessage received, message:" + message, e);
+            LOG.error("Invalid ActorInputMessage received, jmsMessage:" + jmsMessage, e);
             return Optional.empty();
         }
     }

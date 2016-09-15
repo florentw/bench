@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.actor;
 
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,6 +33,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see ActorManager
  */
 public class ActorManagers {
+
+    private final JMSEndpoint masterEndpoint;
+
+    public ActorManagers(final JMSEndpoint masterEndpoint) {
+        this.masterEndpoint = checkNotNull(masterEndpoint);
+    }
 
     /**
      * Will create a new instance of {@link ActorManager} that will instantiate actors in the current JVM.
@@ -60,7 +67,7 @@ public class ActorManagers {
     public ActorManager createForked(@NotNull final String agentName) {
         checkNotNull(agentName);
 
-        return new ForkedActorManager(agentName);
+        return new ForkedActorManager(agentName, masterEndpoint);
     }
 
 }

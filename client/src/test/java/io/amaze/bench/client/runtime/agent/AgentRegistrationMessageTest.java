@@ -35,11 +35,12 @@ import static org.junit.Assert.assertTrue;
  */
 public final class AgentRegistrationMessageTest {
 
+    private static final String AGENT_NAME = "dummy-agent";
     private AgentRegistrationMessage msg;
 
     @Before
     public void before() {
-        msg = AgentRegistrationMessage.create();
+        msg = AgentRegistrationMessage.create(AGENT_NAME);
     }
 
     @Test
@@ -52,7 +53,7 @@ public final class AgentRegistrationMessageTest {
 
     @Test
     public void create_msg() {
-        assertTrue(msg.getName().startsWith(AgentRegistrationMessage.DEFAULT_AGENT_PREFIX));
+        assertTrue(msg.getName().equals(AGENT_NAME));
         assertNotNull(msg.getSystemConfig());
         assertTrue(msg.getCreationTime() > 0);
     }

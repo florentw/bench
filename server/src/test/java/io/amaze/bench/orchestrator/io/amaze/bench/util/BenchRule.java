@@ -16,8 +16,9 @@
 package io.amaze.bench.orchestrator.io.amaze.bench.util;
 
 import io.amaze.bench.client.runtime.actor.ActorManagers;
-import io.amaze.bench.client.runtime.agent.Agent;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
+import io.amaze.bench.orchestrator.Actors;
+import io.amaze.bench.orchestrator.Agents;
 import io.amaze.bench.orchestrator.JMSOrchestratorServer;
 import io.amaze.bench.orchestrator.ResourceManager;
 import io.amaze.bench.orchestrator.registry.ActorRegistry;
@@ -40,19 +41,13 @@ public final class BenchRule extends ExternalResource {
 
     private JMSClient orchestratorServerJmsClient;
     private JMSOrchestratorServer orchestratorServer;
-
     private JMSOrchestratorClientFactory orchestratorClientFactory;
+
+    private Agents agents;
+    private Actors actors;
 
     public BenchRule() {
         this.jmsServerRule = new JMSServerRule();
-    }
-
-    public Agent createAgent() {
-        return new Agent(orchestratorClientFactory, new ActorManagers());
-    }
-
-    public JMSServerRule getJmsServerRule() {
-        return jmsServerRule;
     }
 
     public JMSOrchestratorServer getOrchestratorServer() {
@@ -75,6 +70,14 @@ public final class BenchRule extends ExternalResource {
         return jmsServerRule.createClient();
     }
 
+    public Agents agents() {
+        return agents;
+    }
+
+    public Actors actors() {
+        return actors;
+    }
+
     @Override
     protected void before() throws Throwable {
         jmsServerRule.init();
@@ -91,6 +94,11 @@ public final class BenchRule extends ExternalResource {
         resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
 
         orchestratorClientFactory = new JMSOrchestratorClientFactory(jmsServerRule.getEndpoint());
+
+        ActorManagers actorManagers = new ActorManagers(jmsServerRule.getEndpoint());
+        agents = new Agents(actorManagers, orchestratorClientFactory, agentRegistry);
+
+        actors = new Actors(resourceManager, actorRegistry);
     }
 
     @Override

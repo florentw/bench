@@ -51,7 +51,7 @@ public final class AgentRegistryListenerLoggerTest {
 
     @Test
     public void agent_creation() {
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent");
         loggerListener.onAgentRegistration(regMsg);
 
         verify(delegateListener).onAgentRegistration(regMsg);

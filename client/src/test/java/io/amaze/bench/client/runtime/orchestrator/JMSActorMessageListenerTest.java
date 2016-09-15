@@ -16,8 +16,8 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.actor.Actor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
+import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public final class JMSActorMessageListenerTest {
     private static final String DUMMY_PAYLOAD = "hello";
 
     @Mock
-    private Actor actor;
+    private RuntimeActor actor;
     private JMSActorMessageListener listener;
 
     @Before

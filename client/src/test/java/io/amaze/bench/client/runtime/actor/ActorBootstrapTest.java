@@ -81,9 +81,9 @@ public final class ActorBootstrapTest {
 
     @Test
     public void shutdown_thread_closes_actor() throws IOException, ValidationException {
-        Actor actor = actorBootstrap.createActor(TestActor.DUMMY_ACTOR,
-                                                 TestActor.class.getName(),
-                                                 TestActor.DUMMY_JSON_CONFIG);
+        RuntimeActor actor = actorBootstrap.createActor(TestActor.DUMMY_ACTOR,
+                                                        TestActor.class.getName(),
+                                                        TestActor.DUMMY_JSON_CONFIG);
         actor = spy(actor);
 
         ActorBootstrap.ActorShutdownThread thread = new ActorBootstrap.ActorShutdownThread(actor);
@@ -95,7 +95,7 @@ public final class ActorBootstrapTest {
 
     @Test
     public void install_shutdown_hook() {
-        Actor actor = mock(Actor.class);
+        RuntimeActor actor = mock(RuntimeActor.class);
 
         Thread thread = ActorBootstrap.installShutdownHook(actor);
 

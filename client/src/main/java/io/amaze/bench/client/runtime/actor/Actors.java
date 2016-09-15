@@ -36,17 +36,17 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
 
 
 /**
- * Provides instantiation service for actors objects of type {@link Actor}.<br>
+ * Provides instantiation service for actors objects of type {@link RuntimeActor}.<br>
  * Actor's creation follows this process:
  * <ul>
  * <li>Loading the reactor class and checking validity</li>
  * <li>Parsing and loading configuration, checking for validity</li>
  * <li>Creating the actor's {@link io.amaze.bench.client.runtime.orchestrator.OrchestratorClient}</li>
  * <li>Injecting reactor's dependencies and instantiation</li>
- * <li>Returns a {@link Actor} object wrapper for the resource manager to use</li>
+ * <li>Returns a {@link RuntimeActor} object wrapper for the resource manager to use</li>
  * </ul>
  *
- * @see Actor
+ * @see RuntimeActor
  * @see Reactor
  */
 public final class Actors {
@@ -67,9 +67,9 @@ public final class Actors {
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
     }
 
-    public final Actor create(@NotNull final String name,
-                              @NotNull final String className,
-                              @NotNull final String jsonConfig) throws ValidationException {
+    public final RuntimeActor create(@NotNull final String name,
+                                     @NotNull final String className,
+                                     @NotNull final String jsonConfig) throws ValidationException {
 
         // Fail-fast
         Class<? extends Reactor> clazz = ActorValidators.get().loadAndValidate(className);

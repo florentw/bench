@@ -46,10 +46,10 @@ final class JMSAgentMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(@NotNull final Message message) {
-        checkNotNull(message);
+    public void onMessage(@NotNull final Message jmsMessage) {
+        checkNotNull(jmsMessage);
 
-        Optional<AgentInputMessage> msg = readInputMessage(message);
+        Optional<AgentInputMessage> msg = readInputMessageFrom(jmsMessage);
         if (!msg.isPresent()) {
             return;
         }
@@ -72,18 +72,18 @@ final class JMSAgentMessageListener implements MessageListener {
         }
     }
 
-    private Optional<AgentInputMessage> readInputMessage(@NotNull final Message message) {
+    private Optional<AgentInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
         try {
-            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) message));
+            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Invalid AgentInputMessage received, message:" + message, e);
+            LOG.error("Invalid AgentInputMessage received, jmsMessage:" + jmsMessage, e);
             return Optional.empty();
         }
     }
 
     private void closeActor(final AgentInputMessage msg) {
-        String aToClose = (String) msg.getData();
-        listener.onActorCloseRequest(aToClose);
+        String actor = (String) msg.getData();
+        listener.onActorCloseRequest(actor);
     }
 
     private void createActor(final AgentInputMessage msg) {

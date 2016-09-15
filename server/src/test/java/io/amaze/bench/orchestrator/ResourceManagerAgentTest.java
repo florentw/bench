@@ -35,9 +35,11 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static io.amaze.bench.client.runtime.actor.ActorInputMessage.Command;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_JSON_CONFIG;
@@ -65,7 +67,7 @@ public final class ResourceManagerAgentTest {
     private AgentSync agentSync;
 
     @Before
-    public void before() {
+    public void before() throws ExecutionException {
         orchestratorServer = benchRule.getOrchestratorServer();
         resourceManager = benchRule.getResourceManager();
 
@@ -73,8 +75,7 @@ public final class ResourceManagerAgentTest {
         agentRegistry = benchRule.getAgentRegistry();
         agentSync = registerAgentSync();
 
-        agent = benchRule.createAgent();
-        awaitUninterruptibly(agentSync.agentStarted);
+        agent = getUninterruptibly(benchRule.agents().create("test-agent"));
     }
 
     @Test
@@ -161,9 +162,7 @@ public final class ResourceManagerAgentTest {
     }
 
     private DeployConfig deployConfig(final List<String> preferredHosts) {
-        return new DeployConfig(benchRule.getJmsServerRule().getEndpoint(),
-                                false,
-                                preferredHosts);
+        return new DeployConfig(false, preferredHosts);
     }
 
     private AgentSync registerAgentSync() {

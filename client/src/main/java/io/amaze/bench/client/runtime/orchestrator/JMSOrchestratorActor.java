@@ -16,7 +16,7 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.client.runtime.actor.Actor;
+import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -41,7 +41,7 @@ final class JMSOrchestratorActor extends JMSOrchestratorClient implements Orches
     }
 
     @Override
-    public void startActorListener(@NotNull final Actor actor) {
+    public void startActorListener(@NotNull final RuntimeActor actor) {
         checkNotNull(actor);
 
         try {

@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.client.runtime.actor.Actor;
+import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 
@@ -36,7 +36,7 @@ public class RecorderOrchestratorActor implements OrchestratorActor {
     private boolean actorListenerStarted = false;
 
     @Override
-    public void startActorListener(@NotNull final Actor actor) {
+    public void startActorListener(@NotNull final RuntimeActor actor) {
         actorListenerStarted = true;
     }
 

@@ -23,7 +23,6 @@ import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
 import io.amaze.bench.orchestrator.registry.RegisteredAgent;
-import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -182,8 +181,7 @@ public final class ResourceManagerTest {
     }
 
     private ActorConfig configWithPreferredHosts(final List<String> preferredHosts) {
-        JMSEndpoint endpoint = new JMSEndpoint("", 12);
-        return new ActorConfig(DUMMY_ACTOR, "", new DeployConfig(endpoint, false, preferredHosts), DUMMY_JSON_CONFIG);
+        return new ActorConfig(DUMMY_ACTOR, "", new DeployConfig(false, preferredHosts), DUMMY_JSON_CONFIG);
     }
 
     private AgentRegistrationMessage registerAgentOnOurHost() {

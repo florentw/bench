@@ -17,11 +17,13 @@ package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static io.amaze.bench.client.runtime.agent.AgentBootstrap.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -36,27 +38,29 @@ public final class AgentBootstrapTest {
     public final ExpectedException expectedException = ExpectedException.none();
 
     private DummyClientFactory clientFactory;
+    private JMSEndpoint masterEndpoint;
 
     @Before
     public void before() {
         clientFactory = new DummyClientFactory(mock(OrchestratorAgent.class), mock(OrchestratorActor.class));
+        masterEndpoint = new JMSEndpoint("noSuchHost", 1337);
     }
 
     @Test
     public void invalid_arguments_show_usage() {
-        AgentBootstrap.main(new String[]{});
+        main(new String[]{});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void invalid_arguments_throw() {
-        AgentBootstrap.main(new String[]{"dummy", "not_an_int"});
+        main(new String[]{"dummy", "not_an_int"});
     }
 
     @Test
     public void install_shutdown_hook() {
-        Agent agent = AgentBootstrap.createAgent(clientFactory);
+        Agent agent = createAgent(masterEndpoint, clientFactory);
 
-        Thread shutdownHook = AgentBootstrap.registerShutdownHook(agent);
+        Thread shutdownHook = registerShutdownHook(agent);
 
         assertNotNull(shutdownHook);
         boolean removed = Runtime.getRuntime().removeShutdownHook(shutdownHook);
@@ -65,8 +69,8 @@ public final class AgentBootstrapTest {
 
     @Test
     public void shutdown_hook_closes_agent() throws Exception {
-        Agent agent = spy(AgentBootstrap.createAgent(clientFactory));
-        Thread shutdownHook = AgentBootstrap.registerShutdownHook(agent);
+        Agent agent = spy(createAgent(masterEndpoint, clientFactory));
+        Thread shutdownHook = registerShutdownHook(agent);
 
         shutdownHook.run();
 
@@ -75,9 +79,9 @@ public final class AgentBootstrapTest {
 
     @Test
     public void shutdown_hook_closes_agent_and_close_fail_does_nothing() throws Exception {
-        Agent agent = spy(AgentBootstrap.createAgent(clientFactory));
+        Agent agent = spy(createAgent(masterEndpoint, clientFactory));
         doThrow(new IllegalArgumentException()).when(agent).close();
-        Thread shutdownHook = AgentBootstrap.registerShutdownHook(agent);
+        Thread shutdownHook = registerShutdownHook(agent);
 
         shutdownHook.run();
 
@@ -86,7 +90,7 @@ public final class AgentBootstrapTest {
 
     @Test
     public void can_create_agent() {
-        Agent agent = AgentBootstrap.createAgent(clientFactory);
+        Agent agent = createAgent(masterEndpoint, clientFactory);
 
         assertNotNull(agent);
         assertNotNull(agent.getName());

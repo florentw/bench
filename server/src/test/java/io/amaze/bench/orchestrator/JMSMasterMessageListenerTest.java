@@ -85,7 +85,7 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void agent_registered() throws IOException, JMSException {
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent");
         AgentOutputMessage inputMsg = new AgentOutputMessage(Action.REGISTER_AGENT, regMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 

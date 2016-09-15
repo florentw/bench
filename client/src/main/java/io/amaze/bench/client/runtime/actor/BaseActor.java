@@ -46,7 +46,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 /**
  * Created on 2/28/16.
  */
-public class BaseActor implements Actor {
+public class BaseActor implements RuntimeActor {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseActor.class);
     private static final String MSG_AFTER_METHOD_FAILED = " Error while invoking after method.";

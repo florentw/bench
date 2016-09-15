@@ -50,15 +50,16 @@ public final class AgentBootstrap {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
 
-        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(new JMSEndpoint(host, port));
+        JMSEndpoint masterEndpoint = new JMSEndpoint(host, port);
+        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(masterEndpoint);
 
-        Agent agent = createAgent(clientFactory);
+        Agent agent = createAgent(masterEndpoint, clientFactory);
         registerShutdownHook(agent);
     }
 
     @VisibleForTesting
-    static Agent createAgent(final OrchestratorClientFactory clientFactory) {
-        return new Agent(clientFactory, new ActorManagers());
+    static Agent createAgent(final JMSEndpoint masterEndpoint, final OrchestratorClientFactory clientFactory) {
+        return new Agent(clientFactory, new ActorManagers(masterEndpoint));
     }
 
     @VisibleForTesting

@@ -29,7 +29,7 @@ public interface ManagedActor {
     String getName();
 
     /**
-     * Terminates the actor by invoking its {@link Actor#close()} method.
+     * Terminates the actor by invoking its {@link RuntimeActor#close()} method.
      */
     void close();
 

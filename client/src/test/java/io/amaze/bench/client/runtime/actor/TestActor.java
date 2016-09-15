@@ -18,7 +18,6 @@ package io.amaze.bench.client.runtime.actor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.api.*;
-import io.amaze.bench.shared.jms.JMSEndpoint;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -64,7 +63,7 @@ public class TestActor implements Reactor<String> {
     }
 
     private static DeployConfig createDeployConfig(final boolean forked) {
-        return new DeployConfig(new JMSEndpoint("dummy", 1337), forked, Collections.emptyList());
+        return new DeployConfig(forked, Collections.emptyList());
     }
 
     private static ActorConfig createActorConfig() {

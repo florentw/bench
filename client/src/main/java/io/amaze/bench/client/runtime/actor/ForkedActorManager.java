@@ -55,9 +55,13 @@ final class ForkedActorManager extends AbstractActorManager {
 
     private final Map<String, ProcessWatchDogThread> processes = new HashMap<>();
     private final File localLogDir;
+    private final JMSEndpoint masterEndpoint;
 
-    ForkedActorManager(@NotNull final String agent, @NotNull final File localLogDir) {
+    ForkedActorManager(@NotNull final String agent,
+                       @NotNull final JMSEndpoint masterEndpoint,
+                       @NotNull final File localLogDir) {
         super(agent);
+        this.masterEndpoint = checkNotNull(masterEndpoint);
         this.localLogDir = checkNotNull(localLogDir);
 
         boolean success = localLogDir.mkdir();
@@ -66,8 +70,8 @@ final class ForkedActorManager extends AbstractActorManager {
         }
     }
 
-    ForkedActorManager(@NotNull final String agent) {
-        this(agent, new File(LOG_DIRECTORY_NAME));
+    ForkedActorManager(@NotNull final String agent, @NotNull final JMSEndpoint masterEndpoint) {
+        this(agent, masterEndpoint, new File(LOG_DIRECTORY_NAME));
     }
 
     @NotNull
@@ -127,19 +131,17 @@ final class ForkedActorManager extends AbstractActorManager {
 
         String name = actorConfig.getName();
 
-        JMSEndpoint jmsServer = actorConfig.getDeployConfig().getJmsEndpoint();
-
         String[] cmd = { //
                 JAVA_HOME.value() + JAVA_CMD_PATH, //
                 "-cp", //
                 JAVA_CLASS_PATH.value(), // Use the current classpath
-                ActorBootstrap.class.getName(),        // Main class
-                getAgent(),                            // arg[0]
-                name,                                  // arg[1]
-                actorConfig.getClassName(),            // arg[2]
-                jmsServer.getHost(),                   // arg[3]
-                Integer.toString(jmsServer.getPort()), // arg[4]
-                configFileName                         // arg[5]
+                ActorBootstrap.class.getName(),             // Main class
+                getAgent(),                                 // arg[0]
+                name,                                       // arg[1]
+                actorConfig.getClassName(),                 // arg[2]
+                masterEndpoint.getHost(),                   // arg[3]
+                Integer.toString(masterEndpoint.getPort()), // arg[4]
+                configFileName                              // arg[5]
         };
 
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";

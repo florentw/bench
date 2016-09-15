@@ -15,8 +15,6 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.shared.jms.JMSEndpoint;
-
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collections;
@@ -30,15 +28,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class DeployConfig implements Serializable {
 
-    private final JMSEndpoint jmsServerEndpoint;
     private final boolean forked;
     private final List<String> preferredHosts;
 
-    public DeployConfig(@NotNull final JMSEndpoint jmsServerEndpoint,
-                        final boolean forked,
-                        @NotNull final List<String> preferredHosts) {
-
-        this.jmsServerEndpoint = checkNotNull(jmsServerEndpoint);
+    public DeployConfig(final boolean forked, @NotNull final List<String> preferredHosts) {
         this.forked = forked;
         this.preferredHosts = checkNotNull(preferredHosts);
     }
@@ -54,7 +47,7 @@ public final class DeployConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(jmsServerEndpoint, forked, preferredHosts);
+        return Objects.hash(forked, preferredHosts);
     }
 
     @Override
@@ -66,21 +59,15 @@ public final class DeployConfig implements Serializable {
             return false;
         }
         DeployConfig that = (DeployConfig) o;
-        return Objects.equals(jmsServerEndpoint, that.jmsServerEndpoint) && //
-                forked == that.forked && //
+        return forked == that.forked && //
                 Objects.equals(preferredHosts, that.preferredHosts);
     }
 
     @Override
     public String toString() {
         return "{\"DeployConfig\":{" + //
-                "\"jmsServer\":" + jmsServerEndpoint + ", " + //
                 "\"forked\":\"" + forked + "\"" + ", " + //
                 "\"preferredHosts\":\"" + preferredHosts + "\"}}";
-    }
-
-    JMSEndpoint getJmsEndpoint() {
-        return jmsServerEndpoint;
     }
 
 }

@@ -20,7 +20,6 @@ import io.amaze.bench.shared.metric.SystemConfigs;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -30,7 +29,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentRegistrationMessage implements Serializable {
 
-    static final String DEFAULT_AGENT_PREFIX = "agent-";
 
     private final String name;
     private final SystemConfig systemConfig;
@@ -42,11 +40,6 @@ public final class AgentRegistrationMessage implements Serializable {
         this.name = checkNotNull(name);
         this.systemConfig = checkNotNull(systemConfig);
         this.creationTime = creationTime;
-    }
-
-    public static AgentRegistrationMessage create() {
-        String name = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@", "-");
-        return create(DEFAULT_AGENT_PREFIX + name);
     }
 
     public static AgentRegistrationMessage create(@NotNull final String name) {

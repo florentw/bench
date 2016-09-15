@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.client.runtime.orchestrator;
 
-import io.amaze.bench.client.runtime.actor.Actor;
+import io.amaze.bench.client.runtime.actor.RuntimeActor;
 
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +29,6 @@ public interface OrchestratorActor extends OrchestratorClient {
      *
      * @param actor The name of the agent that will be notified of messages addressed to it on the given listener.
      */
-    void startActorListener(@NotNull final Actor actor);
+    void startActorListener(@NotNull final RuntimeActor actor);
 
 }

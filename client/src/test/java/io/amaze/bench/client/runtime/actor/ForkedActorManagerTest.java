@@ -18,6 +18,7 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.Constants;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
@@ -63,12 +64,14 @@ public final class ForkedActorManagerTest {
     public final JMSServerRule server = new JMSServerRule();
 
     private ForkedActorManager actorManager;
+    private JMSEndpoint masterEndpoint;
 
     @Before
     public void before() throws JMSException, IOException {
         File folder = this.folder.newFolder();
+        masterEndpoint = server.getEndpoint();
 
-        actorManager = new ForkedActorManager(DUMMY_AGENT, folder);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, folder);
 
         server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
         server.getServer().createQueue(DUMMY_ACTOR);
@@ -171,7 +174,7 @@ public final class ForkedActorManagerTest {
         doReturn(false).when(localLogDir).mkdirs(); // NOSONAR
         doReturn(false).when(localLogDir).exists(); // NOSONAR
 
-        actorManager = new ForkedActorManager(DUMMY_AGENT, localLogDir);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, localLogDir);
     }
 
     @Test
@@ -190,7 +193,7 @@ public final class ForkedActorManagerTest {
 
     private ActorConfig configWithInitRdv(final String className, final File rdvFile) {
 
-        DeployConfig deployConfig = new DeployConfig(server.getEndpoint(), true, Collections.emptyList());
+        DeployConfig deployConfig = new DeployConfig(true, Collections.emptyList());
 
         String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
 

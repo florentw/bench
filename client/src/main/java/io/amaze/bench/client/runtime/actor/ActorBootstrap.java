@@ -74,21 +74,21 @@ public final class ActorBootstrap {
         OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(serverEndpoint);
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(agentName, clientFactory);
-        Actor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
+        RuntimeActor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
 
         installShutdownHook(actor);
     }
 
     @VisibleForTesting
-    static Thread installShutdownHook(final Actor actor) {
+    static Thread installShutdownHook(final RuntimeActor actor) {
         ActorShutdownThread hook = new ActorShutdownThread(actor);
         Runtime.getRuntime().addShutdownHook(hook);
         return hook;
     }
 
-    Actor createActor(final String name, //
-                      final String className, //
-                      final String jsonConfig) throws ValidationException, IOException {
+    RuntimeActor createActor(final String name, //
+                             final String className, //
+                             final String jsonConfig) throws ValidationException, IOException {
 
         Actors actors = new Actors(agentName, clientFactory);
         return actors.create(name, className, jsonConfig);
@@ -96,9 +96,9 @@ public final class ActorBootstrap {
 
     static final class ActorShutdownThread extends Thread {
 
-        private final Actor actor;
+        private final RuntimeActor actor;
 
-        ActorShutdownThread(final Actor actor) {
+        ActorShutdownThread(final RuntimeActor actor) {
             this.actor = checkNotNull(actor);
 
             setName("actor-shutdown-hook-" + actor);

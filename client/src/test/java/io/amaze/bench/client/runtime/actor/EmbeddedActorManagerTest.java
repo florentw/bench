@@ -59,7 +59,7 @@ public final class EmbeddedActorManagerTest {
     public void create_actor() throws ValidationException, InterruptedException {
         ManagedActor actor = actorManager.createActor(DUMMY_CONFIG);
         assertNotNull(actor);
-        verify(client).startActorListener(any(Actor.class));
+        verify(client).startActorListener(any(RuntimeActor.class));
     }
 
     @Test

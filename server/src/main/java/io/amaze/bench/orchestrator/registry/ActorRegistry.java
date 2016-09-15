@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>
  * Created on 3/28/16.
  */
-public final class ActorRegistry {
+public class ActorRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActorRegistry.class);
 

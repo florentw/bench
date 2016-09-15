@@ -17,6 +17,7 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ public final class ActorManagersTest {
 
     @Before
     public void before() {
-        actorManagers = new ActorManagers();
+        actorManagers = new ActorManagers(new JMSEndpoint("noSuchHost", 1337));
     }
 
     @Test

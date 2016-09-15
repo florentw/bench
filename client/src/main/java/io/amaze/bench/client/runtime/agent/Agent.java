@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -42,21 +43,27 @@ import static java.lang.String.format;
  */
 public class Agent implements AgentClientListener, AutoCloseable {
 
+    static final String DEFAULT_AGENT_PREFIX = "agent-";
     private static final Logger LOG = LoggerFactory.getLogger(Agent.class);
-
     private final Map<String, ManagedActor> actors = Maps.newHashMap();
     private final OrchestratorAgent agentClient;
     private final ActorManager embeddedManager;
     private final ActorManager forkedManager;
-
     private final String name;
 
     public Agent(@NotNull final OrchestratorClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
+        this(defaultName(), clientFactory, actorManagers);
+    }
+
+    public Agent(@NotNull final String name,
+                 @NotNull final OrchestratorClientFactory clientFactory,
+                 @NotNull final ActorManagers actorManagers) {
+
+        this.name = checkNotNull(name);
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create();
-        name = regMsg.getName();
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(name);
 
         LOG.info(format("Starting agent \"%s\"...", name));
 
@@ -69,6 +76,11 @@ public class Agent implements AgentClientListener, AutoCloseable {
         sendRegistrationMessage(regMsg);
 
         LOG.info(format("Agent \"%s\" started.", name));
+    }
+
+    private static String defaultName() {
+        String name = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@", "-");
+        return DEFAULT_AGENT_PREFIX + name;
     }
 
     @Override

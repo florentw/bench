@@ -57,6 +57,11 @@ public final class ActorConfig implements Serializable {
         return deployConfig;
     }
 
+    @NotNull
+    public String getActorJsonConfig() {
+        return actorJsonConfig;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(name, className, deployConfig, actorJsonConfig);
@@ -83,10 +88,5 @@ public final class ActorConfig implements Serializable {
                 "\"className\":\"" + className + "\"" + ", " + //
                 "\"deployConfig\":" + deployConfig + ", " + //
                 "\"actorJsonConfig\":" + actorJsonConfig + "" + "}}";
-    }
-
-    @NotNull
-    String getActorJsonConfig() {
-        return actorJsonConfig;
     }
 }

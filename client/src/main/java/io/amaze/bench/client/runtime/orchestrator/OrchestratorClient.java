@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 
+import io.amaze.bench.client.runtime.actor.BaseActor;
 import io.amaze.bench.client.runtime.agent.Agent;
 import io.amaze.bench.client.runtime.message.Message;
 
@@ -28,7 +29,7 @@ import java.io.Serializable;
  *
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory
  * @see Agent
- * @see io.amaze.bench.client.runtime.actor.BaseActor
+ * @see BaseActor
  */
 public interface OrchestratorClient extends AutoCloseable {
 

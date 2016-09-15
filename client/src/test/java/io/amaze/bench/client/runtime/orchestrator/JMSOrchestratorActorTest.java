@@ -16,7 +16,7 @@
 package io.amaze.bench.client.runtime.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.actor.Actor;
+import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -44,7 +44,7 @@ public final class JMSOrchestratorActorTest {
     @Mock
     private JMSClient jmsClient;
     @Mock
-    private Actor actor;
+    private RuntimeActor actor;
 
     private JMSOrchestratorActor client;
 

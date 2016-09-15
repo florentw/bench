@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.actor.TestActor.*;
+import static io.amaze.bench.client.runtime.agent.Agent.DEFAULT_AGENT_PREFIX;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,6 +82,7 @@ public final class AgentTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(ActorManagers.class, new ActorManagers(new JMSEndpoint("dummy", 10)));
         tester.testAllPublicConstructors(Agent.class);
         tester.testAllPublicInstanceMethods(agent);
     }
@@ -89,6 +92,7 @@ public final class AgentTest {
         // Smoke tests
         assertNotNull(agent);
         assertNotNull(agent.getName());
+        assertTrue(agent.getName().startsWith(DEFAULT_AGENT_PREFIX));
 
         // Check ActorManagers created
         verify(actorManagers).createEmbedded(agent.getName(), clientFactory);
