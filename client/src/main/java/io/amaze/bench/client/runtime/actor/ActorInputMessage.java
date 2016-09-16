@@ -18,6 +18,7 @@ package io.amaze.bench.client.runtime.actor;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -25,17 +26,36 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ActorInputMessage implements Serializable {
 
+    private static final String NA = "n/a";
+
     private final Command command;
     private final String from;
     private final Serializable payload;
 
-    public ActorInputMessage(@NotNull final Command command,
-                             @NotNull final String from,
-                             @NotNull final Serializable payload) {
-
+    private ActorInputMessage(@NotNull final Command command,
+                              @NotNull final String from,
+                              @NotNull final Serializable payload) {
         this.command = checkNotNull(command);
         this.from = checkNotNull(from);
         this.payload = checkNotNull(payload);
+
+        checkArgument(!from.trim().isEmpty(), "From should not be empty.");
+    }
+
+    public static ActorInputMessage init() {
+        return new ActorInputMessage(Command.INIT, NA, NA);
+    }
+
+    public static ActorInputMessage dumpMetrics() {
+        return new ActorInputMessage(Command.DUMP_METRICS, NA, NA);
+    }
+
+    public static ActorInputMessage sendMessage(@NotNull final String from, @NotNull final Serializable payload) {
+        return new ActorInputMessage(Command.MESSAGE, from, payload);
+    }
+
+    public static ActorInputMessage close() {
+        return new ActorInputMessage(Command.CLOSE, NA, NA);
     }
 
     public Command getCommand() {

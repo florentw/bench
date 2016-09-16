@@ -47,6 +47,7 @@ public final class ActorConfigTest {
         NullPointerTester test = new NullPointerTester();
         test.setDefault(DeployConfig.class, DUMMY_CONFIG.getDeployConfig());
         test.setDefault(JMSEndpoint.class, new JMSEndpoint("test", 10));
+
         test.testAllPublicConstructors(ActorConfig.class);
         test.testAllPublicConstructors(DeployConfig.class);
     }

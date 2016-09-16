@@ -30,4 +30,9 @@ public final class MetricTimedValue extends MetricValue {
     public long getTimestamp() {
         return timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "{\"value\":" + getValue() + ", \"timestamp\":" + timestamp + "}";
+    }
 }

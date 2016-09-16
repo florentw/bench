@@ -118,8 +118,12 @@ public class BaseActor implements RuntimeActor {
 
     @Override
     public final void dumpAndFlushMetrics() {
-        Map<Metric, List<MetricValue>> metricValues = this.metrics.dumpAndFlush();
-        client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metricValues));
+        try {
+            Map<Metric, List<MetricValue>> metricValues = this.metrics.dumpAndFlush();
+            client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metricValues));
+        } catch (RuntimeException e) {
+            actorFailure(e);
+        }
     }
 
     @Override

@@ -38,6 +38,7 @@ import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_A;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_B;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
+import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -262,6 +263,25 @@ public final class BaseActorTest {
             assertThat(metricsMap.get(DUMMY_METRIC_A).get(0).getValue(), is(10));
             assertThat(metricsMap.get(DUMMY_METRIC_B).size(), is(1));
             assertThat(metricsMap.get(DUMMY_METRIC_B).get(0).getValue(), is(1));
+        }
+    }
+
+    @Test
+    public void dump_metrics_throws_and_failure_message_is_sent() throws Exception {
+        try (BaseActor actor = createActor(TestActorMetrics.class)) {
+            actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
+
+            doThrow(new IllegalArgumentException()).when(actorClient).sendToActor(eq(METRICS_ACTOR_NAME),
+                                                                                  any(Message.class));
+            actor.dumpAndFlushMetrics();
+
+            // Check good flow of messages
+            assertThat(actorClient.getSentMessages().size(), is(1));
+            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
+
+            // Check failed message sent
+            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
+            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
         }
     }
 

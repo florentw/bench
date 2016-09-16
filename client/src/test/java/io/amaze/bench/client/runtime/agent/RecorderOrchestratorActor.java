@@ -41,7 +41,7 @@ public class RecorderOrchestratorActor implements OrchestratorActor {
     }
 
     @Override
-    public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+    public void sendToActor(@NotNull final String to, @NotNull final Message message) {
         List<Message<? extends Serializable>> msgs = sentMessages.get(to);
         if (msgs == null) {
             msgs = new ArrayList<>();

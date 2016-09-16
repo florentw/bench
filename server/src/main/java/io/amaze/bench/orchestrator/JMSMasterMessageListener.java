@@ -69,14 +69,14 @@ final class JMSMasterMessageListener implements MessageListener {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Error while reading JMS message  as AgentOutputMessage.", e);
+            LOG.error("Error while reading JMS message.", e);
             return Optional.empty();
         }
     }
 
     private void onMasterMessage(final Message received) {
         AgentOutputMessage masterMsg = (AgentOutputMessage) received.data();
-        switch (masterMsg.getAction()) { // NOSONAR
+        switch (masterMsg.getAction()) {
             case REGISTER_AGENT:
                 onAgentRegistration(masterMsg);
                 break;
@@ -94,7 +94,7 @@ final class JMSMasterMessageListener implements MessageListener {
         ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) received.getData();
         String actor = lfMsg.getActor();
 
-        switch (lfMsg.getPhase()) { // NOSONAR
+        switch (lfMsg.getPhase()) {
             case CREATED:
                 actorsListener.onActorCreated(actor, lfMsg.getAgent());
                 break;

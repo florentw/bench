@@ -31,4 +31,9 @@ public class MetricValue implements Serializable {
     public final Number getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "{\"value\":" + getValue() + "}";
+    }
 }

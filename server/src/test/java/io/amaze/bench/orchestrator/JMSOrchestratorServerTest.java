@@ -16,7 +16,6 @@
 package io.amaze.bench.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
@@ -24,7 +23,6 @@ import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,8 +49,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSOrchestratorServerTest {
 
-    private static final ActorInputMessage DUMMY_MSG = new ActorInputMessage(ActorInputMessage.Command.INIT, "", "");
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -70,7 +66,6 @@ public final class JMSOrchestratorServerTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(ActorInputMessage.class, DUMMY_MSG);
         tester.testAllPublicConstructors(JMSOrchestratorServer.class);
         tester.testAllPublicInstanceMethods(server);
     }
@@ -120,26 +115,8 @@ public final class JMSOrchestratorServerTest {
     }
 
     @Test
-    public void send_to_actor() throws JMSException {
-        server.sendToActor(DUMMY_ACTOR, DUMMY_MSG);
-
-        verify(jmsClient).sendToQueue(DUMMY_ACTOR, DUMMY_MSG);
-    }
-
-    @Test
-    public void send_to_actor_fails_and_rethrows() throws JMSException {
-        JMSException expectedCause = new JMSException(null);
-
-        doThrow(expectedCause).when(jmsClient).sendToQueue(any(String.class), any(Serializable.class));
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectCause(is(expectedCause));
-
-        server.sendToActor(DUMMY_ACTOR, DUMMY_MSG);
-    }
-
-    @Test
     public void send_to_agent() throws JMSException {
-        AgentInputMessage msg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, DUMMY_MSG);
+        AgentInputMessage msg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, "");
         server.sendToAgent(msg);
 
         verify(jmsClient).sendToTopic(AGENTS_ACTOR_NAME, msg);
@@ -150,25 +127,12 @@ public final class JMSOrchestratorServerTest {
         JMSException expectedCause = new JMSException(null);
         doThrow(expectedCause).when(jmsClient).sendToTopic(any(String.class), any(Serializable.class));
 
-        AgentInputMessage msg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, DUMMY_MSG);
+        AgentInputMessage msg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, "");
 
         expectedException.expect(RuntimeException.class);
         expectedException.expectCause(is(expectedCause));
 
         server.sendToAgent(msg);
-    }
-
-    @Test
-    public void close_closes_client_and_server() throws JMSException {
-        server.close();
-
-        verify(jmsClient).close();
-        verify(jmsServer).close();
-    }
-
-    @After
-    public void after() {
-        server.close();
     }
 
 }

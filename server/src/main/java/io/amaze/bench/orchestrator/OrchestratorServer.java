@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.orchestrator;
 
-import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
@@ -28,7 +27,7 @@ import javax.validation.constraints.NotNull;
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClient
  * @see io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory
  */
-interface OrchestratorServer extends AutoCloseable {
+interface OrchestratorServer {
 
     /**
      * Register the given listeners to be plugged to the underlying message system.<br>
@@ -66,19 +65,5 @@ interface OrchestratorServer extends AutoCloseable {
      * @param message Contents of the message, {@link AgentInputMessage}
      */
     void sendToAgent(@NotNull AgentInputMessage message);
-
-    /**
-     * Will send the given message to the specified actor using the underlying messaging system.
-     *
-     * @param actorName The actor name to send the message to
-     * @param message   Contents of the message, {@link ActorInputMessage}
-     */
-    void sendToActor(@NotNull String actorName, @NotNull ActorInputMessage message);
-
-    /**
-     * Will release resources on the underlying messaging system.
-     */
-    @Override
-    void close();
 
 }

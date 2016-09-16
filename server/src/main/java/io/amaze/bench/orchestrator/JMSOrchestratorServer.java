@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.orchestrator;
 
-import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 import io.amaze.bench.orchestrator.registry.AgentRegistryListener;
@@ -93,27 +92,6 @@ public final class JMSOrchestratorServer implements OrchestratorServer {
             client.sendToTopic(AGENTS_ACTOR_NAME, message);
         } catch (JMSException e) {
             throw propagate(e);
-        }
-    }
-
-    @Override
-    public void sendToActor(@NotNull final String actorName, @NotNull final ActorInputMessage message) {
-        checkNotNull(actorName);
-        checkNotNull(message);
-
-        try {
-            client.sendToQueue(actorName, message);
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            client.close();
-        } finally {
-            server.close();
         }
     }
 }

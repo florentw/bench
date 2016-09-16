@@ -18,8 +18,11 @@ package io.amaze.bench.actor;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
 import io.amaze.bench.client.runtime.agent.Agent;
+import io.amaze.bench.orchestrator.ActorSender;
 import io.amaze.bench.orchestrator.Actors;
+import io.amaze.bench.orchestrator.MetricsRepository;
 import io.amaze.bench.orchestrator.io.amaze.bench.util.BenchRule;
+import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.test.IntegrationTest;
 import org.junit.After;
 import org.junit.Before;
@@ -28,8 +31,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static io.amaze.bench.client.runtime.actor.ActorInputMessage.*;
 import static java.util.Collections.emptyList;
 
 /**
@@ -38,19 +44,21 @@ import static java.util.Collections.emptyList;
 @Category(IntegrationTest.class)
 public final class WatcherActorsIntegrationTest {
 
-    private static final DeployConfig EMBEDDED = new DeployConfig(false, emptyList());
     private static final String SYSTEM_WATCHER = "SystemWatcher";
+    private static final String PROCESS_WATCHER = "ProcessWatcher";
+    private static final DeployConfig EMBEDDED = new DeployConfig(true, emptyList());
     private static final ActorConfig SYSTEM_WATCHER_CONFIG = new ActorConfig(SYSTEM_WATCHER,
                                                                              SystemWatcherActor.class.getName(),
                                                                              EMBEDDED,
                                                                              "{}");
-    private static final String PROCESS_WATCHER = "ProcessWatcher";
     private static final ActorConfig PROCESSES_WATCHER_CONFIG = new ActorConfig(PROCESS_WATCHER,
                                                                                 ProcessWatcherActor.class.getName(),
                                                                                 EMBEDDED,
                                                                                 "{}");
+
     @Rule
     public final BenchRule benchRule = new BenchRule();
+
     private Agent agent;
 
     @Before
@@ -80,12 +88,31 @@ public final class WatcherActorsIntegrationTest {
         getUninterruptibly(systemWatcher.actorCreation());
         getUninterruptibly(processesWatcher.actorCreation());
 
-        benchRule.getResourceManager().closeActor(SYSTEM_WATCHER);
-        benchRule.getResourceManager().closeActor(PROCESS_WATCHER);
+        benchRule.actorSender().sendToActor(SYSTEM_WATCHER, close());
+        benchRule.actorSender().sendToActor(PROCESS_WATCHER, close());
 
         getUninterruptibly(systemWatcher.actorTermination());
         getUninterruptibly(processesWatcher.actorTermination());
     }
 
+    @Test
+    public void start_system_monitoring() throws ExecutionException {
+        try (JMSClient metricsClient = benchRule.createClient()) {
+            MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
+            metricsRepository.startListener();
 
+            ActorSender sender = benchRule.actorSender();
+            Actors.ActorHandle systemWatcher = benchRule.actors().create(SYSTEM_WATCHER_CONFIG);
+            getUninterruptibly(systemWatcher.actorCreation());
+
+            sender.sendToActor(SYSTEM_WATCHER,
+                               sendMessage(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.start(1)));
+
+            sleepUninterruptibly(5, TimeUnit.SECONDS);
+
+            sender.sendToActor(SYSTEM_WATCHER, dumpMetrics());
+            sender.sendToActor(SYSTEM_WATCHER, close());
+            getUninterruptibly(systemWatcher.actorTermination());
+        }
+    }
 }

@@ -40,14 +40,13 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
-import static io.amaze.bench.client.runtime.actor.ActorInputMessage.Command;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_JSON_CONFIG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
- * Created on 4/5/16.
+ * Test interactions between the ResourceManager and an Agent
  */
 @Category(IntegrationTest.class)
 public final class ResourceManagerAgentTest {
@@ -57,7 +56,7 @@ public final class ResourceManagerAgentTest {
     @Rule
     public final BenchRule benchRule = new BenchRule();
 
-    private JMSOrchestratorServer orchestratorServer;
+    private ActorSender actorSender;
     private ResourceManager resourceManager;
 
     private ActorRegistry actorRegistry;
@@ -68,11 +67,11 @@ public final class ResourceManagerAgentTest {
 
     @Before
     public void before() throws ExecutionException {
-        orchestratorServer = benchRule.getOrchestratorServer();
-        resourceManager = benchRule.getResourceManager();
+        actorSender = benchRule.actorSender();
+        resourceManager = benchRule.resourceManager();
 
-        actorRegistry = benchRule.getActorRegistry();
-        agentRegistry = benchRule.getAgentRegistry();
+        actorRegistry = benchRule.actorRegistry();
+        agentRegistry = benchRule.agentRegistry();
         agentSync = registerAgentSync();
 
         agent = getUninterruptibly(benchRule.agents().create("test-agent"));
@@ -80,6 +79,7 @@ public final class ResourceManagerAgentTest {
 
     @Test
     public void agent_registration_complete() throws InterruptedException {
+
         assertThat(agentRegistry.all().size(), is(1));
         RegisteredAgent registeredAgent = agentRegistry.all().iterator().next();
         assertThat(registeredAgent.getName(), is(agent.getName()));
@@ -107,10 +107,8 @@ public final class ResourceManagerAgentTest {
         ActorSync sync = createActorWith(preferredHosts);
         sync.assertActorCreated();
 
-        ActorInputMessage initMessage = new ActorInputMessage(Command.INIT, //
-                                                              agent.getName(), //
-                                                              "");
-        orchestratorServer.sendToActor(DUMMY_ACTOR, initMessage);
+        ActorInputMessage initMessage = ActorInputMessage.init();
+        actorSender.sendToActor(DUMMY_ACTOR, initMessage);
 
         sync.assertActorInitialized();
 
@@ -146,7 +144,6 @@ public final class ResourceManagerAgentTest {
     public void after() throws Exception {
         resourceManager.close();
         agent.close();
-        orchestratorServer.close();
     }
 
     private ActorSync createActorWith(final List<String> preferredHosts) {

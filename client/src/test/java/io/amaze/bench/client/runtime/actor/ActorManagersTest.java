@@ -47,6 +47,7 @@ public final class ActorManagersTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
+
         tester.testAllPublicConstructors(ActorManagers.class);
         tester.testAllPublicInstanceMethods(actorManagers);
     }

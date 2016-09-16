@@ -17,19 +17,16 @@ package io.amaze.bench.orchestrator.io.amaze.bench.util;
 
 import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
-import io.amaze.bench.orchestrator.Actors;
-import io.amaze.bench.orchestrator.Agents;
-import io.amaze.bench.orchestrator.JMSOrchestratorServer;
-import io.amaze.bench.orchestrator.ResourceManager;
+import io.amaze.bench.orchestrator.*;
 import io.amaze.bench.orchestrator.registry.ActorRegistry;
 import io.amaze.bench.orchestrator.registry.AgentRegistry;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSServer;
 import io.amaze.bench.shared.test.JMSServerRule;
 import org.junit.rules.ExternalResource;
 
 /**
- * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.<br>
- * Created on 9/1/16.
+ * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.
  */
 public final class BenchRule extends ExternalResource {
 
@@ -38,7 +35,9 @@ public final class BenchRule extends ExternalResource {
     private AgentRegistry agentRegistry;
     private ActorRegistry actorRegistry;
     private ResourceManager resourceManager;
+    private ActorSender actorSender;
 
+    private JMSClient actorsClient;
     private JMSClient orchestratorServerJmsClient;
     private JMSOrchestratorServer orchestratorServer;
     private JMSOrchestratorClientFactory orchestratorClientFactory;
@@ -50,24 +49,28 @@ public final class BenchRule extends ExternalResource {
         this.jmsServerRule = new JMSServerRule();
     }
 
-    public JMSOrchestratorServer getOrchestratorServer() {
+    public JMSOrchestratorServer orchestratorServer() {
         return orchestratorServer;
     }
 
-    public AgentRegistry getAgentRegistry() {
+    public AgentRegistry agentRegistry() {
         return agentRegistry;
     }
 
-    public ActorRegistry getActorRegistry() {
+    public ActorRegistry actorRegistry() {
         return actorRegistry;
     }
 
-    public ResourceManager getResourceManager() {
+    public ResourceManager resourceManager() {
         return resourceManager;
     }
 
     public JMSClient createClient() {
         return jmsServerRule.createClient();
+    }
+
+    public JMSServer jmsServer() {
+        return jmsServerRule.getServer();
     }
 
     public Agents agents() {
@@ -76,6 +79,10 @@ public final class BenchRule extends ExternalResource {
 
     public Actors actors() {
         return actors;
+    }
+
+    public ActorSender actorSender() {
+        return actorSender;
     }
 
     @Override
@@ -92,6 +99,8 @@ public final class BenchRule extends ExternalResource {
                                                   actorRegistry.getListenerForOrchestrator());
 
         resourceManager = new ResourceManager(orchestratorServer, agentRegistry);
+        actorsClient = createClient();
+        actorSender = new ActorSender(actorsClient);
 
         orchestratorClientFactory = new JMSOrchestratorClientFactory(jmsServerRule.getEndpoint());
 
@@ -104,6 +113,7 @@ public final class BenchRule extends ExternalResource {
     @Override
     protected void after() {
         orchestratorServerJmsClient.close();
+        actorsClient.close();
 
         jmsServerRule.close();
     }

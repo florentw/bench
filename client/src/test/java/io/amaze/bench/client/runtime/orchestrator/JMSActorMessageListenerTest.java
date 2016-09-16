@@ -30,7 +30,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 
-import static io.amaze.bench.client.runtime.actor.ActorInputMessage.Command.*;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.hamcrest.CoreMatchers.is;
@@ -68,7 +67,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void initialize_actor_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(INIT, DUMMY_ACTOR, "");
+        ActorInputMessage inputMsg = ActorInputMessage.init();
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -81,8 +80,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void stop_actor_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(CLOSE, DUMMY_ACTOR, "");
-
+        ActorInputMessage inputMsg = ActorInputMessage.close();
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
@@ -94,7 +92,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void dump_actor_metrics_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(DUMP_METRICS, DUMMY_ACTOR, "");
+        ActorInputMessage inputMsg = ActorInputMessage.dumpMetrics();
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -107,7 +105,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test(expected = NullPointerException.class)
     public void on_actor_null_message_msg_throws() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(MESSAGE, DUMMY_ACTOR, null);
+        ActorInputMessage inputMsg = ActorInputMessage.sendMessage("", null);
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -117,7 +115,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void on_actor_message_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = new ActorInputMessage(MESSAGE, DUMMY_ACTOR, DUMMY_PAYLOAD);
+        ActorInputMessage inputMsg = ActorInputMessage.sendMessage(DUMMY_ACTOR, DUMMY_PAYLOAD);
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
