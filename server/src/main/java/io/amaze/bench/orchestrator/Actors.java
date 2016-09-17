@@ -17,6 +17,7 @@ package io.amaze.bench.orchestrator;
 
 import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.orchestrator.registry.ActorRegistry;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 
@@ -47,7 +48,7 @@ public final class Actors {
 
     public final class ActorHandle {
         private final SettableFuture<ActorConfig> actorCreated = SettableFuture.create();
-        private final SettableFuture<ActorConfig> actorInitialized = SettableFuture.create();
+        private final SettableFuture<ActorDeployInfo> actorInitialized = SettableFuture.create();
         private final SettableFuture<Throwable> actorFailed = SettableFuture.create();
         private final SettableFuture<ActorConfig> actorClosed = SettableFuture.create();
 
@@ -55,7 +56,7 @@ public final class Actors {
             return actorCreated;
         }
 
-        public Future<ActorConfig> actorInitialization() {
+        public Future<ActorDeployInfo> actorInitialization() {
             return actorInitialized;
         }
 
@@ -85,9 +86,9 @@ public final class Actors {
         }
 
         @Override
-        public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
+        public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
             if (name.equals(config.getName())) {
-                handle.actorInitialized.set(config);
+                handle.actorInitialized.set(deployInfo);
             }
         }
 

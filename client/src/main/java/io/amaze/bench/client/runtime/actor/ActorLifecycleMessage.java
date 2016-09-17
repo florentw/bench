@@ -30,21 +30,48 @@ public final class ActorLifecycleMessage implements Serializable {
 
     private final String actor;
     private final Phase phase;
-    private final Throwable throwable;
     private final String agent;
+    private final ActorDeployInfo deployInfo;
+    private final Throwable throwable;
 
-    public ActorLifecycleMessage(@NotNull final String actor, @NotNull final String agent, @NotNull final Phase phase) {
-        this(actor, agent, phase, null);
+    private ActorLifecycleMessage(@NotNull final Phase phase,
+                                  @NotNull final String actor,
+                                  final String agent,
+                                  final ActorDeployInfo deployInfo,
+                                  final Throwable throwable) {
+        this.actor = checkNotNull(actor);
+        this.phase = checkNotNull(phase);
+        this.agent = agent;
+        this.deployInfo = deployInfo;
+        this.throwable = throwable;
     }
 
-    public ActorLifecycleMessage(@NotNull final String actor,
-                                 @NotNull final String agent,
-                                 @NotNull final Phase phase,
-                                 final Throwable throwable) {
-        this.actor = checkNotNull(actor);
-        this.agent = checkNotNull(agent);
-        this.phase = checkNotNull(phase);
-        this.throwable = throwable;
+    public static ActorLifecycleMessage created(@NotNull final String actor, @NotNull final String agent) {
+        checkNotNull(actor);
+        checkNotNull(agent);
+
+        return new ActorLifecycleMessage(Phase.CREATED, actor, agent, null, null);
+    }
+
+    public static ActorLifecycleMessage initialized(@NotNull final String actor,
+                                                    @NotNull final ActorDeployInfo deployInfo) {
+        checkNotNull(actor);
+        checkNotNull(deployInfo);
+
+        return new ActorLifecycleMessage(Phase.INITIALIZED, actor, null, deployInfo, null);
+    }
+
+    public static ActorLifecycleMessage failed(@NotNull final String actor, @NotNull final Throwable throwable) {
+        checkNotNull(actor);
+        checkNotNull(throwable);
+
+        return new ActorLifecycleMessage(Phase.FAILED, actor, null, null, throwable);
+    }
+
+    public static ActorLifecycleMessage closed(@NotNull final String actor) {
+        checkNotNull(actor);
+
+        return new ActorLifecycleMessage(Phase.CLOSED, actor, null, null, null);
     }
 
     @NotNull
@@ -57,12 +84,26 @@ public final class ActorLifecycleMessage implements Serializable {
         return phase;
     }
 
+    public String getAgent() {
+        return agent;
+    }
+
+    public ActorDeployInfo getDeployInfo() {
+        return deployInfo;
+    }
+
     public Throwable getThrowable() {
         return throwable;
     }
 
-    public String getAgent() {
-        return agent;
+    @Override
+    public String toString() {
+        return "{\"ActorLifecycleMessage\":{" + //
+                "\"actor\":\"" + actor + "\"" + ", " + //
+                "\"phase\":\"" + phase + "\"" + ", " + //
+                "\"throwable\":" + throwable + ", " + //
+                "\"agent\":\"" + agent + "\"" + ", " + //
+                "\"deployInfo\":" + deployInfo + "}}";
     }
 
     public enum Phase {

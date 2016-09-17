@@ -16,6 +16,7 @@
 package io.amaze.bench.orchestrator.registry;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.orchestrator.registry.RegisteredActor.State;
 import org.junit.After;
 import org.junit.Before;
@@ -41,11 +42,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public final class ActorRegistryTest {
 
-    private ActorRegistry registry;
-    private ActorRegistryListener orchestratorListener;
+    private static final ActorDeployInfo DEPLOY_INFO = new ActorDeployInfo(10);
 
     @Mock
     private ActorRegistryListener clientListener;
+    private ActorRegistry registry;
+    private ActorRegistryListener orchestratorListener;
 
     @Before
     public void before() {
@@ -100,7 +102,7 @@ public final class ActorRegistryTest {
     @Test
     public void actor_registered_and_initialized() {
         orchestratorListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        orchestratorListener.onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
+        orchestratorListener.onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
 
         RegisteredActor actor = registry.byName(DUMMY_ACTOR);
 
@@ -109,13 +111,13 @@ public final class ActorRegistryTest {
         assertThat(actor.getState(), is(State.INITIALIZED));
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        verify(clientListener).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(clientListener).onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void unknown_actor_initialized_does_not_throw() {
-        orchestratorListener.onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
+        orchestratorListener.onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
 
         RegisteredActor actor = registry.byName(DUMMY_ACTOR);
         assertNull(actor);

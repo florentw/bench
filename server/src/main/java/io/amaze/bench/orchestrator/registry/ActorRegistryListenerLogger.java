@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.orchestrator.registry;
 
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +47,13 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     }
 
     @Override
-    public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
+    public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
         checkNotNull(name);
-        checkNotNull(agent);
+        checkNotNull(deployInfo);
 
-        LOG.info(String.format("Initialization of actor \"%s\" by agent \"%s\"", name, agent));
+        LOG.info(String.format("Initialization of actor \"%s\" with deploy info %s", name, deployInfo));
 
-        delegate.onActorInitialized(name, agent);
+        delegate.onActorInitialized(name, deployInfo);
     }
 
     @Override

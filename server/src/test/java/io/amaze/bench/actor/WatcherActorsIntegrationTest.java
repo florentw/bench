@@ -46,7 +46,7 @@ public final class WatcherActorsIntegrationTest {
 
     private static final String SYSTEM_WATCHER = "SystemWatcher";
     private static final String PROCESS_WATCHER = "ProcessWatcher";
-    private static final DeployConfig EMBEDDED = new DeployConfig(true, emptyList());
+    private static final DeployConfig EMBEDDED = new DeployConfig(false, emptyList());
     private static final ActorConfig SYSTEM_WATCHER_CONFIG = new ActorConfig(SYSTEM_WATCHER,
                                                                              SystemWatcherActor.class.getName(),
                                                                              EMBEDDED,
@@ -109,6 +109,9 @@ public final class WatcherActorsIntegrationTest {
                                sendMessage(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.start(1)));
 
             sleepUninterruptibly(5, TimeUnit.SECONDS);
+
+            sender.sendToActor(SYSTEM_WATCHER,
+                               sendMessage(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.stop()));
 
             sender.sendToActor(SYSTEM_WATCHER, dumpMetrics());
             sender.sendToActor(SYSTEM_WATCHER, close());

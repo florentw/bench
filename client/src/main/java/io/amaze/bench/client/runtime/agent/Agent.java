@@ -18,7 +18,10 @@ package io.amaze.bench.client.runtime.agent;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import io.amaze.bench.client.runtime.actor.*;
+import io.amaze.bench.client.runtime.actor.ActorConfig;
+import io.amaze.bench.client.runtime.actor.ActorManager;
+import io.amaze.bench.client.runtime.actor.ActorManagers;
+import io.amaze.bench.client.runtime.actor.ManagedActor;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
@@ -33,7 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
+import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.created;
+import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.failed;
 import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.*;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static java.lang.String.format;
@@ -98,7 +102,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
             actors.put(actorName, instance.get());
-            sendActorLifecycleMessage(actorName, Phase.CREATED);
+            sendToMaster(ACTOR_LIFECYCLE, created(actorName, name));
         }
 
         LOG.info(format("Actor \"%s\" created.", actorName));
@@ -149,11 +153,6 @@ public class Agent implements AgentClientListener, AutoCloseable {
         sendToMaster(UNREGISTER_AGENT, name);
     }
 
-    private void sendActorLifecycleMessage(@NotNull final String actor, @NotNull final Phase phase) {
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(actor, name, phase);
-        sendToMaster(ACTOR_LIFECYCLE, msg);
-    }
-
     private void sendToMaster(AgentOutputMessage.Action action, Serializable msg) {
         AgentOutputMessage agentOutputMessage = new AgentOutputMessage(action, msg);
         agentClient.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
@@ -180,8 +179,6 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void actorFailure(@NotNull final String actor, @NotNull final Throwable throwable) {
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(actor, name, Phase.FAILED, throwable);
-        sendToMaster(ACTOR_LIFECYCLE, msg);
+        sendToMaster(ACTOR_LIFECYCLE, failed(actor, throwable));
     }
-
 }

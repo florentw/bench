@@ -31,8 +31,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import oshi.json.SystemInfo;
 
-import java.lang.management.ManagementFactory;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -263,15 +263,7 @@ public final class ProcessWatcherActorTest {
     }
 
     private int ownPid() {
-        String[] tokens = ManagementFactory.getRuntimeMXBean().getName().split("@");
-        if (tokens.length != 2) {
-            return -1;
-        }
-        try {
-            return Integer.parseInt(tokens[0]);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+        return new SystemInfo().getOperatingSystem().getProcessId();
     }
 
     private ScheduledFuture mockedFuture() {

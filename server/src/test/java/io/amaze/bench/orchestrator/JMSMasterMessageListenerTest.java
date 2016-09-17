@@ -16,10 +16,8 @@
 package io.amaze.bench.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
@@ -35,7 +33,9 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.io.IOException;
 
+import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.*;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Mockito.*;
@@ -86,7 +86,7 @@ public final class JMSMasterMessageListenerTest {
     @Test
     public void agent_registered() throws IOException, JMSException {
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent");
-        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.REGISTER_AGENT, regMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(REGISTER_AGENT, regMsg);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -98,7 +98,7 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void agent_signoff() throws IOException, JMSException {
-        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.UNREGISTER_AGENT, DUMMY_AGENT);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(UNREGISTER_AGENT, DUMMY_AGENT);
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -110,8 +110,7 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void actor_created() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.CREATED);
-        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, created(DUMMY_ACTOR, DUMMY_AGENT));
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
@@ -123,36 +122,33 @@ public final class JMSMasterMessageListenerTest {
 
     @Test
     public void actor_initialized() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.INITIALIZED);
-        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        ActorDeployInfo deployInfo = new ActorDeployInfo(10);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, initialized(DUMMY_ACTOR, deployInfo));
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, deployInfo);
         verifyNoMoreInteractions(agentRegistryListener);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
     public void actor_failure() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.FAILED, null);
-
-        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        Throwable throwable = new IllegalArgumentException();
+        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, failed(DUMMY_ACTOR, throwable));
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryListener).onActorFailed(DUMMY_ACTOR, null);
+        verify(actorRegistryListener).onActorFailed(eq(DUMMY_ACTOR), any(Throwable.class));
         verifyNoMoreInteractions(agentRegistryListener);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
     public void actor_closed() throws IOException, JMSException {
-        ActorLifecycleMessage lfMsg = new ActorLifecycleMessage(DUMMY_ACTOR, DUMMY_AGENT, Phase.CLOSED);
-
-        AgentOutputMessage inputMsg = new AgentOutputMessage(Action.ACTOR_LIFECYCLE, lfMsg);
+        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, closed(DUMMY_ACTOR));
         BytesMessage msg = toBytesMessage(inputMsg);
 
         messageListener.onMessage(msg);

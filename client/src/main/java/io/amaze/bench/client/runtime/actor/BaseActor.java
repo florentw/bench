@@ -28,6 +28,7 @@ import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import oshi.json.SystemInfo;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -38,7 +39,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
+import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.ACTOR_LIFECYCLE;
 import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
@@ -52,7 +53,6 @@ public class BaseActor implements RuntimeActor {
     private static final String MSG_AFTER_METHOD_FAILED = " Error while invoking after method.";
 
     private final String name;
-    private final String agentName;
     private final MetricsInternal metrics;
     private final Method beforeMethod;
     private final Method afterMethod;
@@ -62,7 +62,6 @@ public class BaseActor implements RuntimeActor {
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public BaseActor(@NotNull final String name,
-                     @NotNull final String agentName,
                      @NotNull final MetricsInternal metrics,
                      @NotNull final Reactor instance,
                      @NotNull final OrchestratorActor client,
@@ -70,7 +69,6 @@ public class BaseActor implements RuntimeActor {
                      final Method afterMethod) {
 
         this.name = checkNotNull(name);
-        this.agentName = checkNotNull(agentName);
         this.metrics = checkNotNull(metrics);
         this.beforeMethod = beforeMethod;
         this.afterMethod = afterMethod;
@@ -94,7 +92,7 @@ public class BaseActor implements RuntimeActor {
         }
 
         if (beforeMethod == null) {
-            sendLifecycleMessage(Phase.INITIALIZED);
+            sendLifecycleMessage(initialized(name, deployInfo()));
             return;
         }
 
@@ -113,7 +111,7 @@ public class BaseActor implements RuntimeActor {
             return;
         }
 
-        sendLifecycleMessage(Phase.INITIALIZED);
+        sendLifecycleMessage(initialized(name, deployInfo()));
     }
 
     @Override
@@ -176,7 +174,7 @@ public class BaseActor implements RuntimeActor {
                 return;
             }
 
-            sendLifecycleMessage(Phase.CLOSED);
+            sendLifecycleMessage(closed(name));
         } catch (Exception e) {
             LOG.info(this + " Exception while closing.", e);
         } finally {
@@ -196,6 +194,11 @@ public class BaseActor implements RuntimeActor {
     @VisibleForTesting
     Reactor getInstance() {
         return instance;
+    }
+
+    private ActorDeployInfo deployInfo() {
+        int pid = new SystemInfo().getOperatingSystem().getProcessId();
+        return new ActorDeployInfo(pid);
     }
 
     private boolean tryToCallAfterMethod() {
@@ -229,15 +232,13 @@ public class BaseActor implements RuntimeActor {
         client.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
     }
 
-    private void sendLifecycleMessage(@NotNull final Phase phase) {
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(name, agentName, phase);
+    private void sendLifecycleMessage(@NotNull final ActorLifecycleMessage msg) {
         sendToActorRegistry(ACTOR_LIFECYCLE, msg);
     }
 
     private void actorFailure(@NotNull final Throwable throwable) {
         LOG.warn(this + " failure.", throwable);
 
-        ActorLifecycleMessage msg = new ActorLifecycleMessage(name, agentName, Phase.FAILED, throwable);
-        sendToActorRegistry(ACTOR_LIFECYCLE, msg);
+        sendToActorRegistry(ACTOR_LIFECYCLE, failed(name, throwable));
     }
 }

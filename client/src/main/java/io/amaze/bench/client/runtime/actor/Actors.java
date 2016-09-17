@@ -83,7 +83,7 @@ public final class Actors {
         OrchestratorActor client = clientFactory.createForActor();
         Reactor reactor = createReactor(name, metrics, clazz, client, config);
 
-        return new BaseActor(name, agent, metrics, reactor, client, beforeMethod, afterMethod);
+        return new BaseActor(name, metrics, reactor, client, beforeMethod, afterMethod);
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {

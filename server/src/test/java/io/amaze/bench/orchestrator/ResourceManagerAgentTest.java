@@ -15,10 +15,7 @@
  */
 package io.amaze.bench.orchestrator;
 
-import io.amaze.bench.client.runtime.actor.ActorConfig;
-import io.amaze.bench.client.runtime.actor.ActorInputMessage;
-import io.amaze.bench.client.runtime.actor.DeployConfig;
-import io.amaze.bench.client.runtime.actor.TestActor;
+import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.client.runtime.agent.Agent;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.orchestrator.io.amaze.bench.util.BenchRule;
@@ -195,7 +192,7 @@ public final class ResourceManagerAgentTest {
         }
 
         @Override
-        public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
+        public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
             actorInitialized.countDown();
         }
 

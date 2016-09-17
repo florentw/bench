@@ -19,6 +19,8 @@ import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.api.*;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import oshi.json.SystemInfo;
 
 import javax.validation.constraints.NotNull;
@@ -54,6 +56,8 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.availableMemory", UNIT_BYTES) //
             .label("Available RAM").build();
 
+    private static final Logger LOG = LoggerFactory.getLogger(SystemWatcherActor.class);
+
     private final SystemWatcherThread watcherThread;
 
     private volatile ScheduledFuture<?> currentTaskHandle;
@@ -78,9 +82,11 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
         switch (message.getCommand()) {
             case START:
             case SET_PERIOD:
+                LOG.info("System monitoring rescheduled every " + message.getPeriodSeconds() + " second(s)");
                 currentTaskHandle = reschedule(currentTaskHandle, watcherThread, message.getPeriodSeconds());
                 break;
             case STOP:
+                LOG.info("System monitoring stopped.");
                 cancelTask();
                 break;
             default:

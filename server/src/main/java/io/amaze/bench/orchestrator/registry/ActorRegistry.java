@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.orchestrator.registry;
 
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.orchestrator.registry.RegisteredActor.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,12 +97,15 @@ public class ActorRegistry {
         }
 
         @Override
-        public void onActorInitialized(@NotNull final String name, @NotNull final String agent) {
+        public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
             synchronized (actors) {
-                RegisteredActor found = actors.get(name);
+                RegisteredActor found = actors.remove(name);
 
                 if (found != null) {
-                    RegisteredActor newActor = new RegisteredActor(name, found.getAgent(), State.INITIALIZED);
+                    RegisteredActor newActor = new RegisteredActor(name,
+                                                                   found.getAgent(),
+                                                                   State.INITIALIZED,
+                                                                   deployInfo);
                     actors.put(name, newActor);
 
                 } else {
@@ -112,7 +116,7 @@ public class ActorRegistry {
 
             // Notify listeners
             for (ActorRegistryListener listener : listeners()) {
-                listener.onActorInitialized(name, agent);
+                listener.onActorInitialized(name, deployInfo);
             }
         }
 

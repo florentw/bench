@@ -17,6 +17,7 @@ package io.amaze.bench.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
 import io.amaze.bench.orchestrator.registry.ActorRegistry;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
@@ -120,10 +121,11 @@ public final class ActorsTest {
     public void actorInitialization_is_set_when_actor_initializes() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorInitialized(ACTOR_NAME, AGENT_NAME);
+        ActorDeployInfo expected = new ActorDeployInfo(10);
+        actorRegistryListener.onActorInitialized(ACTOR_NAME, expected);
 
-        ActorConfig actual = getUninterruptibly(actorHandle.actorInitialization());
-        assertSame(actual, actorConfig);
+        ActorDeployInfo actual = getUninterruptibly(actorHandle.actorInitialization());
+        assertSame(actual, expected);
     }
 
     @Test(expected = TimeoutException.class)
@@ -131,7 +133,8 @@ public final class ActorsTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorInitialized(OTHER_ACTOR, AGENT_NAME);
+        ActorDeployInfo expected = new ActorDeployInfo(10);
+        actorRegistryListener.onActorInitialized(OTHER_ACTOR, expected);
 
         getUninterruptibly(actorHandle.actorInitialization(), FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
@@ -201,7 +204,7 @@ public final class ActorsTest {
         verifyActorFailureThrowsFor(actorHandle.actorTermination());
     }
 
-    private void verifyActorFailureThrowsFor(final Future<ActorConfig> future) throws ExecutionException {
+    private void verifyActorFailureThrowsFor(final Future<?> future) throws ExecutionException {
         RuntimeException throwable = new RuntimeException();
         actorRegistryListener.onActorFailed(ACTOR_NAME, throwable);
 

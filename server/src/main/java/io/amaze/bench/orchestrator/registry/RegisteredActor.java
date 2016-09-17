@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.orchestrator.registry;
 
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+
 import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,24 +29,39 @@ public final class RegisteredActor {
     private final String actor;
     private final String agent;
     private final State state;
+    private final ActorDeployInfo deployInfo;
 
     RegisteredActor(@NotNull final String actor, @NotNull final String agent, @NotNull final State state) {
+        this(actor, agent, state, null);
+    }
 
+    RegisteredActor(@NotNull final String actor,
+                    @NotNull final String agent,
+                    @NotNull final State state,
+                    @NotNull final ActorDeployInfo deployInfo) {
         this.actor = checkNotNull(actor);
         this.agent = checkNotNull(agent);
         this.state = checkNotNull(state);
+        this.deployInfo = deployInfo;
     }
 
+    @NotNull
     public String getName() {
         return actor;
     }
 
+    @NotNull
     public State getState() {
         return state;
     }
 
+    @NotNull
     public String getAgent() {
         return agent;
+    }
+
+    public ActorDeployInfo getDeployInfo() {
+        return deployInfo;
     }
 
     public enum State {

@@ -49,4 +49,9 @@ public final class ActorInputMessageTest {
         assertThat(actual.getPayload(), is(expected.getPayload()));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void from_should_not_be_empty() {
+        ActorInputMessage.sendMessage("", "payload");
+    }
+
 }

@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.orchestrator.registry;
 
+import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -24,10 +26,9 @@ public interface ActorRegistryListener {
 
     void onActorCreated(@NotNull String name, @NotNull String agent);
 
-    void onActorInitialized(@NotNull String name, @NotNull String agent);
+    void onActorInitialized(@NotNull String name, @NotNull ActorDeployInfo deployInfo);
 
     void onActorFailed(@NotNull String name, @NotNull Throwable throwable);
 
     void onActorClosed(@NotNull String name);
-
 }
