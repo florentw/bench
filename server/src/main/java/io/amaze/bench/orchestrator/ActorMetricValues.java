@@ -18,23 +18,32 @@ package io.amaze.bench.orchestrator;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 9/18/16.
+ * Container for produced metric values for a given actor.
+ * It contain a collection of {@link Metric} and their associated values lists.
+ *
+ * @see MetricsRepository
  */
 public final class ActorMetricValues {
 
     private final Map<Metric, List<MetricValue>> metricValues;
 
-    ActorMetricValues(final Map<Metric, List<MetricValue>> metricValues) {
+    ActorMetricValues(@NotNull final Map<Metric, List<MetricValue>> metricValues) {
         this.metricValues = checkNotNull(metricValues);
     }
 
-    public synchronized void mergeWith(ActorMetricValues otherValues) {
+    /**
+     * Merges values from the given {@link ActorMetricValues} to the current ones.
+     *
+     * @param otherValues New metric values to be added to our current set.
+     */
+    public synchronized void mergeWith(@NotNull final ActorMetricValues otherValues) {
         checkNotNull(otherValues);
 
         otherValues.metrics().forEach((otherMetric, otherMetricValues) -> {
@@ -47,6 +56,10 @@ public final class ActorMetricValues {
         });
     }
 
+    /**
+     * @return A deep copy of the metric to values map.
+     */
+    @NotNull
     public synchronized Map<Metric, List<MetricValue>> metrics() {
         Map<Metric, List<MetricValue>> copy = new HashMap<>(metricValues.size());
         metricValues.forEach((otherMetric, otherMetricValues) -> //
@@ -55,6 +68,10 @@ public final class ActorMetricValues {
         return copy;
     }
 
+    /**
+     * @return A deep copy of this{@link ActorMetricValues}
+     */
+    @NotNull
     public synchronized ActorMetricValues copy() {
         return new ActorMetricValues(metrics());
     }

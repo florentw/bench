@@ -116,7 +116,7 @@ public final class WatcherActorsIntegrationTest {
                                sendMessage(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.stop()));
 
             sender.sendToActor(SYSTEM_WATCHER, dumpMetrics());
-            Future<ActorMetricValues> metrics = metricsRepository.expectMetricsFor(SYSTEM_WATCHER);
+            Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(SYSTEM_WATCHER);
             sender.sendToActor(SYSTEM_WATCHER, close());
             getUninterruptibly(systemWatcher.actorTermination());
 

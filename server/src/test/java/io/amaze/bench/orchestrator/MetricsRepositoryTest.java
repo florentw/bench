@@ -117,7 +117,7 @@ public final class MetricsRepositoryTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        ActorMetricValues actorMetricValues = metricsRepository.metricsFor(ACTOR_NAME);
+        ActorMetricValues actorMetricValues = metricsRepository.valuesFor(ACTOR_NAME);
         assertThat(actorMetricValues.metrics().size(), is(1));
     }
 
@@ -127,7 +127,7 @@ public final class MetricsRepositoryTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        Map<String, ActorMetricValues> allMetrics = metricsRepository.allMetrics();
+        Map<String, ActorMetricValues> allMetrics = metricsRepository.allValues();
         ActorMetricValues metricValues = allMetrics.get(ACTOR_NAME);
         assertNotNull(metricValues);
         assertThat(metricValues.metrics().size(), is(1));
@@ -143,7 +143,7 @@ public final class MetricsRepositoryTest {
         jmsListener.onMessage(jmsMessage);
         jmsListener.onMessage(secondJmsMessage);
 
-        ActorMetricValues actorMetricValues = metricsRepository.metricsFor(ACTOR_NAME);
+        ActorMetricValues actorMetricValues = metricsRepository.valuesFor(ACTOR_NAME);
         assertThat(actorMetricValues.metrics().size(), is(1));
         assertThat(actorMetricValues.metrics().values().iterator().next().size(), is(1));
     }
@@ -154,7 +154,7 @@ public final class MetricsRepositoryTest {
         BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
         jmsListener.onMessage(jmsMessage);
 
-        Future<ActorMetricValues> future = metricsRepository.expectMetricsFor(ACTOR_NAME);
+        Future<ActorMetricValues> future = metricsRepository.expectValuesFor(ACTOR_NAME);
 
         assertThat(getUninterruptibly(future).metrics().size(), is(1));
     }
@@ -162,8 +162,8 @@ public final class MetricsRepositoryTest {
     @Test
     public void expected_metrics_futures_are_set_when_metrics_are_received()
             throws IOException, javax.jms.JMSException, ExecutionException {
-        Future<ActorMetricValues> firstFuture = metricsRepository.expectMetricsFor(ACTOR_NAME);
-        Future<ActorMetricValues> secondFuture = metricsRepository.expectMetricsFor(ACTOR_NAME);
+        Future<ActorMetricValues> firstFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
+        Future<ActorMetricValues> secondFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
         BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
 
         jmsListener.onMessage(jmsMessage);
