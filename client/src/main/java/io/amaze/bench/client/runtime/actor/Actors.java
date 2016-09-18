@@ -58,10 +58,8 @@ public final class Actors {
 
     private final OrchestratorClientFactory clientFactory;
     private final ConfigParseOptions configParseOptions;
-    private final String agent;
 
-    public Actors(@NotNull final String agent, @NotNull final OrchestratorClientFactory clientFactory) {
-        this.agent = checkNotNull(agent);
+    public Actors(@NotNull final OrchestratorClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
 
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;

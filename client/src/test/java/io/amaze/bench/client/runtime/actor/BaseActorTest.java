@@ -37,7 +37,6 @@ import java.util.Map;
 import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_A;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_B;
-import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,7 +57,7 @@ public final class BaseActorTest {
     public void before() {
         actorClient = spy(new RecorderOrchestratorActor());
         clientFactory = new DummyClientFactory(null, actorClient);
-        factory = new Actors(DUMMY_AGENT, clientFactory);
+        factory = new Actors(clientFactory);
     }
 
     @Test
@@ -288,7 +287,7 @@ public final class BaseActorTest {
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
         clientFactory = new DummyClientFactory(null, actorClient);
-        factory = new Actors(DUMMY_AGENT, clientFactory);
+        factory = new Actors(clientFactory);
 
         doThrow(new RuntimeException()).when(actorClient).close();
 

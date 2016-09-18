@@ -17,7 +17,6 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.util.concurrent.Uninterruptibles;
-import io.amaze.bench.client.runtime.agent.AgentTest;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
 import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
@@ -56,7 +55,7 @@ public final class ActorBootstrapTest {
     public void before() {
         OrchestratorActor client = new RecorderOrchestratorActor();
         OrchestratorClientFactory factory = new DummyClientFactory(null, client);
-        actorBootstrap = new ActorBootstrap(DUMMY, factory);
+        actorBootstrap = new ActorBootstrap(factory);
     }
 
     @Test
@@ -115,7 +114,7 @@ public final class ActorBootstrapTest {
         Files.writeTo(tmpConfigFile, "{}");
 
         try {
-            ActorBootstrap.main(new String[]{AgentTest.DUMMY_AGENT, TestActor.DUMMY_ACTOR, DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+            ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
         } catch (ValidationException ignore) {
         }
 
@@ -126,13 +125,13 @@ public final class ActorBootstrapTest {
     public void main_invalid_class_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{AgentTest.DUMMY_AGENT, TestActor.DUMMY_ACTOR, DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
     }
 
     @Test(expected = RuntimeException.class)
     public void main_orchestrator_client_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{AgentTest.DUMMY_AGENT, TestActor.DUMMY_ACTOR, TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
     }
 }

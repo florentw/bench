@@ -16,13 +16,37 @@
 package io.amaze.bench.orchestrator;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.metric.Metric;
+import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSException;
+import io.amaze.bench.shared.jms.JMSHelper;
 import io.amaze.bench.shared.jms.JMSServer;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import javax.jms.BytesMessage;
+import javax.jms.MessageListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
+import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 9/18/16.
@@ -30,14 +54,24 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsRepositoryTest {
 
+    private static final String ACTOR_NAME = "actor";
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Mock
     private JMSServer server;
     @Mock
     private JMSClient jmsClient;
     private MetricsRepository metricsRepository;
 
+    private MessageListener jmsListener;
+
     @Before
-    public void initMetricsRepository() {
+    public void initMetricsRepository() throws JMSException {
+        doAnswer(invocation -> jmsListener = (MessageListener) invocation.getArguments()[1]) //
+                .when(jmsClient).addQueueListener(eq(METRICS_ACTOR_NAME), any(MessageListener.class));
+
         metricsRepository = new MetricsRepository(server, jmsClient);
     }
 
@@ -47,6 +81,76 @@ public final class MetricsRepositoryTest {
 
         tester.testAllPublicConstructors(MetricsRepository.class);
         tester.testAllPublicInstanceMethods(metricsRepository);
+    }
+
+    @Test
+    public void creating_MetricsRepository_starts_jms_listener() throws JMSException {
+
+        verify(server).createQueue(METRICS_ACTOR_NAME);
+        verify(jmsClient).addQueueListener(eq(METRICS_ACTOR_NAME), any(MessageListener.class));
+        verify(jmsClient).startListening();
+        verifyNoMoreInteractions(server);
+        verifyNoMoreInteractions(jmsClient);
+    }
+
+    @Test
+    public void jms_exception_is_propagated_when_starting_listener() throws JMSException {
+        JMSException expected = new JMSException(new RuntimeException());
+        doThrow(expected).when(jmsClient).startListening();
+
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectCause(is(expected));
+        new MetricsRepository(server, jmsClient);
+    }
+
+    @Test
+    public void no_exception_thrown_on_invalid_jms_message() throws JMSException {
+        jmsListener.onMessage(mock(javax.jms.Message.class));
+    }
+
+    @Test
+    public void metrics_are_added_on_message() throws javax.jms.JMSException, IOException {
+        BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
+
+        jmsListener.onMessage(jmsMessage);
+
+        ActorMetricValues actorMetricValues = metricsRepository.metricsFor(ACTOR_NAME);
+        assertThat(actorMetricValues.metrics().size(), is(1));
+    }
+
+    @Test
+    public void all_metrics_return_copy() throws javax.jms.JMSException, IOException {
+        BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
+
+        jmsListener.onMessage(jmsMessage);
+
+        Map<String, ActorMetricValues> allMetrics = metricsRepository.allMetrics();
+        ActorMetricValues metricValues = allMetrics.get(ACTOR_NAME);
+        assertNotNull(metricValues);
+        assertThat(metricValues.metrics().size(), is(1));
+    }
+
+    @Test
+    public void metrics_are_merged_on_second_message() throws javax.jms.JMSException, IOException {
+        BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
+        ArrayList<MetricValue> values = new ArrayList<>();
+        values.add(new MetricValue(1));
+        BytesMessage secondJmsMessage = jmsMetricsMessage(values);
+
+        jmsListener.onMessage(jmsMessage);
+        jmsListener.onMessage(secondJmsMessage);
+
+        ActorMetricValues actorMetricValues = metricsRepository.metricsFor(ACTOR_NAME);
+        assertThat(actorMetricValues.metrics().size(), is(1));
+        assertThat(actorMetricValues.metrics().values().iterator().next().size(), is(1));
+    }
+
+    private BytesMessage jmsMetricsMessage(final List<MetricValue> values) throws IOException, javax.jms.JMSException {
+        HashMap<Metric, List<MetricValue>> metricValues = new HashMap<>();
+        metricValues.put(Metric.metric("metric", "sec").build(), values);
+        Message message = new Message(ACTOR_NAME, metricValues);
+        final byte[] data = JMSHelper.convertToBytes(message);
+        return createTestBytesMessage(data);
     }
 
 }

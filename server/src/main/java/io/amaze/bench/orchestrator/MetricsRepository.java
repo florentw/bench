@@ -28,6 +28,7 @@ import javax.jms.BytesMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,20 +44,12 @@ public final class MetricsRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetricsRepository.class);
 
-    private final JMSClient client;
+    private final Map<String, ActorMetricValues> actorMetrics = new HashMap<>();
 
     public MetricsRepository(@NotNull final JMSServer server, @NotNull final JMSClient client) {
-        this.client = checkNotNull(client);
-
         try {
             server.createQueue(METRICS_ACTOR_NAME);
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
-    }
 
-    public void startListener() {
-        try {
             JMSMetricsRepositoryListener msgListener = new JMSMetricsRepositoryListener();
             client.addQueueListener(METRICS_ACTOR_NAME, msgListener);
             client.startListening();
@@ -66,15 +59,47 @@ public final class MetricsRepository {
         }
     }
 
-    private static final class JMSMetricsRepositoryListener implements MessageListener {
+    public ActorMetricValues metricsFor(@NotNull final String actor) {
+        checkNotNull(actor);
+        synchronized (actorMetrics) {
+            return actorMetrics.get(actor).copy();
+        }
+    }
+
+    public Map<String, ActorMetricValues> allMetrics() {
+        synchronized (actorMetrics) {
+            Map<String, ActorMetricValues> copy = new HashMap<>(actorMetrics.size());
+            actorMetrics.forEach((actor, metricValues) -> copy.put(actor, actorMetrics.get(actor).copy()));
+            return copy;
+        }
+    }
+
+    private final class JMSMetricsRepositoryListener implements MessageListener {
 
         @Override
         public void onMessage(final Message jmsMessage) {
             Optional<io.amaze.bench.client.runtime.message.Message> input = readMessage(jmsMessage);
-            if (input.isPresent()) {
-                String actor = input.get().from();
-                Map<Metric, List<MetricValue>> metrics = (Map<Metric, List<MetricValue>>) input.get().data();
-                LOG.info("Received metrics from " + actor + " - " + metrics);
+            if (!input.isPresent()) {
+                return;
+            }
+
+            String actor = input.get().from();
+            ActorMetricValues metrics = new ActorMetricValues((Map<Metric, List<MetricValue>>) input.get().data());
+
+            updateMetricValues(actor, metrics);
+        }
+
+        private void updateMetricValues(final String actor, final ActorMetricValues metrics) {
+            LOG.info("Received metrics from " + actor + " - " + metrics);
+
+            synchronized (actorMetrics) {
+                ActorMetricValues existing = actorMetrics.remove(actor);
+                if (existing != null) {
+                    existing.mergeWith(metrics);
+                    actorMetrics.put(actor, existing);
+                } else {
+                    actorMetrics.put(actor, metrics);
+                }
             }
         }
 
@@ -82,9 +107,10 @@ public final class MetricsRepository {
             try {
                 return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
             } catch (Exception e) {
-                LOG.error("Error while reading JMS message as Message.", e);
+                LOG.error("Error while reading JMS message.", e);
                 return Optional.empty();
             }
         }
     }
+
 }

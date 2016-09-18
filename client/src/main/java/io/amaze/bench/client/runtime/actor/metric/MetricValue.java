@@ -17,6 +17,8 @@ package io.amaze.bench.client.runtime.actor.metric;
 
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created on 9/6/16.
  */
@@ -24,8 +26,8 @@ public class MetricValue implements Serializable {
 
     private final Number value;
 
-    MetricValue(final Number value) {
-        this.value = value;
+    public MetricValue(final Number value) {
+        this.value = checkNotNull(value);
     }
 
     public final Number getValue() {

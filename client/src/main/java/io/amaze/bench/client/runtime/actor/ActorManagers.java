@@ -54,7 +54,7 @@ public class ActorManagers {
         checkNotNull(agentName);
         checkNotNull(factory);
 
-        return new EmbeddedActorManager(agentName, new Actors(agentName, factory));
+        return new EmbeddedActorManager(agentName, new Actors(factory));
     }
 
     /**

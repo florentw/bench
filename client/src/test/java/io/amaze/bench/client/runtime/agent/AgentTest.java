@@ -65,7 +65,7 @@ public final class AgentTest {
         actorClient = new RecorderOrchestratorActor();
 
         clientFactory = new DummyClientFactory(agentClient, actorClient);
-        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new Actors(DUMMY_AGENT, clientFactory)));
+        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new Actors(clientFactory)));
 
         when(actorManagers.createEmbedded(anyString(),
                                           any(OrchestratorClientFactory.class))).thenReturn(embeddedManager);

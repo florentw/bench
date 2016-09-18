@@ -38,11 +38,9 @@ public final class ActorBootstrap {
     private static final Logger LOG = LoggerFactory.getLogger(ActorBootstrap.class);
 
     private final OrchestratorClientFactory clientFactory;
-    private final String agentName;
 
-    ActorBootstrap(@NotNull final String agentName, @NotNull final OrchestratorClientFactory clientFactory) {
+    ActorBootstrap(@NotNull final OrchestratorClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
-        this.agentName = checkNotNull(agentName);
     }
 
     /**
@@ -53,19 +51,18 @@ public final class ActorBootstrap {
     public static void main(final String[] args) throws ValidationException, IOException {
         checkNotNull(args);
 
-        if (args.length != 6) {
+        if (args.length != 5) {
             LOG.error("Usage:");
-            LOG.error("ActorBootstrap <agentName> <actorName> <className> " + //
+            LOG.error("ActorBootstrap <actorName> <className> " + //
                               "<jmsServerHost> <jmsServerPort> <temporaryConfigFile>");
             throw new IllegalArgumentException();
         }
 
-        String agentName = args[0];
-        String actorName = args[1];
-        String className = args[2];
-        String jmsServerHost = args[3];
-        int jmsServerPort = Integer.parseInt(args[4]);
-        String jsonTmpConfigFile = args[5];
+        String actorName = args[0];
+        String className = args[1];
+        String jmsServerHost = args[2];
+        int jmsServerPort = Integer.parseInt(args[3]);
+        String jsonTmpConfigFile = args[4];
 
         // Read and delete the temporary config file
         String jsonConfig = Files.readAndDelete(jsonTmpConfigFile);
@@ -73,7 +70,7 @@ public final class ActorBootstrap {
         JMSEndpoint serverEndpoint = new JMSEndpoint(jmsServerHost, jmsServerPort);
         OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(serverEndpoint);
 
-        ActorBootstrap actorBootstrap = new ActorBootstrap(agentName, clientFactory);
+        ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
         RuntimeActor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
 
         installShutdownHook(actor);
@@ -90,7 +87,7 @@ public final class ActorBootstrap {
                              final String className, //
                              final String jsonConfig) throws ValidationException, IOException {
 
-        Actors actors = new Actors(agentName, clientFactory);
+        Actors actors = new Actors(clientFactory);
         return actors.create(name, className, jsonConfig);
     }
 

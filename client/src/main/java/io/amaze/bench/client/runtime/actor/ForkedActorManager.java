@@ -136,12 +136,11 @@ final class ForkedActorManager extends AbstractActorManager {
                 "-cp", //
                 JAVA_CLASS_PATH.value(), // Use the current classpath
                 ActorBootstrap.class.getName(),             // Main class
-                getAgent(),                                 // arg[0]
-                name,                                       // arg[1]
-                actorConfig.getClassName(),                 // arg[2]
-                masterEndpoint.getHost(),                   // arg[3]
-                Integer.toString(masterEndpoint.getPort()), // arg[4]
-                configFileName                              // arg[5]
+                name,                                       // arg[0]
+                actorConfig.getClassName(),                 // arg[1]
+                masterEndpoint.getHost(),                   // arg[2]
+                Integer.toString(masterEndpoint.getPort()), // arg[3]
+                configFileName                              // arg[4]
         };
 
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";

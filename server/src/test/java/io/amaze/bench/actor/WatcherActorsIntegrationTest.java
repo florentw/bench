@@ -18,6 +18,7 @@ package io.amaze.bench.actor;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
 import io.amaze.bench.client.runtime.agent.Agent;
+import io.amaze.bench.orchestrator.ActorMetricValues;
 import io.amaze.bench.orchestrator.ActorSender;
 import io.amaze.bench.orchestrator.Actors;
 import io.amaze.bench.orchestrator.MetricsRepository;
@@ -37,6 +38,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.getUninterrupti
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.amaze.bench.client.runtime.actor.ActorInputMessage.*;
 import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 9/11/16.
@@ -71,7 +73,7 @@ public final class WatcherActorsIntegrationTest {
         agent.close();
     }
 
-    @Test
+    @Test(timeout = 30000)
     public void create_watcher_actors() throws ExecutionException {
 
         Actors.ActorHandle systemWatcher = benchRule.actors().create(SYSTEM_WATCHER_CONFIG);
@@ -81,7 +83,7 @@ public final class WatcherActorsIntegrationTest {
         getUninterruptibly(processesWatcher.actorCreation());
     }
 
-    @Test
+    @Test(timeout = 30000)
     public void close_watcher_actors() throws ExecutionException {
         Actors.ActorHandle systemWatcher = benchRule.actors().create(SYSTEM_WATCHER_CONFIG);
         Actors.ActorHandle processesWatcher = benchRule.actors().create(PROCESSES_WATCHER_CONFIG);
@@ -95,11 +97,10 @@ public final class WatcherActorsIntegrationTest {
         getUninterruptibly(processesWatcher.actorTermination());
     }
 
-    @Test
+    @Test(timeout = 30000)
     public void start_system_monitoring() throws ExecutionException {
         try (JMSClient metricsClient = benchRule.createClient()) {
             MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
-            metricsRepository.startListener();
 
             ActorSender sender = benchRule.actorSender();
             Actors.ActorHandle systemWatcher = benchRule.actors().create(SYSTEM_WATCHER_CONFIG);
@@ -116,6 +117,9 @@ public final class WatcherActorsIntegrationTest {
             sender.sendToActor(SYSTEM_WATCHER, dumpMetrics());
             sender.sendToActor(SYSTEM_WATCHER, close());
             getUninterruptibly(systemWatcher.actorTermination());
+
+            ActorMetricValues metrics = metricsRepository.metricsFor(SYSTEM_WATCHER);
+            assertTrue(metrics.metrics().size() > 0);
         }
     }
 }
