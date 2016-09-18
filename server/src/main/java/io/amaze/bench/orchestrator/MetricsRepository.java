@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.orchestrator;
 
+import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -28,10 +29,8 @@ import javax.jms.BytesMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
@@ -45,6 +44,7 @@ public final class MetricsRepository {
     private static final Logger LOG = LoggerFactory.getLogger(MetricsRepository.class);
 
     private final Map<String, ActorMetricValues> actorMetrics = new HashMap<>();
+    private final Map<String, List<SettableFuture<ActorMetricValues>>> expectedActors = new HashMap<>();
 
     public MetricsRepository(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         try {
@@ -66,12 +66,48 @@ public final class MetricsRepository {
         }
     }
 
+    public Future<ActorMetricValues> expectMetricsFor(@NotNull final String actor) {
+        checkNotNull(actor);
+        synchronized (actorMetrics) {
+            Optional<Future<ActorMetricValues>> immediate = immediateResult(actor);
+            if (immediate.isPresent()) {
+                return immediate.get();
+            }
+
+            return registerExpectedActor(actor);
+        }
+    }
+
     public Map<String, ActorMetricValues> allMetrics() {
         synchronized (actorMetrics) {
             Map<String, ActorMetricValues> copy = new HashMap<>(actorMetrics.size());
             actorMetrics.forEach((actor, metricValues) -> copy.put(actor, actorMetrics.get(actor).copy()));
             return copy;
         }
+    }
+
+    private SettableFuture<ActorMetricValues> registerExpectedActor(final String actor) {
+        List<SettableFuture<ActorMetricValues>> futures = expectedActors.get(actor);
+        SettableFuture<ActorMetricValues> future = SettableFuture.create();
+        if (futures != null) {
+            futures.add(future);
+        } else {
+            List<SettableFuture<ActorMetricValues>> list = new ArrayList<>();
+            list.add(future);
+            expectedActors.put(actor, list);
+        }
+        return future;
+    }
+
+    private Optional<Future<ActorMetricValues>> immediateResult(final String actor) {
+        ActorMetricValues metricValues = actorMetrics.get(actor);
+        if (metricValues == null) {
+            return Optional.empty();
+        }
+
+        SettableFuture<ActorMetricValues> future = SettableFuture.create();
+        future.set(metricValues);
+        return Optional.of(future);
     }
 
     private final class JMSMetricsRepositoryListener implements MessageListener {
@@ -93,14 +129,30 @@ public final class MetricsRepository {
             LOG.info("Received metrics from " + actor + " - " + metrics);
 
             synchronized (actorMetrics) {
-                ActorMetricValues existing = actorMetrics.remove(actor);
-                if (existing != null) {
-                    existing.mergeWith(metrics);
-                    actorMetrics.put(actor, existing);
-                } else {
-                    actorMetrics.put(actor, metrics);
+                ActorMetricValues currentActorMetrics = updateActorMetricValues(actor, metrics);
+
+                setExpectedActorFutures(actor, currentActorMetrics);
+            }
+        }
+
+        private void setExpectedActorFutures(final String actor, final ActorMetricValues currentActorMetrics) {
+            List<SettableFuture<ActorMetricValues>> futures = expectedActors.remove(actor);
+            if (futures != null) {
+                for (SettableFuture<ActorMetricValues> future : futures) {
+                    future.set(currentActorMetrics);
                 }
             }
+        }
+
+        private ActorMetricValues updateActorMetricValues(final String actor, final ActorMetricValues metrics) {
+            ActorMetricValues currentActorMetrics = actorMetrics.remove(actor);
+            if (currentActorMetrics != null) {
+                currentActorMetrics.mergeWith(metrics);
+            } else {
+                currentActorMetrics = metrics;
+            }
+            actorMetrics.put(actor, currentActorMetrics);
+            return currentActorMetrics;
         }
 
         private Optional<io.amaze.bench.client.runtime.message.Message> readMessage(final javax.jms.Message jmsMessage) {

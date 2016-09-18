@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
@@ -115,11 +116,11 @@ public final class WatcherActorsIntegrationTest {
                                sendMessage(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.stop()));
 
             sender.sendToActor(SYSTEM_WATCHER, dumpMetrics());
+            Future<ActorMetricValues> metrics = metricsRepository.expectMetricsFor(SYSTEM_WATCHER);
             sender.sendToActor(SYSTEM_WATCHER, close());
             getUninterruptibly(systemWatcher.actorTermination());
 
-            ActorMetricValues metrics = metricsRepository.metricsFor(SYSTEM_WATCHER);
-            assertTrue(metrics.metrics().size() > 0);
+            assertTrue(getUninterruptibly(metrics).metrics().size() > 0);
         }
     }
 }

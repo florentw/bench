@@ -38,7 +38,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.hamcrest.CoreMatchers.is;
@@ -143,6 +146,30 @@ public final class MetricsRepositoryTest {
         ActorMetricValues actorMetricValues = metricsRepository.metricsFor(ACTOR_NAME);
         assertThat(actorMetricValues.metrics().size(), is(1));
         assertThat(actorMetricValues.metrics().values().iterator().next().size(), is(1));
+    }
+
+    @Test
+    public void expected_metrics_is_set_if_it_already_exists()
+            throws IOException, javax.jms.JMSException, ExecutionException {
+        BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
+        jmsListener.onMessage(jmsMessage);
+
+        Future<ActorMetricValues> future = metricsRepository.expectMetricsFor(ACTOR_NAME);
+
+        assertThat(getUninterruptibly(future).metrics().size(), is(1));
+    }
+
+    @Test
+    public void expected_metrics_futures_are_set_when_metrics_are_received()
+            throws IOException, javax.jms.JMSException, ExecutionException {
+        Future<ActorMetricValues> firstFuture = metricsRepository.expectMetricsFor(ACTOR_NAME);
+        Future<ActorMetricValues> secondFuture = metricsRepository.expectMetricsFor(ACTOR_NAME);
+        BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
+
+        jmsListener.onMessage(jmsMessage);
+
+        assertThat(getUninterruptibly(firstFuture).metrics().size(), is(1));
+        assertThat(getUninterruptibly(secondFuture).metrics().size(), is(1));
     }
 
     private BytesMessage jmsMetricsMessage(final List<MetricValue> values) throws IOException, javax.jms.JMSException {
