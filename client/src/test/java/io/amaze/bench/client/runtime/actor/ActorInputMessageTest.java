@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
+import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import org.junit.Test;
@@ -36,7 +37,6 @@ public final class ActorInputMessageTest {
 
         tester.testAllPublicConstructors(ActorInputMessage.class);
         tester.testAllPublicStaticMethods(ActorInputMessage.class);
-        tester.testAllPublicInstanceMethods(ActorInputMessage.init());
     }
 
     @Test
@@ -52,6 +52,15 @@ public final class ActorInputMessageTest {
     @Test(expected = IllegalArgumentException.class)
     public void from_should_not_be_empty() {
         ActorInputMessage.sendMessage("", "payload");
+    }
+
+    @Test
+    public void equality() {
+        EqualsTester tester = new EqualsTester();
+        tester.addEqualityGroup(ActorInputMessage.close(), ActorInputMessage.close());
+        tester.addEqualityGroup(ActorInputMessage.init(), ActorInputMessage.init());
+        tester.addEqualityGroup(ActorInputMessage.dumpMetrics(), ActorInputMessage.dumpMetrics());
+        tester.testEquals();
     }
 
 }

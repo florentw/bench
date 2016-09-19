@@ -46,7 +46,7 @@ public final class Actors {
         this.actorRegistry = checkNotNull(actorRegistry);
     }
 
-    public ActorHandle create(ActorConfig actorConfig) {
+    public ActorHandle create(@NotNull final ActorConfig actorConfig) {
         checkNotNull(actorConfig);
         HandleRegistryListener handleRegistryListener = new HandleRegistryListener(actorSender, actorConfig);
         actorRegistry.addListener(handleRegistryListener);
@@ -62,7 +62,7 @@ public final class Actors {
         private final ActorSender actorSender;
         private final ActorConfig config;
 
-        ActorHandle(ActorSender actorSender, ActorConfig config) {
+        ActorHandle(final ActorSender actorSender, final ActorConfig config) {
             this.actorSender = actorSender;
             this.config = config;
         }
@@ -76,7 +76,7 @@ public final class Actors {
             actorSender.sendToActor(config.getName(), ActorInputMessage.dumpMetrics());
         }
 
-        public void send(String from, Serializable message) {
+        public void send(final String from, final Serializable message) {
             actorSender.sendToActor(config.getName(), ActorInputMessage.sendMessage(from, message));
         }
 

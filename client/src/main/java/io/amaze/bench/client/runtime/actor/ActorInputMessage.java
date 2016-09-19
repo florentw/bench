@@ -17,6 +17,7 @@ package io.amaze.bench.client.runtime.actor;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -70,10 +71,29 @@ public final class ActorInputMessage implements Serializable {
         return payload;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(command, from, payload);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ActorInputMessage that = (ActorInputMessage) o;
+        return command == that.command && //
+                Objects.equals(from, that.from) && //
+                Objects.equals(payload, that.payload);
+    }
+
     public enum Command {
         INIT, //
         CLOSE, //
         DUMP_METRICS, //
-        MESSAGE //
+        MESSAGE
     }
 }
