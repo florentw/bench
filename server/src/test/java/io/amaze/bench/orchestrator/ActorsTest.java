@@ -38,8 +38,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
@@ -64,12 +63,15 @@ public final class ActorsTest {
     private ActorRegistry actorRegistry;
     @Mock
     private ActorRegistryListener actorRegistryListener;
+    @Mock
+    private ActorSender actorSender;
+
     private Actors actors;
     private ActorConfig actorConfig;
 
     @Before
     public void initActors() {
-        actors = new Actors(resourceManager, actorRegistry);
+        actors = new Actors(actorSender, resourceManager, actorRegistry);
         actorConfig = new ActorConfig(ACTOR_NAME, "className", new DeployConfig(false, new ArrayList<>()), "{}");
 
         doAnswer((invocationOnMock) -> actorRegistryListener = (ActorRegistryListener) invocationOnMock.getArguments()[0]).when(
@@ -79,6 +81,7 @@ public final class ActorsTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(ActorSender.class, actorSender);
 
         tester.setDefault(ResourceManager.class, resourceManager);
         tester.testAllPublicConstructors(Actors.class);
@@ -145,8 +148,8 @@ public final class ActorsTest {
 
         actorRegistryListener.onActorClosed(ACTOR_NAME);
 
-        ActorConfig actual = getUninterruptibly(actorHandle.actorTermination());
-        assertSame(actual, actorConfig);
+        Void actual = getUninterruptibly(actorHandle.actorTermination());
+        assertNull(actual);
     }
 
     @Test(expected = TimeoutException.class)

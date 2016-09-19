@@ -18,10 +18,12 @@ package io.amaze.bench.orchestrator;
 import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.orchestrator.registry.ActorRegistry;
 import io.amaze.bench.orchestrator.registry.ActorRegistryListener;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -31,17 +33,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class Actors {
 
+    private final ActorSender actorSender;
     private final ResourceManager resourceManager;
     private final ActorRegistry actorRegistry;
 
-    public Actors(@NotNull final ResourceManager resourceManager, @NotNull final ActorRegistry actorRegistry) {
+    public Actors(@NotNull final ActorSender actorSender,
+                  @NotNull final ResourceManager resourceManager,
+                  @NotNull final ActorRegistry actorRegistry) {
+
+        this.actorSender = checkNotNull(actorSender);
         this.resourceManager = checkNotNull(resourceManager);
         this.actorRegistry = checkNotNull(actorRegistry);
     }
 
     public ActorHandle create(ActorConfig actorConfig) {
         checkNotNull(actorConfig);
-        HandleRegistryListener handleRegistryListener = new HandleRegistryListener(actorConfig);
+        HandleRegistryListener handleRegistryListener = new HandleRegistryListener(actorSender, actorConfig);
         actorRegistry.addListener(handleRegistryListener);
         return handleRegistryListener.createActor();
     }
@@ -50,7 +57,33 @@ public final class Actors {
         private final SettableFuture<ActorConfig> actorCreated = SettableFuture.create();
         private final SettableFuture<ActorDeployInfo> actorInitialized = SettableFuture.create();
         private final SettableFuture<Throwable> actorFailed = SettableFuture.create();
-        private final SettableFuture<ActorConfig> actorClosed = SettableFuture.create();
+        private final SettableFuture<Void> actorClosed = SettableFuture.create();
+
+        private final ActorSender actorSender;
+        private final ActorConfig config;
+
+        ActorHandle(ActorSender actorSender, ActorConfig config) {
+            this.actorSender = actorSender;
+            this.config = config;
+        }
+
+        public Future<ActorDeployInfo> initialize() {
+            actorSender.sendToActor(config.getName(), ActorInputMessage.init());
+            return actorInitialized;
+        }
+
+        public void dumpMetrics() {
+            actorSender.sendToActor(config.getName(), ActorInputMessage.dumpMetrics());
+        }
+
+        public void send(String from, Serializable message) {
+            actorSender.sendToActor(config.getName(), ActorInputMessage.sendMessage(from, message));
+        }
+
+        public Future<Void> close() {
+            actorSender.sendToActor(config.getName(), ActorInputMessage.close());
+            return actorClosed;
+        }
 
         public Future<ActorConfig> actorCreation() {
             return actorCreated;
@@ -64,7 +97,7 @@ public final class Actors {
             return actorFailed;
         }
 
-        public Future<ActorConfig> actorTermination() {
+        public Future<Void> actorTermination() {
             return actorClosed;
         }
     }
@@ -73,9 +106,9 @@ public final class Actors {
         private final ActorConfig config;
         private final ActorHandle handle;
 
-        HandleRegistryListener(final ActorConfig config) {
+        HandleRegistryListener(final ActorSender actorSender, final ActorConfig config) {
             this.config = config;
-            this.handle = new ActorHandle();
+            this.handle = new ActorHandle(actorSender, config);
         }
 
         @Override
@@ -106,7 +139,7 @@ public final class Actors {
         @Override
         public void onActorClosed(@NotNull final String name) {
             if (name.equals(config.getName())) {
-                handle.actorClosed.set(config);
+                handle.actorClosed.set(null);
             }
         }
 

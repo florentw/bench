@@ -42,6 +42,7 @@ final class StopwatchThread implements Runnable {
     private final SystemInfo systemInfo;
     private final Stopwatch stopwatch;
 
+    private final CountDownLatch stopping = new CountDownLatch(1);
     private final CountDownLatch stopped = new CountDownLatch(1);
 
     private long beforeVirtualSize;
@@ -59,25 +60,30 @@ final class StopwatchThread implements Runnable {
 
     @Override
     public void run() {
-        OSProcess beforeProcess = processOrNull();
-        if (beforeProcess == null) {
-            return;
+        try {
+            OSProcess beforeProcess = processOrNull();
+            if (beforeProcess == null) {
+                return;
+            }
+
+            startMetrics(beforeProcess);
+
+            awaitUninterruptibly(stopping);
+
+            OSProcess afterProcess = processOrNull();
+            if (afterProcess == null) {
+                return;
+            }
+
+            stopMetrics(afterProcess);
+        } finally {
+            stopped.countDown();
         }
-
-        startMetrics(beforeProcess);
-
-        awaitUninterruptibly(stopped);
-
-        OSProcess afterProcess = processOrNull();
-        if (afterProcess == null) {
-            return;
-        }
-
-        stopMetrics(afterProcess);
     }
 
     public void stop() {
-        stopped.countDown();
+        stopping.countDown();
+        awaitUninterruptibly(stopped);
     }
 
     private OSProcess processOrNull() {

@@ -207,6 +207,19 @@ public final class ProcessWatcherActorTest {
     }
 
     @Test
+    public void throw_RecoverableException_when_stop_sampling_called_twice() throws ReactorException {
+        mockedFuture();
+        watcherActor.onMessage(FROM, startSampling(PID, 1, KEY_PREFIX));
+        watcherActor.onMessage(FROM, stopSampling(PID));
+
+        expectedException.expect(RecoverableException.class);
+        watcherActor.onMessage(FROM, stopSampling(PID));
+
+        verify(scheduler).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
+        verifyNoMoreInteractions(scheduler);
+    }
+
+    @Test
     public void start_stopwatch_on_invalid_pid_does_nothing() throws ReactorException {
         ProcessWatcherActor actorWithExecutor = new ProcessWatcherActor(metrics);
         Metrics.Sink mockedSink = mockedSink();
@@ -219,11 +232,12 @@ public final class ProcessWatcherActorTest {
 
     @Test
     public void throws_RecoverableException_when_start_stopwatch_called_twice() throws ReactorException {
-        watcherActor.onMessage(FROM, startStopwatch(PID, KEY_PREFIX));
-        watcherActor.onMessage(FROM, stopStopwatch(PID, KEY_PREFIX));
+        ProcessWatcherActor actorWithExecutor = new ProcessWatcherActor(metrics);
+        actorWithExecutor.onMessage(FROM, startStopwatch(PID, KEY_PREFIX));
+        actorWithExecutor.onMessage(FROM, stopStopwatch(PID, KEY_PREFIX));
 
         expectedException.expect(RecoverableException.class);
-        watcherActor.onMessage(FROM, stopStopwatch(PID, KEY_PREFIX));
+        actorWithExecutor.onMessage(FROM, stopStopwatch(PID, KEY_PREFIX));
 
         verify(scheduler).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
         verifyNoMoreInteractions(scheduler);

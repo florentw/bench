@@ -107,7 +107,7 @@ public final class BenchRule extends ExternalResource {
         ActorManagers actorManagers = new ActorManagers(jmsServerRule.getEndpoint());
         agents = new Agents(actorManagers, orchestratorClientFactory, agentRegistry);
 
-        actors = new Actors(resourceManager, actorRegistry);
+        actors = new Actors(actorSender, resourceManager, actorRegistry);
     }
 
     @Override

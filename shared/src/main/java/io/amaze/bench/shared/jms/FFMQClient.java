@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.shared.jms;
 
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.timewalker.ffmq3.FFMQConstants;
@@ -29,6 +28,8 @@ import javax.naming.NamingException;
 import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.util.Hashtable;
+
+import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 3/2/16.
@@ -115,7 +116,7 @@ public final class FFMQClient implements JMSClient {
         try {
             internalClose();
         } catch (javax.jms.JMSException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 
@@ -179,6 +180,7 @@ public final class FFMQClient implements JMSClient {
             out.writeObject(payload);
             byte[] yourBytes = bos.toByteArray();
             BytesMessage bytesMessage = session.createBytesMessage();
+            bytesMessage.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
             bytesMessage.writeBytes(yourBytes);
             return bytesMessage;
         }

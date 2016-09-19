@@ -137,9 +137,12 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
         }
     }
 
-    private void stopSampling(final ProcessWatcherActorInput message) {
+    private void stopSampling(final ProcessWatcherActorInput message) throws RecoverableException {
         synchronized (samplerFutures) {
             ScheduledFuture future = samplerFutures.remove(message);
+            if (future == null) {
+                throw new RecoverableException("Sampling already stopped.");
+            }
             cancel(future);
         }
     }

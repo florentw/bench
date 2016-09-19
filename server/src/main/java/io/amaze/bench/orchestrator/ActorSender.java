@@ -27,7 +27,7 @@ import static com.google.common.base.Throwables.propagate;
 /**
  * Interface to send messages to actors within the system.
  */
-public final class ActorSender {
+public class ActorSender {
 
     private final JMSClient client;
 
