@@ -41,9 +41,10 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static io.amaze.bench.actor.ProcessWatcherActorInput.startStopwatch;
-import static io.amaze.bench.actor.ProcessWatcherActorInput.stopStopwatch;
+import static io.amaze.bench.actor.ProcessWatcherActorInput.*;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -63,7 +64,7 @@ public final class WatcherActorsIntegrationTest {
     @Rule
     public final BenchRule benchRule = new BenchRule();
     @Rule
-    public Timeout globalTimeout = new Timeout(15, TimeUnit.SECONDS);
+    public final Timeout globalTimeout = new Timeout(15, TimeUnit.SECONDS);
 
     private Agent agent;
     private JMSClient metricsClient;
@@ -81,21 +82,18 @@ public final class WatcherActorsIntegrationTest {
     }
 
     @Theory
-    public void create_watcher_actors(boolean forked) throws ExecutionException {
+    public void create_and_initialize_watcher_actors(boolean forked) throws ExecutionException {
+        Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
+        Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
 
-        Actors.ActorHandle systemWatcher = benchRule.actors().create(systemActorConfig(forked));
-        Actors.ActorHandle processesWatcher = benchRule.actors().create(processActorConfig(forked));
-
-        getUninterruptibly(systemWatcher.actorCreation());
-        getUninterruptibly(processesWatcher.actorCreation());
+        getUninterruptibly(systemWatcher.initialize());
+        getUninterruptibly(processesWatcher.initialize());
     }
 
     @Theory
     public void close_watcher_actors(boolean forked) throws ExecutionException {
-        Actors.ActorHandle systemWatcher = benchRule.actors().create(systemActorConfig(forked));
-        Actors.ActorHandle processesWatcher = benchRule.actors().create(processActorConfig(forked));
-        getUninterruptibly(systemWatcher.actorCreation());
-        getUninterruptibly(processesWatcher.actorCreation());
+        Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
+        Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
         getUninterruptibly(systemWatcher.initialize());
         getUninterruptibly(processesWatcher.initialize());
 
@@ -111,15 +109,15 @@ public final class WatcherActorsIntegrationTest {
 
         systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.start(1));
 
-        sleepUninterruptibly(5, TimeUnit.SECONDS);
+        sleepUninterruptibly(2, TimeUnit.SECONDS);
 
         systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.stop());
 
         systemWatcher.dumpMetrics();
         Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(SYSTEM_WATCHER);
         getUninterruptibly(systemWatcher.close());
-
-        assertTrue(getUninterruptibly(metrics).metrics().size() == 4);
+        sleepUninterruptibly(1, TimeUnit.SECONDS);
+        assertThat(getUninterruptibly(metrics).metrics().size(), is(4));
     }
 
     /**
@@ -128,13 +126,12 @@ public final class WatcherActorsIntegrationTest {
      * @throws ExecutionException No expected
      */
     @Theory
-    public void start_process_monitoring(boolean forked) throws ExecutionException {
+    public void stopWatch_process_monitoring(boolean forked) throws ExecutionException {
         MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
         Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
-        Actors.ActorHandle processesWatcher = benchRule.actors().create(processActorConfig(forked));
-        getUninterruptibly(processesWatcher.actorCreation());
+        Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
         ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.initialize());
 
         processesWatcher.send(PROCESS_WATCHER, startStopwatch(deployInfo.getPid(), METRIC_KEY));
@@ -144,12 +141,44 @@ public final class WatcherActorsIntegrationTest {
         processesWatcher.send(PROCESS_WATCHER, stopStopwatch(deployInfo.getPid(), METRIC_KEY));
 
         processesWatcher.dumpMetrics();
-
-        sleepUninterruptibly(3, TimeUnit.SECONDS);
-
-        assertTrue(getUninterruptibly(metrics).metrics().size() == 13);
+        sleepUninterruptibly(1, TimeUnit.SECONDS);
+        assertThat(getUninterruptibly(metrics).metrics().size(), is(13));
         getUninterruptibly(systemWatcher.close());
         getUninterruptibly(processesWatcher.close());
+    }
+
+    @Theory
+    public void sampling_process_monitoring(boolean forked) throws ExecutionException {
+        MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
+        Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
+
+        Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
+        Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
+        ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.initialize());
+
+        processesWatcher.send(PROCESS_WATCHER, startSampling(deployInfo.getPid(), 1, METRIC_KEY));
+
+        sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+        processesWatcher.send(PROCESS_WATCHER, stopSampling(deployInfo.getPid()));
+
+        processesWatcher.dumpMetrics();
+        sleepUninterruptibly(1, TimeUnit.SECONDS);
+        assertTrue(getUninterruptibly(metrics).metrics().size() > 0);
+        getUninterruptibly(systemWatcher.close());
+        getUninterruptibly(processesWatcher.close());
+    }
+
+    private Actors.ActorHandle createSystemWatcher(final boolean forked) throws ExecutionException {
+        Actors.ActorHandle systemWatcher = benchRule.actors().create(systemActorConfig(forked));
+        getUninterruptibly(systemWatcher.actorCreation());
+        return systemWatcher;
+    }
+
+    private Actors.ActorHandle createProcessWatcher(final boolean forked) throws ExecutionException {
+        Actors.ActorHandle processesWatcher = benchRule.actors().create(processActorConfig(forked));
+        getUninterruptibly(processesWatcher.actorCreation());
+        return processesWatcher;
     }
 
     private ActorConfig systemActorConfig(boolean forked) {
@@ -167,8 +196,7 @@ public final class WatcherActorsIntegrationTest {
     }
 
     private Actors.ActorHandle createAndInitSystemWatcher(boolean forked) throws ExecutionException {
-        Actors.ActorHandle systemWatcher = benchRule.actors().create(systemActorConfig(forked));
-        getUninterruptibly(systemWatcher.actorCreation());
+        Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         getUninterruptibly(systemWatcher.initialize());
         return systemWatcher;
     }

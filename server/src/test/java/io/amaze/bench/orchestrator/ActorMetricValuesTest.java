@@ -26,6 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.amaze.bench.api.metric.Metric.metric;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,7 +80,7 @@ public final class ActorMetricValuesTest {
 
     @Test
     public void copy_return_new_instances() {
-        HashMap<Metric, List<MetricValue>> metricValues = new HashMap<>();
+        Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         List<MetricValue> values = new ArrayList<>();
         values.add(new MetricValue(1));
         metricValues.put(DUMMY_METRIC, values);
@@ -95,7 +96,7 @@ public final class ActorMetricValuesTest {
     }
 
     private ActorMetricValues metricValues(int nbValues) {
-        HashMap<Metric, List<MetricValue>> metricValues = new HashMap<>();
+        Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         List<MetricValue> values = new ArrayList<>();
         for (int i = 0; i < nbValues; i++) {
             values.add(new MetricValue(i));

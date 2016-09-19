@@ -35,4 +35,5 @@ public final class MetricTimedValue extends MetricValue {
     public String toString() {
         return "{\"value\":" + getValue() + ", \"timestamp\":" + timestamp + "}";
     }
+
 }
