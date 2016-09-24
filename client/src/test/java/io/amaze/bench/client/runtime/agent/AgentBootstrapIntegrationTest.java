@@ -85,7 +85,7 @@ public final class AgentBootstrapIntegrationTest {
         boolean msgReceived = awaitUninterruptibly(listener.msgReceived, 2, TimeUnit.SECONDS);
         assertTrue(msgReceived);
 
-        // Verify agent sent a message to master
+        // Verify agent sent a message to registry
         verify(listener).onMessage(any(Message.class));
         verifyNoMoreInteractions(listener);
     }

@@ -39,20 +39,20 @@ public interface RuntimeActor extends Closeable {
 
     /**
      * Initializes the actor by invoking the method annotated with @{@link Before} if any.<br>
-     * Will send failure messages to the master.<br>
+     * Will send failure messages to the registry.<br>
      * Send "initialized" lifecycle notification if successful.<br>
      */
     void init();
 
     /**
      * Dump the actor's accumulated getMetricsAndFlush and sends a message to the getMetricsAndFlush actor for collection.<br>
-     * Will send failure messages to the master.<br>
+     * Will send failure messages to the registry.<br>
      */
     void dumpAndFlushMetrics();
 
     /**
      * Hook for the actor to receive messages.<br>
-     * Will send failure messages to the master.<br>
+     * Will send failure messages to the registry.<br>
      *
      * @param from    Source actor
      * @param message Payload
@@ -61,7 +61,7 @@ public interface RuntimeActor extends Closeable {
 
     /**
      * Closes the actor and invokes the {@link Reactor} method annotated with @{@link After}.<br>
-     * Will send failure messages to the master.<br>
+     * Will send failure messages to the registry.<br>
      * Send "closed" lifecycle notification if successful.<br>
      */
     @Override

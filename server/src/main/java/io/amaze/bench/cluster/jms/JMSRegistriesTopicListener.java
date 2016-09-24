@@ -58,7 +58,7 @@ final class JMSRegistriesTopicListener implements MessageListener {
         }
 
         try {
-            onMasterMessage(received.get());
+            onRegistryMessage(received.get());
         } catch (Exception e) {
             LOG.error("Error handling registry message " + received.get(), e);
         }
@@ -73,7 +73,7 @@ final class JMSRegistriesTopicListener implements MessageListener {
         }
     }
 
-    private void onMasterMessage(final Message received) {
+    private void onRegistryMessage(final Message received) {
         LifecycleMessage lifecycleMessage = (LifecycleMessage) received.data();
         if (lifecycleMessage instanceof AgentLifecycleMessage) {
             AgentLifecycleMessage agentMsg = (AgentLifecycleMessage) lifecycleMessage;

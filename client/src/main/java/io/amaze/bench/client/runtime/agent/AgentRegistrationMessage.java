@@ -25,10 +25,9 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Message sent by an agent to the master after startup for registration.
+ * Message sent by an agent to the agent registry after startup for registration.
  */
 public final class AgentRegistrationMessage implements Serializable {
-
 
     private final String name;
     private final SystemConfig systemConfig;

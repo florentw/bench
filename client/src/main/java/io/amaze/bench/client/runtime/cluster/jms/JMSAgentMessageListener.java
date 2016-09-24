@@ -32,7 +32,7 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Convert received JMS messages from the master to the agent to calls to its {@link Reactor} methods.
+ * Convert received JMS messages from the resource manager to the agent to calls to its {@link Reactor} methods.
  */
 final class JMSAgentMessageListener implements MessageListener {
 
