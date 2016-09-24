@@ -15,9 +15,9 @@
  */
 package io.amaze.bench.cluster.jms;
 
+import io.amaze.bench.client.runtime.LifecycleMessage;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
-import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.cluster.registry.AgentRegistryListener;
@@ -57,11 +57,10 @@ final class JMSRegistriesTopicListener implements MessageListener {
             return;
         }
 
-        Message internalMessage = received.get();
-        if (internalMessage.data() instanceof AgentOutputMessage) {
-            onMasterMessage(internalMessage);
-        } else {
-            LOG.error("Received invalid message \"" + received + "\" (not a AgentOutputMessage).");
+        try {
+            onMasterMessage(received.get());
+        } catch (Exception e) {
+            LOG.error("Error handling registry message " + received.get(), e);
         }
     }
 
@@ -75,26 +74,33 @@ final class JMSRegistriesTopicListener implements MessageListener {
     }
 
     private void onMasterMessage(final Message received) {
-        AgentOutputMessage masterMsg = (AgentOutputMessage) received.data();
-        switch (masterMsg.getAction()) {
-            case REGISTER_AGENT:
-                onAgentRegistration(masterMsg);
-                break;
-            case UNREGISTER_AGENT:
-                onAgentSignOff(masterMsg);
-                break;
-            case ACTOR_LIFECYCLE:
-                onActorLifecycle(masterMsg);
-                break;
-            default:
+        LifecycleMessage lifecycleMessage = (LifecycleMessage) received.data();
+        if (lifecycleMessage instanceof AgentLifecycleMessage) {
+            AgentLifecycleMessage agentMsg = (AgentLifecycleMessage) lifecycleMessage;
+            onAgentLifecycle(agentMsg);
+        } else {
+            ActorLifecycleMessage actorLifecycleMessage = (ActorLifecycleMessage) lifecycleMessage;
+            onActorLifecycle(actorLifecycleMessage);
         }
     }
 
-    private void onActorLifecycle(final AgentOutputMessage received) {
-        ActorLifecycleMessage lfMsg = (ActorLifecycleMessage) received.getData();
+    private void onAgentLifecycle(final AgentLifecycleMessage agentMsg) {
+        switch (agentMsg.getState()) {
+            case CREATED:
+                onAgentRegistration(agentMsg);
+                break;
+            case CLOSED:
+                onAgentSignOff(agentMsg);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void onActorLifecycle(final ActorLifecycleMessage lfMsg) {
         String actor = lfMsg.getActor();
 
-        switch (lfMsg.getPhase()) {
+        switch (lfMsg.getState()) {
             case CREATED:
                 actorsListener.onActorCreated(actor, lfMsg.getAgent());
                 break;
@@ -111,13 +117,12 @@ final class JMSRegistriesTopicListener implements MessageListener {
         }
     }
 
-    private void onAgentSignOff(final AgentOutputMessage received) {
-        String actorName = (String) received.getData();
-        agentsListener.onAgentSignOff(actorName);
+    private void onAgentSignOff(final AgentLifecycleMessage received) {
+        String agentName = received.getAgent();
+        agentsListener.onAgentSignOff(agentName);
     }
 
-    private void onAgentRegistration(final AgentOutputMessage received) {
-        AgentRegistrationMessage regMsg = (AgentRegistrationMessage) received.getData();
-        agentsListener.onAgentRegistration(regMsg);
+    private void onAgentRegistration(final AgentLifecycleMessage received) {
+        agentsListener.onAgentRegistration(received.getRegistrationMessage());
     }
 }

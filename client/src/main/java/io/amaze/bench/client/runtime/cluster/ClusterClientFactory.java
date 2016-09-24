@@ -18,7 +18,7 @@ package io.amaze.bench.client.runtime.cluster;
 import javax.validation.constraints.NotNull;
 
 /**
- * Factory for interfaces to interact with orchestration layer.
+ * Factory to create clients to communicate with the cluster.
  * <ul>
  * <li>Provides {@link AgentClusterClient} instances for the {@link io.amaze.bench.client.runtime.agent.Agent}
  * to listen to incoming messages.</li>

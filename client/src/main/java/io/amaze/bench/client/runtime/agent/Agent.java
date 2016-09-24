@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.Optional;
@@ -37,8 +36,6 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.created;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.failed;
-import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.REGISTER_AGENT;
-import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.UNREGISTER_AGENT;
 import static java.lang.String.format;
 
 /**
@@ -144,16 +141,11 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void sendRegistrationMessage(@NotNull final AgentRegistrationMessage regMsg) {
-        sendToAgentRegistry(REGISTER_AGENT, regMsg);
+        agentClient.sendToAgentRegistry(AgentLifecycleMessage.created(regMsg));
     }
 
     private void signOff() {
-        sendToAgentRegistry(UNREGISTER_AGENT, name);
-    }
-
-    private void sendToAgentRegistry(AgentOutputMessage.Action action, Serializable msg) {
-        AgentOutputMessage agentOutputMessage = new AgentOutputMessage(action, msg);
-        agentClient.sendToAgentRegistry(agentOutputMessage);
+        agentClient.sendToAgentRegistry(AgentLifecycleMessage.closed(name));
     }
 
     private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {

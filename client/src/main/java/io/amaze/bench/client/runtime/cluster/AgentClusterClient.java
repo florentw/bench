@@ -16,7 +16,7 @@
 package io.amaze.bench.client.runtime.cluster;
 
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
+import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 
 import javax.validation.constraints.NotNull;
 
@@ -39,6 +39,6 @@ public interface AgentClusterClient extends ClusterClient {
      *
      * @param message Payload to send
      */
-    void sendToAgentRegistry(@NotNull final AgentOutputMessage message);
+    void sendToAgentRegistry(@NotNull final AgentLifecycleMessage message);
 
 }

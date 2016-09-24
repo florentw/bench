@@ -16,7 +16,7 @@
 package io.amaze.bench.util;
 
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
+import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import org.mockito.ArgumentMatcher;
 
@@ -25,30 +25,30 @@ import java.io.Serializable;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Created on 9/24/16.
+ * Mockito matchers for {@link io.amaze.bench.client.runtime.LifecycleMessage} instances matching.
  */
 public final class Matchers {
 
-    public static ArgumentMatcher<ActorLifecycleMessage> isLifecyclePhase(ActorLifecycleMessage.Phase phase) {
+    public static ArgumentMatcher<ActorLifecycleMessage> isActorState(ActorLifecycleMessage.State state) {
         return new ArgumentMatcher<ActorLifecycleMessage>() {
             @Override
             public boolean matches(final Object argument) {
                 ActorLifecycleMessage actual = (ActorLifecycleMessage) argument;
-                if (ActorLifecycleMessage.Phase.FAILED == actual.getPhase()) {
+                if (ActorLifecycleMessage.State.FAILED == actual.getState()) {
                     assertNotNull(actual.getThrowable());
                 }
 
-                return actual.getPhase() == phase;
+                return actual.getState() == state;
             }
         };
     }
 
-    public static ArgumentMatcher<Serializable> isAgentLifecycle(final AgentOutputMessage input) {
+    public static ArgumentMatcher<Serializable> isAgentLifecycle(final String from, final AgentLifecycleMessage input) {
         return new ArgumentMatcher<Serializable>() {
             @Override
             public boolean matches(final Object argument) {
-                Message<AgentOutputMessage> msg = (Message<AgentOutputMessage>) argument;
-                return msg.data().equals(input);
+                Message<AgentLifecycleMessage> msg = (Message<AgentLifecycleMessage>) argument;
+                return msg.data().equals(input) && msg.from().equals(from);
             }
         };
     }
@@ -57,8 +57,18 @@ public final class Matchers {
         return new ArgumentMatcher<Serializable>() {
             @Override
             public boolean matches(final Object argument) {
-                Message<AgentOutputMessage> msg = (Message<AgentOutputMessage>) argument;
-                return msg.data().getData().equals(input) && msg.from().equals(from);
+                Message<ActorLifecycleMessage> msg = (Message<ActorLifecycleMessage>) argument;
+                return msg.data().equals(input) && msg.from().equals(from);
+            }
+        };
+    }
+
+    public static ArgumentMatcher<AgentLifecycleMessage> isAgentState(final AgentLifecycleMessage.State state) {
+        return new ArgumentMatcher<AgentLifecycleMessage>() {
+            @Override
+            public boolean matches(final Object argument) {
+                AgentLifecycleMessage message = (AgentLifecycleMessage) argument;
+                return message.getState() == state;
             }
         };
     }

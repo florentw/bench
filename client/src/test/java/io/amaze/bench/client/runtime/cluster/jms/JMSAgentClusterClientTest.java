@@ -19,7 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
+import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -99,12 +99,12 @@ public final class JMSAgentClusterClientTest {
 
     @Test
     public void send_to_agent_registry_sends_to_topic() throws JMSException {
-        AgentOutputMessage agentOutputMessage = new AgentOutputMessage(AgentOutputMessage.Action.REGISTER_AGENT,
-                                                                       TEST_AGENT);
+        AgentLifecycleMessage agentLifecycleMessage = AgentLifecycleMessage.closed(TEST_AGENT);
 
-        client.sendToAgentRegistry(agentOutputMessage);
+        client.sendToAgentRegistry(agentLifecycleMessage);
 
-        verify(jmsClient).sendToTopic(eq(REGISTRIES_TOPIC), argThat(isAgentLifecycle(agentOutputMessage)));
+        verify(jmsClient).sendToTopic(eq(REGISTRIES_TOPIC),
+                                      argThat(isAgentLifecycle(TEST_AGENT, agentLifecycleMessage)));
         verifyNoMoreInteractions(jmsClient);
     }
 

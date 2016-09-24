@@ -15,32 +15,31 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
+import io.amaze.bench.client.runtime.LifecycleMessage;
+
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This message class represents actor lifecycle notifications.<br>
- * It is meant to be sent by an agent to the master.<br>
- * <p>
- * Created on 3/6/16.
+ * This message class represents actor lifecycle notifications.
+ * It is meant to be sent by an agent to the registry.<br>
  */
-public final class ActorLifecycleMessage implements Serializable {
+public final class ActorLifecycleMessage implements LifecycleMessage {
 
     private final String actor;
-    private final Phase phase;
+    private final State state;
     private final String agent;
     private final ActorDeployInfo deployInfo;
     private final Throwable throwable;
 
-    private ActorLifecycleMessage(@NotNull final Phase phase,
+    private ActorLifecycleMessage(@NotNull final State state,
                                   @NotNull final String actor,
                                   final String agent,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {
         this.actor = checkNotNull(actor);
-        this.phase = checkNotNull(phase);
+        this.state = checkNotNull(state);
         this.agent = agent;
         this.deployInfo = deployInfo;
         this.throwable = throwable;
@@ -50,7 +49,7 @@ public final class ActorLifecycleMessage implements Serializable {
         checkNotNull(actor);
         checkNotNull(agent);
 
-        return new ActorLifecycleMessage(Phase.CREATED, actor, agent, null, null);
+        return new ActorLifecycleMessage(State.CREATED, actor, agent, null, null);
     }
 
     public static ActorLifecycleMessage initialized(@NotNull final String actor,
@@ -58,20 +57,20 @@ public final class ActorLifecycleMessage implements Serializable {
         checkNotNull(actor);
         checkNotNull(deployInfo);
 
-        return new ActorLifecycleMessage(Phase.INITIALIZED, actor, null, deployInfo, null);
+        return new ActorLifecycleMessage(State.INITIALIZED, actor, null, deployInfo, null);
     }
 
     public static ActorLifecycleMessage failed(@NotNull final String actor, @NotNull final Throwable throwable) {
         checkNotNull(actor);
         checkNotNull(throwable);
 
-        return new ActorLifecycleMessage(Phase.FAILED, actor, null, null, throwable);
+        return new ActorLifecycleMessage(State.FAILED, actor, null, null, throwable);
     }
 
     public static ActorLifecycleMessage closed(@NotNull final String actor) {
         checkNotNull(actor);
 
-        return new ActorLifecycleMessage(Phase.CLOSED, actor, null, null, null);
+        return new ActorLifecycleMessage(State.CLOSED, actor, null, null, null);
     }
 
     @NotNull
@@ -80,8 +79,8 @@ public final class ActorLifecycleMessage implements Serializable {
     }
 
     @NotNull
-    public Phase getPhase() {
-        return phase;
+    public State getState() {
+        return state;
     }
 
     public String getAgent() {
@@ -100,13 +99,13 @@ public final class ActorLifecycleMessage implements Serializable {
     public String toString() {
         return "{\"ActorLifecycleMessage\":{" + //
                 "\"actor\":\"" + actor + "\"" + ", " + //
-                "\"phase\":\"" + phase + "\"" + ", " + //
+                "\"state\":\"" + state + "\"" + ", " + //
                 "\"throwable\":" + throwable + ", " + //
                 "\"agent\":\"" + agent + "\"" + ", " + //
                 "\"deployInfo\":" + deployInfo + "}}";
     }
 
-    public enum Phase {
+    public enum State {
         CREATED, //
         INITIALIZED, //
         FAILED, //

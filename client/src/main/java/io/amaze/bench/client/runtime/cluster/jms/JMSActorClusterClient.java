@@ -18,7 +18,6 @@ package io.amaze.bench.client.runtime.cluster.jms;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.RuntimeActor;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -50,9 +49,7 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
 
     @Override
     public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        AgentOutputMessage agentRegistration = new AgentOutputMessage(AgentOutputMessage.Action.ACTOR_LIFECYCLE,
-                                                                      actorLifecycleMessage);
-        Message msg = new Message<>(actor, agentRegistration);
+        Message msg = new Message<>(actor, actorLifecycleMessage);
         sendToActorRegistry(msg);
     }
 

@@ -16,8 +16,9 @@
 package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.client.runtime.LifecycleMessage;
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
+import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
@@ -35,7 +36,6 @@ import java.io.IOException;
 
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
-import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.*;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Mockito.*;
@@ -86,8 +86,7 @@ public final class JMSRegistriesTopicListenerTest {
     @Test
     public void agent_registered() throws IOException, JMSException {
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent");
-        AgentOutputMessage inputMsg = new AgentOutputMessage(REGISTER_AGENT, regMsg);
-        BytesMessage msg = toBytesMessage(inputMsg);
+        BytesMessage msg = toBytesMessage(AgentLifecycleMessage.created(regMsg));
 
         messageListener.onMessage(msg);
 
@@ -98,8 +97,7 @@ public final class JMSRegistriesTopicListenerTest {
 
     @Test
     public void agent_signoff() throws IOException, JMSException {
-        AgentOutputMessage inputMsg = new AgentOutputMessage(UNREGISTER_AGENT, DUMMY_AGENT);
-        BytesMessage msg = toBytesMessage(inputMsg);
+        BytesMessage msg = toBytesMessage(AgentLifecycleMessage.closed(DUMMY_AGENT));
 
         messageListener.onMessage(msg);
 
@@ -110,8 +108,7 @@ public final class JMSRegistriesTopicListenerTest {
 
     @Test
     public void actor_created() throws IOException, JMSException {
-        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, created(DUMMY_ACTOR, DUMMY_AGENT));
-        BytesMessage msg = toBytesMessage(inputMsg);
+        BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT));
 
         messageListener.onMessage(msg);
 
@@ -123,8 +120,7 @@ public final class JMSRegistriesTopicListenerTest {
     @Test
     public void actor_initialized() throws IOException, JMSException {
         ActorDeployInfo deployInfo = new ActorDeployInfo(10);
-        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, initialized(DUMMY_ACTOR, deployInfo));
-        BytesMessage msg = toBytesMessage(inputMsg);
+        BytesMessage msg = toBytesMessage(initialized(DUMMY_ACTOR, deployInfo));
 
         messageListener.onMessage(msg);
 
@@ -136,8 +132,7 @@ public final class JMSRegistriesTopicListenerTest {
     @Test
     public void actor_failure() throws IOException, JMSException {
         Throwable throwable = new IllegalArgumentException();
-        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, failed(DUMMY_ACTOR, throwable));
-        BytesMessage msg = toBytesMessage(inputMsg);
+        BytesMessage msg = toBytesMessage(failed(DUMMY_ACTOR, throwable));
 
         messageListener.onMessage(msg);
 
@@ -148,8 +143,7 @@ public final class JMSRegistriesTopicListenerTest {
 
     @Test
     public void actor_closed() throws IOException, JMSException {
-        AgentOutputMessage inputMsg = new AgentOutputMessage(ACTOR_LIFECYCLE, closed(DUMMY_ACTOR));
-        BytesMessage msg = toBytesMessage(inputMsg);
+        BytesMessage msg = toBytesMessage(closed(DUMMY_ACTOR));
 
         messageListener.onMessage(msg);
 
@@ -158,8 +152,8 @@ public final class JMSRegistriesTopicListenerTest {
         verifyNoMoreInteractions(actorRegistryListener);
     }
 
-    private BytesMessage toBytesMessage(final AgentOutputMessage masterMsg) throws IOException, JMSException {
-        Message<AgentOutputMessage> message = new Message<>("", masterMsg);
+    private BytesMessage toBytesMessage(final LifecycleMessage lifecycleMessage) throws IOException, JMSException {
+        Message<LifecycleMessage> message = new Message<>("", lifecycleMessage);
         final byte[] data = JMSHelper.convertToBytes(message);
         return createTestBytesMessage(data);
     }

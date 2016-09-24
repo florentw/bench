@@ -42,7 +42,7 @@ public final class ActorLifecycleMessageTest {
 
         assertThat(received.getActor(), is(msg.getActor()));
         assertThat(received.getAgent(), is(msg.getAgent()));
-        assertThat(received.getPhase(), is(msg.getPhase()));
+        assertThat(received.getState(), is(msg.getState()));
         assertThat(received.getDeployInfo(), is(msg.getDeployInfo()));
         assertThat(received.getThrowable(), is(msg.getThrowable()));
     }
