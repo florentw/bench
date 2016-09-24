@@ -17,31 +17,33 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
-import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 
 /**
  * Created on 3/14/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class EmbeddedActorManagerTest {
 
-    private RecorderOrchestratorActor client;
+    @Mock
+    private ActorClusterClient client;
     private ActorManager actorManager;
     private Actors actors;
 
     @Before
     public void before() {
-        client = Mockito.spy(new RecorderOrchestratorActor());
-
         DummyClientFactory factory = new DummyClientFactory(null, client);
         actors = new Actors(factory);
         actorManager = new EmbeddedActorManager(DUMMY_AGENT, actors);
@@ -51,26 +53,33 @@ public final class EmbeddedActorManagerTest {
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(Actors.class, actors);
+
         tester.testAllPublicConstructors(EmbeddedActorManager.class);
         tester.testAllPublicInstanceMethods(actorManager);
     }
 
     @Test
-    public void create_actor() throws ValidationException, InterruptedException {
+    public void creating_actor_starts_listener() throws ValidationException, InterruptedException {
         ManagedActor actor = actorManager.createActor(DUMMY_CONFIG);
         assertNotNull(actor);
+
         verify(client).startActorListener(any(RuntimeActor.class));
+        verifyNoMoreInteractions(client);
     }
 
     @Test
-    public void create_close_actor() throws Exception {
+    public void closing_actor_closes_client() throws Exception {
         ManagedActor actor = actorManager.createActor(DUMMY_CONFIG);
         actor.close();
+
+        verify(client).startActorListener(any(RuntimeActor.class));
         verify(client).close();
     }
 
     @Test
-    public void close_manager() {
+    public void closing_manager_does_nothing() {
         actorManager.close();
+
+        verifyZeroInteractions(client);
     }
 }

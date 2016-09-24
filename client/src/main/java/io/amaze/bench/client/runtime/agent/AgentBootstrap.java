@@ -17,8 +17,8 @@ package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.actor.ActorManagers;
-import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.client.runtime.cluster.jms.JMSClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,14 +51,14 @@ public final class AgentBootstrap {
         int port = Integer.parseInt(args[1]);
 
         JMSEndpoint masterEndpoint = new JMSEndpoint(host, port);
-        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(masterEndpoint);
+        ClusterClientFactory clientFactory = new JMSClusterClientFactory(masterEndpoint);
 
         Agent agent = createAgent(masterEndpoint, clientFactory);
         registerShutdownHook(agent);
     }
 
     @VisibleForTesting
-    static Agent createAgent(final JMSEndpoint masterEndpoint, final OrchestratorClientFactory clientFactory) {
+    static Agent createAgent(final JMSEndpoint masterEndpoint, final ClusterClientFactory clientFactory) {
         return new Agent(clientFactory, new ActorManagers(masterEndpoint));
     }
 

@@ -20,8 +20,10 @@ import net.timewalker.ffmq3.FFMQCoreSettings;
 import net.timewalker.ffmq3.listeners.ClientListener;
 import net.timewalker.ffmq3.listeners.tcp.io.TcpListener;
 import net.timewalker.ffmq3.local.FFMQEngine;
+import net.timewalker.ffmq3.management.TemplateMapping;
 import net.timewalker.ffmq3.management.destination.definition.QueueDefinition;
 import net.timewalker.ffmq3.management.destination.definition.TopicDefinition;
+import net.timewalker.ffmq3.management.destination.template.QueueTemplate;
 import net.timewalker.ffmq3.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,7 @@ public final class FFMQServer implements JMSServer {
     private static final Logger LOG = LoggerFactory.getLogger(FFMQServer.class);
     private static final String ENGINE_NAME = "FFMQ";
     private static final int MAX_NON_PERSISTENT_MESSAGES = 1000;
+    private static final String QUEUE_TEMPLATE = "QueueTemplate";
 
     private final FFMQEngine engine;
     private final ClientListener tcpListener;
@@ -67,6 +70,9 @@ public final class FFMQServer implements JMSServer {
 
             Settings settings = createSettings(DATA_DIR_PATH);
             engine = initEngine(settings);
+
+            createQueueTemplate();
+
             tcpListener = startListenerSynchronously(endpoint, settings);
         } catch (Exception e) {
             throw new io.amaze.bench.shared.jms.JMSException(e);
@@ -135,6 +141,17 @@ public final class FFMQServer implements JMSServer {
             tcpListener.stop();
             engine.undeploy();
         }
+    }
+
+    private void createQueueTemplate() throws JMSException {
+        Settings settings = new Settings();
+        settings.setStringProperty("name", QUEUE_TEMPLATE);
+        settings.setBooleanProperty("persistentStore.useJournal", false);
+        settings.setBooleanProperty("memoryStore.overflowToPersistent", false);
+        settings.setIntProperty("memoryStore.maxMessages", MAX_NON_PERSISTENT_MESSAGES);
+        QueueTemplate queueTemplate = new QueueTemplate(settings);
+        engine.getDestinationTemplateProvider().addQueueTemplate(queueTemplate);
+        engine.getTemplateMappingProvider().addQueueTemplateMapping(new TemplateMapping("*", QUEUE_TEMPLATE));
     }
 
     private void purgeQueuesAnTopicsProperties() throws IOException {
@@ -217,6 +234,9 @@ public final class FFMQServer implements JMSServer {
         settings.setStringProperty(FFMQCoreSettings.BRIDGE_DEFINITIONS_DIR, dataDirPath);
         settings.setStringProperty(FFMQCoreSettings.TEMPLATES_DIR, dataDirPath);
         settings.setStringProperty(FFMQCoreSettings.DEFAULT_DATA_DIR, dataDirPath);
+        settings.setBooleanProperty(FFMQCoreSettings.AUTO_CREATE_QUEUES, true);
+        settings.setBooleanProperty(FFMQCoreSettings.AUTO_CREATE_TOPICS, true);
+        settings.setBooleanProperty(FFMQCoreSettings.DELIVERY_LOG_LISTENERS_FAILURES, true);
         return settings;
     }
 

@@ -74,10 +74,10 @@ public final class AgentBootstrapIntegrationTest {
     public void bootstrap_with_server() throws Exception {
         SyncListener listener = spy(new SyncListener());
 
-        server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
-        server.getServer().createTopic(Constants.AGENTS_ACTOR_NAME);
+        server.getServer().createTopic(Constants.REGISTRIES_TOPIC);
+        server.getServer().createTopic(Constants.AGENTS_TOPIC);
 
-        client.addQueueListener(Constants.MASTER_ACTOR_NAME, listener);
+        client.addTopicListener(Constants.REGISTRIES_TOPIC, listener);
         client.startListening();
 
         agentBootstrapThread.start();

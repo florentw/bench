@@ -76,9 +76,10 @@ public final class ActorConfig implements Serializable {
             return false;
         }
         ActorConfig that = (ActorConfig) o;
-        return Objects.equals(name, that.name) && Objects.equals(className, that.className) && Objects.equals(
-                deployConfig,
-                that.deployConfig) && Objects.equals(actorJsonConfig, that.actorJsonConfig);
+        return Objects.equals(name, that.name) && //
+                Objects.equals(className, that.className) && //
+                Objects.equals(deployConfig, that.deployConfig) && //
+                Objects.equals(actorJsonConfig, that.actorJsonConfig);
     }
 
     @Override

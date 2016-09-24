@@ -20,24 +20,30 @@ import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
 import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
-import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.Phase;
 import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_A;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_B;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
+import static io.amaze.bench.util.Matchers.isLifecyclePhase;
 import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,15 +53,18 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/13/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class BaseActorTest {
 
-    private RecorderOrchestratorActor actorClient;
     private DummyClientFactory clientFactory;
     private Actors factory;
 
+    @Mock
+    private ActorClusterClient actorClient;
+
+
     @Before
     public void before() {
-        actorClient = spy(new RecorderOrchestratorActor());
         clientFactory = new DummyClientFactory(null, actorClient);
         factory = new Actors(clientFactory);
     }
@@ -87,13 +96,8 @@ public final class BaseActorTest {
             assertThat(actor.name(), is(DUMMY_ACTOR));
             assertThat(((TestActor) actor.getInstance()).isBeforeCalled(), is(true));
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check initialized message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.INITIALIZED));
+            verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.INITIALIZED)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -116,13 +120,8 @@ public final class BaseActorTest {
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+            verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.FAILED)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -132,13 +131,8 @@ public final class BaseActorTest {
 
             actor.init();
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+            verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.FAILED)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -149,13 +143,8 @@ public final class BaseActorTest {
 
             actor.init();
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check initialized message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.INITIALIZED));
+            verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.INITIALIZED)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -174,13 +163,12 @@ public final class BaseActorTest {
     public void actor_sends_message() throws Exception {
         try (BaseActor actor = defaultTestActor()) {
             TestActor reactor = (TestActor) actor.getInstance();
-            reactor.getSender().send("hello", "world");
+            String to = "hello";
+            Serializable payload = "world";
+            reactor.getSender().send(to, payload);
 
-            // Check message was sent
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            List<Message<? extends Serializable>> msgToActor = actorClient.getSentMessages().get("hello");
-            assertThat(msgToActor.size(), is(1));
-            assertThat(msgToActor.get(0).data(), is("world"));
+            verify(actorClient).sendToActor(eq(to), argThat(isMessage(payload)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -191,8 +179,7 @@ public final class BaseActorTest {
             actor.onMessage(DUMMY_ACTOR, RECOVERABLE_EXCEPTION_MSG);
 
             assertFalse(((TestActor) actor.getInstance()).isAfterCalled());
-            // Check good no message sent
-            assertTrue(actorClient.getSentMessages().isEmpty());
+            verifyZeroInteractions(actorClient);
         }
     }
 
@@ -215,13 +202,10 @@ public final class BaseActorTest {
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check closed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.CLOSED));
+            InOrder inOrder = inOrder(actorClient);
+            inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.CLOSED)));
+            inOrder.verify(actorClient).close();
+            inOrder.verifyNoMoreInteractions();
         }
     }
 
@@ -231,37 +215,8 @@ public final class BaseActorTest {
 
             actor.onMessage(DUMMY_ACTOR, FAIL_MSG);
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
-        }
-    }
-
-    @Test
-    public void create_dump_metrics_sends_message_to_metrics_actor() throws Exception {
-        try (BaseActor actor = createActor(TestActorMetrics.class)) {
-            actor.init();
-
-            actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
-
-            actor.dumpAndFlushMetrics();
-
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(2));
-            List<Message<? extends Serializable>> msgsToMetrics = actorClient.getSentMessages().get(Constants.METRICS_ACTOR_NAME);
-            assertThat(msgsToMetrics.size(), is(1));
-
-            // Check dump message sent
-            Map<Metric, List<MetricValue>> metricsMap = (Map<Metric, List<MetricValue>>) msgsToMetrics.get(0).data(); // NOSONAR
-            assertThat(metricsMap.size(), is(2));
-            assertThat(metricsMap.get(DUMMY_METRIC_A).size(), is(1));
-            assertThat(metricsMap.get(DUMMY_METRIC_A).get(0).getValue(), is(10));
-            assertThat(metricsMap.get(DUMMY_METRIC_B).size(), is(1));
-            assertThat(metricsMap.get(DUMMY_METRIC_B).get(0).getValue(), is(1));
+            verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.FAILED)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -274,13 +229,39 @@ public final class BaseActorTest {
                                                                                   any(Message.class));
             actor.dumpAndFlushMetrics();
 
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
+            InOrder inOrder = inOrder(actorClient);
+            inOrder.verify(actorClient).sendToActor(eq(METRICS_ACTOR_NAME), isA(Message.class));
+            inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.FAILED)));
+            inOrder.verifyNoMoreInteractions();
+        }
+    }
 
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+    @Test
+    public void create_dump_metrics_sends_message_to_metrics_actor() throws Exception {
+        try (BaseActor actor = createActor(TestActorMetrics.class)) {
+            actor.init();
+
+            actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
+
+            actor.dumpAndFlushMetrics();
+
+            ArgumentMatcher<Message<? extends Serializable>> matchesMetrics = new ArgumentMatcher<Message<? extends Serializable>>() {
+                @Override
+                public boolean matches(final Object argument) {
+                    Message<? extends Serializable> msg = (Message<? extends Serializable>) argument;
+                    Map<Metric, List<MetricValue>> metricsMap = (Map<Metric, List<MetricValue>>) msg.data(); // NOSONAR
+                    assertThat(metricsMap.size(), is(2));
+                    assertThat(metricsMap.get(DUMMY_METRIC_A).size(), is(1));
+                    assertThat(metricsMap.get(DUMMY_METRIC_A).get(0).getValue(), is(10));
+                    assertThat(metricsMap.get(DUMMY_METRIC_B).size(), is(1));
+                    assertThat(metricsMap.get(DUMMY_METRIC_B).get(0).getValue(), is(1));
+                    return true;
+                }
+            };
+            InOrder inOrder = inOrder(actorClient);
+            inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.INITIALIZED)));
+            inOrder.verify(actorClient).sendToActor(eq(Constants.METRICS_ACTOR_NAME), argThat(matchesMetrics));
+            inOrder.verifyNoMoreInteractions();
         }
     }
 
@@ -288,57 +269,42 @@ public final class BaseActorTest {
     public void close_actor_and_closing_client_throws() throws Exception {
         clientFactory = new DummyClientFactory(null, actorClient);
         factory = new Actors(clientFactory);
-
         doThrow(new RuntimeException()).when(actorClient).close();
-
         BaseActor actor = defaultTestActor();
 
         actor.close();
-        verify(actorClient).close();
 
-        // Check good flow of messages
-        assertThat(actorClient.getSentMessages().size(), is(1));
-        assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-        // Check closed message sent
-        ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-        assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.CLOSED));
+        InOrder inOrder = inOrder(actorClient);
+        inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.CLOSED)));
+        inOrder.verify(actorClient).close();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void close_actor_calls_after() throws Exception {
         BaseActor actor = defaultTestActor();
+
         actor.close();
 
-        // Assert after method was called
         assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-
-        // Check good flow of messages
-        assertThat(actorClient.getSentMessages().size(), is(1));
-        assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-        // Check closed message sent
-        ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-        assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.CLOSED));
+        InOrder inOrder = inOrder(actorClient);
+        inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.CLOSED)));
+        inOrder.verify(actorClient).close();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void close_actor_twice_closes_once() throws Exception {
         BaseActor actor = defaultTestActor();
+
+        actor.close();
         actor.close();
 
-        verify(actorClient).close();
-
-        // Assert after method was called
         assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-
-        actor.close();
-
-        verify(actorClient).close();
-
-        // Check good flow of messages
-        assertThat(actorClient.getSentMessages().size(), is(1));
-        assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
+        InOrder inOrder = inOrder(actorClient);
+        inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.CLOSED)));
+        inOrder.verify(actorClient).close();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -346,29 +312,34 @@ public final class BaseActorTest {
         BaseActor actor = createActor(TestActorAfterThrows.class);
         actor.close();
 
-        verify(actorClient).close();
-
-        // Check good flow of messages
-        assertThat(actorClient.getSentMessages().size(), is(1));
-        assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-        // Check failed message sent
-        ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-        assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+        InOrder inOrder = inOrder(actorClient);
+        inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.FAILED)));
+        inOrder.verify(actorClient).close();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void close_actor_and_sending_lifecycle_msg_throws() throws Exception {
         BaseActor actor = defaultTestActor();
 
-        doThrow(new IllegalArgumentException()).when(actorClient).sendToActor(anyString(), any(Message.class));
+        doThrow(new IllegalArgumentException()).when(actorClient).sendToActorRegistry(any(ActorLifecycleMessage.class));
 
         actor.close();
 
-        verify(actorClient).close();
+        InOrder inOrder = inOrder(actorClient);
+        inOrder.verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.CLOSED)));
+        inOrder.verify(actorClient).close();
+        inOrder.verifyNoMoreInteractions();
+    }
 
-        // Check no messages sent
-        assertTrue(actorClient.getSentMessages().isEmpty());
+    private ArgumentMatcher<Message<? extends Serializable>> isMessage(final Serializable payload) {
+        return new ArgumentMatcher<Message<? extends Serializable>>() {
+            @Override
+            public boolean matches(final Object argument) {
+                Message<? extends Serializable> msg = (Message<? extends Serializable>) argument;
+                return msg.data().equals(payload);
+            }
+        };
     }
 
     private void verifyIrrecoverableExceptions(String messageToActor) throws ValidationException {
@@ -378,30 +349,18 @@ public final class BaseActorTest {
 
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-
-            // Check good flow of messages
-            assertThat(actorClient.getSentMessages().size(), is(1));
-            assertThat(messagesSentToMasterFrom(actorClient).size(), is(1));
-
-            // Check failed message sent
-            ActorLifecycleMessage lfMsg = firstMessageToMaster(messagesSentToMasterFrom(actorClient));
-            assertThat(lfMsg.getPhase(), is(ActorLifecycleMessage.Phase.FAILED));
+            verify(actorClient).sendToActorRegistry(argThat(isLifecyclePhase(Phase.FAILED)));
+            verifyNoMoreInteractions(actorClient);
         }
     }
 
     private BaseActor createActor(final Class<?> actorClass) throws ValidationException {
-        return (BaseActor) factory.create(DUMMY_ACTOR, actorClass.getName(), DUMMY_JSON_CONFIG);
+        BaseActor baseActor = (BaseActor) factory.create(DUMMY_ACTOR, actorClass.getName(), DUMMY_JSON_CONFIG);
+        verify(actorClient).startActorListener(baseActor);
+        return baseActor;
     }
 
     private BaseActor defaultTestActor() throws ValidationException {
         return createActor(TestActor.class);
-    }
-
-    private List<Message<? extends Serializable>> messagesSentToMasterFrom(final RecorderOrchestratorActor actorClient) {
-        return actorClient.getSentMessages().get(Constants.MASTER_ACTOR_NAME);
-    }
-
-    private <T extends Serializable> T firstMessageToMaster(final List<Message<? extends Serializable>> msgsToMaster) {
-        return (T) ((AgentOutputMessage) msgsToMaster.get(0).data()).getData();
     }
 }

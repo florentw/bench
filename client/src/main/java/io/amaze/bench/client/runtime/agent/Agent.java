@@ -22,9 +22,8 @@ import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.ActorManager;
 import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.actor.ManagedActor;
-import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +37,8 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.created;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.failed;
-import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.*;
-import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
+import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.REGISTER_AGENT;
+import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.UNREGISTER_AGENT;
 import static java.lang.String.format;
 
 /**
@@ -50,17 +49,16 @@ public class Agent implements AgentClientListener, AutoCloseable {
     static final String DEFAULT_AGENT_PREFIX = "agent-";
     private static final Logger LOG = LoggerFactory.getLogger(Agent.class);
     private final Map<String, ManagedActor> actors = Maps.newHashMap();
-    private final OrchestratorAgent agentClient;
+    private final AgentClusterClient agentClient;
     private final ActorManager embeddedManager;
     private final ActorManager forkedManager;
     private final String name;
 
-    public Agent(@NotNull final OrchestratorClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
+    public Agent(@NotNull final ClusterClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
         this(defaultName(), clientFactory, actorManagers);
     }
 
-    public Agent(@NotNull final String name,
-                 @NotNull final OrchestratorClientFactory clientFactory,
+    public Agent(@NotNull final String name, @NotNull final ClusterClientFactory clientFactory,
                  @NotNull final ActorManagers actorManagers) {
 
         this.name = checkNotNull(name);
@@ -74,7 +72,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         embeddedManager = actorManagers.createEmbedded(name, clientFactory);
         forkedManager = actorManagers.createForked(name);
 
-        agentClient = clientFactory.createForAgent();
+        agentClient = clientFactory.createForAgent(name);
 
         agentClient.startAgentListener(name, this);
         sendRegistrationMessage(regMsg);
@@ -102,7 +100,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
             actors.put(actorName, instance.get());
-            sendToMaster(ACTOR_LIFECYCLE, created(actorName, name));
+            agentClient.sendToActorRegistry(created(actorName, name));
         }
 
         LOG.info(format("Actor \"%s\" created.", actorName));
@@ -146,16 +144,16 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void sendRegistrationMessage(@NotNull final AgentRegistrationMessage regMsg) {
-        sendToMaster(REGISTER_AGENT, regMsg);
+        sendToAgentRegistry(REGISTER_AGENT, regMsg);
     }
 
     private void signOff() {
-        sendToMaster(UNREGISTER_AGENT, name);
+        sendToAgentRegistry(UNREGISTER_AGENT, name);
     }
 
-    private void sendToMaster(AgentOutputMessage.Action action, Serializable msg) {
+    private void sendToAgentRegistry(AgentOutputMessage.Action action, Serializable msg) {
         AgentOutputMessage agentOutputMessage = new AgentOutputMessage(action, msg);
-        agentClient.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
+        agentClient.sendToAgentRegistry(agentOutputMessage);
     }
 
     private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {
@@ -179,6 +177,6 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void actorFailure(@NotNull final String actor, @NotNull final Throwable throwable) {
-        sendToMaster(ACTOR_LIFECYCLE, failed(actor, throwable));
+        agentClient.sendToActorRegistry(failed(actor, throwable));
     }
 }

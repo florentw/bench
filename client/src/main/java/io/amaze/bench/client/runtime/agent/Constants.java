@@ -20,9 +20,10 @@ package io.amaze.bench.client.runtime.agent;
  */
 public final class Constants {
 
-    public static final String MASTER_ACTOR_NAME = "master";
+    public static final String REGISTRIES_TOPIC = "registries";
+
     public static final String METRICS_ACTOR_NAME = "metrics";
-    public static final String AGENTS_ACTOR_NAME = "agents";
+    public static final String AGENTS_TOPIC = "agents";
 
     public static final String LOG_DIRECTORY_NAME = "logs";
 

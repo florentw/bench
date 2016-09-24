@@ -18,14 +18,16 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
-import io.amaze.bench.client.runtime.agent.RecorderOrchestratorActor;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.shared.util.Files;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +40,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 3/14/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class ActorBootstrapTest {
 
     private static final String DUMMY_HOST = "dummyhost";
@@ -49,18 +52,21 @@ public final class ActorBootstrapTest {
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
 
+    @Mock
+    private ActorClusterClient client;
+
     private ActorBootstrap actorBootstrap;
 
     @Before
     public void before() {
-        OrchestratorActor client = new RecorderOrchestratorActor();
-        OrchestratorClientFactory factory = new DummyClientFactory(null, client);
+        ClusterClientFactory factory = new DummyClientFactory(null, client);
         actorBootstrap = new ActorBootstrap(factory);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+
         tester.testAllPublicConstructors(ActorBootstrap.class);
         tester.testAllPublicStaticMethods(ActorBootstrap.class);
         tester.testAllPublicInstanceMethods(actorBootstrap);
@@ -129,7 +135,7 @@ public final class ActorBootstrapTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void main_orchestrator_client_throws() throws IOException, ValidationException {
+    public void main_cluster_client_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
         ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});

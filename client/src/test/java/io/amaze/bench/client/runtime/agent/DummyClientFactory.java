@@ -15,30 +15,30 @@
  */
 package io.amaze.bench.client.runtime.agent;
 
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorAgent;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.client.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 
 /**
  * Created on 3/30/16.
  */
-public final class DummyClientFactory implements OrchestratorClientFactory {
+public final class DummyClientFactory implements ClusterClientFactory {
 
-    private final OrchestratorAgent agentClient;
-    private final OrchestratorActor actorClient;
+    private final AgentClusterClient agentClient;
+    private final ActorClusterClient actorClient;
 
-    public DummyClientFactory(final OrchestratorAgent agentClient, final OrchestratorActor actorClient) {
+    public DummyClientFactory(final AgentClusterClient agentClient, final ActorClusterClient actorClient) {
         this.agentClient = agentClient;
         this.actorClient = actorClient;
     }
 
     @Override
-    public OrchestratorAgent createForAgent() {
+    public AgentClusterClient createForAgent(String agent) {
         return agentClient;
     }
 
     @Override
-    public OrchestratorActor createForActor() {
+    public ActorClusterClient createForActor(String actor) {
         return actorClient;
     }
 }

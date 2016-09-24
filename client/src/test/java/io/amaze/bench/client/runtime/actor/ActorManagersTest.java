@@ -16,7 +16,7 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public final class ActorManagersTest {
     private ActorManagers actorManagers;
 
     @Mock
-    private OrchestratorClientFactory clientFactory;
+    private ClusterClientFactory clientFactory;
 
     @Before
     public void before() {

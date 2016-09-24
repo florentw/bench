@@ -23,9 +23,8 @@ import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
-import io.amaze.bench.client.runtime.agent.AgentOutputMessage;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.json.SystemInfo;
@@ -40,8 +39,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
-import static io.amaze.bench.client.runtime.agent.AgentOutputMessage.Action.ACTOR_LIFECYCLE;
-import static io.amaze.bench.client.runtime.agent.Constants.MASTER_ACTOR_NAME;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 
 /**
@@ -57,14 +54,13 @@ public class BaseActor implements RuntimeActor {
     private final Method beforeMethod;
     private final Method afterMethod;
     private final Reactor instance;
-    private final OrchestratorActor client;
+    private final ActorClusterClient client;
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public BaseActor(@NotNull final String name,
                      @NotNull final MetricsInternal metrics,
-                     @NotNull final Reactor instance,
-                     @NotNull final OrchestratorActor client,
+                     @NotNull final Reactor instance, @NotNull final ActorClusterClient client,
                      final Method beforeMethod,
                      final Method afterMethod) {
 
@@ -227,18 +223,13 @@ public class BaseActor implements RuntimeActor {
         }
     }
 
-    private void sendToActorRegistry(AgentOutputMessage.Action action, Serializable msg) {
-        AgentOutputMessage agentOutputMessage = new AgentOutputMessage(action, msg);
-        client.sendToActor(MASTER_ACTOR_NAME, new Message<>(name, agentOutputMessage));
-    }
-
     private void sendLifecycleMessage(@NotNull final ActorLifecycleMessage msg) {
-        sendToActorRegistry(ACTOR_LIFECYCLE, msg);
+        client.sendToActorRegistry(msg);
     }
 
     private void actorFailure(@NotNull final Throwable throwable) {
         LOG.warn(this + " failure.", throwable);
 
-        sendToActorRegistry(ACTOR_LIFECYCLE, failed(name, throwable));
+        client.sendToActorRegistry(failed(name, throwable));
     }
 }

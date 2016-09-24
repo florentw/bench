@@ -22,9 +22,10 @@ import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.Sender;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.client.runtime.cluster.ClusterClient;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorActor;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
@@ -41,7 +42,7 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
  * <ul>
  * <li>Loading the reactor class and checking validity</li>
  * <li>Parsing and loading configuration, checking for validity</li>
- * <li>Creating the actor's {@link io.amaze.bench.client.runtime.orchestrator.OrchestratorClient}</li>
+ * <li>Creating the actor's {@link ClusterClient}</li>
  * <li>Injecting reactor's dependencies and instantiation</li>
  * <li>Returns a {@link RuntimeActor} object wrapper for the resource manager to use</li>
  * </ul>
@@ -56,10 +57,10 @@ public final class Actors {
                     .setSyntax(ConfigSyntax.JSON) //
                     .setAllowMissing(true);
 
-    private final OrchestratorClientFactory clientFactory;
+    private final ClusterClientFactory clientFactory;
     private final ConfigParseOptions configParseOptions;
 
-    public Actors(@NotNull final OrchestratorClientFactory clientFactory) {
+    public Actors(@NotNull final ClusterClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
 
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
@@ -78,7 +79,7 @@ public final class Actors {
 
         MetricsInternal metrics = MetricsInternal.create();
 
-        OrchestratorActor client = clientFactory.createForActor();
+        ActorClusterClient client = clientFactory.createForActor(name);
         Reactor reactor = createReactor(name, metrics, clazz, client, config);
 
         return new BaseActor(name, metrics, reactor, client, beforeMethod, afterMethod);
@@ -95,9 +96,10 @@ public final class Actors {
     /**
      * Inject dependencies to create a reactor.
      */
-    private Reactor createReactor(final String actorName, final Metrics metrics,
-                                  final Class<? extends Reactor> clazz,
-                                  final OrchestratorActor client,
+    private Reactor createReactor(final String actorName, //
+                                  final Metrics metrics, //
+                                  final Class<? extends Reactor> clazz, //
+                                  final ActorClusterClient client, //
                                   final Config config) {
 
         MutablePicoContainer pico = new DefaultPicoContainer();

@@ -73,7 +73,7 @@ public final class ForkedActorManagerTest {
 
         actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, folder);
 
-        server.getServer().createQueue(Constants.MASTER_ACTOR_NAME);
+        server.getServer().createTopic(Constants.REGISTRIES_TOPIC);
         server.getServer().createQueue(DUMMY_ACTOR);
     }
 
@@ -85,6 +85,7 @@ public final class ForkedActorManagerTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
+
         tester.testAllPublicConstructors(ForkedActorManager.class);
         tester.testAllPublicInstanceMethods(actorManager);
     }

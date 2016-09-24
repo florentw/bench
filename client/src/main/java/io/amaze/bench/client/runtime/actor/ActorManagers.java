@@ -15,7 +15,8 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 
 import javax.validation.constraints.NotNull;
@@ -44,13 +45,12 @@ public class ActorManagers {
      * Will create a new instance of {@link ActorManager} that will instantiate actors in the current JVM.
      *
      * @param agentName The host agent name.
-     * @param factory   An {@link OrchestratorClientFactory} to be used to create
-     *                  {@link io.amaze.bench.client.runtime.orchestrator.OrchestratorActor} instances.
+     * @param factory   An {@link ClusterClientFactory} to be used to create
+     *                  {@link ActorClusterClient} instances.
      * @return An instantiated {@link EmbeddedActorManager}
      */
     @NotNull
-    public ActorManager createEmbedded(@NotNull final String agentName,
-                                       @NotNull final OrchestratorClientFactory factory) {
+    public ActorManager createEmbedded(@NotNull final String agentName, @NotNull final ClusterClientFactory factory) {
         checkNotNull(agentName);
         checkNotNull(factory);
 

@@ -16,8 +16,8 @@
 package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.client.runtime.orchestrator.JMSOrchestratorClientFactory;
-import io.amaze.bench.client.runtime.orchestrator.OrchestratorClientFactory;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.client.runtime.cluster.jms.JMSClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.util.Files;
 import org.slf4j.Logger;
@@ -37,9 +37,9 @@ public final class ActorBootstrap {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActorBootstrap.class);
 
-    private final OrchestratorClientFactory clientFactory;
+    private final ClusterClientFactory clientFactory;
 
-    ActorBootstrap(@NotNull final OrchestratorClientFactory clientFactory) {
+    ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
     }
 
@@ -68,7 +68,7 @@ public final class ActorBootstrap {
         String jsonConfig = Files.readAndDelete(jsonTmpConfigFile);
 
         JMSEndpoint serverEndpoint = new JMSEndpoint(jmsServerHost, jmsServerPort);
-        OrchestratorClientFactory clientFactory = new JMSOrchestratorClientFactory(serverEndpoint);
+        ClusterClientFactory clientFactory = new JMSClusterClientFactory(serverEndpoint);
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
         RuntimeActor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
