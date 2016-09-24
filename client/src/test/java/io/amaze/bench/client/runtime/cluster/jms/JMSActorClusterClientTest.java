@@ -32,7 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import javax.jms.MessageListener;
 import java.io.Serializable;
 
-import static io.amaze.bench.client.runtime.agent.Constants.REGISTRIES_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 import static io.amaze.bench.util.Matchers.isActorLifecycle;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -94,7 +94,8 @@ public final class JMSActorClusterClientTest {
         ActorLifecycleMessage closed = ActorLifecycleMessage.closed(TestActor.DUMMY_ACTOR);
         client.sendToActorRegistry(closed);
 
-        verify(jmsClient).sendToTopic(eq(REGISTRIES_TOPIC), argThat(isActorLifecycle(TestActor.DUMMY_ACTOR, closed)));
+        verify(jmsClient).sendToTopic(eq(ACTOR_REGISTRY_TOPIC),
+                                      argThat(isActorLifecycle(TestActor.DUMMY_ACTOR, closed)));
         verifyNoMoreInteractions(jmsClient);
     }
 

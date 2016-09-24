@@ -15,9 +15,8 @@
  */
 package io.amaze.bench.cluster.jms;
 
-import io.amaze.bench.cluster.RegistriesClusterClient;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
@@ -26,34 +25,32 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.client.runtime.agent.Constants.REGISTRIES_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 
 /**
- * Created on 9/24/16.
+ * Created on 9/25/16.
  */
-public final class JMSRegistriesClusterClient implements RegistriesClusterClient {
+public final class JMSActorRegistryClusterClient implements ActorRegistryClusterClient {
 
     private final JMSClient client;
 
-    public JMSRegistriesClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
+    public JMSActorRegistryClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         this.client = checkNotNull(client);
 
         try {
-            server.createTopic(REGISTRIES_TOPIC);
+            server.createTopic(ACTOR_REGISTRY_TOPIC);
         } catch (JMSException e) {
             throw propagate(e);
         }
     }
 
     @Override
-    public void startRegistryListeners(@NotNull final AgentRegistryListener agentsListener,
-                                       @NotNull final ActorRegistryListener actorsListener) {
-        checkNotNull(agentsListener);
+    public void startRegistryListener(@NotNull final ActorRegistryListener actorsListener) {
         checkNotNull(actorsListener);
 
         try {
-            JMSRegistriesTopicListener msgListener = new JMSRegistriesTopicListener(agentsListener, actorsListener);
-            client.addTopicListener(REGISTRIES_TOPIC, msgListener);
+            JMSActorRegistryTopicListener msgListener = new JMSActorRegistryTopicListener(actorsListener);
+            client.addTopicListener(ACTOR_REGISTRY_TOPIC, msgListener);
             client.startListening();
 
         } catch (JMSException e) {

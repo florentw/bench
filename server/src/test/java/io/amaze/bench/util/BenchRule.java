@@ -16,15 +16,16 @@
 package io.amaze.bench.util;
 
 import io.amaze.bench.client.runtime.actor.ActorManagers;
+import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.client.runtime.cluster.jms.JMSClusterClientFactory;
-import io.amaze.bench.cluster.ActorSender;
-import io.amaze.bench.cluster.Actors;
-import io.amaze.bench.cluster.Agents;
-import io.amaze.bench.cluster.ResourceManager;
-import io.amaze.bench.cluster.jms.JMSRegistriesClusterClient;
+import io.amaze.bench.cluster.*;
+import io.amaze.bench.cluster.jms.JMSActorRegistryClusterClient;
+import io.amaze.bench.cluster.jms.JMSAgentRegistryClusterClient;
 import io.amaze.bench.cluster.jms.JMSResourceManagerClusterClient;
 import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSServer;
 import io.amaze.bench.shared.test.JMSServerRule;
@@ -43,7 +44,9 @@ public final class BenchRule extends ExternalResource {
     private ActorSender actorSender;
 
     private JMSClient actorsClient;
-    private JMSClient masterJmsClient;
+    private JMSClient resourceManagerJmsClient;
+    private JMSClient actorRegistryJmsClient;
+    private JMSClient agentRegistryJmsClient;
 
     private Agents agents;
     private Actors actors;
@@ -88,23 +91,27 @@ public final class BenchRule extends ExternalResource {
     protected void before() throws Throwable {
         jmsServerRule.init();
 
-        masterJmsClient = createClient();
-        JMSRegistriesClusterClient registriesClient = new JMSRegistriesClusterClient(jmsServerRule.getServer(),
-                                                                                     masterJmsClient);
-
+        resourceManagerJmsClient = createClient();
+        actorRegistryJmsClient = createClient();
+        agentRegistryJmsClient = createClient();
+        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(jmsServerRule.getServer(),
+                                                                                           actorRegistryJmsClient);
+        ActorRegistryClusterClient actorRegistryClient = new JMSActorRegistryClusterClient(jmsServerRule.getServer(),
+                                                                                           agentRegistryJmsClient);
         agentRegistry = new AgentRegistry();
         actorRegistry = new ActorRegistry();
 
-        registriesClient.startRegistryListeners(agentRegistry.createClusterListener(),
-                                                actorRegistry.createClusterListener());
-        JMSResourceManagerClusterClient resourceManagerClient = new JMSResourceManagerClusterClient(jmsServerRule.getServer(),
-                                                                                                    masterJmsClient);
+        agentRegistryClient.startRegistryListener(agentRegistry.createClusterListener());
+        actorRegistryClient.startRegistryListener(actorRegistry.createClusterListener());
+
+        ResourceManagerClusterClient resourceManagerClient = new JMSResourceManagerClusterClient(jmsServerRule.getServer(),
+                                                                                                 resourceManagerJmsClient);
 
         resourceManager = new ResourceManager(resourceManagerClient, agentRegistry);
         actorsClient = createClient();
         actorSender = new ActorSender(actorsClient);
 
-        JMSClusterClientFactory clusterClientFactory = new JMSClusterClientFactory(jmsServerRule.getEndpoint());
+        ClusterClientFactory clusterClientFactory = new JMSClusterClientFactory(jmsServerRule.getEndpoint());
 
         ActorManagers actorManagers = new ActorManagers(jmsServerRule.getEndpoint());
         agents = new Agents(actorManagers, clusterClientFactory, agentRegistry);
@@ -114,7 +121,9 @@ public final class BenchRule extends ExternalResource {
 
     @Override
     protected void after() {
-        masterJmsClient.close();
+        resourceManagerJmsClient.close();
+        actorRegistryJmsClient.close();
+        agentRegistryJmsClient.close();
         actorsClient.close();
 
         jmsServerRule.close();

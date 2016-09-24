@@ -15,12 +15,9 @@
  */
 package io.amaze.bench.cluster.jms;
 
-import io.amaze.bench.client.runtime.LifecycleMessage;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,18 +30,15 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 3/28/16.
+ * Created on 9/25/16.
  */
-final class JMSRegistriesTopicListener implements MessageListener {
+public final class JMSActorRegistryTopicListener implements MessageListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JMSRegistriesTopicListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JMSAgentRegistryTopicListener.class);
 
-    private final AgentRegistryListener agentsListener;
     private final ActorRegistryListener actorsListener;
 
-    JMSRegistriesTopicListener(@NotNull final AgentRegistryListener agentsListener,
-                               @NotNull final ActorRegistryListener actorsListener) {
-        this.agentsListener = checkNotNull(agentsListener);
+    JMSActorRegistryTopicListener(@NotNull final ActorRegistryListener actorsListener) {
         this.actorsListener = checkNotNull(actorsListener);
     }
 
@@ -58,7 +52,8 @@ final class JMSRegistriesTopicListener implements MessageListener {
         }
 
         try {
-            onRegistryMessage(received.get());
+            ActorLifecycleMessage lifecycleMessage = (ActorLifecycleMessage) received.get().data();
+            onActorLifecycle(lifecycleMessage);
         } catch (Exception e) {
             LOG.error("Error handling registry message " + received.get(), e);
         }
@@ -70,30 +65,6 @@ final class JMSRegistriesTopicListener implements MessageListener {
         } catch (Exception e) {
             LOG.error("Error while reading JMS message.", e);
             return Optional.empty();
-        }
-    }
-
-    private void onRegistryMessage(final Message received) {
-        LifecycleMessage lifecycleMessage = (LifecycleMessage) received.data();
-        if (lifecycleMessage instanceof AgentLifecycleMessage) {
-            AgentLifecycleMessage agentMsg = (AgentLifecycleMessage) lifecycleMessage;
-            onAgentLifecycle(agentMsg);
-        } else {
-            ActorLifecycleMessage actorLifecycleMessage = (ActorLifecycleMessage) lifecycleMessage;
-            onActorLifecycle(actorLifecycleMessage);
-        }
-    }
-
-    private void onAgentLifecycle(final AgentLifecycleMessage agentMsg) {
-        switch (agentMsg.getState()) {
-            case CREATED:
-                onAgentRegistration(agentMsg);
-                break;
-            case CLOSED:
-                onAgentSignOff(agentMsg);
-                break;
-            default:
-                break;
         }
     }
 
@@ -115,14 +86,5 @@ final class JMSRegistriesTopicListener implements MessageListener {
                 break;
             default:
         }
-    }
-
-    private void onAgentSignOff(final AgentLifecycleMessage received) {
-        String agentName = received.getAgent();
-        agentsListener.onAgentSignOff(agentName);
-    }
-
-    private void onAgentRegistration(final AgentLifecycleMessage received) {
-        agentsListener.onAgentRegistration(received.getRegistrationMessage());
     }
 }

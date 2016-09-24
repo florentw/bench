@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.client.runtime.agent.Constants.REGISTRIES_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 
 /**
  * Created on 3/3/16.
@@ -71,7 +71,7 @@ abstract class JMSClusterClient implements ClusterClient {
 
     final void sendToActorRegistry(final Message msg) {
         try {
-            getClient().sendToTopic(REGISTRIES_TOPIC, msg);
+            getClient().sendToTopic(ACTOR_REGISTRY_TOPIC, msg);
         } catch (JMSException e) {
             throw propagate(e);
         }

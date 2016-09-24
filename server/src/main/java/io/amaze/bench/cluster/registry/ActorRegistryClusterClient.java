@@ -13,33 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster;
-
-import io.amaze.bench.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.cluster.registry.AgentRegistryListener;
+package io.amaze.bench.cluster.registry;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * Facade for the registries to interact with the cluster messaging system.
+ * Facade to add a listener on actors lifecycle events.
  *
- * @see AgentRegistryListener
  * @see ActorRegistryListener
  */
 @FunctionalInterface
-public interface RegistriesClusterClient {
+public interface ActorRegistryClusterClient {
 
     /**
-     * Register the given listeners to be plugged to the underlying message system.<br>
-     * <ul>
-     * <li>{@link AgentRegistryListener} will then be notified of Agent related events</li>
-     * <li>{@link ActorRegistryListener} will be notified of Actor related events</li>
-     * </ul>
+     * Register the given listeners to be plugged to the underlying message system.
+     * {@link ActorRegistryListener} instance will be notified of Actor related events.
      *
-     * @param agentsListener Listener that will be called upon agents notifications.
      * @param actorsListener Listener that will be called upon actors notifications.
      */
-    void startRegistryListeners(@NotNull AgentRegistryListener agentsListener,
-                                @NotNull ActorRegistryListener actorsListener);
+    void startRegistryListener(@NotNull ActorRegistryListener actorsListener);
 
 }

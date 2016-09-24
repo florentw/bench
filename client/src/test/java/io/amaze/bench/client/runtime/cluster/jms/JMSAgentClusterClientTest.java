@@ -34,7 +34,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
 
-import static io.amaze.bench.client.runtime.agent.Constants.REGISTRIES_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 import static io.amaze.bench.util.Matchers.isActorLifecycle;
 import static io.amaze.bench.util.Matchers.isAgentLifecycle;
 import static org.mockito.Matchers.any;
@@ -93,7 +94,7 @@ public final class JMSAgentClusterClientTest {
         ActorLifecycleMessage closed = ActorLifecycleMessage.closed(TestActor.DUMMY_ACTOR);
         client.sendToActorRegistry(closed);
 
-        verify(jmsClient).sendToTopic(eq(REGISTRIES_TOPIC), argThat(isActorLifecycle(TEST_AGENT, closed)));
+        verify(jmsClient).sendToTopic(eq(ACTOR_REGISTRY_TOPIC), argThat(isActorLifecycle(TEST_AGENT, closed)));
         verifyNoMoreInteractions(jmsClient);
     }
 
@@ -103,7 +104,7 @@ public final class JMSAgentClusterClientTest {
 
         client.sendToAgentRegistry(agentLifecycleMessage);
 
-        verify(jmsClient).sendToTopic(eq(REGISTRIES_TOPIC),
+        verify(jmsClient).sendToTopic(eq(AGENT_REGISTRY_TOPIC),
                                       argThat(isAgentLifecycle(TEST_AGENT, agentLifecycleMessage)));
         verifyNoMoreInteractions(jmsClient);
     }

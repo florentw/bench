@@ -17,11 +17,9 @@ package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.LifecycleMessage;
-import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.client.runtime.message.Message;
-import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
@@ -34,8 +32,6 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.io.IOException;
 
-import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
-import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Mockito.*;
@@ -44,23 +40,21 @@ import static org.mockito.Mockito.*;
  * Created on 3/29/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class JMSRegistriesTopicListenerTest {
+public final class JMSAgentRegistryTopicListenerTest {
 
     @Mock
     private AgentRegistryListener agentRegistryListener;
-    @Mock
-    private ActorRegistryListener actorRegistryListener;
-    private JMSRegistriesTopicListener messageListener;
+    private JMSAgentRegistryTopicListener messageListener;
 
     @Before
     public void before() {
-        messageListener = new JMSRegistriesTopicListener(agentRegistryListener, actorRegistryListener);
+        messageListener = new JMSAgentRegistryTopicListener(agentRegistryListener);
     }
 
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.testAllPublicConstructors(JMSRegistriesTopicListener.class);
+        tester.testAllPublicConstructors(JMSAgentRegistryTopicListener.class);
         tester.testAllPublicInstanceMethods(messageListener);
     }
 
@@ -69,7 +63,6 @@ public final class JMSRegistriesTopicListenerTest {
         messageListener.onMessage(mock(javax.jms.Message.class));
 
         verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -80,7 +73,6 @@ public final class JMSRegistriesTopicListenerTest {
         messageListener.onMessage(msg);
 
         verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -92,7 +84,6 @@ public final class JMSRegistriesTopicListenerTest {
 
         verify(agentRegistryListener).onAgentRegistration(regMsg);
         verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
@@ -103,53 +94,6 @@ public final class JMSRegistriesTopicListenerTest {
 
         verify(agentRegistryListener).onAgentSignOff(DUMMY_AGENT);
         verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_created() throws IOException, JMSException {
-        BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_initialized() throws IOException, JMSException {
-        ActorDeployInfo deployInfo = new ActorDeployInfo(10);
-        BytesMessage msg = toBytesMessage(initialized(DUMMY_ACTOR, deployInfo));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, deployInfo);
-        verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_failure() throws IOException, JMSException {
-        Throwable throwable = new IllegalArgumentException();
-        BytesMessage msg = toBytesMessage(failed(DUMMY_ACTOR, throwable));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorFailed(eq(DUMMY_ACTOR), any(Throwable.class));
-        verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_closed() throws IOException, JMSException {
-        BytesMessage msg = toBytesMessage(closed(DUMMY_ACTOR));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorClosed(DUMMY_ACTOR);
-        verifyNoMoreInteractions(agentRegistryListener);
-        verifyNoMoreInteractions(actorRegistryListener);
     }
 
     private BytesMessage toBytesMessage(final LifecycleMessage lifecycleMessage) throws IOException, JMSException {

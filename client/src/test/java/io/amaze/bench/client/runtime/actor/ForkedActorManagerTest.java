@@ -17,7 +17,6 @@ package io.amaze.bench.client.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
@@ -73,7 +72,6 @@ public final class ForkedActorManagerTest {
 
         actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, folder);
 
-        server.getServer().createTopic(Constants.REGISTRIES_TOPIC);
         server.getServer().createQueue(DUMMY_ACTOR);
     }
 

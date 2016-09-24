@@ -16,8 +16,7 @@
 package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.cluster.RegistriesClusterClient;
-import io.amaze.bench.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
@@ -28,37 +27,39 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static io.amaze.bench.client.runtime.agent.Constants.REGISTRIES_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
 
 /**
- * Created on 9/24/16.
+ * Created on 9/25/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class JMSRegistriesClusterClientTest {
+public final class JMSAgentRegistryClusterClientTest {
+
     @Mock
     private JMSClient jmsClient;
     @Mock
     private JMSServer jmsServer;
-    private RegistriesClusterClient registriesClient;
+    private AgentRegistryClusterClient agentRegistryClient;
 
     @Before
     public void before() {
-        registriesClient = new JMSRegistriesClusterClient(jmsServer, jmsClient);
+        agentRegistryClient = new JMSAgentRegistryClusterClient(jmsServer, jmsClient);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
 
-        tester.testAllPublicConstructors(JMSRegistriesClusterClient.class);
-        tester.testAllPublicInstanceMethods(registriesClient);
+        tester.testAllPublicConstructors(JMSAgentRegistryClusterClient.class);
+        tester.testAllPublicInstanceMethods(agentRegistryClient);
     }
 
     @Test
     public void creates_topic_when_initialized() throws JMSException {
-        verify(jmsServer).createTopic(REGISTRIES_TOPIC);
+        verify(jmsServer).createTopic(AGENT_REGISTRY_TOPIC);
         verifyNoMoreInteractions(jmsServer);
         verifyZeroInteractions(jmsClient);
     }
@@ -66,14 +67,13 @@ public final class JMSRegistriesClusterClientTest {
     @Test
     public void start_registry_listeners() throws JMSException {
         AgentRegistryListener agentRegistryListener = mock(AgentRegistryListener.class);
-        ActorRegistryListener actorRegistryListener = mock(ActorRegistryListener.class);
 
-        registriesClient.startRegistryListeners(agentRegistryListener, actorRegistryListener);
+        this.agentRegistryClient.startRegistryListener(agentRegistryListener);
 
-        verify(jmsClient).addTopicListener(eq(REGISTRIES_TOPIC), isA(JMSRegistriesTopicListener.class));
+        verify(jmsClient).addTopicListener(eq(AGENT_REGISTRY_TOPIC), isA(JMSAgentRegistryTopicListener.class));
         verify(jmsClient).startListening();
         verifyNoMoreInteractions(jmsClient);
-        verifyZeroInteractions(agentRegistryListener, actorRegistryListener);
+        verifyZeroInteractions(agentRegistryListener);
     }
 
 }

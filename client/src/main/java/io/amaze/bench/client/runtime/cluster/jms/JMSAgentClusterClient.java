@@ -30,7 +30,7 @@ import javax.validation.constraints.NotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.client.runtime.agent.Constants.AGENTS_TOPIC;
-import static io.amaze.bench.client.runtime.agent.Constants.REGISTRIES_TOPIC;
+import static io.amaze.bench.client.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 
 /**
  * Created on 4/24/16.
@@ -68,7 +68,7 @@ final class JMSAgentClusterClient extends JMSClusterClient implements AgentClust
         checkNotNull(message);
 
         try {
-            getClient().sendToTopic(REGISTRIES_TOPIC, new Message<>(agent, message));
+            getClient().sendToTopic(AGENT_REGISTRY_TOPIC, new Message<>(agent, message));
         } catch (JMSException e) {
             throw propagate(e);
         }
