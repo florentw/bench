@@ -46,7 +46,7 @@ public final class JMSAgentRegistryClusterClientTest {
 
     @Before
     public void before() {
-        agentRegistryClient = new JMSAgentRegistryClusterClient(jmsServer, jmsClient);
+        agentRegistryClient = new JMSAgentRegistryClusterClient(jmsClient);
     }
 
     @Test
@@ -55,13 +55,6 @@ public final class JMSAgentRegistryClusterClientTest {
 
         tester.testAllPublicConstructors(JMSAgentRegistryClusterClient.class);
         tester.testAllPublicInstanceMethods(agentRegistryClient);
-    }
-
-    @Test
-    public void creates_topic_when_initialized() throws JMSException {
-        verify(jmsServer).createTopic(AGENT_REGISTRY_TOPIC);
-        verifyNoMoreInteractions(jmsServer);
-        verifyZeroInteractions(jmsClient);
     }
 
     @Test

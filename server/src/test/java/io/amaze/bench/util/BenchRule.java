@@ -101,8 +101,7 @@ public final class BenchRule extends ExternalResource {
         resourceManagerJmsClient = createClient();
         actorRegistryJmsClient = createClient();
         agentRegistryJmsClient = createClient();
-        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(jmsServerRule.getServer(),
-                                                                                           actorRegistryJmsClient);
+        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(actorRegistryJmsClient);
         ActorRegistryClusterClient actorRegistryClient = new JMSActorRegistryClusterClient(jmsServerRule.getServer(),
                                                                                            agentRegistryJmsClient);
         agentRegistry = new AgentRegistry();
@@ -126,7 +125,7 @@ public final class BenchRule extends ExternalResource {
         actors = new Actors(actorSender, resourceManager, actorRegistry);
 
         metricsRepositoryClient = createClient();
-        metricsRepository = new JMSMetricsRepository(jmsServerRule.getServer(), metricsRepositoryClient);
+        metricsRepository = new JMSMetricsRepository(metricsRepositoryClient);
     }
 
     @Override

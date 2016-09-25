@@ -24,6 +24,7 @@ import net.timewalker.ffmq3.management.TemplateMapping;
 import net.timewalker.ffmq3.management.destination.definition.QueueDefinition;
 import net.timewalker.ffmq3.management.destination.definition.TopicDefinition;
 import net.timewalker.ffmq3.management.destination.template.QueueTemplate;
+import net.timewalker.ffmq3.management.destination.template.TopicTemplate;
 import net.timewalker.ffmq3.utils.Settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,6 +59,7 @@ public final class FFMQServer implements JMSServer {
     private static final String ENGINE_NAME = "FFMQ";
     private static final int MAX_NON_PERSISTENT_MESSAGES = 1000;
     private static final String QUEUE_TEMPLATE = "QueueTemplate";
+    private static final String TOPIC_TEMPLATE = "TopicTemplate";
 
     private final FFMQEngine engine;
     private final ClientListener tcpListener;
@@ -73,6 +75,7 @@ public final class FFMQServer implements JMSServer {
             engine = initEngine(settings);
 
             createQueueTemplate();
+            createTopicTemplate();
 
             tcpListener = startListenerSynchronously(endpoint, settings);
         } catch (Exception e) {
@@ -153,6 +156,17 @@ public final class FFMQServer implements JMSServer {
         QueueTemplate queueTemplate = new QueueTemplate(settings);
         engine.getDestinationTemplateProvider().addQueueTemplate(queueTemplate);
         engine.getTemplateMappingProvider().addQueueTemplateMapping(new TemplateMapping("*", QUEUE_TEMPLATE));
+    }
+
+    private void createTopicTemplate() throws JMSException {
+        Settings settings = new Settings();
+        settings.setStringProperty("name", TOPIC_TEMPLATE);
+        settings.setBooleanProperty("persistentStore.useJournal", false);
+        settings.setBooleanProperty("memoryStore.overflowToPersistent", false);
+        settings.setIntProperty("memoryStore.maxMessages", MAX_NON_PERSISTENT_MESSAGES);
+        TopicTemplate topicTemplate = new TopicTemplate(settings);
+        engine.getDestinationTemplateProvider().addTopicTemplate(topicTemplate);
+        engine.getTemplateMappingProvider().addTopicTemplateMapping(new TemplateMapping("*", TOPIC_TEMPLATE));
     }
 
     private void purgeQueuesAnTopicsProperties() throws IOException {

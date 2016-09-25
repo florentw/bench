@@ -77,7 +77,7 @@ public final class JMSMetricsRepositoryTest {
         doAnswer(invocation -> jmsListener = (MessageListener) invocation.getArguments()[1]) //
                 .when(jmsClient).addTopicListener(eq(METRICS_TOPIC), any(MessageListener.class));
 
-        metricsRepository = new JMSMetricsRepository(server, jmsClient);
+        metricsRepository = new JMSMetricsRepository(jmsClient);
     }
 
     @Test
@@ -91,7 +91,6 @@ public final class JMSMetricsRepositoryTest {
     @Test
     public void creating_MetricsRepository_starts_jms_listener() throws JMSException {
 
-        verify(server).createTopic(METRICS_TOPIC);
         verify(jmsClient).addTopicListener(eq(METRICS_TOPIC), any(MessageListener.class));
         verify(jmsClient).startListening();
         verifyNoMoreInteractions(server);
@@ -105,7 +104,7 @@ public final class JMSMetricsRepositoryTest {
 
         expectedException.expect(RuntimeException.class);
         expectedException.expectCause(is(expected));
-        new JMSMetricsRepository(server, jmsClient);
+        new JMSMetricsRepository(jmsClient);
     }
 
     @Test

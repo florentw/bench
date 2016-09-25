@@ -19,7 +19,6 @@ import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
-import io.amaze.bench.shared.jms.JMSServer;
 
 import javax.validation.constraints.NotNull;
 
@@ -34,14 +33,8 @@ public final class JMSAgentRegistryClusterClient implements AgentRegistryCluster
 
     private final JMSClient client;
 
-    public JMSAgentRegistryClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
+    public JMSAgentRegistryClusterClient(@NotNull final JMSClient client) {
         this.client = checkNotNull(client);
-
-        try {
-            server.createTopic(AGENT_REGISTRY_TOPIC);
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
     }
 
     @Override

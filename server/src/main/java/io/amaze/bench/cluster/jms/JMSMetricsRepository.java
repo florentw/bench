@@ -21,7 +21,6 @@ import io.amaze.bench.cluster.MetricsRepository;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSHelper;
-import io.amaze.bench.shared.jms.JMSServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,10 +45,8 @@ public final class JMSMetricsRepository implements MetricsRepository {
     private final Map<String, MetricValuesMessage> actorValues = new HashMap<>();
     private final Map<String, List<SettableFuture<MetricValuesMessage>>> expectedActors = new HashMap<>();
 
-    public JMSMetricsRepository(@NotNull final JMSServer server, @NotNull final JMSClient client) {
+    public JMSMetricsRepository(@NotNull final JMSClient client) {
         try {
-            server.createTopic(METRICS_TOPIC);
-
             JMSMetricsRepositoryListener msgListener = new JMSMetricsRepositoryListener();
             client.addTopicListener(METRICS_TOPIC, msgListener);
             client.startListening();

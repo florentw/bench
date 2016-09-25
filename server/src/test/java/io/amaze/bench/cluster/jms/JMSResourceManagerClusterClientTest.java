@@ -36,7 +36,8 @@ import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.client.runtime.agent.Constants.AGENTS_TOPIC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created on 4/3/16.
@@ -63,13 +64,6 @@ public final class JMSResourceManagerClusterClientTest {
         NullPointerTester tester = new NullPointerTester();
         tester.testAllPublicConstructors(JMSResourceManagerClusterClient.class);
         tester.testAllPublicInstanceMethods(rmClusterClient);
-    }
-
-    @Test
-    public void agents_endpoint_created_on_initialization() throws JMSException {
-        verify(jmsServer).createTopic(AGENTS_TOPIC);
-
-        verifyNoMoreInteractions(jmsServer, jmsClient);
     }
 
     @Test

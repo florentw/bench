@@ -38,14 +38,6 @@ public final class JMSResourceManagerClusterClient implements ResourceManagerClu
     public JMSResourceManagerClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         this.server = checkNotNull(server);
         this.client = checkNotNull(client);
-
-        try {
-            // This topic is used by the resource manager to send messages to agents
-            server.createTopic(AGENTS_TOPIC);
-
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
     }
 
     @Override

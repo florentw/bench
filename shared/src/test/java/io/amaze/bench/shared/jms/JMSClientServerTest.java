@@ -205,6 +205,7 @@ public final class JMSClientServerTest {
         }
     }
 
+    @Ignore
     @Test(expected = JMSException.class)
     public void client_listens_to_unknown_topic_throws() throws Exception {
         DummyListener listener = new DummyListener(1);
