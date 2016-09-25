@@ -22,9 +22,6 @@ import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
-
 import static io.amaze.bench.api.metric.Metric.metric;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -58,10 +55,10 @@ public final class MetricsInternalTest {
 
         sink.add(10);
 
-        Map<Metric, List<MetricValue>> values = metrics.dumpAndFlush();
-        assertThat(values.size(), is(1));
-        assertThat(values.get(DUMMY_METRIC).size(), is(1));
-        assertThat(values.get(DUMMY_METRIC).get(0).getValue(), is(10));
+        MetricValuesMessage values = metrics.dumpAndFlush();
+        assertThat(values.metrics().size(), is(1));
+        assertThat(values.metrics().get(DUMMY_METRIC).size(), is(1));
+        assertThat(values.metrics().get(DUMMY_METRIC).get(0).getValue(), is(10));
     }
 
     @Test
@@ -71,13 +68,13 @@ public final class MetricsInternalTest {
         sink.timed(10);
         sink.timed(1337L, 11);
 
-        Map<Metric, List<MetricValue>> values = metrics.dumpAndFlush();
-        assertThat(values.size(), is(1));
-        assertThat(values.get(DUMMY_METRIC).size(), is(2));
-        assertThat(values.get(DUMMY_METRIC).get(0).getValue(), is(10));
-        assertTrue(((MetricTimedValue) values.get(DUMMY_METRIC).get(0)).getTimestamp() > 0);
-        assertThat(values.get(DUMMY_METRIC).get(1).getValue(), is(11));
-        assertThat(((MetricTimedValue) values.get(DUMMY_METRIC).get(1)).getTimestamp(), is(1337L));
+        MetricValuesMessage values = metrics.dumpAndFlush();
+        assertThat(values.metrics().size(), is(1));
+        assertThat(values.metrics().get(DUMMY_METRIC).size(), is(2));
+        assertThat(values.metrics().get(DUMMY_METRIC).get(0).getValue(), is(10));
+        assertTrue(((MetricTimedValue) values.metrics().get(DUMMY_METRIC).get(0)).getTimestamp() > 0);
+        assertThat(values.metrics().get(DUMMY_METRIC).get(1).getValue(), is(11));
+        assertThat(((MetricTimedValue) values.metrics().get(DUMMY_METRIC).get(1)).getTimestamp(), is(1337L));
     }
 
     @Test
@@ -85,11 +82,11 @@ public final class MetricsInternalTest {
         metrics.sinkFor(DUMMY_METRIC).add(10);
         metrics.sinkFor(DUMMY_METRIC).add(11);
 
-        Map<Metric, List<MetricValue>> values = metrics.dumpAndFlush();
-        assertThat(values.size(), is(1));
-        assertThat(values.get(DUMMY_METRIC).size(), is(2));
-        assertThat(values.get(DUMMY_METRIC).get(0).getValue(), is(10));
-        assertThat(values.get(DUMMY_METRIC).get(1).getValue(), is(11));
+        MetricValuesMessage values = metrics.dumpAndFlush();
+        assertThat(values.metrics().size(), is(1));
+        assertThat(values.metrics().get(DUMMY_METRIC).size(), is(2));
+        assertThat(values.metrics().get(DUMMY_METRIC).get(0).getValue(), is(10));
+        assertThat(values.metrics().get(DUMMY_METRIC).get(1).getValue(), is(11));
     }
 
     @Test
@@ -101,7 +98,7 @@ public final class MetricsInternalTest {
         metrics.dumpAndFlush();
 
         // Then
-        assertTrue(metrics.dumpAndFlush().isEmpty());
+        assertTrue(metrics.dumpAndFlush().metrics().isEmpty());
     }
 
     @Test

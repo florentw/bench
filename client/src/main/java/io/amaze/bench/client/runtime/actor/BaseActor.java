@@ -20,8 +20,6 @@ import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.RecoverableException;
 import io.amaze.bench.api.TerminationException;
-import io.amaze.bench.api.metric.Metric;
-import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
@@ -33,8 +31,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -109,8 +105,8 @@ public class BaseActor implements RuntimeActor {
     @Override
     public final void dumpAndFlushMetrics() {
         try {
-            Map<Metric, List<MetricValue>> metricValues = this.metrics.dumpAndFlush();
-            client.sendMetrics(new MetricValuesMessage(metricValues));
+            MetricValuesMessage metricValues = this.metrics.dumpAndFlush();
+            client.sendMetrics(metricValues);
         } catch (RuntimeException e) {
             actorFailure(e);
         }

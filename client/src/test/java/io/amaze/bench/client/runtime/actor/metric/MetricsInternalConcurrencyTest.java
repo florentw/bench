@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.*;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
@@ -67,7 +66,7 @@ public final class MetricsInternalConcurrencyTest {
             Metrics.Sink sink = getUninterruptibly(fSink);
             assertNotNull(sink);
         }
-        assertThat(metricsInternal.dumpAndFlush().size(), is(1));
+        assertThat(metricsInternal.dumpAndFlush().metrics().size(), is(1));
     }
 
     @Test
@@ -79,9 +78,9 @@ public final class MetricsInternalConcurrencyTest {
         for (Future<Void> future : futures) {
             getUninterruptibly(future);
         }
-        Map<Metric, List<MetricValue>> map = metricsInternal.dumpAndFlush();
-        assertThat(map.size(), is(1));
-        assertThat(map.get(DUMMY).size(), is(NB_THREADS * ITERATIONS));
+        MetricValuesMessage message = metricsInternal.dumpAndFlush();
+        assertThat(message.metrics().size(), is(1));
+        assertThat(message.metrics().get(DUMMY).size(), is(NB_THREADS * ITERATIONS));
     }
 
     @Test

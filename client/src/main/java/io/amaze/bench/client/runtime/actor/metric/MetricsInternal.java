@@ -54,11 +54,11 @@ public final class MetricsInternal implements Metrics {
         }
     }
 
-    public Map<Metric, List<MetricValue>> dumpAndFlush() {
+    public MetricValuesMessage dumpAndFlush() {
         synchronized (values) {
             Map<Metric, List<MetricValue>> copy = ImmutableMap.copyOf(values);
             flush();
-            return copy;
+            return new MetricValuesMessage(copy);
         }
     }
 

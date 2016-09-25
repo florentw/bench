@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 3/30/16.
+ * Decorator to log agent registry events
  */
 final class AgentRegistryListenerLogger implements AgentRegistryListener {
 

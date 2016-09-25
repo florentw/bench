@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class MetricValuesMessage implements Serializable {
 
-    private final Map<Metric, List<MetricValue>> metricValues;
+    private final Map<Metric, List<MetricValue>> metricValues; // NOSONAR: Serializable
 
     public MetricValuesMessage(@NotNull final Map<Metric, List<MetricValue>> metricValues) {
         this.metricValues = checkNotNull(metricValues);
