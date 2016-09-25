@@ -24,7 +24,9 @@ import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.registry.AgentRegistry;
 import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -37,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -49,6 +52,9 @@ public final class AgentsTest {
 
     private static final int FUTURE_TIMEOUT = 100;
     private static final String AGENT_NAME = "agent";
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private ActorManagers actorManagers;
@@ -103,6 +109,11 @@ public final class AgentsTest {
         Agent agent = getUninterruptibly(future);
         assertNotNull(agent);
         assertThat(agent.getName()).is(AGENT_NAME);
+
+        InOrder inOrder = inOrder(agentRegistry);
+        inOrder.verify(agentRegistry).addListener(agentRegistryListener);
+        inOrder.verify(agentRegistry).removeListener(agentRegistryListener);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test(expected = TimeoutException.class)
@@ -115,12 +126,20 @@ public final class AgentsTest {
         getUninterruptibly(future, FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
-    @Test(expected = TimeoutException.class)
-    public void agent_signOff_does_not_set_future() throws ExecutionException, InterruptedException, TimeoutException {
+    @Test
+    public void agent_signOff_sets_AgentSignOffException()
+            throws ExecutionException, InterruptedException, TimeoutException {
         Future<Agent> future = agents.create(AGENT_NAME);
 
         agentRegistryListener.onAgentSignOff(AGENT_NAME);
 
+        InOrder inOrder = inOrder(agentRegistry);
+        inOrder.verify(agentRegistry).addListener(agentRegistryListener);
+        inOrder.verify(agentRegistry).removeListener(agentRegistryListener);
+        inOrder.verifyNoMoreInteractions();
+
+        expectedException.expect(ExecutionException.class);
+        expectedException.expectCause(instanceOf(Agents.AgentSignOffException.class));
         getUninterruptibly(future, FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 

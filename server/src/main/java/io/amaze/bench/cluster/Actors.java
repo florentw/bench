@@ -133,6 +133,8 @@ public final class Actors {
                 handle.actorCreated.setException(throwable);
                 handle.actorInitialized.setException(throwable);
                 handle.actorClosed.setException(throwable);
+
+                actorRegistry.removeListener(this);
             }
         }
 
@@ -140,6 +142,8 @@ public final class Actors {
         public void onActorClosed(@NotNull final String name) {
             if (name.equals(config.getName())) {
                 handle.actorClosed.set(null);
+
+                actorRegistry.removeListener(this);
             }
         }
 

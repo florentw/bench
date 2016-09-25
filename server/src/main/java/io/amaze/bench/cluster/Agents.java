@@ -44,10 +44,24 @@ public final class Agents {
         this.agentRegistry = checkNotNull(agentRegistry);
     }
 
+    /**
+     * Triggers an {@link Agent} instance creation. Returns a future that is set when it successfully registered.
+     *
+     * @param agentName Name of the agent to be created.
+     * @return A future that will be set with the Agent instance is successful registration.
+     * If a signoff message is received, a {@link AgentSignOffException} is set.
+     */
     public Future<Agent> create(String agentName) {
         WaitAgentRegistration waitAgentRegistration = new WaitAgentRegistration(agentName);
         agentRegistry.addListener(waitAgentRegistration);
         return waitAgentRegistration.createAgent();
+    }
+
+    /**
+     * Is set when the agent signs off.
+     */
+    public static final class AgentSignOffException extends Exception {
+
     }
 
     private final class WaitAgentRegistration implements AgentRegistryListener {
@@ -63,12 +77,16 @@ public final class Agents {
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
             if (msg.getName().equals(agent.getName())) {
                 future.set(agent);
+                agentRegistry.removeListener(this);
             }
         }
 
         @Override
-        public void onAgentSignOff(@NotNull final String agent) {
-            // Nothing to do here
+        public void onAgentSignOff(@NotNull final String agentName) {
+            if (agentName.equals(agent.getName())) {
+                future.setException(new AgentSignOffException());
+                agentRegistry.removeListener(this);
+            }
         }
 
         Future<Agent> createAgent() {

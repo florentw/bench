@@ -135,7 +135,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
     @Override
     public String toString() {
-        return "{\"Agent\":{" + "\"name\":\"" + name + "\"" + "}}";
+        return "{\"Agent\":\"" + name + "\"" + "}";
     }
 
     @NotNull

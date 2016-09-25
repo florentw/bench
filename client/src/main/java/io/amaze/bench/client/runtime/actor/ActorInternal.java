@@ -174,7 +174,7 @@ public class ActorInternal implements RuntimeActor {
 
     @Override
     public String toString() {
-        return "{\"Actor\":{" + "\"name\":\"" + name + "\"" + "}}";
+        return "{\"Actor\":\"" + name + "\"}";
     }
 
     @VisibleForTesting

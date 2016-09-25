@@ -20,7 +20,6 @@ import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.test.JMSServerRule;
 import junit.framework.TestCase;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -140,16 +139,6 @@ public final class JMSClientServerTest {
         }
     }
 
-    @Ignore
-    @Test(expected = JMSException.class)
-    public void client_listens_to_unknown_queue_throws() throws Exception {
-        try (JMSClient client = server.createClient()) {
-            DummyListener listener = new DummyListener(1);
-            client.addQueueListener(DUMMY_TOPIC, listener);
-            client.startListening();
-        }
-    }
-
     @Test
     public void client_sends_five_messages_to_queue_and_receives() throws Exception {
         try (JMSClient client = server.createClient()) {
@@ -202,19 +191,6 @@ public final class JMSClientServerTest {
         try (JMSClient client = server.createClient()) {
             server.getServer().close();
             client.sendToTopic("None", DUMMY_PAYLOAD);
-        }
-    }
-
-    @Ignore
-    @Test(expected = JMSException.class)
-    public void client_listens_to_unknown_topic_throws() throws Exception {
-        DummyListener listener = new DummyListener(1);
-        try (JMSClient client = server.createClient()) {
-
-            client.addTopicListener(DUMMY_TOPIC, listener);
-            client.startListening();
-
-            assertNotNull(server);
         }
     }
 

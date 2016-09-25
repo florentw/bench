@@ -200,6 +200,10 @@ public final class ActorsTest {
 
         Void actual = getUninterruptibly(actorHandle.actorTermination());
         assertNull(actual);
+        InOrder inOrder = inOrder(actorRegistry);
+        inOrder.verify(actorRegistry).addListener(actorRegistryListener);
+        inOrder.verify(actorRegistry).removeListener(actorRegistryListener);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test(expected = TimeoutException.class)
@@ -221,6 +225,10 @@ public final class ActorsTest {
 
         Throwable actual = getUninterruptibly(actorHandle.actorFailure());
         assertSame(actual, expected);
+        InOrder inOrder = inOrder(actorRegistry);
+        inOrder.verify(actorRegistry).addListener(actorRegistryListener);
+        inOrder.verify(actorRegistry).removeListener(actorRegistryListener);
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test(expected = TimeoutException.class)
