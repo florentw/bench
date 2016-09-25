@@ -16,8 +16,8 @@
 package io.amaze.bench.client.runtime.cluster;
 
 
+import io.amaze.bench.client.runtime.actor.ActorInternal;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.actor.BaseActor;
 import io.amaze.bench.client.runtime.agent.Agent;
 import io.amaze.bench.client.runtime.message.Message;
 
@@ -33,7 +33,7 @@ import java.io.Serializable;
  *
  * @see ClusterClientFactory
  * @see Agent
- * @see BaseActor
+ * @see ActorInternal
  */
 public interface ClusterClient extends AutoCloseable {
 

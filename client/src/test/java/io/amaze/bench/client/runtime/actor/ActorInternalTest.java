@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
  * Created on 3/13/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class BaseActorTest {
+public final class ActorInternalTest {
 
     private DummyClientFactory clientFactory;
     private Actors factory;
@@ -72,22 +72,22 @@ public final class BaseActorTest {
     public void null_parameters_are_invalid() throws ValidationException {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(Metrics.class, MetricsInternal.create());
-        tester.setDefault(Method.class, BaseActorTest.class.getMethods()[0]);
-        try (BaseActor actor = defaultTestActor()) {
+        tester.setDefault(Method.class, ActorInternalTest.class.getMethods()[0]);
+        try (ActorInternal actor = defaultTestActor()) {
             tester.testAllPublicInstanceMethods(actor);
         }
     }
 
     @Test
     public void toString_yields_valid_json() throws ValidationException {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
             assertTrue(Json.isValid(actor.toString()));
         }
     }
 
     @Test
     public void create_init_actor() throws Exception {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
 
             actor.init();
 
@@ -112,7 +112,7 @@ public final class BaseActorTest {
 
     @Test
     public void initialize_actor_throws() throws Exception {
-        try (BaseActor actor = createActor(TestActorBeforeThrows.class)) {
+        try (ActorInternal actor = createActor(TestActorBeforeThrows.class)) {
 
             actor.init();
 
@@ -126,7 +126,7 @@ public final class BaseActorTest {
 
     @Test
     public void initialize_actor_failure_and_call_to_after_throws() throws Exception {
-        try (BaseActor actor = createActor(TestActorBeforeAndAfterThrows.class)) {
+        try (ActorInternal actor = createActor(TestActorBeforeAndAfterThrows.class)) {
 
             actor.init();
 
@@ -138,7 +138,7 @@ public final class BaseActorTest {
     @Test
     public void initialize_actor_no_before_method() throws Exception {
         Class<?> actorClass = TestActorNoBeforeNoAfter.class;
-        try (BaseActor actor = createActor(actorClass)) {
+        try (ActorInternal actor = createActor(actorClass)) {
 
             actor.init();
 
@@ -149,7 +149,7 @@ public final class BaseActorTest {
 
     @Test
     public void actor_receives_message() throws Exception {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
 
             actor.onMessage(DUMMY_ACTOR, "");
 
@@ -160,7 +160,7 @@ public final class BaseActorTest {
 
     @Test
     public void actor_sends_message() throws Exception {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
             TestActor reactor = (TestActor) actor.getInstance();
             String to = "hello";
             Serializable payload = "world";
@@ -173,7 +173,7 @@ public final class BaseActorTest {
 
     @Test
     public void recoverableException_is_swallowed_and_actor_not_closed() throws Exception {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
 
             actor.onMessage(DUMMY_ACTOR, RECOVERABLE_EXCEPTION_MSG);
 
@@ -194,7 +194,7 @@ public final class BaseActorTest {
 
     @Test
     public void actor_receives_message_and_throws_termination_exception() throws Exception {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
 
             actor.onMessage(DUMMY_ACTOR, TERMINATE_MSG);
 
@@ -210,7 +210,7 @@ public final class BaseActorTest {
 
     @Test
     public void actor_throws_on_received_message_and_call_to_after_throws() throws Exception {
-        try (BaseActor actor = createActor(TestActorAfterThrows.class)) {
+        try (ActorInternal actor = createActor(TestActorAfterThrows.class)) {
 
             actor.onMessage(DUMMY_ACTOR, FAIL_MSG);
 
@@ -221,7 +221,7 @@ public final class BaseActorTest {
 
     @Test
     public void dump_metrics_throws_and_failure_message_is_sent() throws Exception {
-        try (BaseActor actor = createActor(TestActorMetrics.class)) {
+        try (ActorInternal actor = createActor(TestActorMetrics.class)) {
             actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
 
             doThrow(new IllegalArgumentException()).when(actorClient).sendMetrics(any(MetricValuesMessage.class));
@@ -236,7 +236,7 @@ public final class BaseActorTest {
 
     @Test
     public void create_dump_metrics_sends_message_to_metrics_actor() throws Exception {
-        try (BaseActor actor = createActor(TestActorMetrics.class)) {
+        try (ActorInternal actor = createActor(TestActorMetrics.class)) {
             actor.init();
 
             actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
@@ -268,7 +268,7 @@ public final class BaseActorTest {
         clientFactory = new DummyClientFactory(null, actorClient);
         factory = new Actors(clientFactory);
         doThrow(new RuntimeException()).when(actorClient).close();
-        BaseActor actor = defaultTestActor();
+        ActorInternal actor = defaultTestActor();
 
         actor.close();
 
@@ -280,7 +280,7 @@ public final class BaseActorTest {
 
     @Test
     public void close_actor_calls_after() throws Exception {
-        BaseActor actor = defaultTestActor();
+        ActorInternal actor = defaultTestActor();
 
         actor.close();
 
@@ -293,7 +293,7 @@ public final class BaseActorTest {
 
     @Test
     public void close_actor_twice_closes_once() throws Exception {
-        BaseActor actor = defaultTestActor();
+        ActorInternal actor = defaultTestActor();
 
         actor.close();
         actor.close();
@@ -307,7 +307,7 @@ public final class BaseActorTest {
 
     @Test
     public void close_actor_and_after_method_throws() throws Exception {
-        BaseActor actor = createActor(TestActorAfterThrows.class);
+        ActorInternal actor = createActor(TestActorAfterThrows.class);
         actor.close();
 
         InOrder inOrder = inOrder(actorClient);
@@ -318,7 +318,7 @@ public final class BaseActorTest {
 
     @Test
     public void close_actor_and_sending_lifecycle_msg_throws() throws Exception {
-        BaseActor actor = defaultTestActor();
+        ActorInternal actor = defaultTestActor();
 
         doThrow(new IllegalArgumentException()).when(actorClient).sendToActorRegistry(any(ActorLifecycleMessage.class));
 
@@ -341,7 +341,7 @@ public final class BaseActorTest {
     }
 
     private void verifyIrrecoverableExceptions(String messageToActor) throws ValidationException {
-        try (BaseActor actor = defaultTestActor()) {
+        try (ActorInternal actor = defaultTestActor()) {
 
             actor.onMessage(DUMMY_ACTOR, messageToActor);
 
@@ -352,13 +352,15 @@ public final class BaseActorTest {
         }
     }
 
-    private BaseActor createActor(final Class<?> actorClass) throws ValidationException {
-        BaseActor baseActor = (BaseActor) factory.create(DUMMY_ACTOR, actorClass.getName(), DUMMY_JSON_CONFIG);
-        verify(actorClient).startActorListener(baseActor);
-        return baseActor;
+    private ActorInternal createActor(final Class<?> actorClass) throws ValidationException {
+        ActorInternal actorInternal = (ActorInternal) factory.create(DUMMY_ACTOR,
+                                                                     actorClass.getName(),
+                                                                     DUMMY_JSON_CONFIG);
+        verify(actorClient).startActorListener(actorInternal);
+        return actorInternal;
     }
 
-    private BaseActor defaultTestActor() throws ValidationException {
+    private ActorInternal defaultTestActor() throws ValidationException {
         return createActor(TestActor.class);
     }
 }

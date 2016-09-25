@@ -39,9 +39,9 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
 /**
  * Created on 2/28/16.
  */
-public class BaseActor implements RuntimeActor {
+public class ActorInternal implements RuntimeActor {
 
-    private static final Logger LOG = LogManager.getLogger(BaseActor.class);
+    private static final Logger LOG = LogManager.getLogger(ActorInternal.class);
     private static final String MSG_AFTER_METHOD_FAILED = "{} Error while invoking after method.";
 
     private final String name;
@@ -53,12 +53,12 @@ public class BaseActor implements RuntimeActor {
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
-    public BaseActor(@NotNull final String name,
-                     @NotNull final MetricsInternal metrics,
-                     @NotNull final Reactor instance,
-                     @NotNull final ActorClusterClient client,
-                     final Method beforeMethod,
-                     final Method afterMethod) {
+    public ActorInternal(@NotNull final String name,
+                         @NotNull final MetricsInternal metrics,
+                         @NotNull final Reactor instance,
+                         @NotNull final ActorClusterClient client,
+                         final Method beforeMethod,
+                         final Method afterMethod) {
 
         this.name = checkNotNull(name);
         this.metrics = checkNotNull(metrics);

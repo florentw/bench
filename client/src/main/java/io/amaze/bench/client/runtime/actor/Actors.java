@@ -82,7 +82,7 @@ public final class Actors {
         ActorClusterClient client = clientFactory.createForActor(name);
         Reactor reactor = createReactor(name, metrics, clazz, client, config);
 
-        return new BaseActor(name, metrics, reactor, client, beforeMethod, afterMethod);
+        return new ActorInternal(name, metrics, reactor, client, beforeMethod, afterMethod);
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
