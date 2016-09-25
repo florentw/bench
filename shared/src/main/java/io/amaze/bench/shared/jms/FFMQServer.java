@@ -25,8 +25,8 @@ import net.timewalker.ffmq3.management.destination.definition.QueueDefinition;
 import net.timewalker.ffmq3.management.destination.definition.TopicDefinition;
 import net.timewalker.ffmq3.management.destination.template.QueueTemplate;
 import net.timewalker.ffmq3.utils.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.jms.JMSException;
 import javax.naming.NameAlreadyBoundException;
@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.lang.String.format;
 
 /**
  * Created on 3/2/16.
@@ -53,7 +54,7 @@ public final class FFMQServer implements JMSServer {
     @VisibleForTesting
     static final String TOPIC_PREFIX = "topic-";
 
-    private static final Logger LOG = LoggerFactory.getLogger(FFMQServer.class);
+    private static final Logger LOG = LogManager.getLogger(FFMQServer.class);
     private static final String ENGINE_NAME = "FFMQ";
     private static final int MAX_NON_PERSISTENT_MESSAGES = 1000;
     private static final String QUEUE_TEMPLATE = "QueueTemplate";
@@ -109,7 +110,7 @@ public final class FFMQServer implements JMSServer {
             engine.deleteQueue(queue);
             return true;
         } catch (Exception e) {
-            LOG.debug("Error while deleting queue " + queue, e);
+            LOG.debug("Error while deleting queue {}", queue, e);
             return false;
         }
     }
@@ -122,7 +123,7 @@ public final class FFMQServer implements JMSServer {
             engine.deleteTopic(topic);
             return true;
         } catch (Exception e) {
-            LOG.warn("Error while deleting topic " + topic, e);
+            LOG.warn("Error while deleting topic {}", topic, e);
             return false;
         }
     }
@@ -174,7 +175,7 @@ public final class FFMQServer implements JMSServer {
     private void internalCreateQueue(@NotNull final String name) throws JMSException, NameAlreadyBoundException {
         synchronized (queuesLock) {
             if (engine.getDestinationDefinitionProvider().hasQueueDefinition(name)) {
-                throw new NameAlreadyBoundException(String.format("The queue name '%s' is already in use.", name));
+                throw new NameAlreadyBoundException(format("The queue name '%s' is already in use.", name));
             }
 
             QueueDefinition queueDef = new QueueDefinition();
@@ -190,7 +191,7 @@ public final class FFMQServer implements JMSServer {
     private void internalCreateTopic(@NotNull final String name) throws JMSException, NameAlreadyBoundException {
         synchronized (queuesLock) {
             if (engine.getDestinationDefinitionProvider().hasTopicDefinition(name)) {
-                throw new NameAlreadyBoundException(String.format("The topic name '%s' is already in use.", name));
+                throw new NameAlreadyBoundException(format("The topic name '%s' is already in use.", name));
             }
 
             TopicDefinition topicDef = new TopicDefinition();
@@ -261,7 +262,7 @@ public final class FFMQServer implements JMSServer {
             try {
                 listener.start();
             } catch (JMSException e) {
-                LOG.error("Error while starting TCP listener on " + endpoint, e);
+                LOG.error("Error while starting TCP listener on {}", endpoint, e);
                 exception = e;
             }
         }

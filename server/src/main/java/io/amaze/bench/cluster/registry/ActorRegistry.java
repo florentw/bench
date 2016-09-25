@@ -17,8 +17,8 @@ package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.registry.RegisteredActor.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ActorRegistry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ActorRegistry.class);
+    private static final Logger LOG = LogManager.getLogger(ActorRegistry.class);
 
     private final Map<String, RegisteredActor> actors = new HashMap<>();
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();
@@ -51,7 +51,7 @@ public class ActorRegistry {
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
             if (!removed) {
-                LOG.warn("Attempt to remove unknown actor listener " + listener);
+                LOG.warn("Attempt to remove unknown actor listener {}", listener);
             }
         }
     }
@@ -109,7 +109,7 @@ public class ActorRegistry {
                     actors.put(name, newActor);
 
                 } else {
-                    LOG.warn("Attempt to initialize an unknown Actor: " + name);
+                    LOG.warn("Attempt to initialize an unknown Actor: {}", name);
                     return;
                 }
             }
@@ -125,7 +125,7 @@ public class ActorRegistry {
             synchronized (actors) {
                 RegisteredActor removed = actors.remove(name);
                 if (removed == null) {
-                    LOG.warn("Attempt to remove for failure an unknown actor: " + name, throwable);
+                    LOG.warn("Attempt to remove for failure an unknown actor: {}", name, throwable);
                     return;
                 }
             }
@@ -141,7 +141,7 @@ public class ActorRegistry {
             synchronized (actors) {
                 RegisteredActor removed = actors.remove(name);
                 if (removed == null) {
-                    LOG.warn("Attempt to close an unknown actor: " + name);
+                    LOG.warn("Attempt to close an unknown actor: {}", name);
                     return;
                 }
             }

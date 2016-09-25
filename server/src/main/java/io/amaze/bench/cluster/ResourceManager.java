@@ -22,8 +22,8 @@ import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.cluster.registry.AgentRegistry;
 import io.amaze.bench.cluster.registry.RegisteredAgent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ResourceManager implements AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
+    private static final Logger LOG = LogManager.getLogger(ResourceManager.class);
 
     private final ResourceManagerClusterClient resourceManagerClusterClient;
     private final AgentRegistry agentRegistry;
@@ -143,7 +143,7 @@ public class ResourceManager implements AutoCloseable {
         if (agentOnPreferredHost.isPresent()) {
             return agentOnPreferredHost;
         } else {
-            LOG.warn("Could not find an agent deployed on one of the preferred hosts: " + preferredHosts);
+            LOG.warn("Could not find an agent deployed on one of the preferred hosts: {}", preferredHosts);
 
             // Fallback to pick a random agent
             return pickRandomAgent(allAgents);

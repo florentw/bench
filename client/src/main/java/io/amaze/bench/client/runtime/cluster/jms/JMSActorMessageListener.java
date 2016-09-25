@@ -19,8 +19,8 @@ import io.amaze.bench.api.Reactor;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
 import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.jms.BytesMessage;
 import javax.jms.Message;
@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSActorMessageListener implements MessageListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JMSActorMessageListener.class);
+    private static final Logger LOG = LogManager.getLogger(JMSActorMessageListener.class);
 
     private final RuntimeActor actor;
 
@@ -74,7 +74,7 @@ final class JMSActorMessageListener implements MessageListener {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Invalid ActorInputMessage received, jmsMessage:" + jmsMessage, e);
+            LOG.error("Invalid ActorInputMessage received, jmsMessage:{}", jmsMessage, e);
             return Optional.empty();
         }
     }

@@ -17,15 +17,15 @@ package io.amaze.bench.shared.test;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Created on 8/28/16.
  */
 public final class Json {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Json.class);
+    private static final Logger LOG = LogManager.getLogger(Json.class);
     private static final Gson gson = new Gson();
 
     private Json() {
@@ -37,7 +37,7 @@ public final class Json {
             gson.fromJson(jsonToCheck, Object.class);
             return true;
         } catch (JsonSyntaxException e) {
-            LOG.error("Invalid syntax for " + jsonToCheck, e);
+            LOG.error("Invalid syntax for {}", jsonToCheck, e);
             return false;
         }
     }

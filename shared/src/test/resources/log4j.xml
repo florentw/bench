@@ -25,12 +25,16 @@
         </layout>
     </appender>
 
-    <logger name="io.amaze">
+    <logger name="io.amaze" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
     </logger>
-    <logger name="oshi">
+    <logger name="oshi" additivity="false">
         <level value="WARN"/>
+        <appender-ref ref="console"/>
+    </logger>
+    <logger name="net.timewalker.ffmq3" additivity="false">
+        <level value="INFO"/>
         <appender-ref ref="console"/>
     </logger>
 

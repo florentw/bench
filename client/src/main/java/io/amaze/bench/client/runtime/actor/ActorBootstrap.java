@@ -20,8 +20,8 @@ import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.client.runtime.cluster.jms.JMSClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.util.Files;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ActorBootstrap {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ActorBootstrap.class);
+    private static final Logger LOG = LogManager.getLogger(ActorBootstrap.class);
 
     private final ClusterClientFactory clientFactory;
 
@@ -104,7 +104,7 @@ public final class ActorBootstrap {
 
         @Override
         public void run() {
-            LOG.info("ShutdownHook called for " + actor.name() + ".");
+            LOG.info("ShutdownHook called for {}.", actor.name());
             actor.close();
         }
     }

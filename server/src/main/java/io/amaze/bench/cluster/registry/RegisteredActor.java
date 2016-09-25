@@ -37,8 +37,7 @@ public final class RegisteredActor {
 
     RegisteredActor(@NotNull final String actor,
                     @NotNull final String agent,
-                    @NotNull final State state,
-                    @NotNull final ActorDeployInfo deployInfo) {
+                    @NotNull final State state, final ActorDeployInfo deployInfo) {
         this.actor = checkNotNull(actor);
         this.agent = checkNotNull(agent);
         this.state = checkNotNull(state);

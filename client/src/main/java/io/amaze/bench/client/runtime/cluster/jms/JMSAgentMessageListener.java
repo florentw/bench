@@ -20,8 +20,8 @@ import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.shared.jms.JMSHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.jms.BytesMessage;
 import javax.jms.Message;
@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSAgentMessageListener implements MessageListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JMSAgentMessageListener.class);
+    private static final Logger LOG = LogManager.getLogger(JMSAgentMessageListener.class);
 
     private final AgentClientListener listener;
     private final String agentName;
@@ -77,7 +77,7 @@ final class JMSAgentMessageListener implements MessageListener {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Invalid AgentInputMessage received, jmsMessage:" + jmsMessage, e);
+            LOG.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
             return Optional.empty();
         }
     }

@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AgentRegistryListenerLogger.class);
+    private static final Logger LOG = LogManager.getLogger(AgentRegistryListenerLogger.class);
 
     private final AgentRegistryListener delegate;
 
@@ -40,7 +40,7 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
         checkNotNull(msg);
 
-        LOG.info(String.format("Agent \"%s\" registering, msg: %s", msg.getName(), msg));
+        LOG.info("Agent {} registering, msg: {}", msg.getName(), msg);
 
         delegate.onAgentRegistration(msg);
     }
@@ -49,7 +49,7 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     public void onAgentSignOff(@NotNull final String agent) {
         checkNotNull(agent);
 
-        LOG.info(String.format("Agent \"%s\" signing off.", agent));
+        LOG.info("Agent {} signing off.", agent);
 
         delegate.onAgentSignOff(agent);
     }

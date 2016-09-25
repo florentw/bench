@@ -18,8 +18,8 @@ package io.amaze.bench.actor;
 import com.google.common.base.Stopwatch;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import oshi.json.SystemInfo;
 import oshi.json.software.os.OSProcess;
 
@@ -35,7 +35,7 @@ import static java.lang.String.format;
  */
 final class StopwatchThread implements Runnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StopwatchThread.class);
+    private static final Logger LOG = LogManager.getLogger(StopwatchThread.class);
 
     private final ProcessWatcherActorInput message;
     private final Metrics metrics;
@@ -90,7 +90,7 @@ final class StopwatchThread implements Runnable {
         try {
             return systemInfo.getOperatingSystem().getProcess(message.getPid());
         } catch (Exception e) {
-            LOG.warn("Pid not found " + message.getPid(), e);
+            LOG.warn("Pid {} not found", message.getPid(), e);
             return null;
         }
     }
@@ -135,19 +135,19 @@ final class StopwatchThread implements Runnable {
     private Metric beforeVirtualSize() {
         return metric(format("proc.%s.before.mem.virtualSize", message.getMetricKeyPrefix()),
                       AbstractWatcherActor.UNIT_BYTES) //
-                .label("Virtual memory usage before " + message.getMetricLabelSuffix()).minValue(0).build();
+                .label(format("Virtual memory usage before %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric afterVirtualSize() {
         return metric(format("proc.%s.after.mem.virtualSize", message.getMetricKeyPrefix()),
                       AbstractWatcherActor.UNIT_BYTES) //
-                .label("Virtual memory usage after " + message.getMetricLabelSuffix()).minValue(0).build();
+                .label(format("Virtual memory usage after %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric deltaVirtualSize() {
         return metric(format("proc.%s.delta.mem.virtualSize", message.getMetricKeyPrefix()),
                       AbstractWatcherActor.UNIT_BYTES) //
-                .label("Virtual memory usage delta " + message.getMetricLabelSuffix()).minValue(0).build();
+                .label(format("Virtual memory usage delta %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric beforeResidentSet() {

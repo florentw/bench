@@ -19,8 +19,8 @@ import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSAgentRegistryTopicListener implements MessageListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JMSAgentRegistryTopicListener.class);
+    private static final Logger LOG = LogManager.getLogger(JMSAgentRegistryTopicListener.class);
 
     private final AgentRegistryListener agentsListener;
 
@@ -55,7 +55,7 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
             AgentLifecycleMessage lifecycleMessage = (AgentLifecycleMessage) received.get().data();
             onAgentLifecycle(lifecycleMessage);
         } catch (Exception e) {
-            LOG.error("Error handling registry message " + received.get(), e);
+            LOG.error("Error handling agent registry message {}", received.get(), e);
         }
     }
 

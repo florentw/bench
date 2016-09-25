@@ -18,8 +18,8 @@ package io.amaze.bench.shared.jms;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.timewalker.ffmq3.FFMQConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -36,7 +36,7 @@ import static com.google.common.base.Throwables.propagate;
  */
 public final class FFMQClient implements JMSClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FFMQClient.class);
+    private static final Logger LOG = LogManager.getLogger(FFMQClient.class);
 
     private static final int MAX_CACHE_SIZE = 100;
 

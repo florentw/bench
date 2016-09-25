@@ -25,8 +25,8 @@ import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import oshi.json.SystemInfo;
 
 import javax.validation.constraints.NotNull;
@@ -45,8 +45,8 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
  */
 public class BaseActor implements RuntimeActor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BaseActor.class);
-    private static final String MSG_AFTER_METHOD_FAILED = " Error while invoking after method.";
+    private static final Logger LOG = LogManager.getLogger(BaseActor.class);
+    private static final String MSG_AFTER_METHOD_FAILED = "{} Error while invoking after method.";
 
     private final String name;
     private final MetricsInternal metrics;
@@ -83,22 +83,18 @@ public class BaseActor implements RuntimeActor {
 
     @Override
     public void init() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(this + " Initializing...");
-        }
+        LOG.debug("{} Initializing...", this);
 
         if (beforeMethod == null) {
             sendLifecycleMessage(initialized(name, deployInfo()));
             return;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(this + " Invoking before method...");
-        }
+        LOG.debug("{} Invoking before method...", this);
         try {
             beforeMethod.invoke(instance);
         } catch (Exception e) {
-            LOG.warn(this + " Error while invoking before method on actor \"" + name + "\".", e);
+            LOG.warn("{} Error while invoking before method on actor {}.", this, name, e);
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException ignored) { // NOSONAR
@@ -132,7 +128,7 @@ public class BaseActor implements RuntimeActor {
             /*
              * Recoverable exception, the Reactor code is supposed to be fine, just log the exception.
              */
-            LOG.warn(this + " Recoverable exception caught on message:" + message + ", from:" + from, e);
+            LOG.warn("{} Recoverable exception caught on message:{}, from:{}", this, message, from, e);
 
         } catch (TerminationException ignored) { // NOSONAR
             /*
@@ -148,7 +144,7 @@ public class BaseActor implements RuntimeActor {
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {
-                LOG.warn(this + MSG_AFTER_METHOD_FAILED, afterException);
+                LOG.warn(MSG_AFTER_METHOD_FAILED, this, afterException);
             }
 
             actorFailure(e);
@@ -161,9 +157,7 @@ public class BaseActor implements RuntimeActor {
             return;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(this + " Invoking close...");
-        }
+        LOG.debug("{} Invoking close...", this);
 
         try {
             if (!tryToCallAfterMethod()) {
@@ -172,12 +166,12 @@ public class BaseActor implements RuntimeActor {
 
             sendLifecycleMessage(closed(name));
         } catch (Exception e) {
-            LOG.info(this + " Exception while closing.", e);
+            LOG.info("{} Exception while closing.", this, e);
         } finally {
             try {
                 client.close();
             } catch (Exception e) {
-                LOG.warn(this + " Error while closing client.", e);
+                LOG.warn("{} Error while closing client.", this, e);
             }
         }
     }
@@ -213,12 +207,11 @@ public class BaseActor implements RuntimeActor {
         }
 
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(this + " Invoking after method...");
-            }
+            LOG.debug("{} Invoking after method...", this);
+
             afterMethod.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOG.warn(this + MSG_AFTER_METHOD_FAILED, e);
+            LOG.warn(MSG_AFTER_METHOD_FAILED, this, e);
             throw e;
         }
     }
@@ -228,7 +221,7 @@ public class BaseActor implements RuntimeActor {
     }
 
     private void actorFailure(@NotNull final Throwable throwable) {
-        LOG.warn(this + " failure.", throwable);
+        LOG.warn("{} failure.", this, throwable);
 
         client.sendToActorRegistry(failed(name, throwable));
     }

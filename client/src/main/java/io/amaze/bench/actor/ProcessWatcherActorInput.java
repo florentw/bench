@@ -44,7 +44,8 @@ public final class ProcessWatcherActorInput implements Serializable {
     private ProcessWatcherActorInput(final Command command,
                                      final int pid,
                                      final long periodSeconds,
-                                     final String metricKeyPrefix, final String metricLabelSuffix) {
+                                     final String metricKeyPrefix,
+                                     final String metricLabelSuffix) {
 
         checkArgument(!metricKeyPrefix.trim().isEmpty(), "Key cannot be empty.");
         checkArgument(pid > 0, format("Invalid PID %d", pid));
@@ -94,7 +95,7 @@ public final class ProcessWatcherActorInput implements Serializable {
     }
 
     private static String defaultLabelSuffix(final int pid) {
-        return "pid:" + pid;
+        return String.format("pid:%d", pid);
     }
 
     @Override

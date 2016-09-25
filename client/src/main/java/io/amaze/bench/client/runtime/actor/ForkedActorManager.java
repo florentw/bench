@@ -20,8 +20,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.util.Files;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
@@ -47,7 +47,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
  */
 final class ForkedActorManager extends AbstractActorManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ForkedActorManager.class);
+    private static final Logger LOG = LogManager.getLogger(ForkedActorManager.class);
 
     private static final String JAVA_CMD_PATH = File.separator + "bin" + File.separator + "java";
     private static final String TMP_CONFIG_FILE_PREFIX = "actor-config";
@@ -150,7 +150,7 @@ final class ForkedActorManager extends AbstractActorManager {
                 .redirectErrorStream(true) //
                 .redirectOutput(actorLogFile);
 
-        LOG.info("Started process with command " + builder.command() + ", logging to " + actorLogFileName);
+        LOG.info("Started process with command {}, logging to {}", builder.command(), actorLogFileName);
 
         return builder.start();
     }

@@ -24,8 +24,8 @@ import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.actor.ManagedActor;
 import io.amaze.bench.client.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.lang.management.ManagementFactory;
@@ -36,7 +36,6 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.created;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.failed;
-import static java.lang.String.format;
 
 /**
  * Created on 3/3/16.
@@ -44,7 +43,7 @@ import static java.lang.String.format;
 public class Agent implements AgentClientListener, AutoCloseable {
 
     static final String DEFAULT_AGENT_PREFIX = "agent-";
-    private static final Logger LOG = LoggerFactory.getLogger(Agent.class);
+    private static final Logger LOG = LogManager.getLogger(Agent.class);
     private final Map<String, ManagedActor> actors = Maps.newHashMap();
     private final AgentClusterClient agentClient;
     private final ActorManager embeddedManager;
@@ -64,7 +63,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(name);
 
-        LOG.info(format("Starting agent \"%s\"...", name));
+        LOG.info("{} Starting agent...", this);
 
         embeddedManager = actorManagers.createEmbedded(name, clientFactory);
         forkedManager = actorManagers.createForked(name);
@@ -74,7 +73,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         agentClient.startAgentListener(name, this);
         sendRegistrationMessage(regMsg);
 
-        LOG.info(format("Agent \"%s\" started.", name));
+        LOG.info("{} Agent started.", this);
     }
 
     private static String defaultName() {
@@ -88,11 +87,11 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         String actorName = actorConfig.getName();
         if (actors.get(actorName) != null) {
-            LOG.warn(format("The actor \"%s\" already exists.", actorName));
+            LOG.warn("{} The actor {} already exists.", this, actorName);
             return;
         }
 
-        LOG.info(format("Actor creation request for actor \"%s\" with config: %s", actorName, actorConfig));
+        LOG.info("{} Actor creation request for actor {} with config: {}", this, actorName, actorConfig);
 
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
@@ -100,7 +99,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
             agentClient.sendToActorRegistry(created(actorName, name));
         }
 
-        LOG.info(format("Actor \"%s\" created.", actorName));
+        LOG.info("{} Actor {} created.", this, actorName);
     }
 
     @Override
@@ -109,29 +108,34 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         ManagedActor found = actors.remove(actor);
         if (found == null) {
-            LOG.warn(format("Could not find actor \"%s\" to close.", actor));
+            LOG.warn("{} Could not find actor {} to close.", this, actor);
         } else {
-            LOG.info(format("Closing actor \"%s\"...", actor));
+            LOG.info("{} Closing actor {}...", this, actor);
             found.close();
-            LOG.info(format("Closed actor \"%s\".", actor));
+            LOG.info("{} Closed actor {}.", this, actor);
         }
     }
 
     @Override
     public synchronized void close() throws Exception {
-        LOG.info(format("Closing agent \"%s\"...", name));
+        LOG.info("{} Closing agent...", this);
 
         actors.values().forEach(ManagedActor::close);
         actors.clear();
 
         signOff();
 
-        LOG.info(format("Agent \"%s\" closed.", name));
+        LOG.info("{} Agent closed.", this);
     }
 
     @NotNull
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"Agent\":{" + "\"name\":\"" + name + "\"" + "}}";
     }
 
     @NotNull
@@ -154,7 +158,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
             return Optional.of(manager.createActor(actorConfig));
 
         } catch (Exception e) {
-            LOG.warn(format("Could not create actor with config \"%s\".", actorConfig), e);
+            LOG.warn("Could not create actor with config {}.", actorConfig, e);
             actorFailure(actorConfig.getName(), e);
             return Optional.empty();
         }

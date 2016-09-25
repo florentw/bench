@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.client.runtime.actor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
@@ -30,7 +30,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterrup
  */
 final class ProcessWatchDogThread extends Thread implements Closeable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessWatchDogThread.class);
+    private static final Logger LOG = LogManager.getLogger(ProcessWatchDogThread.class);
 
     private final String name;
     private final Process process;
@@ -56,7 +56,7 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
 
     @Override
     public void run() {
-        LOG.info(this + " Watching process " + process + "...");
+        LOG.info("{} Watching process {}...", this, process);
 
         while (doWork && !exited) {
             watchdogStartedLatch.countDown();
@@ -64,7 +64,7 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
             try {
                 int exitCode = process.waitFor();
                 exited = true;
-                LOG.info(this + " Exited with code " + exitCode + ".");
+                LOG.info("{} Exited with code {}.", this, exitCode);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

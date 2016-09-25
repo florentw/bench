@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.agent.AgentRegistrationMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class AgentRegistry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AgentRegistry.class);
+    private static final Logger LOG = LogManager.getLogger(AgentRegistry.class);
 
     private final Map<String, RegisteredAgent> agents = new HashMap<>();
     private final Set<AgentRegistryListener> clientListeners = new HashSet<>();
@@ -48,7 +48,7 @@ public class AgentRegistry {
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
             if (!removed) {
-                LOG.warn("Attempt to remove unknown agent listener " + listener);
+                LOG.warn("Attempt to remove unknown agent listener {}", listener);
             }
         }
     }
@@ -93,7 +93,7 @@ public class AgentRegistry {
             synchronized (agents) {
                 RegisteredAgent removed = agents.remove(agent);
                 if (removed == null) {
-                    LOG.warn("Attempt to remove unknown agent " + agent);
+                    LOG.warn("Attempt to remove unknown agent {}", agent);
                     return;
                 }
             }

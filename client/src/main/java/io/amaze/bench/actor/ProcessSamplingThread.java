@@ -17,8 +17,8 @@ package io.amaze.bench.actor;
 
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import oshi.json.SystemInfo;
 import oshi.json.software.os.OSProcess;
 
@@ -30,7 +30,7 @@ import static java.lang.String.format;
  */
 final class ProcessSamplingThread implements Runnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessSamplingThread.class);
+    private static final Logger LOG = LogManager.getLogger(ProcessSamplingThread.class);
 
     private final SystemInfo systemInfo;
     private final ProcessWatcherActorInput message;
@@ -71,7 +71,7 @@ final class ProcessSamplingThread implements Runnable {
         try {
             return systemInfo.getOperatingSystem().getProcess(message.getPid());
         } catch (Exception e) {
-            LOG.warn("Pid not found " + message.getPid(), e);
+            LOG.warn("Pid not found {}", message.getPid(), e);
             return null;
         }
     }

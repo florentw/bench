@@ -21,6 +21,7 @@ import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.shared.test.Json;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,7 @@ import static io.amaze.bench.util.Matchers.isAgentState;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -82,6 +84,11 @@ public final class AgentTest {
     @After
     public void after() throws Exception {
         agent.close();
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(agent.toString()));
     }
 
     @Test

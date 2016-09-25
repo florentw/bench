@@ -22,8 +22,8 @@ import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSHelper;
 import io.amaze.bench.shared.jms.JMSServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.jms.BytesMessage;
 import javax.jms.Message;
@@ -41,7 +41,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
  */
 public final class JMSMetricsRepository implements MetricsRepository {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JMSMetricsRepository.class);
+    private static final Logger LOG = LogManager.getLogger(JMSMetricsRepository.class);
 
     private final Map<String, MetricValuesMessage> actorValues = new HashMap<>();
     private final Map<String, List<SettableFuture<MetricValuesMessage>>> expectedActors = new HashMap<>();
@@ -129,7 +129,7 @@ public final class JMSMetricsRepository implements MetricsRepository {
         }
 
         private void updateMetricValues(final String actor, final MetricValuesMessage metrics) {
-            LOG.info("Received metric values from " + actor + " - " + metrics);
+            LOG.info("Received metric values from {}: {}", actor, metrics);
 
             synchronized (actorValues) {
                 MetricValuesMessage currentActorMetrics = updateActorMetricValues(actor, metrics);

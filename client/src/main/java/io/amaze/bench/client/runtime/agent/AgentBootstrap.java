@@ -20,8 +20,8 @@ import io.amaze.bench.client.runtime.actor.ActorManagers;
 import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.client.runtime.cluster.jms.JMSClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentBootstrap {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AgentBootstrap.class);
+    private static final Logger LOG = LogManager.getLogger(AgentBootstrap.class);
 
     private AgentBootstrap() {
         // Should not be instantiated
@@ -81,11 +81,11 @@ public final class AgentBootstrap {
 
         @Override
         public void run() {
-            LOG.info("Calling shutdown hook for agent " + agent);
+            LOG.info("Calling shutdown hook for agent {}", agent);
             try {
                 agent.close();
             } catch (Exception e) {
-                LOG.warn("Error while closing agent " + agent, e);
+                LOG.warn("Error while closing agent {}", agent, e);
             }
         }
     }

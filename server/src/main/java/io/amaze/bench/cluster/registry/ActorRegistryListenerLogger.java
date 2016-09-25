@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ActorRegistryListenerLogger.class);
+    private static final Logger LOG = LogManager.getLogger(ActorRegistryListenerLogger.class);
 
     private final ActorRegistryListener delegate;
 
@@ -41,7 +41,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
         checkNotNull(name);
         checkNotNull(agent);
 
-        LOG.info(String.format("Create actor \"%s\" by agent \"%s\"", name, agent));
+        LOG.info("Create actor {} by agent {}", name, agent);
 
         delegate.onActorCreated(name, agent);
     }
@@ -51,7 +51,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
         checkNotNull(name);
         checkNotNull(deployInfo);
 
-        LOG.info(String.format("Initialization of actor \"%s\" with deploy info %s", name, deployInfo));
+        LOG.info("Initialization of actor {} with deploy info {}", name, deployInfo);
 
         delegate.onActorInitialized(name, deployInfo);
     }
@@ -61,7 +61,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
         checkNotNull(name);
         checkNotNull(throwable);
 
-        LOG.info(String.format("Actor failure of actor \"%s\"", name), throwable);
+        LOG.info("Actor failure of actor {}", name, throwable);
 
         delegate.onActorFailed(name, throwable);
     }
@@ -70,7 +70,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     public void onActorClosed(@NotNull final String name) {
         checkNotNull(name);
 
-        LOG.info(String.format("Close actor \"%s\"", name));
+        LOG.info("Close actor {}", name);
 
         delegate.onActorClosed(name);
     }

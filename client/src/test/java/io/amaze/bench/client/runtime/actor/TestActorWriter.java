@@ -21,8 +21,8 @@ import io.amaze.bench.api.After;
 import io.amaze.bench.api.IrrecoverableException;
 import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.Sender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
@@ -39,7 +39,7 @@ public final class TestActorWriter extends TestActor {
     static final String INIT_FILE_CONFIG = "init_file";
     static final String OK = "OK";
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestActorWriter.class);
+    private static final Logger LOG = LogManager.getLogger(TestActorWriter.class);
     private static final String MSG_CREATION_ERROR = "Could not create file %s";
 
     public TestActorWriter(final Sender sender, final Config config) {
@@ -69,7 +69,7 @@ public final class TestActorWriter extends TestActor {
     private void writeFile(final String fileName, final String content) throws IrrecoverableException {
         try {
             writeTo(new File(fileName), content);
-            LOG.info("Wrote \"" + content + "\" in file " + fileName + " ");
+            LOG.info("Wrote \"{}\" in file {} ", content, fileName);
         } catch (IOException e) {
             throw new IrrecoverableException(String.format(MSG_CREATION_ERROR, fileName), e);
         }
