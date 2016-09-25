@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster;
+package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.message.Message;
+import io.amaze.bench.cluster.MetricsRepository;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSHelper;
@@ -56,7 +57,7 @@ import static org.mockito.Mockito.*;
  * Created on 9/18/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class MetricsRepositoryTest {
+public final class JMSMetricsRepositoryTest {
 
     private static final String ACTOR_NAME = "actor";
 
@@ -76,14 +77,14 @@ public final class MetricsRepositoryTest {
         doAnswer(invocation -> jmsListener = (MessageListener) invocation.getArguments()[1]) //
                 .when(jmsClient).addTopicListener(eq(METRICS_TOPIC), any(MessageListener.class));
 
-        metricsRepository = new MetricsRepository(server, jmsClient);
+        metricsRepository = new JMSMetricsRepository(server, jmsClient);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
 
-        tester.testAllPublicConstructors(MetricsRepository.class);
+        tester.testAllPublicConstructors(JMSMetricsRepository.class);
         tester.testAllPublicInstanceMethods(metricsRepository);
     }
 
@@ -104,7 +105,7 @@ public final class MetricsRepositoryTest {
 
         expectedException.expect(RuntimeException.class);
         expectedException.expectCause(is(expected));
-        new MetricsRepository(server, jmsClient);
+        new JMSMetricsRepository(server, jmsClient);
     }
 
     @Test

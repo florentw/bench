@@ -22,7 +22,6 @@ import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.agent.Agent;
 import io.amaze.bench.cluster.Actors;
 import io.amaze.bench.cluster.MetricsRepository;
-import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;
@@ -67,17 +66,16 @@ public final class WatcherActorsIntegrationTest {
     public final Timeout globalTimeout = new Timeout(15, TimeUnit.SECONDS);
 
     private Agent agent;
-    private JMSClient metricsClient;
+    private MetricsRepository metricsRepository;
 
     @Before
     public void initAgent() throws ExecutionException {
         agent = getUninterruptibly(benchRule.agents().create("test-agent-1"));
-        metricsClient = benchRule.createClient();
+        metricsRepository = benchRule.metricsRepository();
     }
 
     @After
     public void closeAgent() throws Exception {
-        metricsClient.close();
         agent.close();
     }
 
@@ -103,8 +101,6 @@ public final class WatcherActorsIntegrationTest {
 
     @Theory
     public void start_system_monitoring(boolean forked) throws ExecutionException {
-        MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
-
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
 
         systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.start(1));
@@ -127,7 +123,7 @@ public final class WatcherActorsIntegrationTest {
      */
     @Theory
     public void stopWatch_process_monitoring(boolean forked) throws ExecutionException {
-        MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
+        MetricsRepository metricsRepository = benchRule.metricsRepository();
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
@@ -149,7 +145,6 @@ public final class WatcherActorsIntegrationTest {
 
     @Theory
     public void sampling_process_monitoring(boolean forked) throws ExecutionException {
-        MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);

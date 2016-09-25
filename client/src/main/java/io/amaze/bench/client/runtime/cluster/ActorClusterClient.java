@@ -21,7 +21,7 @@ import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 4/24/16.
+ * Interface for an actor to communicate with cluster members.
  */
 public interface ActorClusterClient extends ClusterClient {
 

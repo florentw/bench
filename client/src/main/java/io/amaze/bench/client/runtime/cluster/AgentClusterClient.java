@@ -21,7 +21,7 @@ import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 4/24/16.
+ * Interface for an {@link io.amaze.bench.client.runtime.agent.Agent} to communicate with cluster members.
  */
 public interface AgentClusterClient extends ClusterClient {
 
