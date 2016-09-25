@@ -18,6 +18,7 @@ package io.amaze.bench.cluster;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
@@ -42,7 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
-import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
+import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +74,7 @@ public final class MetricsRepositoryTest {
     @Before
     public void initMetricsRepository() throws JMSException {
         doAnswer(invocation -> jmsListener = (MessageListener) invocation.getArguments()[1]) //
-                .when(jmsClient).addQueueListener(eq(METRICS_ACTOR_NAME), any(MessageListener.class));
+                .when(jmsClient).addTopicListener(eq(METRICS_TOPIC), any(MessageListener.class));
 
         metricsRepository = new MetricsRepository(server, jmsClient);
     }
@@ -89,8 +90,8 @@ public final class MetricsRepositoryTest {
     @Test
     public void creating_MetricsRepository_starts_jms_listener() throws JMSException {
 
-        verify(server).createQueue(METRICS_ACTOR_NAME);
-        verify(jmsClient).addQueueListener(eq(METRICS_ACTOR_NAME), any(MessageListener.class));
+        verify(server).createTopic(METRICS_TOPIC);
+        verify(jmsClient).addTopicListener(eq(METRICS_TOPIC), any(MessageListener.class));
         verify(jmsClient).startListening();
         verifyNoMoreInteractions(server);
         verifyNoMoreInteractions(jmsClient);
@@ -117,8 +118,8 @@ public final class MetricsRepositoryTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        ActorMetricValues actorMetricValues = metricsRepository.valuesFor(ACTOR_NAME);
-        assertThat(actorMetricValues.metrics().size(), is(1));
+        MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(ACTOR_NAME);
+        assertThat(metricValuesMessage.metrics().size(), is(1));
     }
 
     @Test
@@ -127,8 +128,8 @@ public final class MetricsRepositoryTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        Map<String, ActorMetricValues> allMetrics = metricsRepository.allValues();
-        ActorMetricValues metricValues = allMetrics.get(ACTOR_NAME);
+        Map<String, MetricValuesMessage> allMetrics = metricsRepository.allValues();
+        MetricValuesMessage metricValues = allMetrics.get(ACTOR_NAME);
         assertNotNull(metricValues);
         assertThat(metricValues.metrics().size(), is(1));
     }
@@ -143,9 +144,9 @@ public final class MetricsRepositoryTest {
         jmsListener.onMessage(jmsMessage);
         jmsListener.onMessage(secondJmsMessage);
 
-        ActorMetricValues actorMetricValues = metricsRepository.valuesFor(ACTOR_NAME);
-        assertThat(actorMetricValues.metrics().size(), is(1));
-        assertThat(actorMetricValues.metrics().values().iterator().next().size(), is(1));
+        MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(ACTOR_NAME);
+        assertThat(metricValuesMessage.metrics().size(), is(1));
+        assertThat(metricValuesMessage.metrics().values().iterator().next().size(), is(1));
     }
 
     @Test
@@ -154,7 +155,7 @@ public final class MetricsRepositoryTest {
         BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
         jmsListener.onMessage(jmsMessage);
 
-        Future<ActorMetricValues> future = metricsRepository.expectValuesFor(ACTOR_NAME);
+        Future<MetricValuesMessage> future = metricsRepository.expectValuesFor(ACTOR_NAME);
 
         assertThat(getUninterruptibly(future).metrics().size(), is(1));
     }
@@ -162,8 +163,8 @@ public final class MetricsRepositoryTest {
     @Test
     public void expected_metrics_futures_are_set_when_metrics_are_received()
             throws IOException, javax.jms.JMSException, ExecutionException {
-        Future<ActorMetricValues> firstFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
-        Future<ActorMetricValues> secondFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
+        Future<MetricValuesMessage> firstFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
+        Future<MetricValuesMessage> secondFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
         BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
 
         jmsListener.onMessage(jmsMessage);
@@ -173,9 +174,10 @@ public final class MetricsRepositoryTest {
     }
 
     private BytesMessage jmsMetricsMessage(final List<MetricValue> values) throws IOException, javax.jms.JMSException {
-        HashMap<Metric, List<MetricValue>> metricValues = new HashMap<>();
+        Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         metricValues.put(Metric.metric("metric", "sec").build(), values);
-        Message message = new Message(ACTOR_NAME, metricValues);
+        MetricValuesMessage valuesMessage = new MetricValuesMessage(metricValues);
+        Message message = new Message<>(ACTOR_NAME, valuesMessage);
         final byte[] data = JMSHelper.convertToBytes(message);
         return createTestBytesMessage(data);
     }

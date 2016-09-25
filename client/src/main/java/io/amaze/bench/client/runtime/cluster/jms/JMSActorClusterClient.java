@@ -18,6 +18,7 @@ package io.amaze.bench.client.runtime.cluster.jms;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.RuntimeActor;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
 
 /**
  * Created on 4/24/16.
@@ -65,4 +67,15 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
         }
     }
 
+    @Override
+    public void sendMetrics(@NotNull final MetricValuesMessage metricValuesMessage) {
+        checkNotNull(metricValuesMessage);
+
+        Message msg = new Message<>(actor, metricValuesMessage);
+        try {
+            getClient().sendToTopic(METRICS_TOPIC, msg);
+        } catch (JMSException e) {
+            throw propagate(e);
+        }
+    }
 }

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster;
+package io.amaze.bench.client.runtime.actor.metric;
 
 import io.amaze.bench.api.metric.Metric;
-import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,23 +27,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Container for produced metric values for a given actor.
  * It contain a collection of {@link Metric} and their associated values lists.
- *
- * @see MetricsRepository
  */
-public final class ActorMetricValues {
+public final class MetricValuesMessage implements Serializable {
 
     private final Map<Metric, List<MetricValue>> metricValues;
 
-    ActorMetricValues(@NotNull final Map<Metric, List<MetricValue>> metricValues) {
+    public MetricValuesMessage(@NotNull final Map<Metric, List<MetricValue>> metricValues) {
         this.metricValues = checkNotNull(metricValues);
     }
 
     /**
-     * Merges values from the given {@link ActorMetricValues} to the current ones.
+     * Merges values from the given {@link MetricValuesMessage} to the current ones.
      *
      * @param otherValues New metric values to be added to our current set.
      */
-    public synchronized void mergeWith(@NotNull final ActorMetricValues otherValues) {
+    public synchronized void mergeWith(@NotNull final MetricValuesMessage otherValues) {
         checkNotNull(otherValues);
 
         otherValues.metrics().forEach((otherMetric, otherMetricValues) -> {
@@ -69,11 +67,11 @@ public final class ActorMetricValues {
     }
 
     /**
-     * @return A deep copy of this{@link ActorMetricValues}
+     * @return A deep copy of this{@link MetricValuesMessage}
      */
     @NotNull
-    public synchronized ActorMetricValues copy() {
-        return new ActorMetricValues(metrics());
+    public synchronized MetricValuesMessage copy() {
+        return new MetricValuesMessage(metrics());
     }
 
     @Override

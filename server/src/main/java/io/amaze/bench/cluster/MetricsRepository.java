@@ -18,7 +18,7 @@ package io.amaze.bench.cluster;
 import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
-import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSHelper;
@@ -35,14 +35,14 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
+import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
 
 /**
  * Repository for metric values produced by actors.<br/>
  * It offers the ability to get all previously produced actors metric values using {@link #allValues()}, or to wait for
  * an actor to produce values using {@link #expectValuesFor(String)}.
  *
- * @see ActorMetricValues
+ * @see MetricValuesMessage
  * @see Metric
  * @see Metrics
  */
@@ -50,15 +50,15 @@ public final class MetricsRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetricsRepository.class);
 
-    private final Map<String, ActorMetricValues> actorValues = new HashMap<>();
-    private final Map<String, List<SettableFuture<ActorMetricValues>>> expectedActors = new HashMap<>();
+    private final Map<String, MetricValuesMessage> actorValues = new HashMap<>();
+    private final Map<String, List<SettableFuture<MetricValuesMessage>>> expectedActors = new HashMap<>();
 
     public MetricsRepository(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         try {
-            server.createQueue(METRICS_ACTOR_NAME);
+            server.createTopic(METRICS_TOPIC);
 
             JMSMetricsRepositoryListener msgListener = new JMSMetricsRepositoryListener();
-            client.addQueueListener(METRICS_ACTOR_NAME, msgListener);
+            client.addTopicListener(METRICS_TOPIC, msgListener);
             client.startListening();
 
         } catch (JMSException e) {
@@ -72,7 +72,7 @@ public final class MetricsRepository {
      * @param actor Actor to get metric values for.
      * @return Produced metric values for the given actor or {@code null}
      */
-    public ActorMetricValues valuesFor(@NotNull final String actor) {
+    public MetricValuesMessage valuesFor(@NotNull final String actor) {
         checkNotNull(actor);
         synchronized (actorValues) {
             return actorValues.get(actor).copy();
@@ -84,12 +84,12 @@ public final class MetricsRepository {
      * If the actor has already produced metric values, the future will be set right away.
      *
      * @param actor Actor to get metrics for.
-     * @return A future of {@link ActorMetricValues}.
+     * @return A future of {@link MetricValuesMessage}.
      */
-    public Future<ActorMetricValues> expectValuesFor(@NotNull final String actor) {
+    public Future<MetricValuesMessage> expectValuesFor(@NotNull final String actor) {
         checkNotNull(actor);
         synchronized (actorValues) {
-            Optional<Future<ActorMetricValues>> immediate = immediateResult(actor);
+            Optional<Future<MetricValuesMessage>> immediate = immediateResult(actor);
             if (immediate.isPresent()) {
                 return immediate.get();
             }
@@ -103,34 +103,34 @@ public final class MetricsRepository {
      *
      * @return A map of produced metric values with actor names as the key.
      */
-    public Map<String, ActorMetricValues> allValues() {
+    public Map<String, MetricValuesMessage> allValues() {
         synchronized (actorValues) {
-            Map<String, ActorMetricValues> copy = new HashMap<>(actorValues.size());
+            Map<String, MetricValuesMessage> copy = new HashMap<>(actorValues.size());
             actorValues.forEach((actor, metricValues) -> copy.put(actor, actorValues.get(actor).copy()));
             return copy;
         }
     }
 
-    private SettableFuture<ActorMetricValues> registerExpectedActor(final String actor) {
-        List<SettableFuture<ActorMetricValues>> futures = expectedActors.get(actor);
-        SettableFuture<ActorMetricValues> future = SettableFuture.create();
+    private SettableFuture<MetricValuesMessage> registerExpectedActor(final String actor) {
+        List<SettableFuture<MetricValuesMessage>> futures = expectedActors.get(actor);
+        SettableFuture<MetricValuesMessage> future = SettableFuture.create();
         if (futures != null) {
             futures.add(future);
         } else {
-            List<SettableFuture<ActorMetricValues>> list = new ArrayList<>();
+            List<SettableFuture<MetricValuesMessage>> list = new ArrayList<>();
             list.add(future);
             expectedActors.put(actor, list);
         }
         return future;
     }
 
-    private Optional<Future<ActorMetricValues>> immediateResult(final String actor) {
-        ActorMetricValues metricValues = actorValues.get(actor);
+    private Optional<Future<MetricValuesMessage>> immediateResult(final String actor) {
+        MetricValuesMessage metricValues = actorValues.get(actor);
         if (metricValues == null) {
             return Optional.empty();
         }
 
-        SettableFuture<ActorMetricValues> future = SettableFuture.create();
+        SettableFuture<MetricValuesMessage> future = SettableFuture.create();
         future.set(metricValues);
         return Optional.of(future);
     }
@@ -145,32 +145,32 @@ public final class MetricsRepository {
             }
 
             String actor = input.get().from();
-            ActorMetricValues metrics = new ActorMetricValues((Map<Metric, List<MetricValue>>) input.get().data());
+            MetricValuesMessage metrics = (MetricValuesMessage) input.get().data();
 
             updateMetricValues(actor, metrics);
         }
 
-        private void updateMetricValues(final String actor, final ActorMetricValues metrics) {
+        private void updateMetricValues(final String actor, final MetricValuesMessage metrics) {
             LOG.info("Received metric values from " + actor + " - " + metrics);
 
             synchronized (actorValues) {
-                ActorMetricValues currentActorMetrics = updateActorMetricValues(actor, metrics);
+                MetricValuesMessage currentActorMetrics = updateActorMetricValues(actor, metrics);
 
                 setExpectedActorFutures(actor, currentActorMetrics);
             }
         }
 
-        private void setExpectedActorFutures(final String actor, final ActorMetricValues currentActorMetrics) {
-            List<SettableFuture<ActorMetricValues>> futures = expectedActors.remove(actor);
+        private void setExpectedActorFutures(final String actor, final MetricValuesMessage currentActorMetrics) {
+            List<SettableFuture<MetricValuesMessage>> futures = expectedActors.remove(actor);
             if (futures != null) {
-                for (SettableFuture<ActorMetricValues> future : futures) {
+                for (SettableFuture<MetricValuesMessage> future : futures) {
                     future.set(currentActorMetrics);
                 }
             }
         }
 
-        private ActorMetricValues updateActorMetricValues(final String actor, final ActorMetricValues metrics) {
-            ActorMetricValues currentActorMetrics = actorValues.remove(actor);
+        private MetricValuesMessage updateActorMetricValues(final String actor, final MetricValuesMessage metrics) {
+            MetricValuesMessage currentActorMetrics = actorValues.remove(actor);
             if (currentActorMetrics != null) {
                 currentActorMetrics.mergeWith(metrics);
             } else {

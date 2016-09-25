@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.cluster;
 
 import io.amaze.bench.client.runtime.actor.RuntimeActor;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 
 import javax.validation.constraints.NotNull;
 
@@ -30,5 +31,12 @@ public interface ActorClusterClient extends ClusterClient {
      * @param actor The name of the agent that will be notified of messages addressed to it on the given listener.
      */
     void startActorListener(@NotNull final RuntimeActor actor);
+
+    /**
+     * A call to this method will send metrics {@code message} to the metrics topic.
+     *
+     * @param message Payload to send
+     */
+    void sendMetrics(@NotNull final MetricValuesMessage message);
 
 }

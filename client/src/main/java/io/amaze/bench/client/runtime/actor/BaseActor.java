@@ -22,9 +22,9 @@ import io.amaze.bench.api.RecoverableException;
 import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
-import io.amaze.bench.client.runtime.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.json.SystemInfo;
@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
-import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 
 /**
  * Created on 2/28/16.
@@ -60,7 +59,8 @@ public class BaseActor implements RuntimeActor {
 
     public BaseActor(@NotNull final String name,
                      @NotNull final MetricsInternal metrics,
-                     @NotNull final Reactor instance, @NotNull final ActorClusterClient client,
+                     @NotNull final Reactor instance,
+                     @NotNull final ActorClusterClient client,
                      final Method beforeMethod,
                      final Method afterMethod) {
 
@@ -114,7 +114,7 @@ public class BaseActor implements RuntimeActor {
     public final void dumpAndFlushMetrics() {
         try {
             Map<Metric, List<MetricValue>> metricValues = this.metrics.dumpAndFlush();
-            client.sendToActor(METRICS_ACTOR_NAME, new Message<>(name, (Serializable) metricValues));
+            client.sendMetrics(new MetricValuesMessage(metricValues));
         } catch (RuntimeException e) {
             actorFailure(e);
         }

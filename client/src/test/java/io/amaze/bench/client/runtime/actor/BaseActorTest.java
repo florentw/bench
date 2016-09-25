@@ -19,8 +19,8 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.actor.metric.MetricsInternal;
-import io.amaze.bench.client.runtime.agent.Constants;
 import io.amaze.bench.client.runtime.agent.DummyClientFactory;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.message.Message;
@@ -42,7 +42,6 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.State;
 import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_A;
 import static io.amaze.bench.client.runtime.actor.TestActorMetrics.DUMMY_METRIC_B;
-import static io.amaze.bench.client.runtime.agent.Constants.METRICS_ACTOR_NAME;
 import static io.amaze.bench.util.Matchers.isActorState;
 import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
@@ -225,12 +224,11 @@ public final class BaseActorTest {
         try (BaseActor actor = createActor(TestActorMetrics.class)) {
             actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
 
-            doThrow(new IllegalArgumentException()).when(actorClient).sendToActor(eq(METRICS_ACTOR_NAME),
-                                                                                  any(Message.class));
+            doThrow(new IllegalArgumentException()).when(actorClient).sendMetrics(any(MetricValuesMessage.class));
             actor.dumpAndFlushMetrics();
 
             InOrder inOrder = inOrder(actorClient);
-            inOrder.verify(actorClient).sendToActor(eq(METRICS_ACTOR_NAME), isA(Message.class));
+            inOrder.verify(actorClient).sendMetrics(any(MetricValuesMessage.class));
             inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
             inOrder.verifyNoMoreInteractions();
         }
@@ -245,11 +243,11 @@ public final class BaseActorTest {
 
             actor.dumpAndFlushMetrics();
 
-            ArgumentMatcher<Message<? extends Serializable>> matchesMetrics = new ArgumentMatcher<Message<? extends Serializable>>() {
+            ArgumentMatcher<MetricValuesMessage> matchesMetrics = new ArgumentMatcher<MetricValuesMessage>() {
                 @Override
                 public boolean matches(final Object argument) {
-                    Message<? extends Serializable> msg = (Message<? extends Serializable>) argument;
-                    Map<Metric, List<MetricValue>> metricsMap = (Map<Metric, List<MetricValue>>) msg.data(); // NOSONAR
+                    MetricValuesMessage msg = (MetricValuesMessage) argument;
+                    Map<Metric, List<MetricValue>> metricsMap = msg.metrics();
                     assertThat(metricsMap.size(), is(2));
                     assertThat(metricsMap.get(DUMMY_METRIC_A).size(), is(1));
                     assertThat(metricsMap.get(DUMMY_METRIC_A).get(0).getValue(), is(10));
@@ -260,7 +258,7 @@ public final class BaseActorTest {
             };
             InOrder inOrder = inOrder(actorClient);
             inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
-            inOrder.verify(actorClient).sendToActor(eq(Constants.METRICS_ACTOR_NAME), argThat(matchesMetrics));
+            inOrder.verify(actorClient).sendMetrics(argThat(matchesMetrics));
             inOrder.verifyNoMoreInteractions();
         }
     }

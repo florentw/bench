@@ -23,7 +23,8 @@ public final class Constants {
     public static final String ACTOR_REGISTRY_TOPIC = "actor-registry";
     public static final String AGENT_REGISTRY_TOPIC = "agent-registry";
 
-    public static final String METRICS_ACTOR_NAME = "metrics";
+    public static final String METRICS_TOPIC = "metrics";
+
     public static final String AGENTS_TOPIC = "agents";
 
     public static final String LOG_DIRECTORY_NAME = "logs";

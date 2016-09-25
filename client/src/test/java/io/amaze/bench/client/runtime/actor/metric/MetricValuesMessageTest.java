@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster;
+package io.amaze.bench.client.runtime.actor.metric;
 
 import com.google.common.testing.NullPointerTester;
+import com.google.common.testing.SerializableTester;
 import io.amaze.bench.api.metric.Metric;
-import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
  * Created on 9/18/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class ActorMetricValuesTest {
+public final class MetricValuesMessageTest {
 
     private static final Metric DUMMY_METRIC = metric("test", "meters").build();
 
@@ -46,8 +46,16 @@ public final class ActorMetricValuesTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
 
-        tester.testAllPublicConstructors(ActorMetricValues.class);
+        tester.testAllPublicConstructors(MetricValuesMessage.class);
         tester.testAllPublicInstanceMethods(metricValues(2));
+    }
+
+    @Test
+    public void serializable() {
+        MetricValuesMessage expected = metricValues(3);
+        MetricValuesMessage actual = SerializableTester.reserialize(expected);
+
+        assertThat(actual.metrics().size(), is(expected.metrics().size()));
     }
 
     @Test
@@ -58,8 +66,8 @@ public final class ActorMetricValuesTest {
 
     @Test
     public void merge_metrics_with_new_metric_creates_it() {
-        ActorMetricValues originalValues = emptyMetricValues();
-        ActorMetricValues newValues = metricValues(3);
+        MetricValuesMessage originalValues = emptyMetricValues();
+        MetricValuesMessage newValues = metricValues(3);
 
         originalValues.mergeWith(newValues);
 
@@ -69,8 +77,8 @@ public final class ActorMetricValuesTest {
 
     @Test
     public void merge_metrics_add_new_values_to_existing_ones() {
-        ActorMetricValues originalValues = metricValues(2);
-        ActorMetricValues newValues = metricValues(3);
+        MetricValuesMessage originalValues = metricValues(2);
+        MetricValuesMessage newValues = metricValues(3);
 
         originalValues.mergeWith(newValues);
 
@@ -84,18 +92,18 @@ public final class ActorMetricValuesTest {
         List<MetricValue> values = new ArrayList<>();
         values.add(new MetricValue(1));
         metricValues.put(DUMMY_METRIC, values);
-        ActorMetricValues actorMetricValues = new ActorMetricValues(metricValues);
+        MetricValuesMessage metricValuesMessage = new MetricValuesMessage(metricValues);
 
-        assertNotSame(actorMetricValues, actorMetricValues.copy());
-        assertNotSame(metricValues, actorMetricValues.metrics());
-        assertThat(actorMetricValues.copy().metrics().size(), is(actorMetricValues.metrics().size()));
+        assertNotSame(metricValuesMessage, metricValuesMessage.copy());
+        assertNotSame(metricValues, metricValuesMessage.metrics());
+        assertThat(metricValuesMessage.copy().metrics().size(), is(metricValuesMessage.metrics().size()));
     }
 
-    private ActorMetricValues emptyMetricValues() {
-        return new ActorMetricValues(new HashMap<>());
+    private MetricValuesMessage emptyMetricValues() {
+        return new MetricValuesMessage(new HashMap<>());
     }
 
-    private ActorMetricValues metricValues(int nbValues) {
+    private MetricValuesMessage metricValues(int nbValues) {
         Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         List<MetricValue> values = new ArrayList<>();
         for (int i = 0; i < nbValues; i++) {
@@ -104,8 +112,7 @@ public final class ActorMetricValuesTest {
         metricValues.put(DUMMY_METRIC, values);
         metricValues.put(metric("test2", "seconds").build(), new ArrayList<>());
 
-        return new ActorMetricValues(metricValues);
+        return new MetricValuesMessage(metricValues);
     }
-
 
 }

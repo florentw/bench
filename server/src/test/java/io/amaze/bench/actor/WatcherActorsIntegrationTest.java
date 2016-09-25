@@ -18,8 +18,8 @@ package io.amaze.bench.actor;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
+import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.agent.Agent;
-import io.amaze.bench.cluster.ActorMetricValues;
 import io.amaze.bench.cluster.Actors;
 import io.amaze.bench.cluster.MetricsRepository;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -114,7 +114,7 @@ public final class WatcherActorsIntegrationTest {
         systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.stop());
 
         systemWatcher.dumpMetrics();
-        Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(SYSTEM_WATCHER);
+        Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(SYSTEM_WATCHER);
         getUninterruptibly(systemWatcher.close());
         sleepUninterruptibly(1, TimeUnit.SECONDS);
         assertThat(getUninterruptibly(metrics).metrics().size(), is(4));
@@ -128,7 +128,7 @@ public final class WatcherActorsIntegrationTest {
     @Theory
     public void stopWatch_process_monitoring(boolean forked) throws ExecutionException {
         MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
-        Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
+        Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
@@ -150,7 +150,7 @@ public final class WatcherActorsIntegrationTest {
     @Theory
     public void sampling_process_monitoring(boolean forked) throws ExecutionException {
         MetricsRepository metricsRepository = new MetricsRepository(benchRule.jmsServer(), metricsClient);
-        Future<ActorMetricValues> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
+        Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
