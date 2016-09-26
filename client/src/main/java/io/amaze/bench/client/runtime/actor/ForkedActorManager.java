@@ -90,6 +90,10 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         watchDog.awaitUntilStarted();
 
         synchronized (processes) {
+            if (processes.containsKey(actor)) {
+                throw new IllegalArgumentException("An actor with the name " + actor + " already exists.");
+            }
+
             processes.put(actor, watchDog);
         }
 

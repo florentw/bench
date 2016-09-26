@@ -100,9 +100,17 @@ public final class ForkedActorManagerTest {
 
         assertNotNull(actor);
         assertThat(actor.getName(), is(DUMMY_ACTOR));
-
         verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
-        actorManager.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void create_actor_twice_throws() throws ValidationException, IOException, InterruptedException {
+        File rdvFile = folder.newFile();
+        ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFile);
+        actorManager.createActor(actorConfig);
+        verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
+
+        actorManager.createActor(actorConfig);
     }
 
     @Test

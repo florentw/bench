@@ -93,7 +93,8 @@ public class ActorInternal implements RuntimeActor {
             LOG.warn("{} Error while invoking before method on actor {}.", this, name, e);
             try {
                 after();
-            } catch (InvocationTargetException | IllegalAccessException ignored) { // NOSONAR
+            } catch (InvocationTargetException | IllegalAccessException ex) {
+                LOG.debug("{} Error while invoking after method for {}", this, name, ex);
             }
             actorFailure(e);
             return;
