@@ -18,6 +18,7 @@ package io.amaze.bench.client.runtime.actor;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
@@ -45,7 +47,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
  *
  * @see ActorBootstrap
  */
-final class ForkedActorManager extends AbstractActorManager {
+final class ForkedActorManager extends AbstractActorManager implements ProcessTerminationListener {
 
     private static final Logger LOG = LogManager.getLogger(ForkedActorManager.class);
 
@@ -57,6 +59,7 @@ final class ForkedActorManager extends AbstractActorManager {
     private final File localLogDir;
     private final JMSEndpoint masterEndpoint;
 
+    @VisibleForTesting
     ForkedActorManager(@NotNull final String agent,
                        @NotNull final JMSEndpoint masterEndpoint,
                        @NotNull final File localLogDir) {
@@ -82,7 +85,7 @@ final class ForkedActorManager extends AbstractActorManager {
         final String actor = actorConfig.getName();
         Process process = createActorProcess(actorConfig);
 
-        ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor, process);
+        ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor, process, this);
         watchDog.start();
         watchDog.awaitUntilStarted();
 
@@ -95,10 +98,20 @@ final class ForkedActorManager extends AbstractActorManager {
 
     @Override
     public void close() {
+        Set<ProcessWatchDogThread> threads;
         synchronized (processes) {
-            processes.values().forEach(this::terminateProcess);
+            threads = ImmutableSet.copyOf(processes.values());
             processes.clear();
         }
+
+        threads.forEach(this::terminateProcess);
+    }
+
+    @Override
+    public void onProcessExited(@NotNull final String actor, @NotNull final int exitCode) {
+        checkNotNull(actor);
+        LOG.info("Forked actor {} exited with code {}.", actor, exitCode);
+        removeFromProcesses(actor);
     }
 
     @VisibleForTesting
@@ -155,6 +168,17 @@ final class ForkedActorManager extends AbstractActorManager {
         return builder.start();
     }
 
+    private ProcessWatchDogThread removeFromProcesses(String actor) {
+        ProcessWatchDogThread thread;
+        synchronized (processes) {
+            thread = processes.remove(actor);
+            if (thread == null) {
+                return null;
+            }
+        }
+        return thread;
+    }
+
     private final class ForkedManagedActor implements ManagedActor {
         private final String actor;
 
@@ -170,21 +194,9 @@ final class ForkedActorManager extends AbstractActorManager {
 
         @Override
         public void close() {
-            ProcessWatchDogThread thread = removeFromProcesses();
-            if (thread == null) {
-                return;
-            }
-
-            terminateProcess(thread);
-        }
-
-        private ProcessWatchDogThread removeFromProcesses() {
-            synchronized (processes) {
-                ProcessWatchDogThread thread = processes.remove(actor);
-                if (thread == null) {
-                    return null;
-                }
-                return thread;
+            ProcessWatchDogThread watchDogThread = removeFromProcesses(actor);
+            if (watchDogThread != null) {
+                terminateProcess(watchDogThread);
             }
         }
     }

@@ -22,13 +22,13 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} %-5p %c{1}:%L - %m%n"/>
         </Console>
     </Appenders>
-    <Logger name="io.amaze" level="debug" additivity="false">
-        <appender-ref ref="Console"/>
-    </Logger>
-    <Logger name="oshi" level="warn" additivity="false">
-        <appender-ref ref="Console"/>
-    </Logger>
     <Loggers>
+        <Logger name="io.amaze" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
+        <Logger name="oshi" level="warn" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>

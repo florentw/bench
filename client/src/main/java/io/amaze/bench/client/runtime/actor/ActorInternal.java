@@ -121,22 +121,16 @@ public class ActorInternal implements RuntimeActor {
             instance.onMessage(from, message);
 
         } catch (RecoverableException e) {
-            /*
-             * Recoverable exception, the Reactor code is supposed to be fine, just log the exception.
-             */
+            //Recoverable exception, the Reactor code is supposed to be fine, just log the exception.
             LOG.warn("{} Recoverable exception caught on message:{}, from:{}", this, message, from, e);
 
         } catch (TerminationException ignored) { // NOSONAR
-            /*
-             * This is a graceful termination, just perform a regular close on the actor.
-             */
+            // This is a graceful termination, just perform a regular close on the actor.
             close();
 
-        } catch (RuntimeException | ReactorException e) { // Irrecoverable exceptions
-            /*
-             * In the case of a non-recoverable error of the actor, we need to clean-up by calling after,
-             * and notifying the failure.
-             */
+        } catch (RuntimeException | ReactorException e) {
+            // In the case of a non-recoverable error of the actor, we need to clean-up by calling after,
+            // and notifying the failure.
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {

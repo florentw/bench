@@ -18,6 +18,8 @@ package io.amaze.bench.client.runtime.actor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.api.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -34,7 +36,7 @@ public class TestActor implements Reactor<String> {
     static final String RECOVERABLE_EXCEPTION_MSG = "THROW_RECOVERABLE";
     static final String RUNTIME_EXCEPTION_MSG = "THROW_RUNTIME";
     static final String TERMINATE_MSG = "TERMINATE";
-
+    private static final Logger LOG = LogManager.getLogger();
     private static final DeployConfig DUMMY_DEPLOY_CONFIG = createDeployConfig(false);
     public static final ActorConfig DUMMY_CONFIG = createActorConfig();
 
@@ -77,6 +79,8 @@ public class TestActor implements Reactor<String> {
 
     @Override
     public void onMessage(@NotNull final String from, @NotNull final String message) throws ReactorException {
+        LOG.trace("{} received message from {}: {}", this, from, message);
+
         switch (message) {
             case FAIL_MSG:
                 throw new IrrecoverableException("Provoked failure.");

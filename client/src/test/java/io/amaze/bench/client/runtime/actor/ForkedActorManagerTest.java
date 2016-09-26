@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.Timeout;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +58,9 @@ public final class ForkedActorManagerTest {
     private static final int MAX_TIMEOUT_SEC = 30;
 
     @Rule
+    public final Timeout globalTimeout = new Timeout(5, TimeUnit.SECONDS);
+
+    @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
 
     @Rule
@@ -67,10 +71,9 @@ public final class ForkedActorManagerTest {
 
     @Before
     public void before() throws JMSException, IOException {
-        File folder = this.folder.newFolder();
         masterEndpoint = server.getEndpoint();
 
-        actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, folder);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, new File("target/logs"));
 
         server.getServer().createQueue(DUMMY_ACTOR);
     }
@@ -92,6 +95,7 @@ public final class ForkedActorManagerTest {
     public void create_actor_init_called() throws ValidationException, IOException, InterruptedException {
         File rdvFile = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFile);
+
         ManagedActor actor = actorManager.createActor(actorConfig);
 
         assertNotNull(actor);
@@ -114,6 +118,26 @@ public final class ForkedActorManagerTest {
         verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         actor.close();
+
+        // We do not check the fact that the shutdown hook is actually called here
+        joinUninterruptibly(watchDogThread);
+
+        assertThat(actorManager.getProcesses().size(), is(0));
+        assertThat(watchDogThread.hasProcessExited(), is(true));
+
+        actorManager.close();
+    }
+
+    @Test
+    public void actor_process_is_killed_and_watchdog_detects()
+            throws ValidationException, IOException, InterruptedException {
+
+        File rdvFileInit = folder.newFile();
+        ActorConfig actorConfig = suicideConfig(TestActorWriter.class.getName(), rdvFileInit);
+        actorManager.createActor(actorConfig);
+
+        ProcessWatchDogThread watchDogThread = actorManager.getProcesses().get(DUMMY_ACTOR);
+        verifyFileContentWithin(rdvFileInit, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         // We do not check the fact that the shutdown hook is actually called here
         joinUninterruptibly(watchDogThread);
@@ -180,7 +204,7 @@ public final class ForkedActorManagerTest {
     public void watchdog_thread_is_interrupted_while_waitfor() throws InterruptedException {
         Process mockedProcess = mock(Process.class);
         when(mockedProcess.waitFor()).thenThrow(new InterruptedException());
-        ProcessWatchDogThread watchdog = new ProcessWatchDogThread(DUMMY_ACTOR, mockedProcess);
+        ProcessWatchDogThread watchdog = new ProcessWatchDogThread(DUMMY_ACTOR, mockedProcess, actorManager);
         watchdog.start();
         watchdog.awaitUntilStarted();
         watchdog.close();
@@ -188,6 +212,16 @@ public final class ForkedActorManagerTest {
         joinUninterruptibly(watchdog);
 
         assertThat(watchdog.hasProcessExited(), is(false));
+    }
+
+    private ActorConfig suicideConfig(final String className, final File rdvFileInit) {
+
+        DeployConfig deployConfig = new DeployConfig(true, Collections.emptyList());
+
+        String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFileInit.getAbsolutePath() + "\"," + //
+                " \"" + TestActorWriter.SUICIDE_AFTER_MS + "\":500}";
+
+        return new ActorConfig(DUMMY_ACTOR, className, deployConfig, jsonConfig);
     }
 
     private ActorConfig configWithInitRdv(final String className, final File rdvFile) {

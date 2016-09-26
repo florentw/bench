@@ -34,14 +34,18 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
 
     private final String name;
     private final Process process;
+    private final ProcessTerminationListener terminationListener;
     private final CountDownLatch watchdogStartedLatch;
 
     private volatile boolean doWork = true;
     private volatile boolean exited = false;
 
-    ProcessWatchDogThread(@NotNull final String name, @NotNull final Process process) {
+    ProcessWatchDogThread(@NotNull final String name,
+                          @NotNull final Process process,
+                          @NotNull final ProcessTerminationListener terminationListener) {
         this.name = checkNotNull(name);
         this.process = checkNotNull(process);
+        this.terminationListener = checkNotNull(terminationListener);
 
         watchdogStartedLatch = new CountDownLatch(1);
 
@@ -64,7 +68,7 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
             try {
                 int exitCode = process.waitFor();
                 exited = true;
-                LOG.info("{} Exited with code {}.", this, exitCode);
+                terminationListener.onProcessExited(name, exitCode);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

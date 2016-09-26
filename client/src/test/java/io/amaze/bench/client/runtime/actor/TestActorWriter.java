@@ -27,7 +27,9 @@ import org.apache.logging.log4j.Logger;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.amaze.bench.shared.util.Files.writeTo;
 
 /**
@@ -37,6 +39,7 @@ import static io.amaze.bench.shared.util.Files.writeTo;
 public final class TestActorWriter extends TestActor {
 
     static final String INIT_FILE_CONFIG = "init_file";
+    static final String SUICIDE_AFTER_MS = "suicide_after_ms";
     static final String OK = "OK";
 
     private static final Logger LOG = LogManager.getLogger(TestActorWriter.class);
@@ -48,10 +51,19 @@ public final class TestActorWriter extends TestActor {
         if (config.hasPath(INIT_FILE_CONFIG)) {
             String initFileName = getConfig().getString(INIT_FILE_CONFIG);
             try {
+                LOG.info("{} writing RDV file {} ms", this, initFileName);
                 writeFile(initFileName, OK);
             } catch (IrrecoverableException e) {
+                LOG.info("{} Error while init", this, e);
                 Throwables.propagate(e);
             }
+        }
+
+        if (config.hasPath(SUICIDE_AFTER_MS)) {
+            long sleepTime = getConfig().getLong(SUICIDE_AFTER_MS);
+            sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
+            LOG.info("{} committing suicide after {} ms", this, sleepTime);
+            System.exit(0);
         }
     }
 
