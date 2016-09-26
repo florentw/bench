@@ -42,8 +42,6 @@ import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
  * The main class that will be spawn is {@link ActorBootstrap}.<br>
  * <p>
  * A watchdog thread waits for the process termination to avoid zombies.
- * <p>
- * Created on 3/13/16.
  *
  * @see ActorBootstrap
  */

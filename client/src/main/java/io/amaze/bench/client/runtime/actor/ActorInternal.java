@@ -37,7 +37,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
 
 /**
- * Created on 2/28/16.
+ * Main internal implementation of the {@link RuntimeActor}.
+ * It is a wrapper around the {@link Reactor} instance provided.<br/>
+ * It uses an instance of {@link ActorClusterClient} to communicate with cluster members:
+ * <ul>
+ * <li>Will receive messages from other actors addressed to it on {@link #onMessage(String, Serializable)}</li>
+ * <li>Send state notifications to the actor registry topic</li>
+ * <li>Allows to send metrics to the metrics topic</li>
+ * </ul>
  */
 public class ActorInternal implements RuntimeActor {
 
