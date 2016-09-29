@@ -75,7 +75,7 @@ public final class ForkedActorManagerTest {
 
         actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, new File("target/logs"));
 
-        server.getServer().createQueue(DUMMY_ACTOR);
+        server.getServer().createQueue(DUMMY_ACTOR.getName());
     }
 
     @After
@@ -99,7 +99,7 @@ public final class ForkedActorManagerTest {
         ManagedActor actor = actorManager.createActor(actorConfig);
 
         assertNotNull(actor);
-        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
         verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
@@ -212,7 +212,7 @@ public final class ForkedActorManagerTest {
     public void watchdog_thread_is_interrupted_while_waitfor() throws InterruptedException {
         Process mockedProcess = mock(Process.class);
         when(mockedProcess.waitFor()).thenThrow(new InterruptedException());
-        ProcessWatchDogThread watchdog = new ProcessWatchDogThread(DUMMY_ACTOR, mockedProcess, actorManager);
+        ProcessWatchDogThread watchdog = new ProcessWatchDogThread(DUMMY_ACTOR.getName(), mockedProcess, actorManager);
         watchdog.start();
         watchdog.awaitUntilStarted();
         watchdog.close();

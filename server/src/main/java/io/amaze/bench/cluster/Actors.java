@@ -19,6 +19,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
 
@@ -68,20 +69,20 @@ public final class Actors {
         }
 
         public Future<ActorDeployInfo> initialize() {
-            actorSender.sendToActor(config.getName(), ActorInputMessage.init());
+            actorSender.sendToActor(config.getKey(), ActorInputMessage.init());
             return actorInitialized;
         }
 
         public void dumpMetrics() {
-            actorSender.sendToActor(config.getName(), ActorInputMessage.dumpMetrics());
+            actorSender.sendToActor(config.getKey(), ActorInputMessage.dumpMetrics());
         }
 
         public void send(final String from, final Serializable message) {
-            actorSender.sendToActor(config.getName(), ActorInputMessage.sendMessage(from, message));
+            actorSender.sendToActor(config.getKey(), ActorInputMessage.sendMessage(from, message));
         }
 
         public Future<Void> close() {
-            actorSender.sendToActor(config.getName(), ActorInputMessage.close());
+            actorSender.sendToActor(config.getKey(), ActorInputMessage.close());
             return actorClosed;
         }
 
@@ -112,22 +113,22 @@ public final class Actors {
         }
 
         @Override
-        public void onActorCreated(@NotNull final String name, @NotNull final String agent) {
-            if (name.equals(config.getName())) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
+            if (key.equals(config.getKey())) {
                 handle.actorCreated.set(config);
             }
         }
 
         @Override
-        public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
-            if (name.equals(config.getName())) {
+        public void onActorInitialized(@NotNull final ActorKey key, @NotNull final ActorDeployInfo deployInfo) {
+            if (key.equals(config.getKey())) {
                 handle.actorInitialized.set(deployInfo);
             }
         }
 
         @Override
-        public void onActorFailed(@NotNull final String name, @NotNull final Throwable throwable) {
-            if (name.equals(config.getName())) {
+        public void onActorFailed(@NotNull final ActorKey key, @NotNull final Throwable throwable) {
+            if (key.equals(config.getKey())) {
                 handle.actorFailed.set(throwable);
 
                 handle.actorCreated.setException(throwable);
@@ -139,8 +140,8 @@ public final class Actors {
         }
 
         @Override
-        public void onActorClosed(@NotNull final String name) {
-            if (name.equals(config.getName())) {
+        public void onActorClosed(@NotNull final ActorKey key) {
+            if (key.equals(config.getKey())) {
                 handle.actorClosed.set(null);
 
                 actorRegistry.removeListener(this);

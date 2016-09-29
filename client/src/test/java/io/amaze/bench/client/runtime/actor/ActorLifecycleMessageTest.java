@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -19,18 +20,20 @@ import static org.junit.Assert.assertTrue;
 public final class ActorLifecycleMessageTest {
 
     private static final ActorDeployInfo ACTOR_DEPLOY_INFO = new ActorDeployInfo(10);
+    private static final ActorKey ACTOR_KEY = new ActorKey("actor");
 
     private ActorLifecycleMessage msg;
 
     @Before
     public void init() {
-        msg = ActorLifecycleMessage.initialized("actor", ACTOR_DEPLOY_INFO);
+        msg = ActorLifecycleMessage.initialized(ACTOR_KEY, ACTOR_DEPLOY_INFO);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorDeployInfo.class, ACTOR_DEPLOY_INFO);
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicStaticMethods(ActorLifecycleMessage.class);
         tester.testAllPublicInstanceMethods(msg);

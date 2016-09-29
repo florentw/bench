@@ -15,6 +15,9 @@
  */
 package io.amaze.bench.client.runtime.agent;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
+import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -25,29 +28,55 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentInputMessage implements Serializable {
 
-    private final String destinationAgent;
+    private final String targetAgent;
     private final Action action;
-    private final Serializable data;
+    private final ActorCreationRequest creationRequest;
+    private final ActorKey actorToClose;
 
-    public AgentInputMessage(@NotNull final String destinationAgent,
-                             @NotNull final Action action,
-                             @NotNull final Serializable data) {
+    private AgentInputMessage(@NotNull final String targetAgent,
+                              @NotNull final Action action,
+                              final ActorCreationRequest creationRequest,
+                              final ActorKey actorToClose) {
 
-        this.destinationAgent = checkNotNull(destinationAgent);
+        this.targetAgent = checkNotNull(targetAgent);
         this.action = checkNotNull(action);
-        this.data = checkNotNull(data);
+        this.creationRequest = creationRequest;
+        this.actorToClose = actorToClose;
+    }
+
+    public static AgentInputMessage createActor(@NotNull final String targetAgent,
+                                                @NotNull final ActorCreationRequest actorCreationRequest) {
+        checkNotNull(targetAgent);
+        checkNotNull(actorCreationRequest);
+        return new AgentInputMessage(targetAgent, Action.CREATE_ACTOR, actorCreationRequest, null);
+    }
+
+    public static AgentInputMessage closeActor(@NotNull final String targetAgent, @NotNull final ActorKey actorKey) {
+        checkNotNull(targetAgent);
+        checkNotNull(actorKey);
+        return new AgentInputMessage(targetAgent, Action.CLOSE_ACTOR, null, actorKey);
     }
 
     public Action getAction() {
         return action;
     }
 
-    public Serializable getData() {
-        return data;
+    public String getTargetAgent() {
+        return targetAgent;
     }
 
-    public String getDestinationAgent() {
-        return destinationAgent;
+    /**
+     * @return The creation request to create when action is {@link Action#CREATE_ACTOR}, or {@code null}
+     */
+    public ActorCreationRequest getCreationRequest() {
+        return creationRequest;
+    }
+
+    /**
+     * @return The actor to close when action is {@link Action#CLOSE_ACTOR}, or {@code null}
+     */
+    public ActorKey getActorToClose() {
+        return actorToClose;
     }
 
     public enum Action {

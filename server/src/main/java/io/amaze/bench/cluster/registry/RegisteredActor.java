@@ -16,6 +16,7 @@
 package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,18 +27,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class RegisteredActor {
 
-    private final String actor;
+    private final ActorKey actor;
     private final String agent;
     private final State state;
     private final ActorDeployInfo deployInfo;
 
-    RegisteredActor(@NotNull final String actor, @NotNull final String agent, @NotNull final State state) {
+    RegisteredActor(@NotNull final ActorKey actor, @NotNull final String agent, @NotNull final State state) {
         this(actor, agent, state, null);
     }
 
-    RegisteredActor(@NotNull final String actor,
-                    @NotNull final String agent,
-                    @NotNull final State state, final ActorDeployInfo deployInfo) {
+    RegisteredActor(@NotNull final ActorKey actor,
+                    @NotNull final String agent, @NotNull final State state, final ActorDeployInfo deployInfo) {
         this.actor = checkNotNull(actor);
         this.agent = checkNotNull(agent);
         this.state = checkNotNull(state);
@@ -45,7 +45,7 @@ public final class RegisteredActor {
     }
 
     @NotNull
-    public String getName() {
+    public ActorKey getKey() {
         return actor;
     }
 

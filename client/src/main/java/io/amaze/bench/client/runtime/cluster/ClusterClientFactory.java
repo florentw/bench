@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.client.runtime.cluster;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -35,6 +37,6 @@ public interface ClusterClientFactory {
     AgentClusterClient createForAgent(@NotNull String agent);
 
     @NotNull
-    ActorClusterClient createForActor(@NotNull String actor);
+    ActorClusterClient createForActor(@NotNull ActorKey actor);
 
 }

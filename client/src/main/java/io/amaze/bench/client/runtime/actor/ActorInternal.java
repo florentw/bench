@@ -51,7 +51,7 @@ public class ActorInternal implements RuntimeActor {
     private static final Logger LOG = LogManager.getLogger(ActorInternal.class);
     private static final String MSG_AFTER_METHOD_FAILED = "{} Error while invoking after method.";
 
-    private final String name;
+    private final ActorKey actorKey;
     private final MetricsInternal metrics;
     private final Method beforeMethod;
     private final Method afterMethod;
@@ -60,14 +60,14 @@ public class ActorInternal implements RuntimeActor {
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
-    public ActorInternal(@NotNull final String name,
+    public ActorInternal(@NotNull final ActorKey actorKey,
                          @NotNull final MetricsInternal metrics,
                          @NotNull final Reactor instance,
                          @NotNull final ActorClusterClient client,
                          final Method beforeMethod,
                          final Method afterMethod) {
 
-        this.name = checkNotNull(name);
+        this.actorKey = checkNotNull(actorKey);
         this.metrics = checkNotNull(metrics);
         this.beforeMethod = beforeMethod;
         this.afterMethod = afterMethod;
@@ -80,8 +80,8 @@ public class ActorInternal implements RuntimeActor {
     }
 
     @Override
-    public String name() {
-        return name;
+    public ActorKey getKey() {
+        return actorKey;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ActorInternal implements RuntimeActor {
         LOG.debug("{} Initializing...", this);
 
         if (beforeMethod == null) {
-            sendLifecycleMessage(initialized(name, deployInfo()));
+            sendLifecycleMessage(initialized(actorKey, deployInfo()));
             return;
         }
 
@@ -97,17 +97,17 @@ public class ActorInternal implements RuntimeActor {
         try {
             beforeMethod.invoke(instance);
         } catch (Exception e) {
-            LOG.warn("{} Error while invoking before method on actor {}.", this, name, e);
+            LOG.warn("{} Error while invoking before method on actor {}.", this, actorKey, e);
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException ex) {
-                LOG.debug("{} Error while invoking after method for {}", this, name, ex);
+                LOG.debug("{} Error while invoking after method for {}", this, actorKey, ex);
             }
             actorFailure(e);
             return;
         }
 
-        sendLifecycleMessage(initialized(name, deployInfo()));
+        sendLifecycleMessage(initialized(actorKey, deployInfo()));
     }
 
     @Override
@@ -162,7 +162,7 @@ public class ActorInternal implements RuntimeActor {
                 return;
             }
 
-            sendLifecycleMessage(closed(name));
+            sendLifecycleMessage(closed(actorKey));
         } catch (Exception e) {
             LOG.info("{} Exception while closing.", this, e);
         } finally {
@@ -176,7 +176,7 @@ public class ActorInternal implements RuntimeActor {
 
     @Override
     public String toString() {
-        return "{\"Actor\":\"" + name + "\"}";
+        return actorKey.toString();
     }
 
     @VisibleForTesting
@@ -221,6 +221,6 @@ public class ActorInternal implements RuntimeActor {
     private void actorFailure(@NotNull final Throwable throwable) {
         LOG.warn("{} failure.", this, throwable);
 
-        client.sendToActorRegistry(failed(name, throwable));
+        client.sendToActorRegistry(failed(actorKey, throwable));
     }
 }

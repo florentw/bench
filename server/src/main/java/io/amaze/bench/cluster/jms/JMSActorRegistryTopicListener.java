@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.cluster.jms;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.message.Message;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
@@ -69,7 +70,7 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
     }
 
     private void onActorLifecycle(final ActorLifecycleMessage lfMsg) {
-        String actor = lfMsg.getActor();
+        ActorKey actor = lfMsg.getActor();
 
         switch (lfMsg.getState()) {
             case CREATED:

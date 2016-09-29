@@ -66,7 +66,7 @@ public final class Actors {
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
     }
 
-    public final RuntimeActor create(@NotNull final String name,
+    public final RuntimeActor create(@NotNull final ActorKey actorKey,
                                      @NotNull final String className,
                                      @NotNull final String jsonConfig) throws ValidationException {
 
@@ -79,10 +79,10 @@ public final class Actors {
 
         MetricsInternal metrics = MetricsInternal.create();
 
-        ActorClusterClient client = clientFactory.createForActor(name);
-        Reactor reactor = createReactor(name, metrics, clazz, client, config);
+        ActorClusterClient client = clientFactory.createForActor(actorKey);
+        Reactor reactor = createReactor(actorKey, metrics, clazz, client, config);
 
-        return new ActorInternal(name, metrics, reactor, client, beforeMethod, afterMethod);
+        return new ActorInternal(actorKey, metrics, reactor, client, beforeMethod, afterMethod);
     }
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
@@ -96,7 +96,7 @@ public final class Actors {
     /**
      * Inject dependencies to create a reactor.
      */
-    private Reactor createReactor(final String actorName, //
+    private Reactor createReactor(final ActorKey key, //
                                   final Metrics metrics, //
                                   final Class<? extends Reactor> clazz, //
                                   final ActorClusterClient client, //
@@ -110,7 +110,7 @@ public final class Actors {
             checkNotNull(to);
             checkNotNull(message);
 
-            client.sendToActor(to, new Message<>(actorName, message));
+            client.sendToActor(to, new Message<>(key.getName(), message));
         });
 
         pico.addComponent(metrics);

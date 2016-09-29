@@ -83,7 +83,7 @@ public final class ResourceManagerAgentTest {
 
         assertThat(agentRegistry.all().size(), is(1));
         RegisteredAgent registeredAgent = agentRegistry.all().iterator().next();
-        assertThat(registeredAgent.getName(), is(agent.getName()));
+        assertThat(registeredAgent.getAgentName(), is(agent.getName()));
         assertTrue(registeredAgent.getCreationTime() > 0);
         assertNotNull(registeredAgent.getSystemConfig());
     }
@@ -96,9 +96,9 @@ public final class ResourceManagerAgentTest {
         sync.assertActorCreated();
         assertThat(actorRegistry.all().size(), is(1));
 
-        RegisteredActor actor = actorRegistry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
         assertThat(actor.getAgent(), is(agent.getName()));
-        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getState(), is(State.CREATED));
     }
 
@@ -113,9 +113,9 @@ public final class ResourceManagerAgentTest {
 
         sync.assertActorInitialized();
 
-        RegisteredActor actor = actorRegistry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
         assertThat(actor.getAgent(), is(agent.getName()));
-        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getState(), is(State.INITIALIZED));
     }
 
@@ -188,22 +188,22 @@ public final class ResourceManagerAgentTest {
         private final CountDownLatch actorClosed = new CountDownLatch(1);
 
         @Override
-        public void onActorCreated(@NotNull final String name, @NotNull final String agent) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
             actorCreated.countDown();
         }
 
         @Override
-        public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
+        public void onActorInitialized(@NotNull final ActorKey key, @NotNull final ActorDeployInfo deployInfo) {
             actorInitialized.countDown();
         }
 
         @Override
-        public void onActorFailed(@NotNull final String name, @NotNull final Throwable throwable) {
+        public void onActorFailed(@NotNull final ActorKey key, @NotNull final Throwable throwable) {
             actorFailed.countDown();
         }
 
         @Override
-        public void onActorClosed(@NotNull final String name) {
+        public void onActorClosed(@NotNull final ActorKey key) {
             actorClosed.countDown();
         }
 

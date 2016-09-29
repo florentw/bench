@@ -72,18 +72,18 @@ public final class JMSActorClusterClientTest {
 
     @Test
     public void start_actor_listener() throws JMSException {
-        when(actor.name()).thenReturn(TestActor.DUMMY_ACTOR);
+        when(actor.getKey()).thenReturn(TestActor.DUMMY_ACTOR);
 
         client.startActorListener(actor);
 
-        verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR), any(MessageListener.class));
+        verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR.getName()), any(MessageListener.class));
         verify(jmsClient).startListening();
         verifyNoMoreInteractions(jmsClient);
     }
 
     @Test(expected = RuntimeException.class)
     public void start_actor_listener_and_listening_throws() throws JMSException {
-        when(actor.name()).thenReturn(TestActor.DUMMY_ACTOR);
+        when(actor.getKey()).thenReturn(TestActor.DUMMY_ACTOR);
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
         client.startActorListener(actor);
@@ -95,16 +95,16 @@ public final class JMSActorClusterClientTest {
         client.sendToActorRegistry(closed);
 
         verify(jmsClient).sendToTopic(eq(ACTOR_REGISTRY_TOPIC),
-                                      argThat(isActorLifecycle(TestActor.DUMMY_ACTOR, closed)));
+                                      argThat(isActorLifecycle(TestActor.DUMMY_ACTOR.getName(), closed)));
         verifyNoMoreInteractions(jmsClient);
     }
 
     @Test
     public void send_to_actors_sends_to_jms_queue() throws JMSException {
         Message<String> testMsg = getTestMsg();
-        client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
+        client.sendToActor(TestActor.DUMMY_ACTOR.getName(), testMsg);
 
-        verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR, testMsg);
+        verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR.getName(), testMsg);
         verifyNoMoreInteractions(jmsClient);
     }
 
@@ -115,9 +115,9 @@ public final class JMSActorClusterClientTest {
                 .when(jmsClient) //
                 .sendToQueue(anyString(), any(Serializable.class));
 
-        client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
+        client.sendToActor(TestActor.DUMMY_ACTOR.getName(), testMsg);
 
-        verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR, testMsg);
+        verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR.getName(), testMsg);
         verifyNoMoreInteractions(jmsClient);
     }
 
@@ -130,6 +130,6 @@ public final class JMSActorClusterClientTest {
     }
 
     private Message<String> getTestMsg() {
-        return new Message<>(TestActor.DUMMY_ACTOR, "data");
+        return new Message<>(TestActor.DUMMY_ACTOR.getName(), "data");
     }
 }

@@ -90,7 +90,7 @@ public final class ResourceManagerTest {
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
-        assertThat(pickedAgent.getName(), is(DUMMY_AGENT));
+        assertThat(pickedAgent.getAgentName(), is(DUMMY_AGENT));
     }
 
     @Test
@@ -144,7 +144,7 @@ public final class ResourceManagerTest {
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
-        assertThat(pickedAgent.getName(), is(DUMMY_AGENT));
+        assertThat(pickedAgent.getAgentName(), is(DUMMY_AGENT));
     }
 
     @Test
@@ -160,7 +160,7 @@ public final class ResourceManagerTest {
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
-        assertThat(pickedAgent.getName(), is(DUMMY_AGENT));
+        assertThat(pickedAgent.getAgentName(), is(DUMMY_AGENT));
     }
 
     @Test

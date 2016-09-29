@@ -17,6 +17,7 @@ package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.actor.metric.MetricValue;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.message.Message;
@@ -44,6 +45,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,8 +60,6 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSMetricsRepositoryTest {
-
-    private static final String ACTOR_NAME = "actor";
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -118,7 +118,7 @@ public final class JMSMetricsRepositoryTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(ACTOR_NAME);
+        MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(DUMMY_ACTOR);
         assertThat(metricValuesMessage.metrics().size(), is(1));
     }
 
@@ -128,8 +128,8 @@ public final class JMSMetricsRepositoryTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        Map<String, MetricValuesMessage> allMetrics = metricsRepository.allValues();
-        MetricValuesMessage metricValues = allMetrics.get(ACTOR_NAME);
+        Map<ActorKey, MetricValuesMessage> allMetrics = metricsRepository.allValues();
+        MetricValuesMessage metricValues = allMetrics.get(DUMMY_ACTOR);
         assertNotNull(metricValues);
         assertThat(metricValues.metrics().size(), is(1));
     }
@@ -144,7 +144,7 @@ public final class JMSMetricsRepositoryTest {
         jmsListener.onMessage(jmsMessage);
         jmsListener.onMessage(secondJmsMessage);
 
-        MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(ACTOR_NAME);
+        MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(DUMMY_ACTOR);
         assertThat(metricValuesMessage.metrics().size(), is(1));
         assertThat(metricValuesMessage.metrics().values().iterator().next().size(), is(1));
     }
@@ -155,7 +155,7 @@ public final class JMSMetricsRepositoryTest {
         BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
         jmsListener.onMessage(jmsMessage);
 
-        Future<MetricValuesMessage> future = metricsRepository.expectValuesFor(ACTOR_NAME);
+        Future<MetricValuesMessage> future = metricsRepository.expectValuesFor(DUMMY_ACTOR);
 
         assertThat(getUninterruptibly(future).metrics().size(), is(1));
     }
@@ -163,8 +163,8 @@ public final class JMSMetricsRepositoryTest {
     @Test
     public void expected_metrics_futures_are_set_when_metrics_are_received()
             throws IOException, javax.jms.JMSException, ExecutionException {
-        Future<MetricValuesMessage> firstFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
-        Future<MetricValuesMessage> secondFuture = metricsRepository.expectValuesFor(ACTOR_NAME);
+        Future<MetricValuesMessage> firstFuture = metricsRepository.expectValuesFor(DUMMY_ACTOR);
+        Future<MetricValuesMessage> secondFuture = metricsRepository.expectValuesFor(DUMMY_ACTOR);
         BytesMessage jmsMessage = jmsMetricsMessage(new ArrayList<>());
 
         jmsListener.onMessage(jmsMessage);
@@ -177,7 +177,7 @@ public final class JMSMetricsRepositoryTest {
         Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         metricValues.put(Metric.metric("metric", "sec").build(), values);
         MetricValuesMessage valuesMessage = new MetricValuesMessage(metricValues);
-        Message message = new Message<>(ACTOR_NAME, valuesMessage);
+        Message message = new Message<>(DUMMY_ACTOR.getName(), valuesMessage);
         final byte[] data = JMSHelper.convertToBytes(message);
         return createTestBytesMessage(data);
     }

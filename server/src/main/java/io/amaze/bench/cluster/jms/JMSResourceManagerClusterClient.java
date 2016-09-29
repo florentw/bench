@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.cluster.jms;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -41,21 +42,21 @@ public final class JMSResourceManagerClusterClient implements ResourceManagerClu
     }
 
     @Override
-    public void initForActor(@NotNull final String actorName) {
-        checkNotNull(actorName);
+    public void initForActor(@NotNull final ActorKey actorKey) {
+        checkNotNull(actorKey);
 
         try {
-            server.createQueue(actorName);
+            server.createQueue(actorKey.getName());
         } catch (JMSException e) {
             throw propagate(e);
         }
     }
 
     @Override
-    public void closeForActor(@NotNull final String actorName) {
-        checkNotNull(actorName);
+    public void closeForActor(@NotNull final ActorKey actorKey) {
+        checkNotNull(actorKey);
 
-        server.deleteQueue(actorName);
+        server.deleteQueue(actorKey.getName());
     }
 
     @Override

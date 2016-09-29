@@ -58,7 +58,7 @@ public final class ActorBootstrap {
             throw new IllegalArgumentException();
         }
 
-        String actorName = args[0];
+        ActorKey actorKey = new ActorKey(args[0]);
         String className = args[1];
         String jmsServerHost = args[2];
         int jmsServerPort = Integer.parseInt(args[3]);
@@ -71,7 +71,7 @@ public final class ActorBootstrap {
         ClusterClientFactory clientFactory = new JMSClusterClientFactory(serverEndpoint);
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
-        RuntimeActor actor = actorBootstrap.createActor(actorName, className, jsonConfig);
+        RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonConfig);
 
         installShutdownHook(actor);
     }
@@ -83,12 +83,12 @@ public final class ActorBootstrap {
         return hook;
     }
 
-    RuntimeActor createActor(final String name, //
+    RuntimeActor createActor(final ActorKey key, //
                              final String className, //
                              final String jsonConfig) throws ValidationException, IOException {
 
         Actors actors = new Actors(clientFactory);
-        return actors.create(name, className, jsonConfig);
+        return actors.create(key, className, jsonConfig);
     }
 
     static final class ActorShutdownThread extends Thread {
@@ -104,7 +104,7 @@ public final class ActorBootstrap {
 
         @Override
         public void run() {
-            LOG.info("ShutdownHook called for {}.", actor.name());
+            LOG.info("ShutdownHook called for {}.", actor.getKey());
             actor.close();
         }
     }

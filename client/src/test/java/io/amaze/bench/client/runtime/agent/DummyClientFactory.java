@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.client.runtime.agent;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
@@ -38,7 +39,7 @@ public final class DummyClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public ActorClusterClient createForActor(String actor) {
+    public ActorClusterClient createForActor(ActorKey actor) {
         return actorClient;
     }
 }

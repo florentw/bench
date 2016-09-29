@@ -17,7 +17,7 @@ package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
-import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
+import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
@@ -32,6 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.Serializable;
 
 import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
 import static io.amaze.bench.client.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.client.runtime.agent.Constants.AGENTS_TOPIC;
 import static org.hamcrest.CoreMatchers.is;
@@ -70,7 +71,7 @@ public final class JMSResourceManagerClusterClientTest {
     public void create_actor_queue() throws JMSException {
         rmClusterClient.initForActor(DUMMY_ACTOR);
 
-        verify(jmsServer).createQueue(DUMMY_ACTOR);
+        verify(jmsServer).createQueue(DUMMY_ACTOR.getName());
     }
 
     @Test
@@ -88,12 +89,12 @@ public final class JMSResourceManagerClusterClientTest {
     public void delete_actor_queue() throws JMSException {
         rmClusterClient.closeForActor(DUMMY_ACTOR);
 
-        verify(jmsServer).deleteQueue(DUMMY_ACTOR);
+        verify(jmsServer).deleteQueue(DUMMY_ACTOR.getName());
     }
 
     @Test
     public void send_to_agent() throws JMSException {
-        AgentInputMessage msg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, "");
+        AgentInputMessage msg = AgentInputMessage.createActor(DUMMY_AGENT, new ActorCreationRequest(DUMMY_CONFIG));
         rmClusterClient.sendToAgent(msg);
 
         verify(jmsClient).sendToTopic(AGENTS_TOPIC, msg);
@@ -104,7 +105,7 @@ public final class JMSResourceManagerClusterClientTest {
         JMSException expectedCause = new JMSException(null);
         doThrow(expectedCause).when(jmsClient).sendToTopic(any(String.class), any(Serializable.class));
 
-        AgentInputMessage msg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, "");
+        AgentInputMessage msg = AgentInputMessage.createActor(DUMMY_AGENT, new ActorCreationRequest(DUMMY_CONFIG));
 
         expectedException.expect(RuntimeException.class);
         expectedException.expectCause(is(expectedCause));

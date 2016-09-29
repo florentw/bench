@@ -38,7 +38,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.joinUninterrupt
 import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
 
 /**
- * Forks a new JVM to host the actor.<br>
+ * Forks a new JVM to host the actorKey.<br>
  * The main class that will be spawn is {@link ActorBootstrap}.<br>
  * <p>
  * A watchdog thread waits for the process termination to avoid zombies.
@@ -50,10 +50,10 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     private static final Logger LOG = LogManager.getLogger(ForkedActorManager.class);
 
     private static final String JAVA_CMD_PATH = File.separator + "bin" + File.separator + "java";
-    private static final String TMP_CONFIG_FILE_PREFIX = "actor-config";
+    private static final String TMP_CONFIG_FILE_PREFIX = "actorKey-config";
     private static final String TMP_CONFIG_FILE_SUFFIX = ".json";
 
-    private final Map<String, ProcessWatchDogThread> processes = new HashMap<>();
+    private final Map<ActorKey, ProcessWatchDogThread> processes = new HashMap<>();
     private final File localLogDir;
     private final JMSEndpoint masterEndpoint;
 
@@ -80,16 +80,16 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
         checkNotNull(actorConfig);
 
-        final String actor = actorConfig.getName();
+        final ActorKey actor = actorConfig.getKey();
         Process process = createActorProcess(actorConfig);
 
-        ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor, process, this);
+        ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor.getName(), process, this);
         watchDog.start();
         watchDog.awaitUntilStarted();
 
         synchronized (processes) {
             if (processes.containsKey(actor)) {
-                throw new IllegalArgumentException("An actor with the name " + actor + " already exists.");
+                throw new IllegalArgumentException("An actorKey with the name " + actor + " already exists.");
             }
 
             processes.put(actor, watchDog);
@@ -110,14 +110,14 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     }
 
     @Override
-    public void onProcessExited(@NotNull final String actor, @NotNull final int exitCode) {
-        checkNotNull(actor);
-        LOG.info("Forked actor {} exited with code {}.", actor, exitCode);
-        removeFromProcesses(actor);
+    public void onProcessExited(@NotNull final String actorName, @NotNull final int exitCode) {
+        checkNotNull(actorName);
+        LOG.info("Forked actor {} exited with code {}.", actorName, exitCode);
+        removeFromProcesses(new ActorKey(actorName));
     }
 
     @VisibleForTesting
-    Map<String, ProcessWatchDogThread> getProcesses() {
+    Map<ActorKey, ProcessWatchDogThread> getProcesses() {
         synchronized (processes) {
             return ImmutableMap.copyOf(processes);
         }
@@ -144,7 +144,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     private Process forkProcess(@NotNull final ActorConfig actorConfig, @NotNull final String configFileName)
             throws IOException {
 
-        String name = actorConfig.getName();
+        String name = actorConfig.getKey().getName();
 
         String[] cmd = { //
                 JAVA_HOME.value() + JAVA_CMD_PATH, //
@@ -170,7 +170,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         return builder.start();
     }
 
-    private ProcessWatchDogThread removeFromProcesses(String actor) {
+    private ProcessWatchDogThread removeFromProcesses(ActorKey actor) {
         ProcessWatchDogThread thread;
         synchronized (processes) {
             thread = processes.remove(actor);
@@ -182,21 +182,21 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     }
 
     private final class ForkedManagedActor implements ManagedActor {
-        private final String actor;
+        private final ActorKey actorKey;
 
-        ForkedManagedActor(final String actor) {
-            this.actor = actor;
+        ForkedManagedActor(final ActorKey key) {
+            this.actorKey = key;
         }
 
         @NotNull
         @Override
-        public String getName() {
-            return actor;
+        public ActorKey getKey() {
+            return actorKey;
         }
 
         @Override
         public void close() {
-            ProcessWatchDogThread watchDogThread = removeFromProcesses(actor);
+            ProcessWatchDogThread watchDogThread = removeFromProcesses(actorKey);
             if (watchDogThread != null) {
                 terminateProcess(watchDogThread);
             }

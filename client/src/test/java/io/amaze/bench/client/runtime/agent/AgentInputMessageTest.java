@@ -2,6 +2,8 @@ package io.amaze.bench.client.runtime.agent;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.client.runtime.actor.TestActor;
+import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +22,7 @@ public final class AgentInputMessageTest {
 
     @Before
     public void before() {
-        inputMessage = new AgentInputMessage("", AgentInputMessage.Action.CREATE_ACTOR, "");
+        inputMessage = AgentInputMessage.createActor("", new ActorCreationRequest(TestActor.DUMMY_CONFIG));
     }
 
     @Test
@@ -36,8 +38,8 @@ public final class AgentInputMessageTest {
         AgentInputMessage received = SerializableTester.reserialize(inputMessage);
 
         assertThat(received.getAction(), is(inputMessage.getAction()));
-        assertThat(received.getData(), is(inputMessage.getData()));
-        assertThat(received.getDestinationAgent(), is(inputMessage.getDestinationAgent()));
+        assertThat(received.getCreationRequest(), is(inputMessage.getCreationRequest()));
+        assertThat(received.getTargetAgent(), is(inputMessage.getTargetAgent()));
     }
 
 }

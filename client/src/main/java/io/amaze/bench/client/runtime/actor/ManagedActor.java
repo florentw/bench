@@ -23,10 +23,10 @@ import javax.validation.constraints.NotNull;
 public interface ManagedActor {
 
     /**
-     * @return the name of the actor
+     * @return the key of the actor
      */
     @NotNull
-    String getName();
+    ActorKey getKey();
 
     /**
      * Terminates the actor by invoking its {@link RuntimeActor#close()} method.

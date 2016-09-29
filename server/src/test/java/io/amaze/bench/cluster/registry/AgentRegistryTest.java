@@ -73,7 +73,7 @@ public final class AgentRegistryTest {
         clusterListener.onAgentRegistration(REG_MSG);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
-        assertThat(agent.getName(), is(DUMMY_AGENT));
+        assertThat(agent.getAgentName(), is(DUMMY_AGENT));
         assertThat(agent.getSystemConfig(), is(REG_MSG.getSystemConfig()));
         assertThat(agent.getCreationTime(), is(REG_MSG.getCreationTime()));
 
@@ -113,7 +113,7 @@ public final class AgentRegistryTest {
         assertThat(agents.size(), is(1));
 
         RegisteredAgent agent = agents.iterator().next();
-        assertThat(agent.getName(), is(DUMMY_AGENT));
+        assertThat(agent.getAgentName(), is(DUMMY_AGENT));
     }
 
     @Test

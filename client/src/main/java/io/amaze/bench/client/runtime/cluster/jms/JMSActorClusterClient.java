@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.client.runtime.actor.RuntimeActor;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
@@ -36,22 +37,22 @@ import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
  */
 final class JMSActorClusterClient extends JMSClusterClient implements ActorClusterClient {
 
-    private final String actor;
+    private final ActorKey actor;
 
     @VisibleForTesting
-    JMSActorClusterClient(@NotNull final JMSClient client, @NotNull final String actor) {
+    JMSActorClusterClient(@NotNull final JMSClient client, @NotNull final ActorKey actor) {
         super(client);
         this.actor = checkNotNull(actor);
     }
 
-    JMSActorClusterClient(@NotNull final JMSEndpoint endpoint, @NotNull final String actor) {
+    JMSActorClusterClient(@NotNull final JMSEndpoint endpoint, @NotNull final ActorKey actor) {
         super(endpoint);
         this.actor = checkNotNull(actor);
     }
 
     @Override
     public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        Message msg = new Message<>(actor, actorLifecycleMessage);
+        Message msg = new Message<>(actor.getName(), actorLifecycleMessage);
         sendToActorRegistry(msg);
     }
 
@@ -60,7 +61,7 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
         checkNotNull(actor);
 
         try {
-            getClient().addQueueListener(actor.name(), new JMSActorMessageListener(actor));
+            getClient().addQueueListener(actor.getKey().getName(), new JMSActorMessageListener(actor));
             getClient().startListening();
         } catch (JMSException e) {
             throw propagate(e);
@@ -71,7 +72,7 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
     public void sendMetrics(@NotNull final MetricValuesMessage metricValuesMessage) {
         checkNotNull(metricValuesMessage);
 
-        Message msg = new Message<>(actor, metricValuesMessage);
+        Message msg = new Message<>(actor.getName(), metricValuesMessage);
         try {
             getClient().sendToTopic(METRICS_TOPIC, msg);
         } catch (JMSException e) {

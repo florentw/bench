@@ -59,11 +59,11 @@ public class AgentRegistry {
         }
     }
 
-    public RegisteredAgent byName(@NotNull final String name) {
-        checkNotNull(name);
+    public RegisteredAgent byName(@NotNull final String agentName) {
+        checkNotNull(agentName);
 
         synchronized (agents) {
-            return agents.get(name);
+            return agents.get(agentName);
         }
     }
 

@@ -16,6 +16,7 @@
 package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,41 +38,41 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     }
 
     @Override
-    public void onActorCreated(@NotNull final String name, @NotNull final String agent) {
-        checkNotNull(name);
+    public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
+        checkNotNull(key);
         checkNotNull(agent);
 
-        LOG.info("Create actor {} by agent {}", name, agent);
+        LOG.info("Create actor {} by agent {}", key, agent);
 
-        delegate.onActorCreated(name, agent);
+        delegate.onActorCreated(key, agent);
     }
 
     @Override
-    public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
-        checkNotNull(name);
+    public void onActorInitialized(@NotNull final ActorKey key, @NotNull final ActorDeployInfo deployInfo) {
+        checkNotNull(key);
         checkNotNull(deployInfo);
 
-        LOG.info("Initialization of actor {} with deploy info {}", name, deployInfo);
+        LOG.info("Initialization of actor {} with deploy info {}", key, deployInfo);
 
-        delegate.onActorInitialized(name, deployInfo);
+        delegate.onActorInitialized(key, deployInfo);
     }
 
     @Override
-    public void onActorFailed(@NotNull final String name, @NotNull final Throwable throwable) {
-        checkNotNull(name);
+    public void onActorFailed(@NotNull final ActorKey key, @NotNull final Throwable throwable) {
+        checkNotNull(key);
         checkNotNull(throwable);
 
-        LOG.info("Actor failure of actor {}", name, throwable);
+        LOG.info("Actor failure of actor {}", key, throwable);
 
-        delegate.onActorFailed(name, throwable);
+        delegate.onActorFailed(key, throwable);
     }
 
     @Override
-    public void onActorClosed(@NotNull final String name) {
-        checkNotNull(name);
+    public void onActorClosed(@NotNull final ActorKey key) {
+        checkNotNull(key);
 
-        LOG.info("Close actor {}", name);
+        LOG.info("Close actor {}", key);
 
-        delegate.onActorClosed(name);
+        delegate.onActorClosed(key);
     }
 }

@@ -22,8 +22,7 @@ import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 
-import static io.amaze.bench.client.runtime.actor.TestActor.DUMMY_CONFIG;
-import static io.amaze.bench.client.runtime.actor.TestActor.configForActor;
+import static io.amaze.bench.client.runtime.actor.TestActor.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -44,12 +43,13 @@ public final class ActorConfigTest {
 
     @Test
     public void null_parameters_for_constructor() {
-        NullPointerTester test = new NullPointerTester();
-        test.setDefault(DeployConfig.class, DUMMY_CONFIG.getDeployConfig());
-        test.setDefault(JMSEndpoint.class, new JMSEndpoint("test", 10));
+        NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(DeployConfig.class, DUMMY_CONFIG.getDeployConfig());
+        tester.setDefault(JMSEndpoint.class, new JMSEndpoint("test", 10));
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
-        test.testAllPublicConstructors(ActorConfig.class);
-        test.testAllPublicConstructors(DeployConfig.class);
+        tester.testAllPublicConstructors(ActorConfig.class);
+        tester.testAllPublicConstructors(DeployConfig.class);
     }
 
     @Test
@@ -58,7 +58,7 @@ public final class ActorConfigTest {
 
         ActorConfig actual = SerializableTester.reserializeAndAssert(expected);
 
-        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getKey(), is(expected.getKey()));
         assertThat(actual.getActorJsonConfig(), is(expected.getActorJsonConfig()));
         assertThat(actual.getClassName(), is(expected.getClassName()));
         assertThat(actual.getDeployConfig(), is(expected.getDeployConfig()));

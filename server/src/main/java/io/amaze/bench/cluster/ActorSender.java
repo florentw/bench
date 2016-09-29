@@ -16,6 +16,7 @@
 package io.amaze.bench.cluster;
 
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 
@@ -38,15 +39,15 @@ public class ActorSender {
     /**
      * Will send the given message to the specified actor using the underlying messaging system.
      *
-     * @param actorName The actor name to send the message to
-     * @param message   Contents of the message, {@link ActorInputMessage}
+     * @param key     The actor name to send the message to
+     * @param message Contents of the message, {@link ActorInputMessage}
      */
-    public void sendToActor(@NotNull final String actorName, @NotNull final ActorInputMessage message) {
-        checkNotNull(actorName);
+    public void sendToActor(@NotNull final ActorKey key, @NotNull final ActorInputMessage message) {
+        checkNotNull(key);
         checkNotNull(message);
 
         try {
-            client.sendToQueue(actorName, message);
+            client.sendToQueue(key.getName(), message);
         } catch (JMSException e) {
             throw propagate(e);
         }

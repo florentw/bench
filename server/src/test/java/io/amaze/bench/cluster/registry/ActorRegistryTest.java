@@ -78,9 +78,9 @@ public final class ActorRegistryTest {
     @Test
     public void actor_registered() {
         clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
 
-        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.CREATED));
 
@@ -96,7 +96,7 @@ public final class ActorRegistryTest {
         assertThat(actors.size(), is(1));
 
         RegisteredActor actor = actors.iterator().next();
-        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getState(), is(State.CREATED));
     }
 
@@ -105,9 +105,9 @@ public final class ActorRegistryTest {
         clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         clusterListener.onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
 
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
 
-        assertThat(actor.getName(), is(DUMMY_ACTOR));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.INITIALIZED));
 
@@ -120,7 +120,7 @@ public final class ActorRegistryTest {
     public void unknown_actor_initialized_does_not_throw() {
         clusterListener.onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
 
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
         verifyNoMoreInteractions(clientListener);
@@ -131,7 +131,7 @@ public final class ActorRegistryTest {
         clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         clusterListener.onActorClosed(DUMMY_ACTOR);
 
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
@@ -143,7 +143,7 @@ public final class ActorRegistryTest {
     public void unknown_actor_closed_does_not_notify() {
         clusterListener.onActorClosed(DUMMY_ACTOR);
 
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
         verifyNoMoreInteractions(clientListener);
@@ -156,7 +156,7 @@ public final class ActorRegistryTest {
         clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         clusterListener.onActorFailed(DUMMY_ACTOR, dummyThrowable);
 
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
@@ -170,7 +170,7 @@ public final class ActorRegistryTest {
 
         clusterListener.onActorFailed(DUMMY_ACTOR, dummyThrowable);
 
-        RegisteredActor actor = registry.byName(DUMMY_ACTOR);
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
         verifyNoMoreInteractions(clientListener);

@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.cluster.jms;
 
 import io.amaze.bench.api.Reactor;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
@@ -58,7 +59,7 @@ final class JMSAgentMessageListener implements MessageListener {
         AgentInputMessage inputMessage = msg.get();
 
         // Process messages only if sent to myself (topic)
-        if (!inputMessage.getDestinationAgent().equals(agentName)) {
+        if (!inputMessage.getTargetAgent().equals(agentName)) {
             return;
         }
 
@@ -83,12 +84,12 @@ final class JMSAgentMessageListener implements MessageListener {
     }
 
     private void closeActor(final AgentInputMessage msg) {
-        String actor = (String) msg.getData();
+        ActorKey actor = msg.getActorToClose();
         listener.onActorCloseRequest(actor);
     }
 
     private void createActor(final AgentInputMessage msg) {
-        ActorCreationRequest data = (ActorCreationRequest) msg.getData();
+        ActorCreationRequest data = msg.getCreationRequest();
         listener.onActorCreationRequest(data.getActorConfig());
     }
 }

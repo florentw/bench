@@ -22,8 +22,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Instantiates actors using the given factory, in the local JVM.
- * <p>
- * Created on 2/28/16.
  */
 public class EmbeddedActorManager extends AbstractActorManager {
 
@@ -39,14 +37,14 @@ public class EmbeddedActorManager extends AbstractActorManager {
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
         checkNotNull(actorConfig);
 
-        final String name = actorConfig.getName();
-        final RuntimeActor actor = factory.create(name, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
+        final ActorKey key = actorConfig.getKey();
+        final RuntimeActor actor = factory.create(key, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
 
         return new ManagedActor() {
             @NotNull
             @Override
-            public String getName() {
-                return name;
+            public ActorKey getKey() {
+                return key;
             }
 
             @Override

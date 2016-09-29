@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.client.runtime.cluster;
-
-import io.amaze.bench.client.runtime.actor.ActorConfig;
+package io.amaze.bench.client.runtime.actor;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -24,23 +22,25 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Message sent by the resource manager to an agent when it is required to create an actor.
+ * Identifies uniquely an actor instance across the cluster.
+ *
+ * @see RuntimeActor
  */
-public final class ActorCreationRequest implements Serializable {
+public final class ActorKey implements Serializable {
 
-    private final ActorConfig actorConfig;
+    private final String name;
 
-    public ActorCreationRequest(@NotNull final ActorConfig actorConfig) {
-        this.actorConfig = checkNotNull(actorConfig);
+    public ActorKey(@NotNull final String name) {
+        this.name = checkNotNull(name);
     }
 
-    public ActorConfig getActorConfig() {
-        return actorConfig;
+    public String getName() {
+        return name;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(actorConfig);
+        return Objects.hash(name);
     }
 
     @Override
@@ -51,7 +51,12 @@ public final class ActorCreationRequest implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ActorCreationRequest that = (ActorCreationRequest) o;
-        return Objects.equals(actorConfig, that.actorConfig);
+        ActorKey actorKey = (ActorKey) o;
+        return Objects.equals(name, actorKey.name);
+    }
+
+    @Override
+    public String toString() {
+        return "{\"actor\":\"" + name + "\"}";
     }
 }

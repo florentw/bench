@@ -120,7 +120,7 @@ public final class ActorBootstrapTest {
         Files.writeTo(tmpConfigFile, "{}");
 
         try {
-            ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+            ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
         } catch (ValidationException ignore) {
         }
 
@@ -131,13 +131,13 @@ public final class ActorBootstrapTest {
     public void main_invalid_class_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
     }
 
     @Test(expected = RuntimeException.class)
     public void main_cluster_client_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR, TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR.getName(), TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
     }
 }

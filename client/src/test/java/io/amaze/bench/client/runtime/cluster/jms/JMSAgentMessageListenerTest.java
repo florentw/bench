@@ -19,7 +19,6 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.TestActor;
 import io.amaze.bench.client.runtime.agent.AgentClientListener;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
-import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
@@ -63,8 +62,8 @@ public final class JMSAgentMessageListenerTest {
     public void create_actor_calls_listener() throws IOException, ClassNotFoundException, JMSException {
         ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
 
-        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT, Action.CREATE_ACTOR, creationRequest);
-        BytesMessage testBytesMessage = toBytesMessage(masterMsg);
+        AgentInputMessage toAgent = AgentInputMessage.createActor(DUMMY_AGENT, creationRequest);
+        BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
         listener.onMessage(testBytesMessage);
 
@@ -75,9 +74,8 @@ public final class JMSAgentMessageListenerTest {
     @Test
     public void create_actor_for_wrong_agent_does_nothing() throws IOException, ClassNotFoundException, JMSException {
         ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
-
-        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT + "2", Action.CREATE_ACTOR, creationRequest);
-        BytesMessage testBytesMessage = toBytesMessage(masterMsg);
+        AgentInputMessage toAgent = AgentInputMessage.createActor(DUMMY_AGENT + "2", creationRequest);
+        BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
         listener.onMessage(testBytesMessage);
 
@@ -86,8 +84,8 @@ public final class JMSAgentMessageListenerTest {
 
     @Test
     public void close_actor_calls_listener() throws IOException, ClassNotFoundException, JMSException {
-        AgentInputMessage masterMsg = new AgentInputMessage(DUMMY_AGENT, Action.CLOSE_ACTOR, TestActor.DUMMY_ACTOR);
-        BytesMessage testBytesMessage = toBytesMessage(masterMsg);
+        AgentInputMessage toAgent = AgentInputMessage.closeActor(DUMMY_AGENT, TestActor.DUMMY_ACTOR);
+        BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
         listener.onMessage(testBytesMessage);
 
@@ -102,9 +100,9 @@ public final class JMSAgentMessageListenerTest {
         verifyNoMoreInteractions(agentListener);
     }
 
-    private BytesMessage toBytesMessage(final AgentInputMessage masterMsg)
+    private BytesMessage toBytesMessage(final AgentInputMessage toAgent)
             throws IOException, ClassNotFoundException, JMSException {
-        byte[] bytes = JMSHelper.convertToBytes(masterMsg);
+        byte[] bytes = JMSHelper.convertToBytes(toAgent);
         return createTestBytesMessage(bytes);
     }
 }

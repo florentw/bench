@@ -17,6 +17,7 @@ package io.amaze.bench.actor;
 
 import io.amaze.bench.client.runtime.actor.ActorConfig;
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.actor.DeployConfig;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.client.runtime.agent.Agent;
@@ -57,8 +58,8 @@ public final class WatcherActorsIntegrationTest {
     public static final boolean[] forked = {false, true};
 
     private static final String METRIC_KEY = "metric_key";
-    private static final String SYSTEM_WATCHER = "SystemWatcher";
-    private static final String PROCESS_WATCHER = "ProcessWatcher";
+    private static final ActorKey SYSTEM_WATCHER = new ActorKey("SystemWatcher");
+    private static final ActorKey PROCESS_WATCHER = new ActorKey("ProcessWatcher");
 
     @Rule
     public final BenchRule benchRule = new BenchRule();
@@ -130,11 +131,11 @@ public final class WatcherActorsIntegrationTest {
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
         ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.initialize());
 
-        processesWatcher.send(PROCESS_WATCHER, startStopwatch(deployInfo.getPid(), METRIC_KEY));
+        processesWatcher.send(PROCESS_WATCHER.getName(), startStopwatch(deployInfo.getPid(), METRIC_KEY));
 
         sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-        processesWatcher.send(PROCESS_WATCHER, stopStopwatch(deployInfo.getPid(), METRIC_KEY));
+        processesWatcher.send(PROCESS_WATCHER.getName(), stopStopwatch(deployInfo.getPid(), METRIC_KEY));
 
         processesWatcher.dumpMetrics();
         sleepUninterruptibly(1, TimeUnit.SECONDS);
@@ -151,11 +152,11 @@ public final class WatcherActorsIntegrationTest {
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
         ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.initialize());
 
-        processesWatcher.send(PROCESS_WATCHER, startSampling(deployInfo.getPid(), 1, METRIC_KEY));
+        processesWatcher.send(PROCESS_WATCHER.getName(), startSampling(deployInfo.getPid(), 1, METRIC_KEY));
 
         sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-        processesWatcher.send(PROCESS_WATCHER, stopSampling(deployInfo.getPid()));
+        processesWatcher.send(PROCESS_WATCHER.getName(), stopSampling(deployInfo.getPid()));
 
         processesWatcher.dumpMetrics();
         sleepUninterruptibly(1, TimeUnit.SECONDS);

@@ -16,6 +16,7 @@
 package io.amaze.bench.client.runtime.agent;
 
 import io.amaze.bench.client.runtime.actor.ActorConfig;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -37,5 +38,5 @@ public interface AgentClientListener {
      *
      * @param actor Actor to close
      */
-    void onActorCloseRequest(@NotNull String actor);
+    void onActorCloseRequest(@NotNull ActorKey actor);
 }

@@ -26,20 +26,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class RegisteredAgent {
 
-    private final String name;
+    private final String agentName;
     private final SystemConfig systemConfig;
     private final long creationTime;
 
-    RegisteredAgent(@NotNull final String name, @NotNull final SystemConfig systemConfig,
+    RegisteredAgent(@NotNull final String agentName, @NotNull final SystemConfig systemConfig,
                     @NotNull final long creationTime) {
 
-        this.name = checkNotNull(name);
+        this.agentName = checkNotNull(agentName);
         this.systemConfig = checkNotNull(systemConfig);
         this.creationTime = checkNotNull(creationTime);
     }
 
-    public String getName() {
-        return name;
+    public String getAgentName() {
+        return agentName;
     }
 
     public SystemConfig getSystemConfig() {

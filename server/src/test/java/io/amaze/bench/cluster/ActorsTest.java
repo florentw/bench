@@ -16,10 +16,7 @@
 package io.amaze.bench.cluster;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.client.runtime.actor.ActorConfig;
-import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
-import io.amaze.bench.client.runtime.actor.ActorInputMessage;
-import io.amaze.bench.client.runtime.actor.DeployConfig;
+import io.amaze.bench.client.runtime.actor.*;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import org.junit.Before;
@@ -51,9 +48,9 @@ import static org.mockito.Mockito.*;
 public final class ActorsTest {
 
     private static final int FUTURE_TIMEOUT = 100;
-    private static final String ACTOR_NAME = "actor";
     private static final String AGENT_NAME = "agent";
-    private static final String OTHER_ACTOR = "dummy-actor";
+    private static final ActorKey ACTOR_KEY = new ActorKey("actor");
+    private static final ActorKey OTHER_ACTOR = new ActorKey("other-actor");
 
     @Rule
     public Timeout globalTimeout = new Timeout(5, TimeUnit.SECONDS);
@@ -76,7 +73,7 @@ public final class ActorsTest {
     @Before
     public void initActors() {
         actors = new Actors(actorSender, resourceManager, actorRegistry);
-        actorConfig = new ActorConfig(ACTOR_NAME, "className", new DeployConfig(false, new ArrayList<>()), "{}");
+        actorConfig = new ActorConfig(ACTOR_KEY, "className", new DeployConfig(false, new ArrayList<>()), "{}");
 
         doAnswer((invocationOnMock) -> actorRegistryListener = (ActorRegistryListener) invocationOnMock.getArguments()[0]).when(
                 actorRegistry).addListener(any(ActorRegistryListener.class));
@@ -113,7 +110,7 @@ public final class ActorsTest {
         Future<ActorDeployInfo> future = actorHandle.initialize();
 
         assertNotNull(future);
-        verify(actorSender).sendToActor(ACTOR_NAME, ActorInputMessage.init());
+        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.init());
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -123,7 +120,7 @@ public final class ActorsTest {
 
         actorHandle.dumpMetrics();
 
-        verify(actorSender).sendToActor(ACTOR_NAME, ActorInputMessage.dumpMetrics());
+        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.dumpMetrics());
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -135,7 +132,7 @@ public final class ActorsTest {
 
         actorHandle.send(from, message);
 
-        verify(actorSender).sendToActor(ACTOR_NAME, ActorInputMessage.sendMessage(from, message));
+        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.sendMessage(from, message));
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -146,7 +143,7 @@ public final class ActorsTest {
         Future<Void> close = actorHandle.close();
 
         assertNotNull(close);
-        verify(actorSender).sendToActor(ACTOR_NAME, ActorInputMessage.close());
+        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.close());
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -154,7 +151,7 @@ public final class ActorsTest {
     public void actorCreation_is_set_when_actor_created() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(ACTOR_NAME, AGENT_NAME);
+        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_NAME);
 
         ActorConfig actual = getUninterruptibly(actorHandle.actorCreation());
         assertSame(actual, actorConfig);
@@ -175,7 +172,7 @@ public final class ActorsTest {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
         ActorDeployInfo expected = new ActorDeployInfo(10);
-        actorRegistryListener.onActorInitialized(ACTOR_NAME, expected);
+        actorRegistryListener.onActorInitialized(ACTOR_KEY, expected);
 
         ActorDeployInfo actual = getUninterruptibly(actorHandle.actorInitialization());
         assertSame(actual, expected);
@@ -196,7 +193,7 @@ public final class ActorsTest {
     public void actorTermination_is_set_when_actor_closes() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorClosed(ACTOR_NAME);
+        actorRegistryListener.onActorClosed(ACTOR_KEY);
 
         Void actual = getUninterruptibly(actorHandle.actorTermination());
         assertNull(actual);
@@ -221,7 +218,7 @@ public final class ActorsTest {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
         RuntimeException expected = new RuntimeException();
-        actorRegistryListener.onActorFailed(ACTOR_NAME, expected);
+        actorRegistryListener.onActorFailed(ACTOR_KEY, expected);
 
         Throwable actual = getUninterruptibly(actorHandle.actorFailure());
         assertSame(actual, expected);
@@ -267,7 +264,7 @@ public final class ActorsTest {
 
     private void verifyActorFailureThrowsFor(final Future<?> future) throws ExecutionException {
         RuntimeException throwable = new RuntimeException();
-        actorRegistryListener.onActorFailed(ACTOR_NAME, throwable);
+        actorRegistryListener.onActorFailed(ACTOR_KEY, throwable);
 
         expectedException.expect(ExecutionException.class);
         expectedException.expectCause(is(throwable));

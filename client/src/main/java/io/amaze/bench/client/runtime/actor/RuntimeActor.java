@@ -30,12 +30,12 @@ import java.io.Serializable;
 public interface RuntimeActor extends Closeable {
 
     /**
-     * The actor's name must be unique across the cluster.
+     * The actor's key must be unique across the cluster.
      * It's the instance unique key.
      *
-     * @return The actor's name.
+     * @return The actor's key.
      */
-    String name();
+    ActorKey getKey();
 
     /**
      * Initializes the actor by invoking the method annotated with @{@link Before} if any.<br>

@@ -26,25 +26,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ActorConfig implements Serializable {
 
-    private final String name;
+    private final ActorKey key;
     private final String className;
     private final DeployConfig deployConfig;
     private final String actorJsonConfig;
 
-    public ActorConfig(@NotNull final String name,
+    public ActorConfig(@NotNull final ActorKey key,
                        @NotNull final String className,
                        @NotNull final DeployConfig deployConfig,
                        @NotNull final String actorJsonConfig) {
 
-        this.name = checkNotNull(name);
+        this.key = checkNotNull(key);
         this.className = checkNotNull(className);
         this.deployConfig = checkNotNull(deployConfig);
         this.actorJsonConfig = checkNotNull(actorJsonConfig);
     }
 
     @NotNull
-    public String getName() {
-        return name;
+    public ActorKey getKey() {
+        return key;
     }
 
     @NotNull
@@ -64,7 +64,7 @@ public final class ActorConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, className, deployConfig, actorJsonConfig);
+        return Objects.hash(key, className, deployConfig, actorJsonConfig);
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class ActorConfig implements Serializable {
             return false;
         }
         ActorConfig that = (ActorConfig) o;
-        return Objects.equals(name, that.name) && //
+        return Objects.equals(key, that.key) && //
                 Objects.equals(className, that.className) && //
                 Objects.equals(deployConfig, that.deployConfig) && //
                 Objects.equals(actorJsonConfig, that.actorJsonConfig);
@@ -85,9 +85,9 @@ public final class ActorConfig implements Serializable {
     @Override
     public String toString() {
         return "{\"ActorConfig\":{" + //
-                "\"name\":\"" + name + "\"" + ", " + //
-                "\"className\":\"" + className + "\"" + ", " + //
+                "\"key\":" + key + ", " + //
+                "\"className\":\"" + className + "\", " + //
                 "\"deployConfig\":" + deployConfig + ", " + //
-                "\"actorJsonConfig\":" + actorJsonConfig + "" + "}}";
+                "\"actorJsonConfig\":" + actorJsonConfig + "}}";
     }
 }

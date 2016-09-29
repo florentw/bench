@@ -115,14 +115,14 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void on_actor_message_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = ActorInputMessage.sendMessage(DUMMY_ACTOR, DUMMY_PAYLOAD);
+        ActorInputMessage inputMsg = ActorInputMessage.sendMessage(DUMMY_ACTOR.getName(), DUMMY_PAYLOAD);
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
         listener.onMessage(msg);
 
-        verify(actor).onMessage(argThat(is(DUMMY_ACTOR)), argThat(is(DUMMY_PAYLOAD)));
+        verify(actor).onMessage(argThat(is(DUMMY_ACTOR.getName())), argThat(is(DUMMY_PAYLOAD)));
         verifyNoMoreInteractions(actor);
     }
 }

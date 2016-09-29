@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.client.runtime.cluster.jms;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.client.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
@@ -41,7 +42,7 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public ActorClusterClient createForActor(@NotNull String actor) {
+    public ActorClusterClient createForActor(@NotNull ActorKey actor) {
         return new JMSActorClusterClient(endpoint, checkNotNull(actor));
     }
 

@@ -27,14 +27,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ActorLifecycleMessage implements LifecycleMessage {
 
-    private final String actor;
+    private final ActorKey actor;
     private final State state;
     private final String agent;
     private final ActorDeployInfo deployInfo;
     private final Throwable throwable;
 
-    private ActorLifecycleMessage(@NotNull final State state,
-                                  @NotNull final String actor,
+    private ActorLifecycleMessage(@NotNull final State state, @NotNull final ActorKey actor,
                                   final String agent,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {
@@ -45,14 +44,14 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
         this.throwable = throwable;
     }
 
-    public static ActorLifecycleMessage created(@NotNull final String actor, @NotNull final String agent) {
+    public static ActorLifecycleMessage created(@NotNull final ActorKey actor, @NotNull final String agent) {
         checkNotNull(actor);
         checkNotNull(agent);
 
         return new ActorLifecycleMessage(State.CREATED, actor, agent, null, null);
     }
 
-    public static ActorLifecycleMessage initialized(@NotNull final String actor,
+    public static ActorLifecycleMessage initialized(@NotNull final ActorKey actor,
                                                     @NotNull final ActorDeployInfo deployInfo) {
         checkNotNull(actor);
         checkNotNull(deployInfo);
@@ -60,21 +59,21 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
         return new ActorLifecycleMessage(State.INITIALIZED, actor, null, deployInfo, null);
     }
 
-    public static ActorLifecycleMessage failed(@NotNull final String actor, @NotNull final Throwable throwable) {
+    public static ActorLifecycleMessage failed(@NotNull final ActorKey actor, @NotNull final Throwable throwable) {
         checkNotNull(actor);
         checkNotNull(throwable);
 
         return new ActorLifecycleMessage(State.FAILED, actor, null, null, throwable);
     }
 
-    public static ActorLifecycleMessage closed(@NotNull final String actor) {
+    public static ActorLifecycleMessage closed(@NotNull final ActorKey actor) {
         checkNotNull(actor);
 
         return new ActorLifecycleMessage(State.CLOSED, actor, null, null, null);
     }
 
     @NotNull
-    public String getActor() {
+    public ActorKey getActor() {
         return actor;
     }
 
@@ -98,10 +97,10 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
     @Override
     public String toString() {
         return "{\"ActorLifecycleMessage\":{" + //
-                "\"actor\":\"" + actor + "\"" + ", " + //
-                "\"state\":\"" + state + "\"" + ", " + //
+                "\"actor\":" + actor + ", " + //
+                "\"state\":\"" + state + "\", " + //
                 "\"throwable\":" + throwable + ", " + //
-                "\"agent\":\"" + agent + "\"" + ", " + //
+                "\"agent\":\"" + agent + "\", " + //
                 "\"deployInfo\":" + deployInfo + "}}";
     }
 

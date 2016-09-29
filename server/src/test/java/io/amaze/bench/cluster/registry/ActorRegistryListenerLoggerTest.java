@@ -17,6 +17,7 @@ package io.amaze.bench.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ public final class ActorRegistryListenerLoggerTest {
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorDeployInfo.class, new ActorDeployInfo(10));
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(ActorRegistryListenerLogger.class);
         tester.testAllPublicInstanceMethods(loggerListener);

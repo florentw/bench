@@ -17,6 +17,7 @@ package io.amaze.bench.cluster;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.client.runtime.actor.ActorInputMessage;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.Before;
@@ -59,6 +60,7 @@ public final class ActorSenderTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorInputMessage.class, DUMMY_MSG);
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(ActorSender.class);
         tester.testAllPublicInstanceMethods(sender);
@@ -68,7 +70,7 @@ public final class ActorSenderTest {
     public void send_to_actor() throws JMSException {
         sender.sendToActor(DUMMY_ACTOR, DUMMY_MSG);
 
-        verify(jmsClient).sendToQueue(DUMMY_ACTOR, DUMMY_MSG);
+        verify(jmsClient).sendToQueue(DUMMY_ACTOR.getName(), DUMMY_MSG);
     }
 
     @Test

@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.cluster;
 
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
 import io.amaze.bench.client.runtime.cluster.ClusterClient;
 import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
@@ -34,17 +35,17 @@ public interface ResourceManagerClusterClient {
      * In practice a message queue is created in the underlying implementation.<br>
      * The actor can then consume incoming messages from the queue.
      *
-     * @param actorName The actor name, that will uniquely identify the queue in the system.
+     * @param key The actor name, that will uniquely identify the queue in the cluster.
      */
-    void initForActor(@NotNull String actorName);
+    void initForActor(@NotNull ActorKey key);
 
     /**
      * Deletes the endpoint queue created for an actor to receive messages.<br>
      * The queue should have been previously created using {@link #initForActor}
      *
-     * @param actorName The actor unique name.
+     * @param key The actor unique key in the cluster.
      */
-    void closeForActor(@NotNull String actorName);
+    void closeForActor(@NotNull ActorKey key);
 
     /**
      * Will send the given message to the specified agent using the underlying messaging system.

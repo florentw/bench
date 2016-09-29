@@ -17,8 +17,8 @@ package io.amaze.bench.cluster;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.client.runtime.actor.ActorConfig;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.agent.AgentInputMessage;
-import io.amaze.bench.client.runtime.agent.AgentInputMessage.Action;
 import io.amaze.bench.client.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.cluster.registry.AgentRegistry;
 import io.amaze.bench.cluster.registry.RegisteredAgent;
@@ -41,7 +41,7 @@ public class ResourceManager implements AutoCloseable {
     private final ResourceManagerClusterClient resourceManagerClusterClient;
     private final AgentRegistry agentRegistry;
 
-    private final Map<String, RegisteredAgent> actorsToAgents = new ConcurrentHashMap<>();
+    private final Map<ActorKey, RegisteredAgent> actorsToAgents = new ConcurrentHashMap<>();
     private final Random rand = new Random();
 
     public ResourceManager(@NotNull final ResourceManagerClusterClient resourceManagerClusterClient,
@@ -59,7 +59,7 @@ public class ResourceManager implements AutoCloseable {
     public void createActor(@NotNull final ActorConfig actorConfig) {
         checkNotNull(actorConfig);
 
-        String name = actorConfig.getName();
+        ActorKey name = actorConfig.getKey();
         resourceManagerClusterClient.initForActor(name);
 
         ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig);
@@ -69,7 +69,7 @@ public class ResourceManager implements AutoCloseable {
             throw new IllegalStateException("No agents found to create actor " + name);
         }
 
-        AgentInputMessage msg = new AgentInputMessage(agent.get().getName(), Action.CREATE_ACTOR, actorCreationMsg);
+        AgentInputMessage msg = AgentInputMessage.createActor(agent.get().getAgentName(), actorCreationMsg);
 
         resourceManagerClusterClient.sendToAgent(msg);
         actorsToAgents.put(name, agent.get());
@@ -78,19 +78,20 @@ public class ResourceManager implements AutoCloseable {
     /**
      * Requests to close an actor. It will contact the agent hosting the actor in order for it to close it.
      *
-     * @param name The name of the actor to close.
+     * @param actor The key of the actor to close.
      * @throws IllegalArgumentException if the actor does not exist.
      */
-    public void closeActor(@NotNull final String name) {
-        checkNotNull(name);
+    public void closeActor(@NotNull final ActorKey actor) {
+        checkNotNull(actor);
 
-        RegisteredAgent agent = actorsToAgents.remove(name);
+        RegisteredAgent agent = actorsToAgents.remove(actor);
         if (agent == null) {
-            throw new IllegalArgumentException("Attempt to close unknown actor " + name);
+            throw new IllegalArgumentException("Attempt to close unknown actor " + actor);
         }
 
-        resourceManagerClusterClient.closeForActor(name);
-        resourceManagerClusterClient.sendToAgent(new AgentInputMessage(agent.getName(), Action.CLOSE_ACTOR, name));
+        resourceManagerClusterClient.closeForActor(actor);
+        AgentInputMessage msg = AgentInputMessage.closeActor(agent.getAgentName(), actor);
+        resourceManagerClusterClient.sendToAgent(msg);
     }
 
     /**
@@ -98,12 +99,12 @@ public class ResourceManager implements AutoCloseable {
      */
     @Override
     public void close() {
-        Set<String> actorsMapCopy = new HashSet<>(actorsToAgents.keySet());
+        Set<ActorKey> actorsMapCopy = new HashSet<>(actorsToAgents.keySet());
         actorsMapCopy.forEach(this::closeActor);
     }
 
     @VisibleForTesting
-    Map<String, RegisteredAgent> getActorsToAgents() {
+    Map<ActorKey, RegisteredAgent> getActorsToAgents() {
         return Collections.unmodifiableMap(actorsToAgents);
     }
 

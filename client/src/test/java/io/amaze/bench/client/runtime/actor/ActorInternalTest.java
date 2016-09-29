@@ -92,7 +92,7 @@ public final class ActorInternalTest {
             actor.init();
 
             // Check before method is called
-            assertThat(actor.name(), is(DUMMY_ACTOR));
+            assertThat(actor.getKey(), is(DUMMY_ACTOR));
             assertThat(((TestActor) actor.getInstance()).isBeforeCalled(), is(true));
 
             verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
@@ -151,7 +151,7 @@ public final class ActorInternalTest {
     public void actor_receives_message() throws Exception {
         try (ActorInternal actor = defaultTestActor()) {
 
-            actor.onMessage(DUMMY_ACTOR, "");
+            actor.onMessage(DUMMY_ACTOR.getName(), "");
 
             // Assert message is received by the instance
             assertThat(((TestActor) actor.getInstance()).getReceivedMessages().size(), is(1));
@@ -175,7 +175,7 @@ public final class ActorInternalTest {
     public void recoverableException_is_swallowed_and_actor_not_closed() throws Exception {
         try (ActorInternal actor = defaultTestActor()) {
 
-            actor.onMessage(DUMMY_ACTOR, RECOVERABLE_EXCEPTION_MSG);
+            actor.onMessage(DUMMY_ACTOR.getName(), RECOVERABLE_EXCEPTION_MSG);
 
             assertFalse(((TestActor) actor.getInstance()).isAfterCalled());
             verifyZeroInteractions(actorClient);
@@ -196,7 +196,7 @@ public final class ActorInternalTest {
     public void actor_receives_message_and_throws_termination_exception() throws Exception {
         try (ActorInternal actor = defaultTestActor()) {
 
-            actor.onMessage(DUMMY_ACTOR, TERMINATE_MSG);
+            actor.onMessage(DUMMY_ACTOR.getName(), TERMINATE_MSG);
 
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
@@ -212,7 +212,7 @@ public final class ActorInternalTest {
     public void actor_throws_on_received_message_and_call_to_after_throws() throws Exception {
         try (ActorInternal actor = createActor(TestActorAfterThrows.class)) {
 
-            actor.onMessage(DUMMY_ACTOR, FAIL_MSG);
+            actor.onMessage(DUMMY_ACTOR.getName(), FAIL_MSG);
 
             verify(actorClient).sendToActorRegistry(argThat(isActorState(State.FAILED)));
             verifyNoMoreInteractions(actorClient);
@@ -222,7 +222,7 @@ public final class ActorInternalTest {
     @Test
     public void dump_metrics_throws_and_failure_message_is_sent() throws Exception {
         try (ActorInternal actor = createActor(TestActorMetrics.class)) {
-            actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
+            actor.onMessage(DUMMY_ACTOR.getName(), TestActorMetrics.PRODUCE_METRICS_MSG);
 
             doThrow(new IllegalArgumentException()).when(actorClient).sendMetrics(any(MetricValuesMessage.class));
             actor.dumpAndFlushMetrics();
@@ -239,7 +239,7 @@ public final class ActorInternalTest {
         try (ActorInternal actor = createActor(TestActorMetrics.class)) {
             actor.init();
 
-            actor.onMessage(DUMMY_ACTOR, TestActorMetrics.PRODUCE_METRICS_MSG);
+            actor.onMessage(DUMMY_ACTOR.getName(), TestActorMetrics.PRODUCE_METRICS_MSG);
 
             actor.dumpAndFlushMetrics();
 
@@ -343,7 +343,7 @@ public final class ActorInternalTest {
     private void verifyIrrecoverableExceptions(String messageToActor) throws ValidationException {
         try (ActorInternal actor = defaultTestActor()) {
 
-            actor.onMessage(DUMMY_ACTOR, messageToActor);
+            actor.onMessage(DUMMY_ACTOR.getName(), messageToActor);
 
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());

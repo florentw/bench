@@ -16,6 +16,7 @@
 package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.client.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.cluster.registry.RegisteredActor.State;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +35,7 @@ public class ActorRegistry {
 
     private static final Logger LOG = LogManager.getLogger(ActorRegistry.class);
 
-    private final Map<String, RegisteredActor> actors = new HashMap<>();
+    private final Map<ActorKey, RegisteredActor> actors = new HashMap<>();
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();
 
     public void addListener(@NotNull final ActorRegistryListener listener) {
@@ -62,14 +63,14 @@ public class ActorRegistry {
     }
 
     /**
-     * @param name name of the actor to find
+     * @param key key of the actor to find
      * @return {@code null} if no actor with that name is found, returns the actor otherwise
      */
-    public RegisteredActor byName(@NotNull final String name) {
-        checkNotNull(name);
+    public RegisteredActor byKey(@NotNull final ActorKey key) {
+        checkNotNull(key);
 
         synchronized (actors) {
-            return actors.get(name);
+            return actors.get(key);
         }
     }
 
@@ -85,19 +86,19 @@ public class ActorRegistry {
     private final class ActorRegistryListenerState implements ActorRegistryListener {
 
         @Override
-        public void onActorCreated(@NotNull final String name, @NotNull final String agent) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
             synchronized (actors) {
-                actors.put(name, new RegisteredActor(name, agent, State.CREATED));
+                actors.put(key, new RegisteredActor(key, agent, State.CREATED));
             }
 
             // Notify listeners
             for (ActorRegistryListener listener : listeners()) {
-                listener.onActorCreated(name, agent);
+                listener.onActorCreated(key, agent);
             }
         }
 
         @Override
-        public void onActorInitialized(@NotNull final String name, @NotNull final ActorDeployInfo deployInfo) {
+        public void onActorInitialized(@NotNull final ActorKey name, @NotNull final ActorDeployInfo deployInfo) {
             synchronized (actors) {
                 RegisteredActor found = actors.remove(name);
 
@@ -121,7 +122,7 @@ public class ActorRegistry {
         }
 
         @Override
-        public void onActorFailed(@NotNull final String name, @NotNull final Throwable throwable) {
+        public void onActorFailed(@NotNull final ActorKey name, @NotNull final Throwable throwable) {
             synchronized (actors) {
                 RegisteredActor removed = actors.remove(name);
                 if (removed == null) {
@@ -137,7 +138,7 @@ public class ActorRegistry {
         }
 
         @Override
-        public void onActorClosed(@NotNull final String name) {
+        public void onActorClosed(@NotNull final ActorKey name) {
             synchronized (actors) {
                 RegisteredActor removed = actors.remove(name);
                 if (removed == null) {

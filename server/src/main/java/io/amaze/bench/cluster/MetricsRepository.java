@@ -17,6 +17,7 @@ package io.amaze.bench.cluster;
 
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.client.runtime.actor.ActorKey;
 import io.amaze.bench.client.runtime.actor.metric.MetricValuesMessage;
 
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ import java.util.concurrent.Future;
 /**
  * Repository for metric values produced by actors.<br/>
  * It offers the ability to get all previously produced actors metric values using {@link #allValues()}, or to wait for
- * an actor to produce values using {@link #expectValuesFor(String)}.
+ * an actor to produce values using {@link #expectValuesFor}.
  *
  * @see MetricValuesMessage
  * @see Metric
@@ -40,7 +41,7 @@ public interface MetricsRepository {
      * @param actor Actor to get metric values for.
      * @return Produced metric values for the given actor or {@code null}
      */
-    MetricValuesMessage valuesFor(@NotNull String actor);
+    MetricValuesMessage valuesFor(@NotNull ActorKey actor);
 
     /**
      * Returns a {@link Future} that will be set once the specified actor has produced values.
@@ -49,13 +50,13 @@ public interface MetricsRepository {
      * @param actor Actor to get metrics for.
      * @return A future of {@link MetricValuesMessage}.
      */
-    Future<MetricValuesMessage> expectValuesFor(@NotNull String actor);
+    Future<MetricValuesMessage> expectValuesFor(@NotNull ActorKey actor);
 
     /**
      * Returns produced metric values produced until now by actors.
      *
      * @return A map of produced metric values with actor names as the key.
      */
-    Map<String, MetricValuesMessage> allValues();
+    Map<ActorKey, MetricValuesMessage> allValues();
 
 }
