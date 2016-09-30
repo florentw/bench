@@ -56,7 +56,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.availableMemory", UNIT_BYTES) //
             .label("Available RAM").build();
 
-    private static final Logger log = LogManager.getLogger(SystemWatcherActor.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final SystemWatcherThread watcherThread;
 

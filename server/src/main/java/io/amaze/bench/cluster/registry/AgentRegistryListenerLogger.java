@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
-    private static final Logger log = LogManager.getLogger(AgentRegistryListenerLogger.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final AgentRegistryListener delegate;
 

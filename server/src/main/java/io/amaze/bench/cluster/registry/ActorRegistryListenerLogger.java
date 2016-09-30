@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
-    private static final Logger log = LogManager.getLogger(ActorRegistryListenerLogger.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final ActorRegistryListener delegate;
 

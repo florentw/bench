@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSAgentRegistryTopicListener implements MessageListener {
 
-    private static final Logger log = LogManager.getLogger(JMSAgentRegistryTopicListener.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final AgentRegistryListener agentsListener;
 

@@ -30,7 +30,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterrup
  */
 final class ProcessWatchDogThread extends Thread implements Closeable {
 
-    private static final Logger log = LogManager.getLogger(ProcessWatchDogThread.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final String name;
     private final Process process;

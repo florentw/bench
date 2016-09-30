@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class AgentRegistry {
 
-    private static final Logger log = LogManager.getLogger(AgentRegistry.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final Map<String, RegisteredAgent> agents = new HashMap<>();
     private final Set<AgentRegistryListener> clientListeners = new HashSet<>();

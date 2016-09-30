@@ -47,7 +47,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
  */
 final class ForkedActorManager extends AbstractActorManager implements ProcessTerminationListener {
 
-    private static final Logger log = LogManager.getLogger(ForkedActorManager.class);
+    private static final Logger log = LogManager.getLogger();
 
     private static final String JAVA_CMD_PATH = File.separator + "bin" + File.separator + "java";
     private static final String TMP_CONFIG_FILE_PREFIX = "actorKey-config";

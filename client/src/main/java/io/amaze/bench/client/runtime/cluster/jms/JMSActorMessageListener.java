@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSActorMessageListener implements MessageListener {
 
-    private static final Logger log = LogManager.getLogger(JMSActorMessageListener.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final RuntimeActor actor;
 

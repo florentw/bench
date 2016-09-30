@@ -49,7 +49,7 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
 public class ActorInternal implements RuntimeActor {
 
     private static final String MSG_AFTER_METHOD_FAILED = "{} Error while invoking after method.";
-    private static final Logger log = LogManager.getLogger(ActorInternal.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final ActorKey actorKey;
     private final MetricsInternal metrics;

@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentBootstrap {
 
-    private static final Logger log = LogManager.getLogger(AgentBootstrap.class);
+    private static final Logger log = LogManager.getLogger();
 
     private AgentBootstrap() {
         // Should not be instantiated

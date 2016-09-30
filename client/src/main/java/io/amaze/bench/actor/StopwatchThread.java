@@ -35,7 +35,7 @@ import static java.lang.String.format;
  */
 final class StopwatchThread implements Runnable {
 
-    private static final Logger log = LogManager.getLogger(StopwatchThread.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final ProcessWatcherActorInput message;
     private final Metrics metrics;

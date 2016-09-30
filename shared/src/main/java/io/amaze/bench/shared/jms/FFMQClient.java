@@ -36,7 +36,7 @@ import static com.google.common.base.Throwables.propagate;
  */
 public final class FFMQClient implements JMSClient {
 
-    private static final Logger log = LogManager.getLogger(FFMQClient.class);
+    private static final Logger log = LogManager.getLogger();
 
     private static final int MAX_CACHE_SIZE = 100;
 

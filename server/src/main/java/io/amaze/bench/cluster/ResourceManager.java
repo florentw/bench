@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ResourceManager implements AutoCloseable {
 
-    private static final Logger log = LogManager.getLogger(ResourceManager.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final ResourceManagerClusterClient resourceManagerClusterClient;
     private final AgentRegistry agentRegistry;

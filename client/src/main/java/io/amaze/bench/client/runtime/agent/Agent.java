@@ -40,7 +40,7 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.failed;
 public class Agent implements AgentClientListener, AutoCloseable {
 
     private static final String DEFAULT_AGENT_PREFIX = "agent-";
-    private static final Logger log = LogManager.getLogger(Agent.class);
+    private static final Logger log = LogManager.getLogger();
     private final Map<ActorKey, ManagedActor> actors = Maps.newHashMap();
     private final AgentClusterClient agentClient;
     private final ActorManager embeddedManager;

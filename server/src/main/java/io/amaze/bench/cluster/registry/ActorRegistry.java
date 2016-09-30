@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ActorRegistry {
 
-    private static final Logger log = LogManager.getLogger(ActorRegistry.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final Map<ActorKey, RegisteredActor> actors = new HashMap<>();
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();

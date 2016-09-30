@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
 @Category(IntegrationTest.class)
 public final class ForkedActorManagerTest {
 
-    private static final Logger log = LogManager.getLogger(ForkedActorManagerTest.class);
+    private static final Logger log = LogManager.getLogger();
 
     private static final int MAX_TIMEOUT_SEC = 30;
 

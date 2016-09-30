@@ -42,7 +42,7 @@ public final class TestActorWriter extends TestActor {
     static final String SUICIDE_AFTER_MS = "suicide_after_ms";
     static final String OK = "OK";
 
-    private static final Logger log = LogManager.getLogger(TestActorWriter.class);
+    private static final Logger log = LogManager.getLogger();
     private static final String MSG_CREATION_ERROR = "Could not create file %s";
 
     public TestActorWriter(final Sender sender, final Config config) {

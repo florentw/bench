@@ -55,7 +55,7 @@ public final class FFMQServer implements JMSServer {
     @VisibleForTesting
     static final String TOPIC_PREFIX = "topic-";
 
-    private static final Logger log = LogManager.getLogger(FFMQServer.class);
+    private static final Logger log = LogManager.getLogger();
     private static final String ENGINE_NAME = "FFMQ";
     private static final int MAX_NON_PERSISTENT_MESSAGES = 1000;
     private static final String QUEUE_TEMPLATE = "QueueTemplate";

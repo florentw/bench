@@ -41,7 +41,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
  */
 public final class JMSMetricsRepository implements MetricsRepository {
 
-    private static final Logger log = LogManager.getLogger(JMSMetricsRepository.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final Map<ActorKey, MetricValuesMessage> actorValues = new HashMap<>();
     private final Map<ActorKey, List<SettableFuture<MetricValuesMessage>>> expectedActors = new HashMap<>();

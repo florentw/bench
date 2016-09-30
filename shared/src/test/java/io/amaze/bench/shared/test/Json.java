@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class Json {
 
-    private static final Logger log = LogManager.getLogger(Json.class);
+    private static final Logger log = LogManager.getLogger();
     private static final Gson gson = new Gson();
 
     private Json() {

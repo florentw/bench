@@ -30,7 +30,7 @@ import static java.lang.String.format;
  */
 final class ProcessSamplingThread implements Runnable {
 
-    private static final Logger log = LogManager.getLogger(ProcessSamplingThread.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final SystemInfo systemInfo;
     private final ProcessWatcherActorInput message;

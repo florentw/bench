@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ActorBootstrap {
 
-    private static final Logger log = LogManager.getLogger(ActorBootstrap.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final ClusterClientFactory clientFactory;
 
