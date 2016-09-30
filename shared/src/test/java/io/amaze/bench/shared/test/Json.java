@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class Json {
 
-    private static final Logger LOG = LogManager.getLogger(Json.class);
+    private static final Logger log = LogManager.getLogger(Json.class);
     private static final Gson gson = new Gson();
 
     private Json() {
@@ -37,7 +37,7 @@ public final class Json {
             gson.fromJson(jsonToCheck, Object.class);
             return true;
         } catch (JsonSyntaxException e) {
-            LOG.error("Invalid syntax for {}", jsonToCheck, e);
+            log.error("Invalid syntax for {}", jsonToCheck, e);
             return false;
         }
     }

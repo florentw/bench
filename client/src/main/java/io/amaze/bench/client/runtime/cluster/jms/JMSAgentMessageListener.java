@@ -37,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSAgentMessageListener implements MessageListener {
 
-    private static final Logger LOG = LogManager.getLogger(JMSAgentMessageListener.class);
+    private static final Logger log = LogManager.getLogger(JMSAgentMessageListener.class);
 
     private final AgentClientListener listener;
     private final String agentName;
@@ -78,7 +78,7 @@ final class JMSAgentMessageListener implements MessageListener {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
+            log.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
             return Optional.empty();
         }
     }

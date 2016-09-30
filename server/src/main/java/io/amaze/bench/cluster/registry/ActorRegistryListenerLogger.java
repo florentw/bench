@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
-    private static final Logger LOG = LogManager.getLogger(ActorRegistryListenerLogger.class);
+    private static final Logger log = LogManager.getLogger(ActorRegistryListenerLogger.class);
 
     private final ActorRegistryListener delegate;
 
@@ -42,7 +42,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
         checkNotNull(key);
         checkNotNull(agent);
 
-        LOG.info("Create actor {} by agent {}", key, agent);
+        log.info("Create actor {} by agent {}", key, agent);
 
         delegate.onActorCreated(key, agent);
     }
@@ -52,7 +52,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
         checkNotNull(key);
         checkNotNull(deployInfo);
 
-        LOG.info("Initialization of actor {} with deploy info {}", key, deployInfo);
+        log.info("Initialization of actor {} with deploy info {}", key, deployInfo);
 
         delegate.onActorInitialized(key, deployInfo);
     }
@@ -62,7 +62,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
         checkNotNull(key);
         checkNotNull(throwable);
 
-        LOG.info("Actor failure of actor {}", key, throwable);
+        log.info("Actor failure of actor {}", key, throwable);
 
         delegate.onActorFailed(key, throwable);
     }
@@ -71,7 +71,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     public void onActorClosed(@NotNull final ActorKey key) {
         checkNotNull(key);
 
-        LOG.info("Close actor {}", key);
+        log.info("Close actor {}", key);
 
         delegate.onActorClosed(key);
     }

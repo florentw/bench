@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
 @Category(IntegrationTest.class)
 public final class ForkedActorManagerTest {
 
-    private static final Logger LOG = LogManager.getLogger(ForkedActorManagerTest.class);
+    private static final Logger log = LogManager.getLogger(ForkedActorManagerTest.class);
 
     private static final int MAX_TIMEOUT_SEC = 30;
 
@@ -259,7 +259,7 @@ public final class ForkedActorManagerTest {
             if (expectedContent.equals(content)) {
                 return;
             }
-            LOG.debug("Condition not met yet, sleeping for 500ms");
+            log.debug("Condition not met yet, sleeping for 500ms");
             sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
         }
 

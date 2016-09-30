@@ -41,7 +41,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.METRICS_TOPIC;
  */
 public final class JMSMetricsRepository implements MetricsRepository {
 
-    private static final Logger LOG = LogManager.getLogger(JMSMetricsRepository.class);
+    private static final Logger log = LogManager.getLogger(JMSMetricsRepository.class);
 
     private final Map<ActorKey, MetricValuesMessage> actorValues = new HashMap<>();
     private final Map<ActorKey, List<SettableFuture<MetricValuesMessage>>> expectedActors = new HashMap<>();
@@ -127,7 +127,7 @@ public final class JMSMetricsRepository implements MetricsRepository {
         }
 
         private void updateMetricValues(final ActorKey actor, final MetricValuesMessage metrics) {
-            LOG.info("Received metric values from {}: {}", actor, metrics);
+            log.info("Received metric values from {}: {}", actor, metrics);
 
             synchronized (actorValues) {
                 MetricValuesMessage currentActorMetrics = updateActorMetricValues(actor, metrics);
@@ -160,7 +160,7 @@ public final class JMSMetricsRepository implements MetricsRepository {
             try {
                 return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
             } catch (Exception e) {
-                LOG.error("Error while reading JMS message.", e);
+                log.error("Error while reading JMS message.", e);
                 return Optional.empty();
             }
         }

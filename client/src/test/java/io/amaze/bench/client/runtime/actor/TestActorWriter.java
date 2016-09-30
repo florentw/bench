@@ -42,7 +42,7 @@ public final class TestActorWriter extends TestActor {
     static final String SUICIDE_AFTER_MS = "suicide_after_ms";
     static final String OK = "OK";
 
-    private static final Logger LOG = LogManager.getLogger(TestActorWriter.class);
+    private static final Logger log = LogManager.getLogger(TestActorWriter.class);
     private static final String MSG_CREATION_ERROR = "Could not create file %s";
 
     public TestActorWriter(final Sender sender, final Config config) {
@@ -51,10 +51,10 @@ public final class TestActorWriter extends TestActor {
         if (config.hasPath(INIT_FILE_CONFIG)) {
             String initFileName = getConfig().getString(INIT_FILE_CONFIG);
             try {
-                LOG.info("{} writing RDV file {} ms", this, initFileName);
+                log.info("{} writing RDV file {} ms", this, initFileName);
                 writeFile(initFileName, OK);
             } catch (IrrecoverableException e) {
-                LOG.info("{} Error while init", this, e);
+                log.info("{} Error while init", this, e);
                 Throwables.propagate(e);
             }
         }
@@ -62,7 +62,7 @@ public final class TestActorWriter extends TestActor {
         if (config.hasPath(SUICIDE_AFTER_MS)) {
             long sleepTime = getConfig().getLong(SUICIDE_AFTER_MS);
             sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
-            LOG.info("{} committing suicide after {} ms", this, sleepTime);
+            log.info("{} committing suicide after {} ms", this, sleepTime);
             System.exit(0);
         }
     }
@@ -81,7 +81,7 @@ public final class TestActorWriter extends TestActor {
     private void writeFile(final String fileName, final String content) throws IrrecoverableException {
         try {
             writeTo(new File(fileName), content);
-            LOG.info("Wrote \"{}\" in file {} ", content, fileName);
+            log.info("Wrote \"{}\" in file {} ", content, fileName);
         } catch (IOException e) {
             throw new IrrecoverableException(String.format(MSG_CREATION_ERROR, fileName), e);
         }

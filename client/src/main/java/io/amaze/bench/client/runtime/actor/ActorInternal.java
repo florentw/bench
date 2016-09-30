@@ -48,8 +48,8 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.*;
  */
 public class ActorInternal implements RuntimeActor {
 
-    private static final Logger LOG = LogManager.getLogger(ActorInternal.class);
     private static final String MSG_AFTER_METHOD_FAILED = "{} Error while invoking after method.";
+    private static final Logger log = LogManager.getLogger(ActorInternal.class);
 
     private final ActorKey actorKey;
     private final MetricsInternal metrics;
@@ -86,22 +86,22 @@ public class ActorInternal implements RuntimeActor {
 
     @Override
     public void init() {
-        LOG.debug("{} Initializing...", this);
+        log.debug("{} Initializing...", this);
 
         if (beforeMethod == null) {
             sendLifecycleMessage(initialized(actorKey, deployInfo()));
             return;
         }
 
-        LOG.debug("{} Invoking before method...", this);
+        log.debug("{} Invoking before method...", this);
         try {
             beforeMethod.invoke(instance);
         } catch (Exception e) {
-            LOG.warn("{} Error while invoking before method on actor {}.", this, actorKey, e);
+            log.warn("{} Error while invoking before method on actor {}.", this, actorKey, e);
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException ex) {
-                LOG.debug("{} Error while invoking after method for {}", this, actorKey, ex);
+                log.debug("{} Error while invoking after method for {}", this, actorKey, ex);
             }
             actorFailure(e);
             return;
@@ -130,7 +130,7 @@ public class ActorInternal implements RuntimeActor {
 
         } catch (RecoverableException e) {
             //Recoverable exception, the Reactor code is supposed to be fine, just log the exception.
-            LOG.warn("{} Recoverable exception caught on message:{}, from:{}", this, message, from, e);
+            log.warn("{} Recoverable exception caught on message:{}, from:{}", this, message, from, e);
 
         } catch (TerminationException ignored) { // NOSONAR
             // This is a graceful termination, just perform a regular close on the actor.
@@ -142,7 +142,7 @@ public class ActorInternal implements RuntimeActor {
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {
-                LOG.warn(MSG_AFTER_METHOD_FAILED, this, afterException);
+                log.warn(MSG_AFTER_METHOD_FAILED, this, afterException);
             }
 
             actorFailure(e);
@@ -155,7 +155,7 @@ public class ActorInternal implements RuntimeActor {
             return;
         }
 
-        LOG.debug("{} Invoking close...", this);
+        log.debug("{} Invoking close...", this);
 
         try {
             if (!tryToCallAfterMethod()) {
@@ -164,12 +164,12 @@ public class ActorInternal implements RuntimeActor {
 
             sendLifecycleMessage(closed(actorKey));
         } catch (Exception e) {
-            LOG.info("{} Exception while closing.", this, e);
+            log.info("{} Exception while closing.", this, e);
         } finally {
             try {
                 client.close();
             } catch (Exception e) {
-                LOG.warn("{} Error while closing client.", this, e);
+                log.warn("{} Error while closing client.", this, e);
             }
         }
     }
@@ -205,11 +205,11 @@ public class ActorInternal implements RuntimeActor {
         }
 
         try {
-            LOG.debug("{} Invoking after method...", this);
+            log.debug("{} Invoking after method...", this);
 
             afterMethod.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOG.warn(MSG_AFTER_METHOD_FAILED, this, e);
+            log.warn(MSG_AFTER_METHOD_FAILED, this, e);
             throw e;
         }
     }
@@ -219,7 +219,7 @@ public class ActorInternal implements RuntimeActor {
     }
 
     private void actorFailure(@NotNull final Throwable throwable) {
-        LOG.warn("{} failure.", this, throwable);
+        log.warn("{} failure.", this, throwable);
 
         client.sendToActorRegistry(failed(actorKey, throwable));
     }

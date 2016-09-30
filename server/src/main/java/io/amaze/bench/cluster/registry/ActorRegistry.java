@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ActorRegistry {
 
-    private static final Logger LOG = LogManager.getLogger(ActorRegistry.class);
+    private static final Logger log = LogManager.getLogger(ActorRegistry.class);
 
     private final Map<ActorKey, RegisteredActor> actors = new HashMap<>();
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();
@@ -52,7 +52,7 @@ public class ActorRegistry {
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
             if (!removed) {
-                LOG.warn("Attempt to remove unknown actor listener {}", listener);
+                log.warn("Attempt to remove unknown actor listener {}", listener);
             }
         }
     }
@@ -110,7 +110,7 @@ public class ActorRegistry {
                     actors.put(name, newActor);
 
                 } else {
-                    LOG.warn("Attempt to initialize an unknown Actor: {}", name);
+                    log.warn("Attempt to initialize an unknown Actor: {}", name);
                     return;
                 }
             }
@@ -126,7 +126,7 @@ public class ActorRegistry {
             synchronized (actors) {
                 RegisteredActor removed = actors.remove(name);
                 if (removed == null) {
-                    LOG.warn("Attempt to remove for failure an unknown actor: {}", name, throwable);
+                    log.warn("Attempt to remove for failure an unknown actor: {}", name, throwable);
                     return;
                 }
             }
@@ -142,7 +142,7 @@ public class ActorRegistry {
             synchronized (actors) {
                 RegisteredActor removed = actors.remove(name);
                 if (removed == null) {
-                    LOG.warn("Attempt to close an unknown actor: {}", name);
+                    log.warn("Attempt to close an unknown actor: {}", name);
                     return;
                 }
             }

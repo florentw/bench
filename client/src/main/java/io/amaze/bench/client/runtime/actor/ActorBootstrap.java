@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ActorBootstrap {
 
-    private static final Logger LOG = LogManager.getLogger(ActorBootstrap.class);
+    private static final Logger log = LogManager.getLogger(ActorBootstrap.class);
 
     private final ClusterClientFactory clientFactory;
 
@@ -52,8 +52,8 @@ public final class ActorBootstrap {
         checkNotNull(args);
 
         if (args.length != 5) {
-            LOG.error("Usage:");
-            LOG.error("ActorBootstrap <actorName> <className> " + //
+            log.error("Usage:");
+            log.error("ActorBootstrap <actorName> <className> " + //
                               "<jmsServerHost> <jmsServerPort> <temporaryConfigFile>");
             throw new IllegalArgumentException();
         }
@@ -104,7 +104,7 @@ public final class ActorBootstrap {
 
         @Override
         public void run() {
-            LOG.info("ShutdownHook called for {}.", actor.getKey());
+            log.info("ShutdownHook called for {}.", actor.getKey());
             actor.close();
         }
     }

@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class AgentRegistry {
 
-    private static final Logger LOG = LogManager.getLogger(AgentRegistry.class);
+    private static final Logger log = LogManager.getLogger(AgentRegistry.class);
 
     private final Map<String, RegisteredAgent> agents = new HashMap<>();
     private final Set<AgentRegistryListener> clientListeners = new HashSet<>();
@@ -48,7 +48,7 @@ public class AgentRegistry {
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
             if (!removed) {
-                LOG.warn("Attempt to remove unknown agent listener {}", listener);
+                log.warn("Attempt to remove unknown agent listener {}", listener);
             }
         }
     }
@@ -93,7 +93,7 @@ public class AgentRegistry {
             synchronized (agents) {
                 RegisteredAgent removed = agents.remove(agent);
                 if (removed == null) {
-                    LOG.warn("Attempt to remove unknown agent {}", agent);
+                    log.warn("Attempt to remove unknown agent {}", agent);
                     return;
                 }
             }

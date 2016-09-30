@@ -56,7 +56,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.availableMemory", UNIT_BYTES) //
             .label("Available RAM").build();
 
-    private static final Logger LOG = LogManager.getLogger(SystemWatcherActor.class);
+    private static final Logger log = LogManager.getLogger(SystemWatcherActor.class);
 
     private final SystemWatcherThread watcherThread;
 
@@ -82,11 +82,11 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
         switch (message.getCommand()) {
             case START:
             case SET_PERIOD:
-                LOG.info("System monitoring rescheduled every {} second(s)", message.getPeriodSeconds());
+                log.info("System monitoring rescheduled every {} second(s)", message.getPeriodSeconds());
                 currentTaskHandle = reschedule(currentTaskHandle, watcherThread, message.getPeriodSeconds());
                 break;
             case STOP:
-                LOG.info("System monitoring stopped.");
+                log.info("System monitoring stopped.");
                 cancelTask();
                 break;
             default:

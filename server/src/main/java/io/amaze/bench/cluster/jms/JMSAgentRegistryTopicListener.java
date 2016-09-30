@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSAgentRegistryTopicListener implements MessageListener {
 
-    private static final Logger LOG = LogManager.getLogger(JMSAgentRegistryTopicListener.class);
+    private static final Logger log = LogManager.getLogger(JMSAgentRegistryTopicListener.class);
 
     private final AgentRegistryListener agentsListener;
 
@@ -55,7 +55,7 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
             AgentLifecycleMessage lifecycleMessage = (AgentLifecycleMessage) received.get().data();
             onAgentLifecycle(lifecycleMessage);
         } catch (Exception e) {
-            LOG.error("Error handling agent registry message {}", received.get(), e);
+            log.error("Error handling agent registry message {}", received.get(), e);
         }
     }
 
@@ -63,7 +63,7 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Error while reading JMS message.", e);
+            log.error("Error while reading JMS message.", e);
             return Optional.empty();
         }
     }

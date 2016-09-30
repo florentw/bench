@@ -30,7 +30,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterrup
  */
 final class ProcessWatchDogThread extends Thread implements Closeable {
 
-    private static final Logger LOG = LogManager.getLogger(ProcessWatchDogThread.class);
+    private static final Logger log = LogManager.getLogger(ProcessWatchDogThread.class);
 
     private final String name;
     private final Process process;
@@ -60,7 +60,7 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
 
     @Override
     public void run() {
-        LOG.info("{} Watching process {}...", this, process);
+        log.info("{} Watching process {}...", this, process);
 
         while (doWork && !exited) {
             watchdogStartedLatch.countDown();

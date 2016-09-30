@@ -36,7 +36,7 @@ public class TestActor implements Reactor<String> {
     static final String RECOVERABLE_EXCEPTION_MSG = "THROW_RECOVERABLE";
     static final String RUNTIME_EXCEPTION_MSG = "THROW_RUNTIME";
     static final String TERMINATE_MSG = "TERMINATE";
-    private static final Logger LOG = LogManager.getLogger(TestActor.class);
+    private static final Logger log = LogManager.getLogger(TestActor.class);
     private static final DeployConfig DUMMY_DEPLOY_CONFIG = createDeployConfig(false);
     public static final ActorConfig DUMMY_CONFIG = createActorConfig();
 
@@ -79,7 +79,7 @@ public class TestActor implements Reactor<String> {
 
     @Override
     public void onMessage(@NotNull final String from, @NotNull final String message) throws ReactorException {
-        LOG.trace("{} received message from {}: {}", this, from, message);
+        log.debug("{} received message from {}: {}", this, from, message);
 
         switch (message) {
             case FAIL_MSG:

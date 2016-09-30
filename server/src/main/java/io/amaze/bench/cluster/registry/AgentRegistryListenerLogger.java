@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
-    private static final Logger LOG = LogManager.getLogger(AgentRegistryListenerLogger.class);
+    private static final Logger log = LogManager.getLogger(AgentRegistryListenerLogger.class);
 
     private final AgentRegistryListener delegate;
 
@@ -40,7 +40,7 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
         checkNotNull(msg);
 
-        LOG.info("Agent {} registering, msg: {}", msg.getName(), msg);
+        log.info("Agent {} registering, msg: {}", msg.getName(), msg);
 
         delegate.onAgentRegistration(msg);
     }
@@ -49,7 +49,7 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     public void onAgentSignOff(@NotNull final String agent) {
         checkNotNull(agent);
 
-        LOG.info("Agent {} signing off.", agent);
+        log.info("Agent {} signing off.", agent);
 
         delegate.onAgentSignOff(agent);
     }

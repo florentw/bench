@@ -40,7 +40,7 @@ import static io.amaze.bench.client.runtime.actor.ActorLifecycleMessage.failed;
 public class Agent implements AgentClientListener, AutoCloseable {
 
     private static final String DEFAULT_AGENT_PREFIX = "agent-";
-    private static final Logger LOG = LogManager.getLogger(Agent.class);
+    private static final Logger log = LogManager.getLogger(Agent.class);
     private final Map<ActorKey, ManagedActor> actors = Maps.newHashMap();
     private final AgentClusterClient agentClient;
     private final ActorManager embeddedManager;
@@ -60,7 +60,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(name);
 
-        LOG.info("{} Starting...", this);
+        log.info("{} Starting...", this);
 
         embeddedManager = actorManagers.createEmbedded(name, clientFactory);
         forkedManager = actorManagers.createForked(name);
@@ -70,7 +70,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         agentClient.startAgentListener(name, this);
         sendRegistrationMessage(regMsg);
 
-        LOG.info("{} Started.", this);
+        log.info("{} Started.", this);
     }
 
     private static String defaultName() {
@@ -84,11 +84,11 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         ActorKey actorKey = actorConfig.getKey();
         if (actors.get(actorKey) != null) {
-            LOG.warn("{} The actor {} already exists.", this, actorKey);
+            log.warn("{} The actor {} already exists.", this, actorKey);
             return;
         }
 
-        LOG.info("{} Actor creation request for {} with config: {}", this, actorKey, actorConfig);
+        log.info("{} Actor creation request for {} with config: {}", this, actorKey, actorConfig);
 
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
@@ -96,7 +96,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
             agentClient.sendToActorRegistry(created(actorKey, name));
         }
 
-        LOG.info("{} Actor {} created.", this, actorKey);
+        log.info("{} Actor {} created.", this, actorKey);
     }
 
     @Override
@@ -105,24 +105,24 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
         ManagedActor found = actors.remove(actor);
         if (found == null) {
-            LOG.warn("{} Could not find {} to close.", this, actor);
+            log.warn("{} Could not find {} to close.", this, actor);
         } else {
-            LOG.info("{} Closing {}...", this, actor);
+            log.info("{} Closing {}...", this, actor);
             found.close();
-            LOG.info("{} Closed {}.", this, actor);
+            log.info("{} Closed {}.", this, actor);
         }
     }
 
     @Override
     public synchronized void close() throws Exception {
-        LOG.info("{} Closing...", this);
+        log.info("{} Closing...", this);
 
         actors.values().forEach(ManagedActor::close);
         actors.clear();
 
         signOff();
 
-        LOG.info("{} Closed.", this);
+        log.info("{} Closed.", this);
     }
 
     @NotNull
@@ -155,7 +155,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
             return Optional.of(manager.createActor(actorConfig));
 
         } catch (Exception e) {
-            LOG.warn("Could not create actor with config {}.", actorConfig, e);
+            log.warn("Could not create actor with config {}.", actorConfig, e);
             actorFailure(actorConfig.getKey(), e);
             return Optional.empty();
         }

@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ResourceManager implements AutoCloseable {
 
-    private static final Logger LOG = LogManager.getLogger(ResourceManager.class);
+    private static final Logger log = LogManager.getLogger(ResourceManager.class);
 
     private final ResourceManagerClusterClient resourceManagerClusterClient;
     private final AgentRegistry agentRegistry;
@@ -144,7 +144,7 @@ public class ResourceManager implements AutoCloseable {
         if (agentOnPreferredHost.isPresent()) {
             return agentOnPreferredHost;
         } else {
-            LOG.warn("Could not find an agent deployed on one of the preferred hosts: {}", preferredHosts);
+            log.warn("Could not find an agent deployed on one of the preferred hosts: {}", preferredHosts);
 
             // Fallback to pick a random agent
             return pickRandomAgent(allAgents);

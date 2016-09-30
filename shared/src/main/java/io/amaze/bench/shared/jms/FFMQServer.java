@@ -55,7 +55,7 @@ public final class FFMQServer implements JMSServer {
     @VisibleForTesting
     static final String TOPIC_PREFIX = "topic-";
 
-    private static final Logger LOG = LogManager.getLogger(FFMQServer.class);
+    private static final Logger log = LogManager.getLogger(FFMQServer.class);
     private static final String ENGINE_NAME = "FFMQ";
     private static final int MAX_NON_PERSISTENT_MESSAGES = 1000;
     private static final String QUEUE_TEMPLATE = "QueueTemplate";
@@ -113,7 +113,7 @@ public final class FFMQServer implements JMSServer {
             engine.deleteQueue(queue);
             return true;
         } catch (Exception e) {
-            LOG.debug("Error while deleting queue {}", queue, e);
+            log.debug("Error while deleting queue {}", queue, e);
             return false;
         }
     }
@@ -126,7 +126,7 @@ public final class FFMQServer implements JMSServer {
             engine.deleteTopic(topic);
             return true;
         } catch (Exception e) {
-            LOG.warn("Error while deleting topic {}", topic, e);
+            log.warn("Error while deleting topic {}", topic, e);
             return false;
         }
     }
@@ -276,7 +276,7 @@ public final class FFMQServer implements JMSServer {
             try {
                 listener.start();
             } catch (JMSException e) {
-                LOG.error("Error while starting TCP listener on {}", endpoint, e);
+                log.error("Error while starting TCP listener on {}", endpoint, e);
                 exception = e;
             }
         }

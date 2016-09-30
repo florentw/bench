@@ -36,7 +36,7 @@ import static com.google.common.base.Throwables.propagate;
  */
 public final class FFMQClient implements JMSClient {
 
-    private static final Logger LOG = LogManager.getLogger(FFMQClient.class);
+    private static final Logger log = LogManager.getLogger(FFMQClient.class);
 
     private static final int MAX_CACHE_SIZE = 100;
 
@@ -135,7 +135,7 @@ public final class FFMQClient implements JMSClient {
             try {
                 conn.close();
             } catch (javax.jms.JMSException e) {
-                LOG.debug("Error while closing JMS connection.", e);
+                log.debug("Error while closing JMS connection.", e);
             }
         }
     }

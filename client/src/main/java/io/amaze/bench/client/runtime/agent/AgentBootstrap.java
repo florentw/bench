@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentBootstrap {
 
-    private static final Logger LOG = LogManager.getLogger(AgentBootstrap.class);
+    private static final Logger log = LogManager.getLogger(AgentBootstrap.class);
 
     private AgentBootstrap() {
         // Should not be instantiated
@@ -42,8 +42,8 @@ public final class AgentBootstrap {
 
     public static void main(final String[] args) {
         if (args.length != 2) {
-            LOG.info("Usage:");
-            LOG.info("$ agent <jmsServerHost> <jmsServerPort>");
+            log.info("Usage:");
+            log.info("$ agent <jmsServerHost> <jmsServerPort>");
             return;
         }
 
@@ -81,11 +81,11 @@ public final class AgentBootstrap {
 
         @Override
         public void run() {
-            LOG.info("Calling shutdown hook for agent {}", agent);
+            log.info("Calling shutdown hook for agent {}", agent);
             try {
                 agent.close();
             } catch (Exception e) {
-                LOG.warn("Error while closing agent {}", agent, e);
+                log.warn("Error while closing agent {}", agent, e);
             }
         }
     }

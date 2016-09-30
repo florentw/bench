@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class JMSActorMessageListener implements MessageListener {
 
-    private static final Logger LOG = LogManager.getLogger(JMSActorMessageListener.class);
+    private static final Logger log = LogManager.getLogger(JMSActorMessageListener.class);
 
     private final RuntimeActor actor;
 
@@ -74,7 +74,7 @@ final class JMSActorMessageListener implements MessageListener {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {
-            LOG.error("Invalid ActorInputMessage received, jmsMessage:{}", jmsMessage, e);
+            log.error("Invalid ActorInputMessage received, jmsMessage:{}", jmsMessage, e);
             return Optional.empty();
         }
     }

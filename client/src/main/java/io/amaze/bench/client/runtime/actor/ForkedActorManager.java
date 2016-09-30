@@ -47,7 +47,7 @@ import static io.amaze.bench.client.runtime.agent.Constants.LOG_DIRECTORY_NAME;
  */
 final class ForkedActorManager extends AbstractActorManager implements ProcessTerminationListener {
 
-    private static final Logger LOG = LogManager.getLogger(ForkedActorManager.class);
+    private static final Logger log = LogManager.getLogger(ForkedActorManager.class);
 
     private static final String JAVA_CMD_PATH = File.separator + "bin" + File.separator + "java";
     private static final String TMP_CONFIG_FILE_PREFIX = "actorKey-config";
@@ -112,7 +112,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     @Override
     public void onProcessExited(@NotNull final String actorName, @NotNull final int exitCode) {
         checkNotNull(actorName);
-        LOG.info("Forked actor {} exited with code {}.", actorName, exitCode);
+        log.info("Forked actor {} exited with code {}.", actorName, exitCode);
         removeFromProcesses(new ActorKey(actorName));
     }
 
@@ -165,7 +165,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
                 .redirectErrorStream(true) //
                 .redirectOutput(actorLogFile);
 
-        LOG.info("Started process with command {}, logging to {}", builder.command(), actorLogFileName);
+        log.info("Started process with command {}, logging to {}", builder.command(), actorLogFileName);
 
         return builder.start();
     }
