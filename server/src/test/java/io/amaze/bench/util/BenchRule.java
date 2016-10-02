@@ -15,18 +15,13 @@
  */
 package io.amaze.bench.util;
 
-import io.amaze.bench.client.runtime.actor.ActorManagers;
-import io.amaze.bench.client.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.client.runtime.cluster.jms.JMSClusterClientFactory;
-import io.amaze.bench.cluster.*;
-import io.amaze.bench.cluster.jms.JMSActorRegistryClusterClient;
-import io.amaze.bench.cluster.jms.JMSAgentRegistryClusterClient;
-import io.amaze.bench.cluster.jms.JMSMetricsRepository;
-import io.amaze.bench.cluster.jms.JMSResourceManagerClusterClient;
-import io.amaze.bench.cluster.registry.ActorRegistry;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.cluster.registry.AgentRegistry;
-import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
+import io.amaze.bench.runtime.actor.ActorManagers;
+import io.amaze.bench.runtime.cluster.*;
+import io.amaze.bench.runtime.cluster.jms.*;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSServer;
 import io.amaze.bench.shared.test.JMSServerRule;
@@ -53,6 +48,7 @@ public final class BenchRule extends ExternalResource {
     private Agents agents;
     private Actors actors;
     private MetricsRepository metricsRepository;
+    private ActorRegistryClusterClient actorRegistryClient;
 
     public BenchRule() {
         this.jmsServerRule = new JMSServerRule();
@@ -99,11 +95,10 @@ public final class BenchRule extends ExternalResource {
         jmsServerRule.init();
 
         resourceManagerJmsClient = createClient();
-        actorRegistryJmsClient = createClient();
         agentRegistryJmsClient = createClient();
+        actorRegistryJmsClient = createClient();
         AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(actorRegistryJmsClient);
-        ActorRegistryClusterClient actorRegistryClient = new JMSActorRegistryClusterClient(jmsServerRule.getServer(),
-                                                                                           agentRegistryJmsClient);
+        actorRegistryClient = new JMSActorRegistryClusterClient(jmsServerRule.getEndpoint());
         agentRegistry = new AgentRegistry();
         actorRegistry = new ActorRegistry();
 
@@ -132,7 +127,7 @@ public final class BenchRule extends ExternalResource {
     protected void after() {
         resourceManagerJmsClient.close();
         actorRegistryJmsClient.close();
-        agentRegistryJmsClient.close();
+        actorRegistryClient.close();
         actorsClient.close();
         metricsRepositoryClient.close();
 

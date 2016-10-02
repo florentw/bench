@@ -37,6 +37,7 @@
         <config.version>1.2.1</config.version>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <javax.jms.version>1.1</javax.jms.version>
+        <jgroups.version>4.0.0.Beta1</jgroups.version>
         <oshi.version>3.1</oshi.version>
 
         <!-- Test dependency versions -->

@@ -19,6 +19,11 @@
             <version>${javax.jms.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+            <version>${jgroups.version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.timewalker.ffmq</groupId>
             <artifactId>ffmq3-server</artifactId>
             <version>${ffmq.version}</version>

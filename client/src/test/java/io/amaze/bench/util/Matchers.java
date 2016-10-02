@@ -15,9 +15,10 @@
  */
 package io.amaze.bench.util;
 
-import io.amaze.bench.client.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.client.runtime.agent.AgentLifecycleMessage;
-import io.amaze.bench.client.runtime.message.Message;
+import io.amaze.bench.runtime.LifecycleMessage;
+import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
+import io.amaze.bench.runtime.message.Message;
 import org.mockito.ArgumentMatcher;
 
 import java.io.Serializable;
@@ -25,7 +26,7 @@ import java.io.Serializable;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Mockito matchers for {@link io.amaze.bench.client.runtime.LifecycleMessage} instances matching.
+ * Mockito matchers for {@link LifecycleMessage} instances matching.
  */
 public final class Matchers {
 
