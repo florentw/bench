@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor.metric;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,6 +33,23 @@ public class MetricValue implements Serializable {
 
     public final Number getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MetricValue that = (MetricValue) o;
+        return Objects.equals(value, that.value);
     }
 
     @Override

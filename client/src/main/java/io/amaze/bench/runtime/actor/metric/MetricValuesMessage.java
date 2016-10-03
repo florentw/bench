@@ -75,6 +75,23 @@ public final class MetricValuesMessage implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(metricValues);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MetricValuesMessage that = (MetricValuesMessage) o;
+        return Objects.equals(metricValues, that.metricValues);
+    }
+
+    @Override
     public synchronized String toString() {
         StringBuilder out = new StringBuilder("{\"metricValues\":{");
         AtomicInteger line = new AtomicInteger(metricValues.size());

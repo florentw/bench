@@ -18,10 +18,7 @@ package io.amaze.bench.util;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.cluster.*;
 import io.amaze.bench.runtime.cluster.jms.*;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSServer;
 import io.amaze.bench.shared.test.JMSServerRule;
@@ -49,6 +46,7 @@ public final class BenchRule extends ExternalResource {
     private Actors actors;
     private MetricsRepository metricsRepository;
     private ActorRegistryClusterClient actorRegistryClient;
+    private JMSMetricsRepositoryClusterClient jmsMetricsClusterClient;
 
     public BenchRule() {
         this.jmsServerRule = new JMSServerRule();
@@ -119,8 +117,7 @@ public final class BenchRule extends ExternalResource {
 
         actors = new Actors(actorSender, resourceManager, actorRegistry);
 
-        metricsRepositoryClient = createClient();
-        metricsRepository = new JMSMetricsRepository(metricsRepositoryClient);
+        initMetrics();
     }
 
     @Override
@@ -132,5 +129,12 @@ public final class BenchRule extends ExternalResource {
         metricsRepositoryClient.close();
 
         jmsServerRule.close();
+    }
+
+    private void initMetrics() {
+        metricsRepository = new MetricsRepository();
+        metricsRepositoryClient = createClient();
+        jmsMetricsClusterClient = new JMSMetricsRepositoryClusterClient(metricsRepositoryClient);
+        jmsMetricsClusterClient.startMetricsListener(metricsRepository.createClusterListener());
     }
 }

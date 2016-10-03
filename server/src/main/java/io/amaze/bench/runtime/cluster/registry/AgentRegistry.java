@@ -69,10 +69,10 @@ public class AgentRegistry {
 
     @NotNull
     public AgentRegistryListener createClusterListener() {
-        return new AgentRegistryListenerLogger(new AgentRegistryState());
+        return new AgentRegistryListenerLogger(new AgentLifecycleListener());
     }
 
-    private final class AgentRegistryState implements AgentRegistryListener {
+    private final class AgentLifecycleListener implements AgentRegistryListener {
 
         @Override
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {

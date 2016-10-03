@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.actor.metric;
 
+import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.test.Json;
@@ -36,7 +37,6 @@ public final class MetricValueTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.testAllPublicConstructors(MetricValue.class);
-        tester.testAllPublicInstanceMethods(new MetricValue(1));
     }
 
     @Test
@@ -44,6 +44,13 @@ public final class MetricValueTest {
         MetricValue expected = new MetricValue(1);
         MetricValue actual = SerializableTester.reserialize(expected);
         assertThat(actual.getValue(), is(expected.getValue()));
+    }
+
+    @Test
+    public void equality() {
+        EqualsTester tester = new EqualsTester();
+        tester.addEqualityGroup(new MetricValue(1), new MetricValue(1));
+        tester.testEquals();
     }
 
     @Test

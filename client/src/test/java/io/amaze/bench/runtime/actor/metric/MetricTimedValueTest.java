@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.actor.metric;
 
+import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.test.Json;
@@ -36,19 +37,29 @@ public final class MetricTimedValueTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.testAllPublicConstructors(MetricTimedValue.class);
-        tester.testAllPublicInstanceMethods(new MetricTimedValue(1, 1));
     }
 
     @Test
     public void serializable() {
-        MetricTimedValue expected = new MetricTimedValue(1, 1);
+        MetricTimedValue expected = metricTimedValue();
         MetricTimedValue actual = SerializableTester.reserialize(expected);
         assertThat(actual.getValue(), is(expected.getValue()));
     }
 
     @Test
+    public void equality() {
+        EqualsTester tester = new EqualsTester();
+        tester.addEqualityGroup(metricTimedValue(), metricTimedValue());
+        tester.testEquals();
+    }
+
+    @Test
     public void toString_yields_valid_json() {
-        assertTrue(Json.isValid(new MetricTimedValue(1, 1).toString()));
+        assertTrue(Json.isValid(metricTimedValue().toString()));
+    }
+
+    private MetricTimedValue metricTimedValue() {
+        return new MetricTimedValue(1, 1);
     }
 
 }

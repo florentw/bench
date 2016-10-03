@@ -22,7 +22,7 @@ import io.amaze.bench.runtime.actor.DeployConfig;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.cluster.Actors;
-import io.amaze.bench.runtime.cluster.MetricsRepository;
+import io.amaze.bench.runtime.cluster.registry.MetricsRepository;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;

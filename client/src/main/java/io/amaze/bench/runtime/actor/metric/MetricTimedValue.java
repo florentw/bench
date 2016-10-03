@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.runtime.actor.metric;
 
+import java.util.Objects;
+
 /**
  * Created on 9/6/16.
  */
@@ -29,6 +31,26 @@ public final class MetricTimedValue extends MetricValue {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), timestamp);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        MetricTimedValue that = (MetricTimedValue) o;
+        return timestamp == that.timestamp;
     }
 
     @Override

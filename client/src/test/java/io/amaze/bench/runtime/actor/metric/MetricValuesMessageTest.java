@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.actor.metric;
 
+import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.api.metric.Metric;
@@ -47,7 +48,13 @@ public final class MetricValuesMessageTest {
         NullPointerTester tester = new NullPointerTester();
 
         tester.testAllPublicConstructors(MetricValuesMessage.class);
-        tester.testAllPublicInstanceMethods(metricValues(2));
+    }
+
+    @Test
+    public void equality() {
+        EqualsTester tester = new EqualsTester();
+        tester.addEqualityGroup(metricValues(3), metricValues(3));
+        tester.testEquals();
     }
 
     @Test
