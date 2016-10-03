@@ -16,8 +16,8 @@
 
     <modules>
         <module>api</module>
-        <module>client</module>
-        <module>server</module>
+        <module>agent</module>
+        <module>leader</module>
         <module>shared</module>
     </modules>
 
