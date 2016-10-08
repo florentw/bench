@@ -35,7 +35,7 @@ public class ActorRegistry {
     private final Map<ActorKey, RegisteredActor> actors = new HashMap<>();
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();
 
-    public void resetState(final Set<RegisteredActor> initialActorSet) {
+    public void resetState(@NotNull final Set<RegisteredActor> initialActorSet) {
         checkNotNull(initialActorSet);
         synchronized (actors) {
             actors.clear();

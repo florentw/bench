@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.actor;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,20 +40,20 @@ public final class EmbeddedActorManagerTest {
 
     @Mock
     private ActorClusterClient client;
+    @Mock
+    private ActorRegistryClusterClient actorRegistryClient;
+
     private ActorManager actorManager;
-    private Actors actors;
 
     @Before
     public void before() {
-        DummyClientFactory factory = new DummyClientFactory(null, client);
-        actors = new Actors(factory);
-        actorManager = new EmbeddedActorManager(DUMMY_AGENT, actors);
+        DummyClientFactory factory = new DummyClientFactory(null, client, actorRegistryClient);
+        actorManager = new EmbeddedActorManager(DUMMY_AGENT, factory);
     }
 
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Actors.class, actors);
 
         tester.testAllPublicConstructors(EmbeddedActorManager.class);
         tester.testAllPublicInstanceMethods(actorManager);
@@ -65,6 +66,7 @@ public final class EmbeddedActorManagerTest {
 
         verify(client).startActorListener(any(RuntimeActor.class));
         verifyNoMoreInteractions(client);
+        verifyNoMoreInteractions(actorRegistryClient);
     }
 
     @Test
@@ -74,6 +76,7 @@ public final class EmbeddedActorManagerTest {
 
         verify(client).startActorListener(any(RuntimeActor.class));
         verify(client).close();
+        verifyNoMoreInteractions(actorRegistryClient);
     }
 
     @Test

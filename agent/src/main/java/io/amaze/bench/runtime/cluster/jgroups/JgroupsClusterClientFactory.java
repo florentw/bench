@@ -21,7 +21,7 @@ import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.shared.jgroups.JgroupsCluster;
+import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
 import org.jgroups.JChannel;
 
 import javax.validation.constraints.NotNull;
@@ -33,31 +33,32 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class JgroupsClusterClientFactory implements ClusterClientFactory {
 
-    private final JgroupsCluster jgroupsCluster;
+    private final JgroupsClusterMember jgroupsClusterMember;
     private final JgroupsSender jgroupsSender;
     private final ActorRegistry actorRegistry;
 
     public JgroupsClusterClientFactory(@NotNull JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
         this.actorRegistry = checkNotNull(actorRegistry);
-        jgroupsCluster = new JgroupsCluster();
         jgroupsSender = new JgroupsSender(jChannel, actorRegistry);
-        jChannel.receiver(jgroupsCluster);
+        jgroupsClusterMember = new JgroupsClusterMember(jChannel);
     }
 
     @Override
     public AgentClusterClient createForAgent(@NotNull final String agent) {
-        return new JgroupsAgentClusterClient(jgroupsCluster.listenerMultiplexer(), jgroupsSender);
+        checkNotNull(agent);
+        return new JgroupsAgentClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender);
     }
 
     @Override
     public ActorClusterClient createForActor(@NotNull final ActorKey actor) {
-        return new JgroupsActorClusterClient(jgroupsCluster.listenerMultiplexer(), jgroupsSender);
+        checkNotNull(actor);
+        return new JgroupsActorClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender);
     }
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
-        return new JgroupsActorRegistryClusterClient(jgroupsCluster.listenerMultiplexer(),
-                                                     jgroupsCluster.stateMultiplexer(),
+        return new JgroupsActorRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
+                                                     jgroupsClusterMember.stateMultiplexer(),
                                                      actorRegistry);
     }
 }

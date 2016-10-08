@@ -16,6 +16,8 @@
 package io.amaze.bench.shared.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.io.*;
@@ -31,11 +33,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class JgroupsStateMultiplexer {
 
+    private static final Logger log = LogManager.getLogger();
+
     private final Map<JgroupsStateKey, JgroupsStateHolder<? extends Serializable>> stateHolderObjects = new HashMap<>();
 
     public void addStateHolder(@NotNull final JgroupsStateHolder<?> holder) {
         checkNotNull(holder);
         JgroupsStateKey key = holder.getKey();
+
+        log.debug("Adding state holder {}...", key);
+
         synchronized (stateHolderObjects) {
             if (stateHolderObjects.containsKey(key)) {
                 throw new IllegalStateException("A holder for the key " + key + " is already registered.");
@@ -46,6 +53,9 @@ public class JgroupsStateMultiplexer {
 
     public void removeStateHolder(@NotNull final JgroupsStateKey key) {
         checkNotNull(key);
+
+        log.debug("Removing state holder for {}...", key);
+
         synchronized (stateHolderObjects) {
             stateHolderObjects.remove(key);
         }
@@ -53,6 +63,9 @@ public class JgroupsStateMultiplexer {
 
     public void gatherStateFrom(@NotNull final OutputStream output) throws IOException {
         checkNotNull(output);
+
+        log.debug("Gathering state from holders...");
+
         try (ObjectOutputStream oos = new ObjectOutputStream(output)) {
             JgroupsSharedState sharedState = gatherStateFromHolders();
             oos.writeObject(sharedState);
@@ -61,6 +74,9 @@ public class JgroupsStateMultiplexer {
 
     public void writeStateTo(@NotNull final InputStream input) throws IOException {
         checkNotNull(input);
+
+        log.debug("Writing state to holders...");
+
         try (ObjectInputStream ois = new ObjectInputStream(input)) {
             JgroupsSharedState newState = (JgroupsSharedState) ois.readObject();
             setNewStateOnHolders(newState);

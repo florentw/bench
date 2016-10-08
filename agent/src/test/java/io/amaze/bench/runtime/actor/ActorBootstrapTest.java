@@ -16,10 +16,10 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.util.Files;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +32,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.File;
 import java.io.IOException;
 
+import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -54,13 +56,15 @@ public final class ActorBootstrapTest {
 
     @Mock
     private ActorClusterClient client;
+    @Mock
+    private ActorRegistryClusterClient actorRegistryClient;
 
     private ActorBootstrap actorBootstrap;
 
     @Before
-    public void before() {
-        ClusterClientFactory factory = new DummyClientFactory(null, client);
-        actorBootstrap = new ActorBootstrap(factory);
+    public void before() throws IOException, ValidationException {
+        ClusterClientFactory factory = new DummyClientFactory(null, client, actorRegistryClient);
+        actorBootstrap = spy(new ActorBootstrap(factory));
     }
 
     @Test
@@ -69,40 +73,43 @@ public final class ActorBootstrapTest {
 
         tester.testAllPublicConstructors(ActorBootstrap.class);
         tester.testAllPublicStaticMethods(ActorBootstrap.class);
-        tester.testAllPublicInstanceMethods(actorBootstrap);
     }
 
     @Test(expected = ValidationException.class)
     public void create_actor_empty_config_throws() throws IOException, ValidationException {
         File actorConf = File.createTempFile(CONF_PREFIX, CONF_SUFFIX);
-        actorBootstrap.createActor(TestActor.DUMMY_ACTOR, TestActor.class.getName(), actorConf.getAbsolutePath());
+        actorBootstrap.createActor(DUMMY_ACTOR, TestActor.class.getName(), actorConf.getAbsolutePath());
     }
 
     @Test(expected = ValidationException.class)
     public void create_invalid_actor_throws() throws IOException, ValidationException {
         File actorConf = File.createTempFile(CONF_PREFIX, CONF_SUFFIX);
-        actorBootstrap.createActor(TestActor.DUMMY_ACTOR, String.class.getName(), actorConf.getAbsolutePath());
+        actorBootstrap.createActor(DUMMY_ACTOR, String.class.getName(), actorConf.getAbsolutePath());
     }
 
     @Test
-    public void shutdown_thread_closes_actor() throws IOException, ValidationException {
-        RuntimeActor actor = actorBootstrap.createActor(TestActor.DUMMY_ACTOR,
+    public void shutdown_thread_closes_actor_bootstrap() throws IOException, ValidationException {
+        RuntimeActor actor = actorBootstrap.createActor(DUMMY_ACTOR,
                                                         TestActor.class.getName(),
                                                         TestActor.DUMMY_JSON_CONFIG);
         actor = spy(actor);
 
-        ActorBootstrap.ActorShutdownThread thread = new ActorBootstrap.ActorShutdownThread(actor);
+        ActorBootstrap.ActorShutdownThread thread = new ActorBootstrap.ActorShutdownThread(actorBootstrap, actor);
         thread.start();
 
-        Uninterruptibles.joinUninterruptibly(thread);
-        verify(actor).close();
+        joinUninterruptibly(thread);
+        verify(actorBootstrap).close();
+    }
+
+    @Test
+    public void closing_bootstrap_twice_does_not_throw() {
+        actorBootstrap.close();
+        actorBootstrap.close();
     }
 
     @Test
     public void install_shutdown_hook() {
-        RuntimeActor actor = mock(RuntimeActor.class);
-
-        Thread thread = ActorBootstrap.installShutdownHook(actor);
+        Thread thread = ActorBootstrap.installShutdownHook(actorBootstrap, mock(RuntimeActor.class));
 
         assertNotNull(thread);
         boolean removed = Runtime.getRuntime().removeShutdownHook(thread);
@@ -120,7 +127,7 @@ public final class ActorBootstrapTest {
         Files.writeTo(tmpConfigFile, "{}");
 
         try {
-            ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+            ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
         } catch (ValidationException ignore) {
         }
 
@@ -131,13 +138,13 @@ public final class ActorBootstrapTest {
     public void main_invalid_class_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
     }
 
     @Test(expected = RuntimeException.class)
     public void main_cluster_client_throws() throws IOException, ValidationException {
         File tmpConfigFile = folder.newFile();
         Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{TestActor.DUMMY_ACTOR.getName(), TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
     }
 }

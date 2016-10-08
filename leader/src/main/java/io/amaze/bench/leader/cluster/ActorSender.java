@@ -32,7 +32,7 @@ public class ActorSender {
 
     private final JMSClient client;
 
-    public ActorSender(final JMSClient client) {
+    public ActorSender(@NotNull final JMSClient client) {
         this.client = checkNotNull(client);
     }
 

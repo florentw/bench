@@ -16,6 +16,10 @@
 package io.amaze.bench.shared.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 
@@ -29,20 +33,40 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created on 10/2/16.
  */
-public final class JgroupsCluster extends ReceiverAdapter {
+public final class JgroupsClusterMember extends ReceiverAdapter {
 
+    @VisibleForTesting
+    static final String CLUSTER_NAME = "bench-cluster";
+    private static final Logger log = LogManager.getLogger();
+    private static final int DEFAULT_STATE_TIMEOUT_MS = 10000;
+
+    private final JChannel jChannel;
     private final JgroupsListenerMultiplexer listenerMultiplexer;
     private final JgroupsStateMultiplexer stateMultiplexer;
 
-    public JgroupsCluster() {
-        this(new JgroupsListenerMultiplexer(), new JgroupsStateMultiplexer());
+    public JgroupsClusterMember(final JChannel jChannel) {
+        this(jChannel, new JgroupsListenerMultiplexer(), new JgroupsStateMultiplexer());
     }
 
     @VisibleForTesting
-    JgroupsCluster(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
-                   @NotNull final JgroupsStateMultiplexer stateMultiplexer) {
+    JgroupsClusterMember(@NotNull final JChannel jChannel,
+                         @NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
+                         @NotNull final JgroupsStateMultiplexer stateMultiplexer) {
+        this.jChannel = checkNotNull(jChannel);
         this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
         this.stateMultiplexer = checkNotNull(stateMultiplexer);
+    }
+
+    public synchronized void join() {
+        log.info("Member joining cluster...");
+
+        jChannel.receiver(this);
+        try {
+            jChannel.connect(CLUSTER_NAME);
+            jChannel.getState(null, DEFAULT_STATE_TIMEOUT_MS);
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
     }
 
     @Override

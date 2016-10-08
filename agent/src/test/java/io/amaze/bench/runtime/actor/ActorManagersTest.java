@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * Created on 4/9/16.
@@ -38,9 +40,12 @@ public final class ActorManagersTest {
 
     @Mock
     private ClusterClientFactory clientFactory;
+    @Mock
+    private ActorRegistryClusterClient actorRegistryClient;
 
     @Before
     public void before() {
+        doReturn(actorRegistryClient).when(clientFactory).createForActorRegistry();
         actorManagers = new ActorManagers(new JMSEndpoint("noSuchHost", 1337));
     }
 

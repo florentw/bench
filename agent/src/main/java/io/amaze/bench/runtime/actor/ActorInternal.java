@@ -74,7 +74,7 @@ public class ActorInternal implements RuntimeActor {
         this.instance = checkNotNull(instance);
         this.client = checkNotNull(client);
 
-        // Plug the reactor listener to the JMS queue
+        // Plug the reactor listener to the cluster messaging system
         // Should be done last!
         client.startActorListener(this);
     }

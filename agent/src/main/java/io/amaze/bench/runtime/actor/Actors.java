@@ -50,7 +50,7 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
  * @see RuntimeActor
  * @see Reactor
  */
-public final class Actors {
+public class Actors {
 
     private static final ConfigParseOptions DEFAULT_CONFIG_PARSE_OPTIONS = //
             ConfigParseOptions.defaults() //
@@ -62,7 +62,6 @@ public final class Actors {
 
     public Actors(@NotNull final ClusterClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
-
         configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
     }
 
@@ -119,6 +118,4 @@ public final class Actors {
 
         return pico.getComponent(clazz);
     }
-
-
 }

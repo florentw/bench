@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,14 +34,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @see ForkedActorManager
  */
-public final class ActorBootstrap {
+public class ActorBootstrap implements Closeable {
 
     private static final Logger log = LogManager.getLogger();
 
-    private final ClusterClientFactory clientFactory;
+    private final Actors actors;
+    private volatile RuntimeActor actor;
 
-    ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) {
-        this.clientFactory = checkNotNull(clientFactory);
+    public ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) throws IOException, ValidationException {
+        actors = new Actors(clientFactory);
     }
 
     /**
@@ -73,39 +75,44 @@ public final class ActorBootstrap {
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
         RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonConfig);
 
-        installShutdownHook(actor);
+        installShutdownHook(actorBootstrap, actor);
     }
 
     @VisibleForTesting
-    static Thread installShutdownHook(final RuntimeActor actor) {
-        ActorShutdownThread hook = new ActorShutdownThread(actor);
+    static Thread installShutdownHook(final ActorBootstrap actorBootstrap, final RuntimeActor actor) {
+        ActorShutdownThread hook = new ActorShutdownThread(actorBootstrap, actor);
         Runtime.getRuntime().addShutdownHook(hook);
         return hook;
+    }
+
+    @Override
+    public void close() {
+        if (actor != null) {
+            actor.close();
+        }
     }
 
     RuntimeActor createActor(final ActorKey key, //
                              final String className, //
                              final String jsonConfig) throws ValidationException, IOException {
-
-        Actors actors = new Actors(clientFactory);
-        return actors.create(key, className, jsonConfig);
+        actor = actors.create(key, className, jsonConfig);
+        return actor;
     }
 
     static final class ActorShutdownThread extends Thread {
+        private final ActorBootstrap actorBootstrap;
 
-        private final RuntimeActor actor;
+        ActorShutdownThread(final ActorBootstrap actorBootstrap, final RuntimeActor actor) {
+            this.actorBootstrap = checkNotNull(actorBootstrap);
 
-        ActorShutdownThread(final RuntimeActor actor) {
-            this.actor = checkNotNull(actor);
-
-            setName("actor-shutdown-hook-" + actor);
+            setName("actor-shutdown-hook-" + actor.getKey());
             setDaemon(true);
         }
 
         @Override
         public void run() {
-            log.info("ShutdownHook called for {}.", actor.getKey());
-            actor.close();
+            log.info("ShutdownHook called for {}.", actorBootstrap.actor.getKey());
+            actorBootstrap.close();
         }
     }
 }

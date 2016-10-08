@@ -41,7 +41,6 @@ public class Agent implements AgentClientListener, AutoCloseable {
 
     private static final String DEFAULT_AGENT_PREFIX = "agent-";
     private static final Logger log = LogManager.getLogger();
-
     private final Map<ActorKey, ManagedActor> actors = Maps.newHashMap();
     private final AgentClusterClient agentClient;
     private final ActorManager embeddedManager;
@@ -52,8 +51,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         this(defaultName(), clientFactory, actorManagers);
     }
 
-    public Agent(@NotNull final String name,
-                 @NotNull final ClusterClientFactory clientFactory,
+    public Agent(@NotNull final String name, @NotNull final ClusterClientFactory clientFactory,
                  @NotNull final ActorManagers actorManagers) {
 
         this.name = checkNotNull(name);

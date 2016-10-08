@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.agent;
 
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +43,9 @@ public final class AgentBootstrapTest {
 
     @Before
     public void before() {
-        clientFactory = new DummyClientFactory(mock(AgentClusterClient.class), mock(ActorClusterClient.class));
+        clientFactory = new DummyClientFactory(mock(AgentClusterClient.class),
+                                               mock(ActorClusterClient.class),
+                                               mock(ActorRegistryClusterClient.class));
         masterEndpoint = new JMSEndpoint("noSuchHost", 1337);
     }
 

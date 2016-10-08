@@ -16,6 +16,8 @@
 package io.amaze.bench.runtime.actor;
 
 
+import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+
 import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -25,11 +27,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EmbeddedActorManager extends AbstractActorManager {
 
-    private final Actors factory;
+    private final Actors actors;
 
-    public EmbeddedActorManager(@NotNull final String agent, @NotNull final Actors factory) {
+    public EmbeddedActorManager(@NotNull final String agent, @NotNull final ClusterClientFactory clientFactory) {
         super(agent);
-        this.factory = checkNotNull(factory);
+        actors = new Actors(clientFactory);
     }
 
     @NotNull
@@ -38,7 +40,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
         checkNotNull(actorConfig);
 
         final ActorKey key = actorConfig.getKey();
-        final RuntimeActor actor = factory.create(key, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
+        final RuntimeActor actor = actors.create(key, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
 
         return new ManagedActor() {
             @NotNull

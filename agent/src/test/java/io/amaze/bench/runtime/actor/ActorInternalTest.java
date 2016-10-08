@@ -23,6 +23,7 @@ import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
@@ -60,11 +61,12 @@ public final class ActorInternalTest {
 
     @Mock
     private ActorClusterClient actorClient;
-
+    @Mock
+    private ActorRegistryClusterClient actorRegistryClient;
 
     @Before
     public void before() {
-        clientFactory = new DummyClientFactory(null, actorClient);
+        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient);
         factory = new Actors(clientFactory);
     }
 
@@ -265,7 +267,7 @@ public final class ActorInternalTest {
 
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
-        clientFactory = new DummyClientFactory(null, actorClient);
+        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient);
         factory = new Actors(clientFactory);
         doThrow(new RuntimeException()).when(actorClient).close();
         ActorInternal actor = defaultTestActor();

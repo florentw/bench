@@ -16,6 +16,7 @@
 package io.amaze.bench.shared.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,15 +28,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static io.amaze.bench.shared.jgroups.JgroupsClusterMember.CLUSTER_NAME;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 10/3/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class JgroupsClusterTest {
+public final class JgroupsClusterMemberTest {
 
     @Mock
     private JgroupsListenerMultiplexer listenerMultiplexer;
@@ -45,35 +47,56 @@ public final class JgroupsClusterTest {
     private OutputStream outputStream;
     @Mock
     private InputStream inputStream;
+    @Mock
+    private JChannel jChannel;
 
-    private JgroupsCluster jgroupsCluster;
+    private JgroupsClusterMember jgroupsClusterMember;
 
     @Before
     public void init() {
-        jgroupsCluster = new JgroupsCluster(listenerMultiplexer, stateMultiplexer);
+        jgroupsClusterMember = new JgroupsClusterMember(jChannel, listenerMultiplexer, stateMultiplexer);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
 
-        tester.testAllPublicConstructors(JgroupsCluster.class);
-        tester.testAllPublicInstanceMethods(jgroupsCluster);
+        tester.testAllPublicConstructors(JgroupsClusterMember.class);
+        tester.testAllPublicInstanceMethods(jgroupsClusterMember);
     }
 
     @Test
     public void public_constructor_creates_multiplexers() {
-        JgroupsCluster cluster = new JgroupsCluster();
+        JgroupsClusterMember cluster = new JgroupsClusterMember(jChannel);
 
         assertNotNull(cluster.listenerMultiplexer());
         assertNotNull(cluster.stateMultiplexer());
     }
 
     @Test
+    public void joining_connects_to_cluster_and_requests_initial_state() throws Exception {
+        jgroupsClusterMember.join();
+
+        verify(jChannel).receiver(jgroupsClusterMember);
+        verify(jChannel).connect(CLUSTER_NAME);
+        verify(jChannel).getState(eq(null), anyLong());
+        verifyNoMoreInteractions(jChannel);
+        verifyZeroInteractions(stateMultiplexer);
+        verifyZeroInteractions(listenerMultiplexer);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void error_while_joining_propagates_it() throws Exception {
+        doThrow(new IllegalArgumentException()).when(jChannel).connect(CLUSTER_NAME);
+
+        jgroupsClusterMember.join();
+    }
+
+    @Test
     public void calling_receive_dispatches_message_to_listeners() {
         Message dummyMessage = new Message();
 
-        jgroupsCluster.receive(dummyMessage);
+        jgroupsClusterMember.receive(dummyMessage);
 
         verify(listenerMultiplexer).dispatch(dummyMessage);
         verifyZeroInteractions(stateMultiplexer);
@@ -81,7 +104,7 @@ public final class JgroupsClusterTest {
 
     @Test
     public void get_state_calls_gather_state_on_multiplexer() throws IOException {
-        jgroupsCluster.getState(outputStream);
+        jgroupsClusterMember.getState(outputStream);
 
         verify(stateMultiplexer).gatherStateFrom(outputStream);
         verifyZeroInteractions(listenerMultiplexer);
@@ -89,7 +112,7 @@ public final class JgroupsClusterTest {
 
     @Test
     public void set_state_calls_write_state_on_multiplexer() throws IOException {
-        jgroupsCluster.setState(inputStream);
+        jgroupsClusterMember.setState(inputStream);
 
         verify(stateMultiplexer).writeStateTo(inputStream);
         verifyZeroInteractions(listenerMultiplexer);

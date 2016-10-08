@@ -20,6 +20,7 @@ import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.test.Json;
 import org.junit.After;
@@ -62,14 +63,16 @@ public final class AgentTest {
     private ManagedActor embeddedManagedActor;
     @Mock
     private ManagedActor forkedManagedActor;
+    @Mock
+    private ActorRegistryClusterClient actorRegistryClient;
 
     private Agent agent;
     private ClusterClientFactory clientFactory;
 
     @Before
     public void before() throws ValidationException {
-        clientFactory = new DummyClientFactory(agentClient, actorClient);
-        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, new Actors(clientFactory)));
+        clientFactory = new DummyClientFactory(agentClient, actorClient, actorRegistryClient);
+        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);
         when(actorManagers.createForked(anyString())).thenReturn(forkedManager);

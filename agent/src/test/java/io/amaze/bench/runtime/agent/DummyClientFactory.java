@@ -28,10 +28,14 @@ public final class DummyClientFactory implements ClusterClientFactory {
 
     private final AgentClusterClient agentClient;
     private final ActorClusterClient actorClient;
+    private final ActorRegistryClusterClient actorRegistryClient;
 
-    public DummyClientFactory(final AgentClusterClient agentClient, final ActorClusterClient actorClient) {
+    public DummyClientFactory(final AgentClusterClient agentClient,
+                              final ActorClusterClient actorClient,
+                              final ActorRegistryClusterClient actorRegistryClient) {
         this.agentClient = agentClient;
         this.actorClient = actorClient;
+        this.actorRegistryClient = actorRegistryClient;
     }
 
     @Override
@@ -46,6 +50,6 @@ public final class DummyClientFactory implements ClusterClientFactory {
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
-        throw new UnsupportedOperationException();
+        return actorRegistryClient;
     }
 }

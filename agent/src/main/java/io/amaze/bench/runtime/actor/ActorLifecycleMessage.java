@@ -33,7 +33,8 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
     private final ActorDeployInfo deployInfo;
     private final Throwable throwable;
 
-    private ActorLifecycleMessage(@NotNull final State state, @NotNull final ActorKey actor,
+    private ActorLifecycleMessage(@NotNull final State state,
+                                  @NotNull final ActorKey actor,
                                   final String agent,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {

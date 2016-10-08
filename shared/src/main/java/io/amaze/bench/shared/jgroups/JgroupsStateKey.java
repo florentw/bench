@@ -52,4 +52,9 @@ public final class JgroupsStateKey implements Serializable {
         JgroupsStateKey that = (JgroupsStateKey) o;
         return Objects.equals(key, that.key);
     }
+
+    @Override
+    public String toString() {
+        return "{\"JgroupsStateKey\":\"" + key + "\"}";
+    }
 }

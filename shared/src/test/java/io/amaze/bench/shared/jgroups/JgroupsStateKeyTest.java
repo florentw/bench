@@ -18,10 +18,12 @@ package io.amaze.bench.shared.jgroups;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -51,6 +53,11 @@ public final class JgroupsStateKeyTest {
         tester.addEqualityGroup(makeKey(), makeKey());
         tester.addEqualityGroup(makeKey().hashCode(), makeKey().hashCode());
         tester.testEquals();
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(makeKey().toString()));
     }
 
     private JgroupsStateKey makeKey() {
