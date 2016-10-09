@@ -18,9 +18,11 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
+import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.jgroups.JChannel;
 import org.jgroups.util.Util;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 
@@ -35,12 +37,14 @@ public final class JgroupsSender {
     private final JChannel channel;
     private final ActorRegistry actorRegistry;
 
-    public JgroupsSender(final JChannel channel, final ActorRegistry actorRegistry) {
+    public JgroupsSender(@NotNull final JChannel channel, @NotNull final ActorRegistry actorRegistry) {
         this.channel = checkNotNull(channel);
         this.actorRegistry = checkNotNull(actorRegistry);
     }
 
-    public void broadcast(Serializable message) {
+    public void broadcast(@NotNull final Serializable message) {
+        checkNotNull(message);
+
         try {
             channel.send(null, Util.objectToByteBuffer(message));
         } catch (Exception e) {
@@ -48,14 +52,18 @@ public final class JgroupsSender {
         }
     }
 
-    public void sendToActor(ActorKey actor, Serializable message) {
+    public void sendToActor(@NotNull final ActorKey actor, @NotNull final Serializable message) {
+        checkNotNull(actor);
+        checkNotNull(message);
+
         RegisteredActor registeredActor = actorRegistry.byKey(actor);
         if (registeredActor == null) {
             throw new NoSuchElementException("Cannot find " + actor + ".");
         }
 
         try {
-            channel.send(null, Util.objectToByteBuffer(message));
+            JgroupsEndpoint endpoint = registeredActor.getEndpoint();
+            channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));
         } catch (Exception e) {
             throw propagate(e);
         }

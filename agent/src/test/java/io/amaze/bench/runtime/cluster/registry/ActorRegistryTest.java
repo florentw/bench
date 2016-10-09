@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.registry;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor.State;
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
@@ -107,6 +109,18 @@ public final class ActorRegistryTest {
         RegisteredActor actor = actors.iterator().next();
         assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getState(), is(State.CREATED));
+    }
+
+    @Test
+    public void resetState_overrides_current_view() {
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        Set<RegisteredActor> newActorSet = new HashSet<>();
+        RegisteredActor newActor = RegisteredActor.created(new ActorKey("dummy-new"), "agent", endpoint);
+        newActorSet.add(newActor);
+
+        registry.resetState(newActorSet);
+
+        assertThat(registry.all(), is(newActorSet));
     }
 
     @Test

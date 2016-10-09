@@ -80,8 +80,8 @@ public final class RegisteredActor {
     }
 
     @NotNull
-    public Endpoint getEndpoint() {
-        return endpoint;
+    public <T extends Endpoint> T getEndpoint() {
+        return (T) endpoint;
     }
 
     public ActorDeployInfo getDeployInfo() {

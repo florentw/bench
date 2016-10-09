@@ -84,11 +84,9 @@ public class ActorRegistry {
             if (actorThatLeft != null) {
                 log.info("Detected actor disconnection for {}.", actorThatLeft);
                 actors.remove(actorThatLeft);
+            } else {
+                return;
             }
-        }
-
-        if (actorThatLeft == null) {
-            return;
         }
 
         // Notify listeners
