@@ -38,18 +38,32 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     private final JgroupsClusterMember jgroupsClusterMember;
     private final JgroupsSender jgroupsSender;
     private final ActorRegistry actorRegistry;
-    private final Endpoint endpoint;
+    private final JChannel jChannel;
+    private JgroupsActorRegistryClusterClient registryClusterClient;
 
     public JgroupsClusterClientFactory(@NotNull JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
+        this.jChannel = checkNotNull(jChannel);
         this.actorRegistry = checkNotNull(actorRegistry);
+
         jgroupsSender = new JgroupsSender(jChannel, actorRegistry);
         jgroupsClusterMember = new JgroupsClusterMember(jChannel);
-        endpoint = new JgroupsEndpoint(jChannel.getAddress());
+        registryClusterClient = new JgroupsActorRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
+                                                                      jgroupsClusterMember.stateMultiplexer(),
+                                                                      jgroupsClusterMember.viewMultiplexer(),
+                                                                      actorRegistry);
+    }
+
+    /**
+     * Joins the Jgroups cluster
+     */
+    public void join() {
+        jgroupsClusterMember.join();
+        registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
     }
 
     @Override
     public Endpoint getEndpoint() {
-        return endpoint;
+        return new JgroupsEndpoint(jChannel.getAddress());
     }
 
     @Override
@@ -66,9 +80,6 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
-        return new JgroupsActorRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
-                                                     jgroupsClusterMember.stateMultiplexer(),
-                                                     jgroupsClusterMember.viewMultiplexer(),
-                                                     actorRegistry);
+        return registryClusterClient;
     }
 }

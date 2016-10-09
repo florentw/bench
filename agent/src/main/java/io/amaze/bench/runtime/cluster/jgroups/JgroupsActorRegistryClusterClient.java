@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.agent.Constants;
@@ -23,6 +24,7 @@ import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jgroups.*;
 import org.jgroups.Address;
+import org.jgroups.Message;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -32,14 +34,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created on 10/1/16.
  */
-public final class JgroupsActorRegistryClusterClient implements ActorRegistryClusterClient {
+public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterClient {
 
-    private static final JgroupsStateKey ACTOR_REGISTRY_STATE_KEY = new JgroupsStateKey(Constants.ACTOR_REGISTRY_TOPIC);
+    static final JgroupsStateKey ACTOR_REGISTRY_STATE_KEY = new JgroupsStateKey(Constants.ACTOR_REGISTRY_TOPIC);
 
     private final JgroupsListenerMultiplexer listenerMultiplexer;
     private final JgroupsStateMultiplexer stateMultiplexer;
     private final JgroupsViewMultiplexer viewMultiplexer;
     private final ActorRegistry actorRegistry;
+    private JgroupsViewListener viewListener;
 
     public JgroupsActorRegistryClusterClient(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
                                              @NotNull final JgroupsStateMultiplexer stateMultiplexer,
@@ -50,42 +53,52 @@ public final class JgroupsActorRegistryClusterClient implements ActorRegistryClu
         this.stateMultiplexer = checkNotNull(stateMultiplexer);
         this.actorRegistry = checkNotNull(actorRegistry);
         this.viewMultiplexer = checkNotNull(viewMultiplexer);
+
+        stateMultiplexer.addStateHolder(stateHolder());
     }
 
     @Override
     public void startRegistryListener(@NotNull final ActorRegistryListener actorsListener) {
+        checkNotNull(actorsListener);
+
         listenerMultiplexer.addListener(ActorLifecycleMessage.class, registryListener(actorsListener));
-        stateMultiplexer.addStateHolder(stateHolder());
-        viewMultiplexer.addListener(viewListener());
+        viewListener = viewListener();
+        viewMultiplexer.addListener(viewListener);
     }
 
     @Override
     public void close() {
-        listenerMultiplexer.removeListenerFor(ActorLifecycleMessage.class);
         stateMultiplexer.removeStateHolder(ACTOR_REGISTRY_STATE_KEY);
+
+        // to be done only if startRegistryListener was called
+        if (viewListener != null) {
+            listenerMultiplexer.removeListenerFor(ActorLifecycleMessage.class);
+            viewMultiplexer.removeListener(viewListener);
+        }
     }
 
     private JgroupsViewListener viewListener() {
-        return new JgroupsViewListener() {
-            @Override
-            public void initialView(final Collection<Address> members) {
-                // Nothing to do here
-            }
-
-            @Override
-            public void memberJoined(@NotNull final Address address) {
-                // Nothing to do here
-            }
-
-            @Override
-            public void memberLeft(@NotNull final Address address) {
-                actorRegistry.onEndpointDisconnected(new JgroupsEndpoint(address));
-            }
-        };
+        return new ActorRegistryViewListener(actorRegistry);
     }
 
     private JgroupsListener<ActorLifecycleMessage> registryListener(@NotNull final ActorRegistryListener actorsListener) {
-        return (msg, lfMsg) -> {
+        return new RegistryMessageListener(actorsListener);
+    }
+
+    private JgroupsStateHolder<ActorView> stateHolder() {
+        return new RegistryStateHolder(actorRegistry);
+    }
+
+    @VisibleForTesting
+    static final class RegistryMessageListener implements JgroupsListener<ActorLifecycleMessage> {
+        private final ActorRegistryListener actorsListener;
+
+        RegistryMessageListener(@NotNull final ActorRegistryListener actorsListener) {
+            this.actorsListener = actorsListener;
+        }
+
+        @Override
+        public void onMessage(@NotNull final Message msg, @NotNull final ActorLifecycleMessage lfMsg) {
             ActorKey actor = lfMsg.getActor();
 
             switch (lfMsg.getState()) {
@@ -103,26 +116,55 @@ public final class JgroupsActorRegistryClusterClient implements ActorRegistryClu
                     break;
                 default:
             }
-        };
+        }
     }
 
-    private JgroupsStateHolder<ActorView> stateHolder() {
-        return new JgroupsStateHolder<ActorView>() {
-            @Override
-            public JgroupsStateKey getKey() {
-                return ACTOR_REGISTRY_STATE_KEY;
-            }
+    @VisibleForTesting
+    static final class ActorRegistryViewListener implements JgroupsViewListener {
+        private final ActorRegistry actorRegistry;
 
-            @Override
-            public ActorView getState() {
-                return new ActorView(actorRegistry.all());
-            }
+        ActorRegistryViewListener(@NotNull final ActorRegistry actorRegistry) {
+            this.actorRegistry = actorRegistry;
+        }
 
-            @Override
-            public void setState(@NotNull final ActorView newState) {
-                checkNotNull(newState);
-                actorRegistry.resetState(newState.getRegisteredActors());
-            }
-        };
+        @Override
+        public void initialView(final Collection<Address> members) {
+            // Nothing to do here
+        }
+
+        @Override
+        public void memberJoined(@NotNull final Address address) {
+            // Nothing to do here
+        }
+
+        @Override
+        public void memberLeft(@NotNull final Address address) {
+            actorRegistry.onEndpointDisconnected(new JgroupsEndpoint(address));
+        }
+    }
+
+    @VisibleForTesting
+    static final class RegistryStateHolder implements JgroupsStateHolder<ActorView> {
+        private final ActorRegistry actorRegistry;
+
+        RegistryStateHolder(@NotNull final ActorRegistry actorRegistry) {
+            this.actorRegistry = actorRegistry;
+        }
+
+        @Override
+        public JgroupsStateKey getKey() {
+            return ACTOR_REGISTRY_STATE_KEY;
+        }
+
+        @Override
+        public ActorView getState() {
+            return new ActorView(actorRegistry.all());
+        }
+
+        @Override
+        public void setState(@NotNull final ActorView newState) {
+            checkNotNull(newState);
+            actorRegistry.resetState(newState.getRegisteredActors());
+        }
     }
 }

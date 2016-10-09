@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.actor;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.api.*;
@@ -23,6 +24,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 3/3/16.
@@ -32,6 +35,7 @@ public class TestActor implements Reactor<String> {
 
     public static final ActorKey DUMMY_ACTOR = new ActorKey("test-actor");
     public static final String DUMMY_JSON_CONFIG = "{}";
+
     static final String FAIL_MSG = "DO_FAIL";
     static final String RECOVERABLE_EXCEPTION_MSG = "THROW_RECOVERABLE";
     static final String RUNTIME_EXCEPTION_MSG = "THROW_RUNTIME";
@@ -40,6 +44,7 @@ public class TestActor implements Reactor<String> {
     private static final DeployConfig DUMMY_DEPLOY_CONFIG = createDeployConfig(false);
     public static final ActorConfig DUMMY_CONFIG = createActorConfig();
 
+    private final CountDownLatch messageReceived = new CountDownLatch(1);
     private final Sender sender;
     private final Map<String, List<String>> receivedMessages = new HashMap<>();
     private final Config config;
@@ -99,6 +104,8 @@ public class TestActor implements Reactor<String> {
             receivedMessages.put(from, msgs);
         }
         msgs.add(message);
+
+        messageReceived.countDown();
     }
 
     @After
@@ -118,8 +125,12 @@ public class TestActor implements Reactor<String> {
         return sender;
     }
 
-    Map<String, List<String>> getReceivedMessages() {
+    public Map<String, List<String>> getReceivedMessages() {
         return receivedMessages;
+    }
+
+    public boolean awaitFirstReceivedMessage() {
+        return Uninterruptibles.awaitUninterruptibly(messageReceived, 5, TimeUnit.SECONDS);
     }
 
     Config getConfig() {

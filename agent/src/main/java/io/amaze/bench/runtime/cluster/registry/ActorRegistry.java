@@ -23,6 +23,9 @@ import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -110,17 +113,15 @@ public class ActorRegistry {
     public void onEndpointDisconnected(final Endpoint endpoint) {
         checkNotNull(endpoint);
 
-        ActorKey actorThatLeft = null;
+        List<ActorKey> actorsThatLeft = new ArrayList<>();
         synchronized (actors) {
-            for (RegisteredActor actor : actors.values()) {
-                if (actor.getEndpoint().equals(endpoint)) {
-                    actorThatLeft = actor.getKey();
-                }
-            }
+            Predicate<RegisteredActor> endpointFilter = actor -> actor.getEndpoint().equals(endpoint);
+            Stream<RegisteredActor> filteredOnEndpoint = actors.values().stream().filter(endpointFilter);
+            actorsThatLeft.addAll(filteredOnEndpoint.map(RegisteredActor::getKey).collect(Collectors.toList()));
 
-            if (actorThatLeft != null) {
-                log.info("Detected actor disconnection for {}.", actorThatLeft);
-                actors.remove(actorThatLeft);
+            if (!actorsThatLeft.isEmpty()) {
+                log.info("Detected actor disconnection for {}.", actorsThatLeft);
+                actorsThatLeft.forEach(actors::remove);
             } else {
                 return;
             }
@@ -128,7 +129,7 @@ public class ActorRegistry {
 
         // Notify listeners
         for (ActorRegistryListener listener : listeners()) {
-            listener.onActorFailed(actorThatLeft, new ActorDisconnectedException());
+            actorsThatLeft.forEach(actorKey -> listener.onActorFailed(actorKey, new ActorDisconnectedException()));
         }
     }
 

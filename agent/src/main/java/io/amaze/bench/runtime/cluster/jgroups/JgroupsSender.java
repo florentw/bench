@@ -56,6 +56,7 @@ public final class JgroupsSender {
         checkNotNull(actor);
         checkNotNull(message);
 
+        // We need to resolve the endpoint using the actor's name first
         RegisteredActor registeredActor = actorRegistry.byKey(actor);
         if (registeredActor == null) {
             throw new NoSuchElementException("Cannot find " + actor + ".");

@@ -180,7 +180,7 @@ public class ActorInternal implements RuntimeActor {
     }
 
     @VisibleForTesting
-    Reactor getInstance() {
+    public Reactor getInstance() {
         return instance;
     }
 
