@@ -46,14 +46,30 @@ public class ActorRegistry {
         }
     }
 
+    /**
+     * Registers a listener that will be notified with actors lifecycle events.
+     *
+     * @param listener The listener to be notified of events
+     * @throws IllegalStateException if the listener is already registered
+     */
     public void addListener(@NotNull final ActorRegistryListener listener) {
         checkNotNull(listener);
 
         synchronized (clientListeners) {
+            if (clientListeners.contains(listener)) {
+                throw new IllegalStateException("Registry listener already is registered.");
+            }
+
             clientListeners.add(listener);
         }
     }
 
+    /**
+     * Unregisters a previously registered listener, it will no longer be notified of lifecycle events.
+     * If the listener is already unregistered, no exception is thrown.
+     *
+     * @param listener The listener instance to unregister
+     */
     public void removeListener(@NotNull final ActorRegistryListener listener) {
         checkNotNull(listener);
 
@@ -62,6 +78,27 @@ public class ActorRegistry {
             if (!removed) {
                 log.warn("Attempt to remove unknown actor listener {}", listener);
             }
+        }
+    }
+
+    /**
+     * @param key key of the actor to find
+     * @return {@code null} if no actor with that name is found, returns the actor otherwise
+     */
+    public RegisteredActor byKey(@NotNull final ActorKey key) {
+        checkNotNull(key);
+
+        synchronized (actors) {
+            return actors.get(key);
+        }
+    }
+
+    /**
+     * @return An unmodifiable set of currently registered actors.
+     */
+    public Set<RegisteredActor> all() {
+        synchronized (actors) {
+            return Collections.unmodifiableSet(new HashSet<>(actors.values()));
         }
     }
 
@@ -98,27 +135,6 @@ public class ActorRegistry {
     @NotNull
     public ActorRegistryListener createClusterListener() {
         return new ActorRegistryListenerLogger(new ActorRegistryListenerState());
-    }
-
-    /**
-     * @param key key of the actor to find
-     * @return {@code null} if no actor with that name is found, returns the actor otherwise
-     */
-    public RegisteredActor byKey(@NotNull final ActorKey key) {
-        checkNotNull(key);
-
-        synchronized (actors) {
-            return actors.get(key);
-        }
-    }
-
-    /**
-     * @return An unmodifiable set of currently registered actors.
-     */
-    public Set<RegisteredActor> all() {
-        synchronized (actors) {
-            return Collections.unmodifiableSet(new HashSet<>(actors.values()));
-        }
     }
 
     private Set<ActorRegistryListener> listeners() {

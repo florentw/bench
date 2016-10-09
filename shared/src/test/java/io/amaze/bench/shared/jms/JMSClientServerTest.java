@@ -187,7 +187,7 @@ public final class JMSClientServerTest {
     }
 
     @Test(expected = JMSException.class)
-    public void client_sends_to_topic_after_server_closed_throws() throws Exception {
+    public void client_sends_to_topic_after_server_closed_throws_JMSException() throws Exception {
         try (JMSClient client = server.createClient()) {
             server.getServer().close();
             client.sendToTopic("None", DUMMY_PAYLOAD);

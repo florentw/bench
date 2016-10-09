@@ -24,9 +24,11 @@ import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 
 import javax.validation.constraints.NotNull;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 
 /**
  * Created on 9/12/16.
@@ -69,6 +71,7 @@ public final class Agents {
     private final class WaitAgentRegistration implements AgentRegistryListener {
         private final String agentName;
         private final SettableFuture<Agent> future = SettableFuture.create();
+        private final CountDownLatch agentCreated = new CountDownLatch(1);
         private Agent agent;
 
         WaitAgentRegistration(final String agentName) {
@@ -78,6 +81,9 @@ public final class Agents {
         @Override
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
             checkNotNull(msg);
+
+            awaitUninterruptibly(agentCreated);
+
             if (msg.getName().equals(agent.getName())) {
                 future.set(agent);
                 agentRegistry.removeListener(this);
@@ -86,6 +92,10 @@ public final class Agents {
 
         @Override
         public void onAgentSignOff(@NotNull final String agentName) {
+            checkNotNull(agentName);
+
+            awaitUninterruptibly(agentCreated);
+
             if (agentName.equals(agent.getName())) {
                 future.setException(new AgentSignOffException());
                 agentRegistry.removeListener(this);
@@ -94,6 +104,7 @@ public final class Agents {
 
         Future<Agent> createAgent() {
             agent = new Agent(agentName, clientFactory, actorManagers);
+            agentCreated.countDown();
             return future;
         }
     }
