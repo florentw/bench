@@ -44,6 +44,8 @@ public final class JgroupsClusterMemberTest {
     @Mock
     private JgroupsStateMultiplexer stateMultiplexer;
     @Mock
+    private JgroupsViewMultiplexer viewMultiplexer;
+    @Mock
     private OutputStream outputStream;
     @Mock
     private InputStream inputStream;
@@ -54,7 +56,10 @@ public final class JgroupsClusterMemberTest {
 
     @Before
     public void init() {
-        jgroupsClusterMember = new JgroupsClusterMember(jChannel, listenerMultiplexer, stateMultiplexer);
+        jgroupsClusterMember = new JgroupsClusterMember(jChannel,
+                                                        listenerMultiplexer,
+                                                        stateMultiplexer,
+                                                        viewMultiplexer);
     }
 
     @Test

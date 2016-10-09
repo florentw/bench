@@ -16,6 +16,7 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
@@ -54,10 +55,11 @@ public final class ActorsTest {
 
     @Rule
     public Timeout globalTimeout = new Timeout(5, TimeUnit.SECONDS);
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    @Mock
+    private Endpoint endpoint;
     @Mock
     private ResourceManager resourceManager;
     @Mock
@@ -151,7 +153,7 @@ public final class ActorsTest {
     public void actorCreation_is_set_when_actor_created() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_NAME);
+        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_NAME, endpoint);
 
         ActorConfig actual = getUninterruptibly(actorHandle.actorCreation());
         assertSame(actual, actorConfig);
@@ -162,7 +164,7 @@ public final class ActorsTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(OTHER_ACTOR, AGENT_NAME);
+        actorRegistryListener.onActorCreated(OTHER_ACTOR, AGENT_NAME, endpoint);
 
         getUninterruptibly(actorHandle.actorCreation(), FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }

@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 import org.junit.Before;
@@ -35,6 +36,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public final class ActorRegistryListenerLoggerTest {
 
+    @Mock
+    private Endpoint endpoint;
     @Mock
     private ActorRegistryListener delegateListener;
 
@@ -57,9 +60,9 @@ public final class ActorRegistryListenerLoggerTest {
 
     @Test
     public void actor_created() {
-        loggerListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        loggerListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
 
-        verify(delegateListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(delegateListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
         verifyNoMoreInteractions(delegateListener);
     }
 

@@ -16,10 +16,12 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.LifecycleMessage;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.runtime.message.Message;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,8 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSActorRegistryTopicListenerTest {
+
+    private final Endpoint endpoint = new JMSEndpoint("localhost", 1337);
 
     @Mock
     private ActorRegistryListener actorRegistryListener;
@@ -80,11 +84,11 @@ public final class JMSActorRegistryTopicListenerTest {
 
     @Test
     public void actor_created() throws IOException, JMSException {
-        BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT));
+        BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT, endpoint));
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 

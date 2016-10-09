@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 
@@ -30,29 +31,37 @@ public final class RegisteredActor {
     private final ActorKey actor;
     private final String agentHost;
     private final State state;
+    private final Endpoint endpoint;
     private final ActorDeployInfo deployInfo;
 
     private RegisteredActor(@NotNull final ActorKey actor, //
                             @NotNull final String agentHost, //
                             @NotNull final State state, //
+                            @NotNull final Endpoint endpoint, //
                             final ActorDeployInfo deployInfo) {
 
         this.actor = checkNotNull(actor);
         this.agentHost = checkNotNull(agentHost);
         this.state = checkNotNull(state);
+        this.endpoint = checkNotNull(endpoint);
         this.deployInfo = deployInfo;
     }
 
     public static RegisteredActor created(@NotNull final ActorKey actor, //
-                                          @NotNull final String agentHost) {
-        return new RegisteredActor(actor, agentHost, State.CREATED, null);
+                                          @NotNull final String agentHost, //
+                                          @NotNull final Endpoint endpoint) {
+        return new RegisteredActor(actor, agentHost, State.CREATED, endpoint, null);
     }
 
     public static RegisteredActor initialized(@NotNull RegisteredActor created, //
                                               @NotNull final ActorDeployInfo deployInfo) {
         checkNotNull(created);
         checkNotNull(deployInfo);
-        return new RegisteredActor(created.getKey(), created.getAgentHost(), State.INITIALIZED, deployInfo);
+        return new RegisteredActor(created.getKey(),
+                                   created.getAgentHost(),
+                                   State.INITIALIZED,
+                                   created.getEndpoint(),
+                                   deployInfo);
     }
 
     @NotNull
@@ -68,6 +77,11 @@ public final class RegisteredActor {
     @NotNull
     public String getAgentHost() {
         return agentHost;
+    }
+
+    @NotNull
+    public Endpoint getEndpoint() {
+        return endpoint;
     }
 
     public ActorDeployInfo getDeployInfo() {

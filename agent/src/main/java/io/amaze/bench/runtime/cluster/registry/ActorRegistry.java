@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +65,38 @@ public class ActorRegistry {
         }
     }
 
+    /**
+     * To be called by the messaging system in case a disconnection is detected.
+     *
+     * @param endpoint The endpoint of the member that left the cluster.
+     */
+    public void onEndpointDisconnected(final Endpoint endpoint) {
+        checkNotNull(endpoint);
+
+        ActorKey actorThatLeft = null;
+        synchronized (actors) {
+            for (RegisteredActor actor : actors.values()) {
+                if (actor.getEndpoint().equals(endpoint)) {
+                    actorThatLeft = actor.getKey();
+                }
+            }
+
+            if (actorThatLeft != null) {
+                log.info("Detected actor disconnection for {}.", actorThatLeft);
+                actors.remove(actorThatLeft);
+            }
+        }
+
+        if (actorThatLeft == null) {
+            return;
+        }
+
+        // Notify listeners
+        for (ActorRegistryListener listener : listeners()) {
+            listener.onActorFailed(actorThatLeft, new ActorDisconnectedException());
+        }
+    }
+
     @NotNull
     public ActorRegistryListener createClusterListener() {
         return new ActorRegistryListenerLogger(new ActorRegistryListenerState());
@@ -90,17 +123,25 @@ public class ActorRegistry {
         }
     }
 
+    private Set<ActorRegistryListener> listeners() {
+        synchronized (clientListeners) {
+            return new HashSet<>(clientListeners);
+        }
+    }
+
     private final class ActorRegistryListenerState implements ActorRegistryListener {
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
+        public void onActorCreated(@NotNull final ActorKey key,
+                                   @NotNull final String agent,
+                                   @NotNull final Endpoint endpoint) {
             synchronized (actors) {
-                actors.put(key, RegisteredActor.created(key, agent));
+                actors.put(key, RegisteredActor.created(key, agent, endpoint));
             }
 
             // Notify listeners
             for (ActorRegistryListener listener : listeners()) {
-                listener.onActorCreated(key, agent);
+                listener.onActorCreated(key, agent, endpoint);
             }
         }
 
@@ -152,12 +193,6 @@ public class ActorRegistry {
             // Notify listeners
             for (ActorRegistryListener listener : listeners()) {
                 listener.onActorClosed(name);
-            }
-        }
-
-        private Set<ActorRegistryListener> listeners() {
-            synchronized (clientListeners) {
-                return new HashSet<>(clientListeners);
             }
         }
     }

@@ -5,6 +5,7 @@ import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static junit.framework.TestCase.assertNotNull;
+import static org.mockito.Mockito.when;
 
 /**
  * Created on 10/5/16.
@@ -25,11 +27,14 @@ public final class JgroupsClusterMemberClientFactoryTest {
     private JChannel jChannel;
     @Mock
     private ActorRegistry actorRegistry;
+    @Mock
+    private Address address;
 
     private JgroupsClusterClientFactory clusterClientFactory;
 
     @Before
     public void init() {
+        when(jChannel.getAddress()).thenReturn(address);
         clusterClientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
     }
 

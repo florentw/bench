@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
@@ -46,15 +47,18 @@ public class Agent implements AgentClientListener, AutoCloseable {
     private final ActorManager embeddedManager;
     private final ActorManager forkedManager;
     private final String name;
+    private final Endpoint endpoint;
 
     public Agent(@NotNull final ClusterClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
         this(defaultName(), clientFactory, actorManagers);
     }
 
-    public Agent(@NotNull final String name, @NotNull final ClusterClientFactory clientFactory,
+    public Agent(@NotNull final String name, //
+                 @NotNull final ClusterClientFactory clientFactory, //
                  @NotNull final ActorManagers actorManagers) {
 
         this.name = checkNotNull(name);
+        this.endpoint = clientFactory.getEndpoint();
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 
@@ -93,7 +97,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
             actors.put(actorKey, instance.get());
-            agentClient.sendToActorRegistry(created(actorKey, name));
+            agentClient.sendToActorRegistry(created(actorKey, name, endpoint));
         }
 
         log.info("{} Actor {} created.", this, actorKey);

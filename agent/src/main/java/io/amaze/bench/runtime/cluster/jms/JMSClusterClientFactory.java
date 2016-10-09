@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
@@ -35,6 +36,11 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
 
     public JMSClusterClientFactory(@NotNull final JMSEndpoint endpoint) {
         this.endpoint = checkNotNull(endpoint);
+    }
+
+    @Override
+    public Endpoint getEndpoint() {
+        return new JMSEndpoint("dummy", 1337);
     }
 
     @Override

@@ -15,9 +15,10 @@
  */
 package io.amaze.bench.runtime.cluster;
 
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 
 import javax.validation.constraints.NotNull;
 
@@ -28,12 +29,17 @@ import javax.validation.constraints.NotNull;
  * to listen to incoming messages.</li>
  * <li>Provides {@link ActorClusterClient} instances for actors to listen to incoming messages
  * and be able to send back.</li>
+ * <li>Provides {@link ActorRegistryClusterClient} instances for the actor registry to interact with the cluster.</li>
  * </ul>
  *
  * @see AgentClusterClient
  * @see ActorClusterClient
+ * @see ActorRegistryClusterClient
  */
 public interface ClusterClientFactory {
+
+    @NotNull
+    Endpoint getEndpoint();
 
     @NotNull
     AgentClusterClient createForAgent(@NotNull String agent);

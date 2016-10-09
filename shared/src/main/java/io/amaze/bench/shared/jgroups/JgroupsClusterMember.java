@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
+import org.jgroups.View;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -43,18 +44,24 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
     private final JChannel jChannel;
     private final JgroupsListenerMultiplexer listenerMultiplexer;
     private final JgroupsStateMultiplexer stateMultiplexer;
+    private final JgroupsViewMultiplexer viewMultiplexer;
 
     public JgroupsClusterMember(final JChannel jChannel) {
-        this(jChannel, new JgroupsListenerMultiplexer(), new JgroupsStateMultiplexer());
+        this(jChannel, //
+             new JgroupsListenerMultiplexer(), //
+             new JgroupsStateMultiplexer(), //
+             new JgroupsViewMultiplexer(jChannel));
     }
 
     @VisibleForTesting
     JgroupsClusterMember(@NotNull final JChannel jChannel,
                          @NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
-                         @NotNull final JgroupsStateMultiplexer stateMultiplexer) {
+                         @NotNull final JgroupsStateMultiplexer stateMultiplexer,
+                         @NotNull final JgroupsViewMultiplexer viewMultiplexer) {
         this.jChannel = checkNotNull(jChannel);
         this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
         this.stateMultiplexer = checkNotNull(stateMultiplexer);
+        this.viewMultiplexer = checkNotNull(viewMultiplexer);
     }
 
     public synchronized void join() {
@@ -87,11 +94,21 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
         stateMultiplexer.writeStateTo(input);
     }
 
+    @Override
+    public void viewAccepted(final View view) {
+        checkNotNull(view);
+        viewMultiplexer.viewUpdate(view);
+    }
+
     public JgroupsListenerMultiplexer listenerMultiplexer() {
         return listenerMultiplexer;
     }
 
     public JgroupsStateMultiplexer stateMultiplexer() {
         return stateMultiplexer;
+    }
+
+    public JgroupsViewMultiplexer viewMultiplexer() {
+        return viewMultiplexer;
     }
 }

@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.agent;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
@@ -36,6 +37,12 @@ public final class DummyClientFactory implements ClusterClientFactory {
         this.agentClient = agentClient;
         this.actorClient = actorClient;
         this.actorRegistryClient = actorRegistryClient;
+    }
+
+    @Override
+    public Endpoint getEndpoint() {
+        return new Endpoint() {
+        };
     }
 
     @Override

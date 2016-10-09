@@ -15,15 +15,17 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jgroups.*;
+import org.jgroups.Address;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,21 +38,25 @@ public final class JgroupsActorRegistryClusterClient implements ActorRegistryClu
 
     private final JgroupsListenerMultiplexer listenerMultiplexer;
     private final JgroupsStateMultiplexer stateMultiplexer;
+    private final JgroupsViewMultiplexer viewMultiplexer;
     private final ActorRegistry actorRegistry;
 
     public JgroupsActorRegistryClusterClient(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
                                              @NotNull final JgroupsStateMultiplexer stateMultiplexer,
+                                             @NotNull final JgroupsViewMultiplexer viewMultiplexer,
                                              @NotNull final ActorRegistry actorRegistry) {
 
         this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
         this.stateMultiplexer = checkNotNull(stateMultiplexer);
         this.actorRegistry = checkNotNull(actorRegistry);
+        this.viewMultiplexer = checkNotNull(viewMultiplexer);
     }
 
     @Override
     public void startRegistryListener(@NotNull final ActorRegistryListener actorsListener) {
         listenerMultiplexer.addListener(ActorLifecycleMessage.class, registryListener(actorsListener));
         stateMultiplexer.addStateHolder(stateHolder());
+        viewMultiplexer.addListener(viewListener());
     }
 
     @Override
@@ -59,13 +65,32 @@ public final class JgroupsActorRegistryClusterClient implements ActorRegistryClu
         stateMultiplexer.removeStateHolder(ACTOR_REGISTRY_STATE_KEY);
     }
 
+    private JgroupsViewListener viewListener() {
+        return new JgroupsViewListener() {
+            @Override
+            public void initialView(final Collection<Address> members) {
+                // Nothing to do here
+            }
+
+            @Override
+            public void memberJoined(@NotNull final Address address) {
+                // Nothing to do here
+            }
+
+            @Override
+            public void memberLeft(@NotNull final Address address) {
+                actorRegistry.onEndpointDisconnected(new JgroupsEndpoint(address));
+            }
+        };
+    }
+
     private JgroupsListener<ActorLifecycleMessage> registryListener(@NotNull final ActorRegistryListener actorsListener) {
         return (msg, lfMsg) -> {
             ActorKey actor = lfMsg.getActor();
 
             switch (lfMsg.getState()) {
                 case CREATED:
-                    actorsListener.onActorCreated(actor, lfMsg.getAgent());
+                    actorsListener.onActorCreated(actor, lfMsg.getAgent(), lfMsg.getEndpoint());
                     break;
                 case INITIALIZED:
                     actorsListener.onActorInitialized(actor, lfMsg.getDeployInfo());

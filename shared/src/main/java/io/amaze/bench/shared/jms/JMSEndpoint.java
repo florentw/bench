@@ -15,7 +15,8 @@
  */
 package io.amaze.bench.shared.jms;
 
-import java.io.Serializable;
+import io.amaze.bench.Endpoint;
+
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -24,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created on 9/4/16.
  */
-public final class JMSEndpoint implements Serializable {
+public final class JMSEndpoint implements Endpoint {
 
     private final String host;
     private final int port;
