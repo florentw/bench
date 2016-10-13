@@ -18,7 +18,6 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.base.Throwables;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
-import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.util.Files;
 import io.amaze.bench.util.AgentClusterRule;
@@ -49,7 +48,7 @@ public final class AgentBootstrapIntegrationTest {
     private AgentRegistryClusterClient registryClusterClient;
 
     @Before
-    public void before() throws JMSException, IOException {
+    public void before() throws IOException {
         AgentConfig agentConfig = cluster.agentConfig();
         File configFile = temporaryFolder.newFile();
         Files.writeTo(configFile, agentConfig.toJson());

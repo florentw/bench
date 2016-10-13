@@ -18,7 +18,6 @@ package io.amaze.bench.runtime.actor;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
-import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,6 @@ public final class DeployConfigTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(JMSEndpoint.class, createEndpoint());
         tester.testAllPublicConstructors(DeployConfig.class);
     }
 
@@ -63,10 +61,6 @@ public final class DeployConfigTest {
 
         assertThat(actual.getPreferredHosts(), is(expected.getPreferredHosts()));
         assertThat(actual.isForked(), is(expected.isForked()));
-    }
-
-    private JMSEndpoint createEndpoint() {
-        return new JMSEndpoint("", 10);
     }
 
     private DeployConfig createDeployConfig() {

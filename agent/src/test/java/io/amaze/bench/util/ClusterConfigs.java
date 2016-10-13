@@ -24,10 +24,6 @@ public final class ClusterConfigs {
                 DUMMY_PORT).toConfig().root().render(ConfigRenderOptions.concise()) + "}");
     }
 
-    public static Config clusterConfig(final JMSServerRule server) {
-        return agentConfig(server).clusterConfig();
-    }
-
     public static AgentConfig agentConfig(final JMSServerRule server) {
         Config clusterConfig = ConfigFactory.parseString("{" + //
                                                                  "\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JMSClusterClientFactory.class.getName() + "\"," + //
