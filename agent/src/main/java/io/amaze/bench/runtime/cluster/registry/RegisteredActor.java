@@ -20,13 +20,14 @@ import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/29/16.
  */
-public final class RegisteredActor {
+public final class RegisteredActor implements Serializable {
 
     private final ActorKey actor;
     private final String agentHost;
