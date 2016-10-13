@@ -16,13 +16,13 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.leader.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.DeployConfig;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
-import io.amaze.bench.leader.cluster.registry.RegisteredAgent;
+import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;

@@ -15,13 +15,16 @@
  */
 package io.amaze.bench.runtime.actor;
 
-import com.typesafe.config.*;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.api.After;
 import io.amaze.bench.api.Before;
 import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.Sender;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
+import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
@@ -52,17 +55,10 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
  */
 public class Actors {
 
-    private static final ConfigParseOptions DEFAULT_CONFIG_PARSE_OPTIONS = //
-            ConfigParseOptions.defaults() //
-                    .setSyntax(ConfigSyntax.JSON) //
-                    .setAllowMissing(true);
-
     private final ClusterClientFactory clientFactory;
-    private final ConfigParseOptions configParseOptions;
 
     public Actors(@NotNull final ClusterClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
-        configParseOptions = DEFAULT_CONFIG_PARSE_OPTIONS;
     }
 
     public final RuntimeActor create(@NotNull final ActorKey actorKey,
@@ -86,7 +82,7 @@ public class Actors {
 
     private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
         try {
-            return ConfigFactory.parseString(jsonConfig, configParseOptions);
+            return ConfigFactory.parseString(jsonConfig, Constants.CONFIG_PARSE_OPTIONS);
         } catch (ConfigException e) {
             throw ValidationException.create("Configuration error", e);
         }

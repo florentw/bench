@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.leader.cluster.registry;
+package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.shared.metric.SystemConfig;
 
@@ -30,7 +30,8 @@ public final class RegisteredAgent {
     private final SystemConfig systemConfig;
     private final long creationTime;
 
-    RegisteredAgent(@NotNull final String agentName, @NotNull final SystemConfig systemConfig,
+    RegisteredAgent(@NotNull final String agentName,
+                    @NotNull final SystemConfig systemConfig,
                     @NotNull final long creationTime) {
 
         this.agentName = checkNotNull(agentName);
@@ -49,4 +50,5 @@ public final class RegisteredAgent {
     public long getCreationTime() {
         return creationTime;
     }
+
 }

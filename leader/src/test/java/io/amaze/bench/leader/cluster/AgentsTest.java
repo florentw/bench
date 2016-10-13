@@ -16,13 +16,14 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.leader.cluster.registry.AgentRegistry;
-import io.amaze.bench.leader.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,6 +65,8 @@ public final class AgentsTest {
     private AgentRegistry agentRegistry;
     @Mock
     private AgentClusterClient agentClusterClient;
+    @Mock
+    private ClusterConfigFactory clusterConfigFactory;
 
     private AgentRegistryListener agentRegistryListener;
 
@@ -88,7 +91,7 @@ public final class AgentsTest {
     }
 
     @Test
-    public void creating_actor_adds_listener_and_create_agent() {
+    public void creating_agent_adds_listener() {
 
         Future<Agent> future = agents.create(AGENT_NAME);
 
@@ -96,7 +99,7 @@ public final class AgentsTest {
         InOrder inOrder = inOrder(agentRegistry, actorManagers);
         inOrder.verify(agentRegistry).addListener(any(AgentRegistryListener.class));
         inOrder.verify(actorManagers).createEmbedded(AGENT_NAME, clusterClientFactory);
-        inOrder.verify(actorManagers).createForked(AGENT_NAME);
+        inOrder.verify(actorManagers).createForked(AGENT_NAME, clusterClientFactory.clusterConfigFactory());
         inOrder.verifyNoMoreInteractions();
     }
 

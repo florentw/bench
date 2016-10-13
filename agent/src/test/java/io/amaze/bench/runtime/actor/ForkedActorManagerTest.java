@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.cluster.jms.JMSClusterConfigFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
@@ -59,21 +60,20 @@ public final class ForkedActorManagerTest {
 
     @Rule
     public final Timeout globalTimeout = new Timeout(5, TimeUnit.SECONDS);
-
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
-
     @Rule
     public final JMSServerRule server = new JMSServerRule();
 
     private ForkedActorManager actorManager;
-    private JMSEndpoint masterEndpoint;
+    private JMSClusterConfigFactory clusterConfigFactory;
 
     @Before
     public void before() throws JMSException, IOException {
-        masterEndpoint = server.getEndpoint();
+        JMSEndpoint masterEndpoint = server.getEndpoint();
+        clusterConfigFactory = new JMSClusterConfigFactory(masterEndpoint);
 
-        actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, new File("target/logs"));
+        actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, new File("target/logs"));
 
         server.getServer().createQueue(DUMMY_ACTOR.getName());
     }
@@ -205,7 +205,7 @@ public final class ForkedActorManagerTest {
         doReturn(false).when(localLogDir).mkdirs(); // NOSONAR
         doReturn(false).when(localLogDir).exists(); // NOSONAR
 
-        actorManager = new ForkedActorManager(DUMMY_AGENT, masterEndpoint, localLogDir);
+        actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, localLogDir);
     }
 
     @Test

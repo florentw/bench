@@ -20,6 +20,7 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 
 /**
@@ -30,17 +31,19 @@ public final class DummyClientFactory implements ClusterClientFactory {
     private final AgentClusterClient agentClient;
     private final ActorClusterClient actorClient;
     private final ActorRegistryClusterClient actorRegistryClient;
+    private final ClusterConfigFactory clusterConfigFactory;
 
     public DummyClientFactory(final AgentClusterClient agentClient,
                               final ActorClusterClient actorClient,
-                              final ActorRegistryClusterClient actorRegistryClient) {
+                              final ActorRegistryClusterClient actorRegistryClient,
+                              final ClusterConfigFactory clusterConfigFactory) {
         this.agentClient = agentClient;
         this.actorClient = actorClient;
         this.actorRegistryClient = actorRegistryClient;
+        this.clusterConfigFactory = clusterConfigFactory;
     }
 
-    @Override
-    public Endpoint getEndpoint() {
+    public Endpoint getLocalEndpoint() {
         return new Endpoint() {
         };
     }
@@ -58,5 +61,10 @@ public final class DummyClientFactory implements ClusterClientFactory {
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
         return actorRegistryClient;
+    }
+
+    @Override
+    public ClusterConfigFactory clusterConfigFactory() {
+        return clusterConfigFactory;
     }
 }

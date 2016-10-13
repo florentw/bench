@@ -66,7 +66,7 @@ public final class ActorInternalTest {
 
     @Before
     public void before() {
-        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient);
+        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient, null);
         factory = new Actors(clientFactory);
     }
 
@@ -267,7 +267,7 @@ public final class ActorInternalTest {
 
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
-        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient);
+        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient, null);
         factory = new Actors(clientFactory);
         doThrow(new RuntimeException()).when(actorClient).close();
         ActorInternal actor = defaultTestActor();

@@ -17,7 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 
 import javax.validation.constraints.NotNull;
 
@@ -34,12 +34,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see ActorManager
  */
 public class ActorManagers {
-
-    private final JMSEndpoint masterEndpoint;
-
-    public ActorManagers(final JMSEndpoint masterEndpoint) {
-        this.masterEndpoint = checkNotNull(masterEndpoint);
-    }
 
     /**
      * Will create a new instance of {@link ActorManager} that will instantiate actors in the current JVM.
@@ -60,14 +54,17 @@ public class ActorManagers {
     /**
      * Will create a new instance of {@link ActorManager} that will instantiate each actor in a new JVM.
      *
-     * @param agentName The host agent name.
+     * @param agentName            The host agent name.
+     * @param clusterConfigFactory Factory to generate cluster config for forked actor to join.
      * @return An instantiated {@link ForkedActorManager}
      */
     @NotNull
-    public ActorManager createForked(@NotNull final String agentName) {
+    public ActorManager createForked(@NotNull final String agentName,
+                                     @NotNull final ClusterConfigFactory clusterConfigFactory) {
         checkNotNull(agentName);
+        checkNotNull(clusterConfigFactory);
 
-        return new ForkedActorManager(agentName, masterEndpoint);
+        return new ForkedActorManager(agentName, clusterConfigFactory);
     }
 
 }

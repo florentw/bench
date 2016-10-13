@@ -15,11 +15,14 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.typesafe.config.Config;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 
@@ -32,30 +35,42 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class JMSClusterClientFactory implements ClusterClientFactory {
 
-    private final JMSEndpoint endpoint;
+    private static final JMSEndpoint DUMMY_JMS_ENDPOINT = new JMSEndpoint("dummy", 1337);
+    private final JMSEndpoint serverEndpoint;
 
-    public JMSClusterClientFactory(@NotNull final JMSEndpoint endpoint) {
-        this.endpoint = checkNotNull(endpoint);
+    public JMSClusterClientFactory(@NotNull final Config clusterConfig) {
+        checkNotNull(clusterConfig);
+        this.serverEndpoint = new JMSEndpoint(clusterConfig);
     }
 
-    @Override
-    public Endpoint getEndpoint() {
-        return new JMSEndpoint("dummy", 1337);
+    @VisibleForTesting
+    JMSClusterClientFactory(@NotNull final JMSEndpoint serverEndpoint) {
+        this.serverEndpoint = checkNotNull(serverEndpoint);
+    }
+
+    public Endpoint getLocalEndpoint() {
+        return DUMMY_JMS_ENDPOINT;
     }
 
     @Override
     public AgentClusterClient createForAgent(@NotNull String agent) {
-        return new JMSAgentClusterClient(endpoint, checkNotNull(agent));
+        return new JMSAgentClusterClient(serverEndpoint, checkNotNull(agent));
     }
 
     @Override
     public ActorClusterClient createForActor(@NotNull ActorKey actor) {
-        return new JMSActorClusterClient(endpoint, checkNotNull(actor));
+        return new JMSActorClusterClient(serverEndpoint, checkNotNull(actor));
     }
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
-        return new JMSActorRegistryClusterClient(endpoint);
+        return new JMSActorRegistryClusterClient(serverEndpoint);
     }
+
+    @Override
+    public ClusterConfigFactory clusterConfigFactory() {
+        return new JMSClusterConfigFactory(serverEndpoint);
+    }
+
 }
 

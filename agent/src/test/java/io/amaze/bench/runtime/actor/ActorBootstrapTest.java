@@ -16,11 +16,14 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.util.Files;
+import io.amaze.bench.util.ClusterConfigs;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,8 +48,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class ActorBootstrapTest {
 
-    private static final String DUMMY_HOST = "dummyhost";
-    private static final String DUMMY_PORT = "1337";
     private static final String CONF_PREFIX = "actor";
     private static final String CONF_SUFFIX = ".json";
     private static final String DUMMY = "dummy";
@@ -63,7 +64,7 @@ public final class ActorBootstrapTest {
 
     @Before
     public void before() throws IOException, ValidationException {
-        ClusterClientFactory factory = new DummyClientFactory(null, client, actorRegistryClient);
+        ClusterClientFactory factory = new DummyClientFactory(null, client, actorRegistryClient, null);
         actorBootstrap = spy(new ActorBootstrap(factory));
     }
 
@@ -122,29 +123,46 @@ public final class ActorBootstrapTest {
     }
 
     @Test
-    public void main_reads_temporary_config_file_and_deletes() throws IOException, ValidationException {
-        File tmpConfigFile = folder.newFile();
-        Files.writeTo(tmpConfigFile, "{}");
+    public void main_reads_and_deletes_temporary_config_files() throws IOException, ValidationException {
+        File clusterConfigFile = writeClusterConfigFile();
+        File actorConfigFile = writeActorConfig();
 
         try {
-            ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+            ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
         } catch (ValidationException ignore) {
         }
 
-        assertThat(tmpConfigFile.exists(), is(false));
+        assertThat(clusterConfigFile.exists(), is(false));
+        assertThat(actorConfigFile.exists(), is(false));
     }
 
     @Test(expected = ValidationException.class)
     public void main_invalid_class_throws() throws IOException, ValidationException {
-        File tmpConfigFile = folder.newFile();
-        Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+        File actorConfigFile = writeActorConfig();
+        File clusterConfigFile = writeClusterConfigFile();
+
+        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
     }
 
-    @Test(expected = RuntimeException.class)
-    public void main_cluster_client_throws() throws IOException, ValidationException {
-        File tmpConfigFile = folder.newFile();
-        Files.writeTo(tmpConfigFile, TestActor.DUMMY_JSON_CONFIG);
-        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), TestActor.class.getName(), DUMMY_HOST, DUMMY_PORT, tmpConfigFile.getAbsolutePath()});
+    @Test(expected = ValidationException.class)
+    public void main_cluster_client_throws_ValidationException_on_invalid_config()
+            throws IOException, ValidationException {
+        File tmpConfigFile = writeActorConfig();
+        File clusterConfigFile = folder.newFile();
+
+        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), TestActor.class.getName(), clusterConfigFile.getAbsolutePath(), tmpConfigFile.getAbsolutePath()});
+    }
+
+    private File writeActorConfig() throws IOException {
+        File actorConfigFile = folder.newFile();
+        Files.writeTo(actorConfigFile, TestActor.DUMMY_JSON_CONFIG);
+        return actorConfigFile;
+    }
+
+    private File writeClusterConfigFile() throws IOException {
+        Config clusterConfig = ClusterConfigs.dummyClusterConfig();
+        File clusterConfigFile = folder.newFile();
+        Files.writeTo(clusterConfigFile, clusterConfig.root().render(ConfigRenderOptions.concise()));
+        return clusterConfigFile;
     }
 }

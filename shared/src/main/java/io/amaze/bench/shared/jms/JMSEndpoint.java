@@ -15,8 +15,12 @@
  */
 package io.amaze.bench.shared.jms;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.Endpoint;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -27,8 +31,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class JMSEndpoint implements Endpoint {
 
+    private static final String SERVER_HOST = "jms.server.host";
+    private static final String SERVER_PORT = "jms.server.port";
+
     private final String host;
     private final int port;
+
+    public JMSEndpoint(final Config clusterConfig) {
+        this(clusterConfig.getString(SERVER_HOST), //
+             clusterConfig.getInt(SERVER_PORT));
+    }
 
     public JMSEndpoint(final String host, final int port) {
         checkArgument(port > 0, "Port must be a non-zero positive integer.");
@@ -43,6 +55,13 @@ public final class JMSEndpoint implements Endpoint {
 
     public int getPort() {
         return port;
+    }
+
+    public Config toConfig() {
+        Map<String, Object> propertiesMap = new HashMap<>();
+        propertiesMap.put(SERVER_HOST, host);
+        propertiesMap.put(SERVER_PORT, port);
+        return ConfigFactory.parseMap(propertiesMap);
     }
 
     @Override

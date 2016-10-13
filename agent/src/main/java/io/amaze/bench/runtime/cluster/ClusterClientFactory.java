@@ -35,11 +35,12 @@ import javax.validation.constraints.NotNull;
  * @see AgentClusterClient
  * @see ActorClusterClient
  * @see ActorRegistryClusterClient
+ * @see ClusterConfigFactory
  */
 public interface ClusterClientFactory {
 
     @NotNull
-    Endpoint getEndpoint();
+    Endpoint getLocalEndpoint();
 
     @NotNull
     AgentClusterClient createForAgent(@NotNull String agent);
@@ -49,5 +50,8 @@ public interface ClusterClientFactory {
 
     @NotNull
     ActorRegistryClusterClient createForActorRegistry();
+
+    @NotNull
+    ClusterConfigFactory clusterConfigFactory();
 
 }

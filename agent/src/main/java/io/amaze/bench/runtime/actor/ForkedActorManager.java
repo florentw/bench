@@ -19,7 +19,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import io.amaze.bench.shared.jms.JMSEndpoint;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,19 +52,19 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     private static final Logger log = LogManager.getLogger();
 
     private static final String JAVA_CMD_PATH = File.separator + "bin" + File.separator + "java";
-    private static final String TMP_CONFIG_FILE_PREFIX = "actorKey-config";
-    private static final String TMP_CONFIG_FILE_SUFFIX = ".json";
+    private static final String TMP_CONFIG_PREFIX = "config-";
+    private static final String TMP_CONFIG_SUFFIX = ".json";
 
+    private final ClusterConfigFactory clusterConfigFactory;
     private final Map<ActorKey, ProcessWatchDogThread> processes = new HashMap<>();
     private final File localLogDir;
-    private final JMSEndpoint masterEndpoint;
 
     @VisibleForTesting
     ForkedActorManager(@NotNull final String agent,
-                       @NotNull final JMSEndpoint masterEndpoint,
+                       @NotNull final ClusterConfigFactory clusterConfigFactory,
                        @NotNull final File localLogDir) {
         super(agent);
-        this.masterEndpoint = checkNotNull(masterEndpoint);
+        this.clusterConfigFactory = checkNotNull(clusterConfigFactory);
         this.localLogDir = checkNotNull(localLogDir);
 
         boolean success = localLogDir.mkdir();
@@ -71,8 +73,8 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         }
     }
 
-    ForkedActorManager(@NotNull final String agent, @NotNull final JMSEndpoint masterEndpoint) {
-        this(agent, masterEndpoint, new File(LOG_DIRECTORY_NAME));
+    ForkedActorManager(@NotNull final String agent, @NotNull final ClusterConfigFactory clusterConfigFactory) {
+        this(agent, clusterConfigFactory, new File(LOG_DIRECTORY_NAME));
     }
 
     @NotNull
@@ -81,7 +83,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         checkNotNull(actorConfig);
 
         final ActorKey actor = actorConfig.getKey();
-        Process process = createActorProcess(actorConfig);
+        Process process = createActorProcess(actorConfig, clusterConfigFactory.clusterConfigFor(actor));
 
         ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor.getName(), process, this);
         watchDog.start();
@@ -123,16 +125,22 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         }
     }
 
-    private Process createActorProcess(final ActorConfig actorConfig) {
+    private Process createActorProcess(final ActorConfig actorConfig, final Config clusterConfig) {
         try {
-            File tempConfigFile = File.createTempFile(TMP_CONFIG_FILE_PREFIX, TMP_CONFIG_FILE_SUFFIX);
-            Files.writeTo(tempConfigFile, actorConfig.getActorJsonConfig());
+            File tempActorConfig = writeTmpFile(actorConfig.getActorJsonConfig());
+            File tempClusterConfig = writeTmpFile(clusterConfig.root().render(ConfigRenderOptions.concise()));
 
-            return forkProcess(actorConfig, tempConfigFile.getAbsolutePath());
+            return forkProcess(actorConfig, tempActorConfig.getAbsolutePath(), tempClusterConfig.getAbsolutePath());
 
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    private File writeTmpFile(final String actorJsonConfig) throws IOException {
+        File tempActorConfig = File.createTempFile(TMP_CONFIG_PREFIX, TMP_CONFIG_SUFFIX);
+        Files.writeTo(tempActorConfig, actorJsonConfig);
+        return tempActorConfig;
     }
 
     private void terminateProcess(final ProcessWatchDogThread thread) {
@@ -141,8 +149,9 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         joinUninterruptibly(thread);
     }
 
-    private Process forkProcess(@NotNull final ActorConfig actorConfig, @NotNull final String configFileName)
-            throws IOException {
+    private Process forkProcess(@NotNull final ActorConfig actorConfig,
+                                @NotNull final String actorConfigFile,
+                                @NotNull final String clusterConfigFile) throws IOException {
 
         String name = actorConfig.getKey().getName();
 
@@ -150,12 +159,11 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
                 JAVA_HOME.value() + JAVA_CMD_PATH, //
                 "-cp", //
                 JAVA_CLASS_PATH.value(), // Use the current classpath
-                ActorBootstrap.class.getName(),             // Main class
-                name,                                       // arg[0]
-                actorConfig.getClassName(),                 // arg[1]
-                masterEndpoint.getHost(),                   // arg[2]
-                Integer.toString(masterEndpoint.getPort()), // arg[3]
-                configFileName                              // arg[4]
+                ActorBootstrap.class.getName(), // Main class
+                name,                           // arg[0]
+                actorConfig.getClassName(),     // arg[1]
+                clusterConfigFile,              // arg[2]
+                actorConfigFile                 // arg[3]
         };
 
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";

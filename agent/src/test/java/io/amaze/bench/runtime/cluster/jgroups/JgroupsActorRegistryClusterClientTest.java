@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -164,7 +163,7 @@ public final class JgroupsActorRegistryClusterClientTest {
     }
 
     @Test
-    public void message_listener_forwards_actor_created() throws IOException, JMSException {
+    public void message_listener_forwards_actor_created() throws IOException {
         RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
 
         registryMessageListener.onMessage(message, created(DUMMY_ACTOR, DUMMY_AGENT, endpoint));
@@ -174,7 +173,7 @@ public final class JgroupsActorRegistryClusterClientTest {
     }
 
     @Test
-    public void message_listener_forwards_actor_initialized() throws IOException, JMSException {
+    public void message_listener_forwards_actor_initialized() throws IOException {
         RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
         ActorDeployInfo deployInfo = new ActorDeployInfo(10);
 
@@ -185,7 +184,7 @@ public final class JgroupsActorRegistryClusterClientTest {
     }
 
     @Test
-    public void message_listener_forwards_actor_failure() throws IOException, JMSException {
+    public void message_listener_forwards_actor_failure() throws IOException {
         RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
         Throwable throwable = new IllegalArgumentException();
 
@@ -196,7 +195,7 @@ public final class JgroupsActorRegistryClusterClientTest {
     }
 
     @Test
-    public void message_listener_forwards_actor_closed() throws IOException, JMSException {
+    public void message_listener_forwards_actor_closed() throws IOException {
         RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
 
         registryMessageListener.onMessage(message, closed(DUMMY_ACTOR));

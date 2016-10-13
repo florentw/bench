@@ -58,7 +58,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
                  @NotNull final ActorManagers actorManagers) {
 
         this.name = checkNotNull(name);
-        this.endpoint = clientFactory.getEndpoint();
+        this.endpoint = clientFactory.getLocalEndpoint();
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 
@@ -67,7 +67,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         log.info("{} Starting...", this);
 
         embeddedManager = actorManagers.createEmbedded(name, clientFactory);
-        forkedManager = actorManagers.createForked(name);
+        forkedManager = actorManagers.createForked(name, clientFactory.clusterConfigFactory());
 
         agentClient = clientFactory.createForAgent(name);
 
@@ -97,7 +97,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
             actors.put(actorKey, instance.get());
-            agentClient.sendToActorRegistry(created(actorKey, name, endpoint));
+            agentClient.sendToActorRegistry(created(actorKey, name, endpoint)); // TODO endpoint @init ?
         }
 
         log.info("{} Actor {} created.", this, actorKey);

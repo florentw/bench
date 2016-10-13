@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.leader.cluster.registry;
+package io.amaze.bench.runtime.cluster.registry;
 
-import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.runtime.agent.Agent;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 3/28/16.
+ * Facade to add a listener on {@link Agent} lifecycle events.
+ *
+ * @see AgentRegistryListener
  */
-public interface AgentRegistryListener {
+@FunctionalInterface
+public interface AgentRegistryClusterClient {
 
-    void onAgentRegistration(@NotNull AgentRegistrationMessage msg);
-
-    void onAgentSignOff(@NotNull String agent);
+    /**
+     * Register the given listeners to be plugged to the underlying message system.
+     * {@link AgentRegistryListener} instance will be notified of {@link Agent} related events.
+     *
+     * @param agentsListener Listener that will be called upon actors notifications.
+     */
+    void startRegistryListener(@NotNull AgentRegistryListener agentsListener);
 
 }

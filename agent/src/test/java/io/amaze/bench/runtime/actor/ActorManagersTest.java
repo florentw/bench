@@ -17,8 +17,8 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,12 +41,15 @@ public final class ActorManagersTest {
     @Mock
     private ClusterClientFactory clientFactory;
     @Mock
+    private ClusterConfigFactory configFactory;
+
+    @Mock
     private ActorRegistryClusterClient actorRegistryClient;
 
     @Before
     public void before() {
         doReturn(actorRegistryClient).when(clientFactory).createForActorRegistry();
-        actorManagers = new ActorManagers(new JMSEndpoint("noSuchHost", 1337));
+        actorManagers = new ActorManagers();
     }
 
     @Test
@@ -67,7 +70,7 @@ public final class ActorManagersTest {
 
     @Test
     public void can_supply_forked_manager() {
-        try (ActorManager forked = actorManagers.createForked(DUMMY_AGENT)) {
+        try (ActorManager forked = actorManagers.createForked(DUMMY_AGENT, configFactory)) {
             assertNotNull(forked);
             assertTrue(forked instanceof ForkedActorManager);
         }

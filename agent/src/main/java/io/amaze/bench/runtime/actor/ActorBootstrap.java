@@ -16,9 +16,12 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
+import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.jms.JMSClusterClientFactory;
-import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.runtime.cluster.ClusterClients;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,27 +56,26 @@ public class ActorBootstrap implements Closeable {
     public static void main(final String[] args) throws ValidationException, IOException {
         checkNotNull(args);
 
-        if (args.length != 5) {
+        if (args.length != 4) {
             log.error("Usage:");
             log.error("ActorBootstrap <actorName> <className> " + //
-                              "<jmsServerHost> <jmsServerPort> <temporaryConfigFile>");
+                              "<tmpClusterConfigFile> <tmpActorConfigFile>");
             throw new IllegalArgumentException();
         }
 
         ActorKey actorKey = new ActorKey(args[0]);
         String className = args[1];
-        String jmsServerHost = args[2];
-        int jmsServerPort = Integer.parseInt(args[3]);
-        String jsonTmpConfigFile = args[4];
+        String tmpClusterConfig = args[2];
+        String tmpActorConfig = args[3];
 
-        // Read and delete the temporary config file
-        String jsonConfig = Files.readAndDelete(jsonTmpConfigFile);
+        // Read and delete temporary config files
+        Config clusterConfig = parseClusterConfig(Files.readAndDelete(tmpClusterConfig));
+        String jsonActorConfig = Files.readAndDelete(tmpActorConfig);
 
-        JMSEndpoint serverEndpoint = new JMSEndpoint(jmsServerHost, jmsServerPort);
-        ClusterClientFactory clientFactory = new JMSClusterClientFactory(serverEndpoint);
+        ClusterClientFactory clientFactory = ClusterClients.newFactory(clusterConfig);
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
-        RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonConfig);
+        RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonActorConfig);
 
         installShutdownHook(actorBootstrap, actor);
     }
@@ -83,6 +85,14 @@ public class ActorBootstrap implements Closeable {
         ActorShutdownThread hook = new ActorShutdownThread(actorBootstrap, actor);
         Runtime.getRuntime().addShutdownHook(hook);
         return hook;
+    }
+
+    private static Config parseClusterConfig(@NotNull final String jsonConfig) throws ValidationException {
+        try {
+            return ConfigFactory.parseString(jsonConfig, Constants.CONFIG_PARSE_OPTIONS);
+        } catch (ConfigException e) {
+            throw ValidationException.create("Cluster configuration error for " + jsonConfig, e);
+        }
     }
 
     @Override

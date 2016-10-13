@@ -15,6 +15,9 @@
  */
 package io.amaze.bench.runtime.agent;
 
+import com.typesafe.config.ConfigParseOptions;
+import com.typesafe.config.ConfigSyntax;
+
 /**
  * Created on 3/5/16.
  */
@@ -28,6 +31,11 @@ public final class Constants {
     public static final String AGENTS_TOPIC = "agents";
 
     public static final String LOG_DIRECTORY_NAME = "logs";
+
+    public static final ConfigParseOptions CONFIG_PARSE_OPTIONS = //
+            ConfigParseOptions.defaults() //
+                    .setSyntax(ConfigSyntax.JSON) //
+                    .setAllowMissing(true);
 
     private Constants() {
         // Should not be instantiated

@@ -16,8 +16,8 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.leader.cluster.registry.AgentRegistry;
-import io.amaze.bench.leader.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;

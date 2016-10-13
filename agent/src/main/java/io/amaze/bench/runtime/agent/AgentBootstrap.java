@@ -18,10 +18,11 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.jms.JMSClusterClientFactory;
-import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.runtime.cluster.ClusterClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,25 +42,25 @@ public final class AgentBootstrap {
     }
 
     public static void main(final String[] args) {
-        if (args.length != 2) {
+        if (args.length != 1) {
             log.info("Usage:");
-            log.info("$ agent <jmsServerHost> <jmsServerPort>");
+            log.info("$ agent <configFile>");
             return;
         }
 
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
+        String configFileName = args[0];
 
-        JMSEndpoint masterEndpoint = new JMSEndpoint(host, port);
-        ClusterClientFactory clientFactory = new JMSClusterClientFactory(masterEndpoint);
+        File configFile = new File(configFileName);
+        AgentConfig agentConfig = new AgentConfig(configFile);
+        ClusterClientFactory clientFactory = ClusterClients.newFactory(agentConfig.clusterConfig());
 
-        Agent agent = createAgent(masterEndpoint, clientFactory);
+        Agent agent = createAgent(clientFactory);
         registerShutdownHook(agent);
     }
 
     @VisibleForTesting
-    static Agent createAgent(final JMSEndpoint masterEndpoint, final ClusterClientFactory clientFactory) {
-        return new Agent(clientFactory, new ActorManagers(masterEndpoint));
+    static Agent createAgent(final ClusterClientFactory clientFactory) {
+        return new Agent(clientFactory, new ActorManagers());
     }
 
     @VisibleForTesting

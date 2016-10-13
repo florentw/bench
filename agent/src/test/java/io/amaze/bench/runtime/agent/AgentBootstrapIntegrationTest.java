@@ -19,15 +19,19 @@ import com.google.common.base.Throwables;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.test.IntegrationTest;
-import io.amaze.bench.shared.test.JMSServerRule;
+import io.amaze.bench.shared.util.Files;
+import io.amaze.bench.util.AgentClusterRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -43,26 +47,30 @@ import static org.mockito.Mockito.*;
 public final class AgentBootstrapIntegrationTest {
 
     @Rule
-    public final JMSServerRule server = new JMSServerRule();
+    public final AgentClusterRule cluster = new AgentClusterRule();
+    @Rule
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private Thread agentBootstrapThread;
     private JMSClient client;
 
     @Before
-    public void before() throws JMSException {
+    public void before() throws JMSException, IOException {
+        AgentConfig agentConfig = cluster.agentConfig();
+        File configFile = temporaryFolder.newFile();
+        Files.writeTo(configFile, agentConfig.toJson());
         agentBootstrapThread = new Thread() {
             @Override
             public void run() {
                 try {
-                    AgentBootstrap.main(new String[]{server.getEndpoint().getHost(), //
-                            Integer.toString(server.getEndpoint().getPort())});
+                    AgentBootstrap.main(new String[]{configFile.getAbsolutePath()});
                 } catch (Exception e) {
                     Throwables.propagate(e);
                 }
             }
         };
 
-        client = server.createClient();
+        client = cluster.jmsServerRule().createClient();
     }
 
     @After
@@ -73,9 +81,6 @@ public final class AgentBootstrapIntegrationTest {
     @Test
     public void bootstrap_with_server() throws Exception {
         SyncListener listener = spy(new SyncListener());
-
-        server.getServer().createTopic(Constants.AGENT_REGISTRY_TOPIC);
-        server.getServer().createTopic(Constants.AGENTS_TOPIC);
 
         client.addTopicListener(Constants.AGENT_REGISTRY_TOPIC, listener);
         client.startListening();

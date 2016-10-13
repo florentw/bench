@@ -20,6 +20,7 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
@@ -40,6 +41,7 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     private final ActorRegistry actorRegistry;
     private final JChannel jChannel;
     private JgroupsActorRegistryClusterClient registryClusterClient;
+    private JgroupsClusterConfigFactory jgroupsClusterConfigFactory;
 
     public JgroupsClusterClientFactory(@NotNull JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
         this.jChannel = checkNotNull(jChannel);
@@ -51,6 +53,7 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
                                                                       jgroupsClusterMember.stateMultiplexer(),
                                                                       jgroupsClusterMember.viewMultiplexer(),
                                                                       actorRegistry);
+        jgroupsClusterConfigFactory = new JgroupsClusterConfigFactory();
     }
 
     /**
@@ -61,8 +64,7 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
     }
 
-    @Override
-    public Endpoint getEndpoint() {
+    public Endpoint getLocalEndpoint() {
         return new JgroupsEndpoint(jChannel.getAddress());
     }
 
@@ -82,4 +84,10 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     public ActorRegistryClusterClient createForActorRegistry() {
         return registryClusterClient;
     }
+
+    @Override
+    public ClusterConfigFactory clusterConfigFactory() {
+        return jgroupsClusterConfigFactory;
+    }
+
 }

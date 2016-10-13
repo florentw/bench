@@ -16,8 +16,8 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.leader.cluster.registry.AgentRegistry;
-import io.amaze.bench.leader.cluster.registry.RegisteredAgent;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
 import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentInputMessage;

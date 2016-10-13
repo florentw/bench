@@ -1,10 +1,7 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.api.After;
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.ActorInternal;
-import io.amaze.bench.runtime.actor.Actors;
-import io.amaze.bench.runtime.actor.TestActor;
+import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
 import org.jgroups.JChannel;
@@ -28,8 +25,7 @@ public final class JgroupsActorClusterTest {
     @Before
     public void init() throws Exception {
         jChannel = new JChannel("fast.xml");
-        ActorRegistry actorRegistry = new ActorRegistry();
-        clientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
+        clientFactory = new JgroupsClusterClientFactory(jChannel, new ActorRegistry());
         clientFactory.join();
 
         assertThat(jChannel.isConnected(), is(true));
@@ -54,6 +50,4 @@ public final class JgroupsActorClusterTest {
         clientFactory.join();
         jChannel.close();
     }
-
-
 }

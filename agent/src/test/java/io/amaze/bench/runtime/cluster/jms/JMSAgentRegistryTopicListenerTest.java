@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.leader.cluster.jms;
+package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.LifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
-import io.amaze.bench.leader.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;

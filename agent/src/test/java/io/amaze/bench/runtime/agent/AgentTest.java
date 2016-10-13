@@ -20,8 +20,8 @@ import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.test.Json;
 import org.junit.After;
 import org.junit.Before;
@@ -65,17 +65,19 @@ public final class AgentTest {
     private ManagedActor forkedManagedActor;
     @Mock
     private ActorRegistryClusterClient actorRegistryClient;
+    @Mock
+    private ClusterConfigFactory clusterConfigFactory;
 
     private Agent agent;
     private ClusterClientFactory clientFactory;
 
     @Before
     public void before() throws ValidationException {
-        clientFactory = new DummyClientFactory(agentClient, actorClient, actorRegistryClient);
+        clientFactory = new DummyClientFactory(agentClient, actorClient, actorRegistryClient, clusterConfigFactory);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);
-        when(actorManagers.createForked(anyString())).thenReturn(forkedManager);
+        when(actorManagers.createForked(anyString(), eq(clusterConfigFactory))).thenReturn(forkedManager);
         doReturn(embeddedManagedActor).when(embeddedManager).createActor(TestActor.DUMMY_CONFIG);
         doReturn(forkedManagedActor).when(forkedManager).createActor(TestActor.DUMMY_CONFIG);
 
@@ -97,7 +99,7 @@ public final class AgentTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(ActorManagers.class, new ActorManagers(new JMSEndpoint("dummy", 10)));
+        tester.setDefault(ActorManagers.class, new ActorManagers());
 
         tester.testAllPublicConstructors(Agent.class);
         tester.testAllPublicInstanceMethods(agent);
@@ -111,7 +113,7 @@ public final class AgentTest {
 
         // Check ActorManagers created
         verify(actorManagers).createEmbedded(agent.getName(), clientFactory);
-        verify(actorManagers).createForked(agent.getName());
+        verify(actorManagers).createForked(agent.getName(), clusterConfigFactory);
         verifyNoMoreInteractions(actorManagers);
 
         verifyNoMoreInteractions(agentClient);
