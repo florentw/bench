@@ -32,7 +32,7 @@ import static com.google.common.base.Throwables.propagate;
 /**
  * Created on 10/1/16.
  */
-public final class JgroupsSender {
+public class JgroupsSender {
 
     private final JChannel channel;
     private final ActorRegistry actorRegistry;

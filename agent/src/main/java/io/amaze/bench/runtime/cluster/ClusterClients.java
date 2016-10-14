@@ -1,6 +1,5 @@
 package io.amaze.bench.runtime.cluster;
 
-import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
 
 import javax.validation.constraints.NotNull;
@@ -8,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 10/10/16.
@@ -31,7 +31,7 @@ public final class ClusterClients {
                     ClusterClientFactory.class);
             return newFactory(factoryClass, factoryConfig);
         } catch (ClassNotFoundException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 
@@ -41,7 +41,7 @@ public final class ClusterClients {
             Constructor<? extends ClusterClientFactory> constructor = factoryClass.getConstructor(Config.class);
             return constructor.newInstance(clusterConfig);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-            throw Throwables.propagate(e);
+            throw propagate(e);
         }
     }
 

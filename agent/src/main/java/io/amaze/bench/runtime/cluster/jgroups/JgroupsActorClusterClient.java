@@ -45,6 +45,8 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
 
     @Override
     public void startActorListener(@NotNull final RuntimeActor actor) {
+        checkNotNull(actor);
+
         multiplexer.addListener(ActorInputMessage.class, (msg, input) -> {
             switch (input.getCommand()) { // NOSONAR
                 case INIT:
@@ -66,16 +68,23 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
 
     @Override
     public void sendMetrics(@NotNull final MetricValuesMessage message) {
+        checkNotNull(message);
+
         sender.broadcast(message);
     }
 
     @Override
     public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
+        checkNotNull(actorLifecycleMessage);
+
         sender.broadcast(actorLifecycleMessage);
     }
 
     @Override
     public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+        checkNotNull(to);
+        checkNotNull(message);
+
         sender.sendToActor(new ActorKey(to), message);
     }
 

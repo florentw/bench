@@ -31,8 +31,9 @@ import java.util.Set;
 
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -50,6 +51,8 @@ public final class AgentRegistryTest {
     private AgentRegistryListener clientListener;
     @Mock
     private Endpoint endpoint;
+    @Mock
+    private Endpoint anotherEndpoint;
 
     @Before
     public void before() {
@@ -104,19 +107,43 @@ public final class AgentRegistryTest {
     @Test
     public void agent_registered_signs_off() {
         clusterListener.onAgentRegistration(regMsg);
+
         clusterListener.onAgentSignOff(DUMMY_AGENT);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
         assertNull(agent);
-
         verify(clientListener).onAgentRegistration(regMsg);
         verify(clientListener).onAgentSignOff(DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
-    public void unknown_agent_signs_off() {
+    public void unknown_agent_signs_off_does_nothing() {
         clusterListener.onAgentSignOff(DUMMY_AGENT);
+
+        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
+        assertNull(agent);
+
+        verifyNoMoreInteractions(clientListener);
+    }
+
+    @Test
+    public void agent_failure_removes_it_and_propagates() {
+        Throwable throwable = new IllegalArgumentException();
+        clusterListener.onAgentRegistration(regMsg);
+
+        clusterListener.onAgentFailed(DUMMY_AGENT, throwable);
+
+        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
+        assertNull(agent);
+        verify(clientListener).onAgentRegistration(regMsg);
+        verify(clientListener).onAgentFailed(DUMMY_AGENT, throwable);
+        verifyNoMoreInteractions(clientListener);
+    }
+
+    @Test
+    public void unknown_agent_failure_does_nothing() {
+        clusterListener.onAgentFailed(DUMMY_AGENT, new IllegalArgumentException());
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
         assertNull(agent);
@@ -149,5 +176,28 @@ public final class AgentRegistryTest {
     public void remove_listener_twice_does_not_throw() {
         registry.removeListener(clientListener);
         registry.removeListener(clientListener);
+    }
+
+    @Test
+    public void agent_is_removed_when_endpoint_disconnects_and_listeners_are_notified() {
+        clusterListener.onAgentRegistration(regMsg);
+
+        registry.onEndpointDisconnected(endpoint);
+
+        assertNull(registry.byName(DUMMY_AGENT));
+        verify(clientListener).onAgentRegistration(regMsg);
+        verify(clientListener).onAgentFailed(eq(DUMMY_AGENT), any(AgentDisconnectedException.class));
+        verifyNoMoreInteractions(clientListener);
+    }
+
+    @Test
+    public void agent_is_not_removed_when_another_endpoint_disconnects() {
+        clusterListener.onAgentRegistration(regMsg);
+
+        registry.onEndpointDisconnected(anotherEndpoint);
+
+        assertNotNull(registry.byName(DUMMY_AGENT));
+        verify(clientListener).onAgentRegistration(regMsg);
+        verifyNoMoreInteractions(clientListener);
     }
 }
