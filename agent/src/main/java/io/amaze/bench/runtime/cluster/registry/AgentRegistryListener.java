@@ -28,4 +28,6 @@ public interface AgentRegistryListener {
 
     void onAgentSignOff(@NotNull String agent);
 
+    void onAgentFailed(@NotNull String agent, @NotNull Throwable throwable);
+
 }

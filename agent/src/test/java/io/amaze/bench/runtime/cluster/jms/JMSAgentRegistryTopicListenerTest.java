@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.LifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
@@ -44,6 +45,9 @@ public final class JMSAgentRegistryTopicListenerTest {
 
     @Mock
     private AgentRegistryListener agentRegistryListener;
+    @Mock
+    private Endpoint endpoint;
+
     private JMSAgentRegistryTopicListener messageListener;
 
     @Before
@@ -77,7 +81,7 @@ public final class JMSAgentRegistryTopicListenerTest {
 
     @Test
     public void agent_registered() throws IOException, JMSException {
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent");
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent", endpoint);
         BytesMessage msg = toBytesMessage(AgentLifecycleMessage.created(regMsg));
 
         messageListener.onMessage(msg);
@@ -87,12 +91,23 @@ public final class JMSAgentRegistryTopicListenerTest {
     }
 
     @Test
-    public void agent_signoff() throws IOException, JMSException {
+    public void agent_sign_off() throws IOException, JMSException {
         BytesMessage msg = toBytesMessage(AgentLifecycleMessage.closed(DUMMY_AGENT));
 
         messageListener.onMessage(msg);
 
         verify(agentRegistryListener).onAgentSignOff(DUMMY_AGENT);
+        verifyNoMoreInteractions(agentRegistryListener);
+    }
+
+    @Test
+    public void agent_fails() throws IOException, JMSException {
+        Throwable throwable = new IllegalArgumentException();
+        BytesMessage msg = toBytesMessage(AgentLifecycleMessage.failed(DUMMY_AGENT, throwable));
+
+        messageListener.onMessage(msg);
+
+        verify(agentRegistryListener).onAgentFailed(eq(DUMMY_AGENT), any(IllegalArgumentException.class));
         verifyNoMoreInteractions(agentRegistryListener);
     }
 

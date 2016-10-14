@@ -53,4 +53,14 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
         delegate.onAgentSignOff(agent);
     }
+
+    @Override
+    public void onAgentFailed(final String agent, final Throwable throwable) {
+        checkNotNull(agent);
+        checkNotNull(throwable);
+
+        log.info("Agent {} failed", agent, throwable);
+
+        delegate.onAgentFailed(agent, throwable);
+    }
 }

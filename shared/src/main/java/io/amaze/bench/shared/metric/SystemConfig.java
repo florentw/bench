@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -69,6 +70,27 @@ public final class SystemConfig implements Serializable {
 
     public String getMemoryJson() {
         return memoryJson;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hostName, operatingSystemJson, fileSystemJson, processorJson, memoryJson);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SystemConfig that = (SystemConfig) o;
+        return Objects.equals(hostName, that.hostName) && //
+                Objects.equals(operatingSystemJson, that.operatingSystemJson) && //
+                Objects.equals(fileSystemJson, that.fileSystemJson) && //
+                Objects.equals(processorJson, that.processorJson) && //
+                Objects.equals(memoryJson, that.memoryJson);
     }
 
     @Override

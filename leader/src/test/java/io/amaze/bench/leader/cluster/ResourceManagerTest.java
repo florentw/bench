@@ -16,12 +16,13 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.DeployConfig;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Before;
@@ -54,8 +55,12 @@ public final class ResourceManagerTest {
 
     private ResourceManager resourceManager;
     private AgentRegistry agentRegistry;
+
     @Mock
     private ResourceManagerClusterClient resourceManagerClusterClient;
+    @Mock
+    private Endpoint endpoint;
+
     private ActorConfig defaultActorConfig;
 
     @Before
@@ -185,14 +190,17 @@ public final class ResourceManagerTest {
     }
 
     private AgentRegistrationMessage registerAgentOnOurHost() {
-        AgentRegistrationMessage regMsgAgentOnPHost = AgentRegistrationMessage.create(DUMMY_AGENT);
+        AgentRegistrationMessage regMsgAgentOnPHost = AgentRegistrationMessage.create(DUMMY_AGENT, endpoint);
         agentRegistry.createClusterListener().onAgentRegistration(regMsgAgentOnPHost);
         return regMsgAgentOnPHost;
     }
 
     private AgentRegistrationMessage registerDummyAgentOnOtherHost(final String agentName) {
         SystemConfig sysInfoOtherHost = SystemConfig.createWithHostname(OTHER_HOST);
-        AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentName, sysInfoOtherHost, 0);
+        AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentName,
+                                                                                       sysInfoOtherHost,
+                                                                                       endpoint,
+                                                                                       0);
         agentRegistry.createClusterListener().onAgentRegistration(regMsgAgentOnOtherHost);
         return regMsgAgentOnOtherHost;
     }

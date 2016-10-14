@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,9 @@ public final class AgentRegistryListenerLoggerTest {
 
     @Mock
     private AgentRegistryListener delegateListener;
+    @Mock
+    private Endpoint endpoint;
+
     private AgentRegistryListenerLogger loggerListener;
 
     @Before
@@ -51,7 +55,7 @@ public final class AgentRegistryListenerLoggerTest {
 
     @Test
     public void agent_creation() {
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent");
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent", endpoint);
         loggerListener.onAgentRegistration(regMsg);
 
         verify(delegateListener).onAgentRegistration(regMsg);

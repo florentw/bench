@@ -18,12 +18,15 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.metric.SystemConfigs;
 import io.amaze.bench.shared.test.Json;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,14 +36,18 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created on 3/5/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class AgentRegistrationMessageTest {
 
     private static final String AGENT_NAME = "dummy-agent";
+
     private AgentRegistrationMessage msg;
+    private RegisteredActorTest.DummyEndpoint endpoint;
 
     @Before
     public void before() {
-        msg = AgentRegistrationMessage.create(AGENT_NAME);
+        endpoint = new RegisteredActorTest.DummyEndpoint("endpoint");
+        msg = AgentRegistrationMessage.create(AGENT_NAME, endpoint);
     }
 
     @Test
@@ -60,7 +67,7 @@ public final class AgentRegistrationMessageTest {
 
     @Test
     public void equality() {
-        AgentRegistrationMessage other = AgentRegistrationMessage.create("different");
+        AgentRegistrationMessage other = AgentRegistrationMessage.create("different", endpoint);
 
         new EqualsTester() //
                 .addEqualityGroup(msg, msg) //
@@ -77,6 +84,7 @@ public final class AgentRegistrationMessageTest {
 
         assertThat(received.getCreationTime(), is(msg.getCreationTime()));
         assertThat(received.getName(), is(msg.getName()));
+        assertThat(received.getEndpoint(), is(msg.getEndpoint()));
         assertNotNull(received.getSystemConfig());
     }
 

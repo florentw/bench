@@ -15,12 +15,16 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -72,6 +76,44 @@ public class AgentRegistry {
         return new AgentRegistryListenerLogger(new AgentLifecycleListener());
     }
 
+    public void resetState(@NotNull final Set<RegisteredAgent> initialAgents) {
+        checkNotNull(initialAgents);
+        synchronized (agents) {
+            agents.clear();
+            for (RegisteredAgent agent : initialAgents) {
+                agents.put(agent.getAgentName(), agent);
+            }
+        }
+    }
+
+    public void onEndpointDisconnected(final Endpoint endpoint) {
+        checkNotNull(endpoint);
+        List<String> agentsThatLeft = new ArrayList<>();
+        synchronized (agents) {
+            Predicate<RegisteredAgent> endpointFilter = agent -> agent.getEndpoint().equals(endpoint);
+            Stream<RegisteredAgent> filtered = agents.values().stream().filter(endpointFilter);
+            agentsThatLeft.addAll(filtered.map(RegisteredAgent::getAgentName).collect(Collectors.toList()));
+
+            if (!agentsThatLeft.isEmpty()) {
+                log.info("Detected agent disconnection for {}.", agentsThatLeft);
+                agentsThatLeft.forEach(agents::remove);
+            } else {
+                return;
+            }
+        }
+
+        // Notify listeners
+        for (AgentRegistryListener listener : listeners()) {
+            agentsThatLeft.forEach(agent -> listener.onAgentFailed(agent, new AgentDisconnectedException()));
+        }
+    }
+
+    private Set<AgentRegistryListener> listeners() {
+        synchronized (clientListeners) {
+            return new HashSet<>(clientListeners);
+        }
+    }
+
     private final class AgentLifecycleListener implements AgentRegistryListener {
 
         @Override
@@ -79,7 +121,8 @@ public class AgentRegistry {
             synchronized (agents) {
                 RegisteredAgent agent = new RegisteredAgent(msg.getName(),
                                                             msg.getSystemConfig(),
-                                                            msg.getCreationTime());
+                                                            msg.getCreationTime(),
+                                                            msg.getEndpoint());
                 agents.put(msg.getName(), agent);
             }
 
@@ -90,12 +133,8 @@ public class AgentRegistry {
 
         @Override
         public void onAgentSignOff(@NotNull final String agent) {
-            synchronized (agents) {
-                RegisteredAgent removed = agents.remove(agent);
-                if (removed == null) {
-                    log.warn("Attempt to remove unknown agent {}", agent);
-                    return;
-                }
+            if (!removeAgent(agent)) {
+                return;
             }
 
             for (AgentRegistryListener listener : listeners()) {
@@ -103,10 +142,26 @@ public class AgentRegistry {
             }
         }
 
-        private Set<AgentRegistryListener> listeners() {
-            synchronized (clientListeners) {
-                return new HashSet<>(clientListeners);
+        @Override
+        public void onAgentFailed(final String agent, final Throwable throwable) {
+            if (!removeAgent(agent)) {
+                return;
             }
+
+            for (AgentRegistryListener listener : listeners()) {
+                listener.onAgentFailed(agent, throwable);
+            }
+        }
+
+        private boolean removeAgent(final String agent) {
+            synchronized (agents) {
+                RegisteredAgent removed = agents.remove(agent);
+                if (removed == null) {
+                    log.warn("Attempt to remove unknown agent {}", agent);
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

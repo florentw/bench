@@ -16,7 +16,9 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
@@ -39,18 +42,20 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public final class AgentRegistryTest {
 
-    private static final AgentRegistrationMessage REG_MSG = AgentRegistrationMessage.create(DUMMY_AGENT);
-
+    private AgentRegistrationMessage regMsg;
     private AgentRegistry registry;
     private AgentRegistryListener clusterListener;
 
     @Mock
     private AgentRegistryListener clientListener;
+    @Mock
+    private Endpoint endpoint;
 
     @Before
     public void before() {
         registry = new AgentRegistry();
         clusterListener = registry.createClusterListener();
+        regMsg = AgentRegistrationMessage.create(DUMMY_AGENT, endpoint);
 
         registry.addListener(clientListener);
     }
@@ -69,27 +74,42 @@ public final class AgentRegistryTest {
     }
 
     @Test
+    public void resetState_overrides_current_view() {
+        clusterListener.onAgentRegistration(regMsg);
+        Set<RegisteredAgent> newAgentSet = new HashSet<>();
+        RegisteredAgent newAgent = new RegisteredAgent(DUMMY_AGENT,
+                                                       SystemConfig.createWithHostname("dummy"),
+                                                       0,
+                                                       endpoint);
+        newAgentSet.add(newAgent);
+
+        registry.resetState(newAgentSet);
+
+        assertThat(registry.all(), is(newAgentSet));
+    }
+
+    @Test
     public void agent_registered() {
-        clusterListener.onAgentRegistration(REG_MSG);
+        clusterListener.onAgentRegistration(regMsg);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
         assertThat(agent.getAgentName(), is(DUMMY_AGENT));
-        assertThat(agent.getSystemConfig(), is(REG_MSG.getSystemConfig()));
-        assertThat(agent.getCreationTime(), is(REG_MSG.getCreationTime()));
+        assertThat(agent.getSystemConfig(), is(regMsg.getSystemConfig()));
+        assertThat(agent.getCreationTime(), is(regMsg.getCreationTime()));
 
-        verify(clientListener).onAgentRegistration(REG_MSG);
+        verify(clientListener).onAgentRegistration(regMsg);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void agent_registered_signs_off() {
-        clusterListener.onAgentRegistration(REG_MSG);
+        clusterListener.onAgentRegistration(regMsg);
         clusterListener.onAgentSignOff(DUMMY_AGENT);
 
         RegisteredAgent agent = registry.byName(DUMMY_AGENT);
         assertNull(agent);
 
-        verify(clientListener).onAgentRegistration(REG_MSG);
+        verify(clientListener).onAgentRegistration(regMsg);
         verify(clientListener).onAgentSignOff(DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
@@ -106,7 +126,7 @@ public final class AgentRegistryTest {
 
     @Test
     public void list_all() {
-        clusterListener.onAgentRegistration(REG_MSG);
+        clusterListener.onAgentRegistration(regMsg);
 
         Set<RegisteredAgent> agents = registry.all();
 
@@ -120,7 +140,7 @@ public final class AgentRegistryTest {
     public void removed_listener_is_not_notified() {
         registry.removeListener(clientListener);
 
-        clusterListener.onAgentRegistration(REG_MSG);
+        clusterListener.onAgentRegistration(regMsg);
 
         verifyNoMoreInteractions(clientListener);
     }

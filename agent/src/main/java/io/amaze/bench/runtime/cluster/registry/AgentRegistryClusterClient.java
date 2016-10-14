@@ -18,14 +18,14 @@ package io.amaze.bench.runtime.cluster.registry;
 import io.amaze.bench.runtime.agent.Agent;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 
 /**
  * Facade to add a listener on {@link Agent} lifecycle events.
  *
  * @see AgentRegistryListener
  */
-@FunctionalInterface
-public interface AgentRegistryClusterClient {
+public interface AgentRegistryClusterClient extends Closeable {
 
     /**
      * Register the given listeners to be plugged to the underlying message system.
@@ -34,5 +34,8 @@ public interface AgentRegistryClusterClient {
      * @param agentsListener Listener that will be called upon actors notifications.
      */
     void startRegistryListener(@NotNull AgentRegistryListener agentsListener);
+
+    @Override
+    void close();
 
 }

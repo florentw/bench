@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.shared.metric;
 
+import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.test.Json;
@@ -37,7 +38,6 @@ public final class SystemConfigTest {
         NullPointerTester tester = new NullPointerTester();
 
         tester.testConstructors(SystemConfig.class, NullPointerTester.Visibility.PACKAGE);
-        tester.testAllPublicInstanceMethods(SystemConfigs.get());
     }
 
     @Test
@@ -51,6 +51,14 @@ public final class SystemConfigTest {
         assertThat(expected.getFileSystemJson(), is(actual.getFileSystemJson()));
         assertThat(expected.getProcessorJson(), is(actual.getProcessorJson()));
         assertThat(expected.toString(), is(actual.toString()));
+    }
+
+    @Test
+    public void equality() {
+        EqualsTester tester = new EqualsTester();
+        tester.addEqualityGroup(SystemConfigs.get(), SystemConfigs.get());
+
+        tester.testEquals();
     }
 
     @Test

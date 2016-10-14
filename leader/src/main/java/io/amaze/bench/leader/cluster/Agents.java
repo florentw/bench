@@ -16,12 +16,12 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.CountDownLatch;
@@ -68,6 +68,13 @@ public final class Agents {
 
     }
 
+    /**
+     * Is set when the agent fails.
+     */
+    public static final class AgentFailureException extends Exception {
+
+    }
+
     private final class WaitAgentRegistration implements AgentRegistryListener {
         private final String agentName;
         private final SettableFuture<Agent> future = SettableFuture.create();
@@ -98,6 +105,19 @@ public final class Agents {
 
             if (agentName.equals(agent.getName())) {
                 future.setException(new AgentSignOffException());
+                agentRegistry.removeListener(this);
+            }
+        }
+
+        @Override
+        public void onAgentFailed(@NotNull final String agent, @NotNull final Throwable throwable) {
+            checkNotNull(agentName);
+            checkNotNull(throwable);
+
+            awaitUninterruptibly(agentCreated);
+
+            if (agentName.equals(agent)) {
+                future.setException(new AgentFailureException());
                 agentRegistry.removeListener(this);
             }
         }

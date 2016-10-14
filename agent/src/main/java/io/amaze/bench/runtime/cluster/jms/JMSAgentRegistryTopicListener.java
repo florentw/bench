@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
@@ -76,9 +76,16 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
             case CLOSED:
                 onAgentSignOff(agentMsg);
                 break;
+            case FAILED:
+                onAgentFailure(agentMsg);
+                break;
             default:
                 break;
         }
+    }
+
+    private void onAgentFailure(final AgentLifecycleMessage received) {
+        agentsListener.onAgentFailed(received.getAgent(), received.getThrowable());
     }
 
     private void onAgentSignOff(final AgentLifecycleMessage received) {

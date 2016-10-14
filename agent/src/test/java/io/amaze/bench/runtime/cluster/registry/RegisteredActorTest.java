@@ -58,7 +58,7 @@ public final class RegisteredActorTest {
 
         private final String key;
 
-        DummyEndpoint(final String key) {
+        public DummyEndpoint(final String key) {
             this.key = key;
         }
 

@@ -16,14 +16,15 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,6 +68,8 @@ public final class AgentsTest {
     private AgentClusterClient agentClusterClient;
     @Mock
     private ClusterConfigFactory clusterConfigFactory;
+    @Mock
+    private Endpoint endpoint;
 
     private AgentRegistryListener agentRegistryListener;
 
@@ -76,6 +79,7 @@ public final class AgentsTest {
     public void createAgentsAndMockRegistry() {
         agents = new Agents(actorManagers, clusterClientFactory, agentRegistry);
         when(clusterClientFactory.createForAgent(AGENT_NAME)).thenReturn(agentClusterClient);
+        when(clusterClientFactory.getLocalEndpoint()).thenReturn(endpoint);
 
         doAnswer(invocation -> agentRegistryListener = (AgentRegistryListener) invocation.getArguments()[0]).when(
                 agentRegistry).addListener(any(AgentRegistryListener.class));
@@ -107,7 +111,7 @@ public final class AgentsTest {
     public void agent_is_returned_when_the_correct_agent_registers() throws ExecutionException, InterruptedException {
         Future<Agent> future = agents.create(AGENT_NAME);
 
-        agentRegistryListener.onAgentRegistration(AgentRegistrationMessage.create(AGENT_NAME));
+        agentRegistryListener.onAgentRegistration(AgentRegistrationMessage.create(AGENT_NAME, endpoint));
 
         Agent agent = getUninterruptibly(future);
         assertNotNull(agent);
@@ -124,7 +128,7 @@ public final class AgentsTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         Future<Agent> future = agents.create(AGENT_NAME);
 
-        agentRegistryListener.onAgentRegistration(AgentRegistrationMessage.create("dummy-agent"));
+        agentRegistryListener.onAgentRegistration(AgentRegistrationMessage.create("dummy-agent", endpoint));
 
         getUninterruptibly(future, FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
@@ -143,6 +147,24 @@ public final class AgentsTest {
 
         expectedException.expect(ExecutionException.class);
         expectedException.expectCause(instanceOf(Agents.AgentSignOffException.class));
+        getUninterruptibly(future, FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    public void agent_failure_sets_throwable()
+            throws ExecutionException, InterruptedException, TimeoutException {
+        Exception throwable = new IllegalArgumentException();
+        Future<Agent> future = agents.create(AGENT_NAME);
+
+        agentRegistryListener.onAgentFailed(AGENT_NAME, throwable);
+
+        InOrder inOrder = inOrder(agentRegistry);
+        inOrder.verify(agentRegistry).addListener(agentRegistryListener);
+        inOrder.verify(agentRegistry).removeListener(agentRegistryListener);
+        inOrder.verifyNoMoreInteractions();
+
+        expectedException.expect(ExecutionException.class);
+        expectedException.expectCause(instanceOf(Agents.AgentFailureException.class));
         getUninterruptibly(future, FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 

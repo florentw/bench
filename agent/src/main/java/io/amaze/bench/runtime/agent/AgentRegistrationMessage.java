@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.agent;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.metric.SystemConfigs;
 
@@ -31,26 +32,33 @@ public final class AgentRegistrationMessage implements Serializable {
 
     private final String name;
     private final SystemConfig systemConfig;
+    private final Endpoint endpoint;
     private final long creationTime;
 
     public AgentRegistrationMessage(@NotNull final String name,
                                     @NotNull final SystemConfig systemConfig,
+                                    @NotNull final Endpoint endpoint,
                                     final long creationTime) {
         this.name = checkNotNull(name);
         this.systemConfig = checkNotNull(systemConfig);
+        this.endpoint = checkNotNull(endpoint);
         this.creationTime = creationTime;
     }
 
-    public static AgentRegistrationMessage create(@NotNull final String name) {
+    public static AgentRegistrationMessage create(@NotNull final String name, @NotNull final Endpoint endpoint) {
         checkNotNull(name);
 
         SystemConfig systemConfig = SystemConfigs.get();
         long creationTime = System.currentTimeMillis();
-        return new AgentRegistrationMessage(name, systemConfig, creationTime);
+        return new AgentRegistrationMessage(name, systemConfig, endpoint, creationTime);
     }
 
     public String getName() {
         return name;
+    }
+
+    public Endpoint getEndpoint() {
+        return endpoint;
     }
 
     public long getCreationTime() {
@@ -83,6 +91,7 @@ public final class AgentRegistrationMessage implements Serializable {
         return "{\"AgentRegistrationMessage\":{" + //
                 "\"name\":\"" + name + "\"" + ", " + //
                 "\"systemConfig\":" + systemConfig + ", " + //
+                "\"endpoint\":" + endpoint + ", " + //
                 "\"creationTime\":\"" + creationTime + "\"" + "}}";
     }
 }

@@ -16,15 +16,10 @@
 package io.amaze.bench.leader.cluster;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
-import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
+import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;
@@ -175,6 +170,7 @@ public final class ResourceManagerAgentTest {
     private static final class AgentSync implements AgentRegistryListener {
         final CountDownLatch agentStarted = new CountDownLatch(1);
         final CountDownLatch agentClosed = new CountDownLatch(1);
+        final CountDownLatch agentFailed = new CountDownLatch(1);
 
         @Override
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
@@ -184,6 +180,11 @@ public final class ResourceManagerAgentTest {
         @Override
         public void onAgentSignOff(@NotNull final String agent) {
             agentClosed.countDown();
+        }
+
+        @Override
+        public void onAgentFailed(@NotNull final String agent, @NotNull final Throwable throwable) {
+            agentFailed.countDown();
         }
     }
 

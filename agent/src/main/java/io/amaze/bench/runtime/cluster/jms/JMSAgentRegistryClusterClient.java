@@ -50,4 +50,9 @@ public final class JMSAgentRegistryClusterClient implements AgentRegistryCluster
             throw propagate(e);
         }
     }
+
+    @Override
+    public void close() {
+        // Nothing to close
+    }
 }

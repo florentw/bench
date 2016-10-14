@@ -15,28 +15,34 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.shared.metric.SystemConfig;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/29/16.
  */
-public final class RegisteredAgent {
+public final class RegisteredAgent implements Serializable {
 
     private final String agentName;
     private final SystemConfig systemConfig;
+    private final Endpoint endpoint;
     private final long creationTime;
 
-    RegisteredAgent(@NotNull final String agentName,
-                    @NotNull final SystemConfig systemConfig,
-                    @NotNull final long creationTime) {
+    public RegisteredAgent(@NotNull final String agentName,
+                           @NotNull final SystemConfig systemConfig,
+                           @NotNull final long creationTime,
+                           @NotNull final Endpoint endpoint) {
 
         this.agentName = checkNotNull(agentName);
         this.systemConfig = checkNotNull(systemConfig);
         this.creationTime = checkNotNull(creationTime);
+        this.endpoint = checkNotNull(endpoint);
     }
 
     public String getAgentName() {
@@ -51,4 +57,36 @@ public final class RegisteredAgent {
         return creationTime;
     }
 
+    public Endpoint getEndpoint() {
+        return endpoint;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(agentName, systemConfig, endpoint, creationTime);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RegisteredAgent that = (RegisteredAgent) o;
+        return creationTime == that.creationTime && //
+                Objects.equals(agentName, that.agentName) && //
+                Objects.equals(systemConfig, that.systemConfig) && //
+                Objects.equals(endpoint, that.endpoint);
+    }
+
+    @Override
+    public String toString() {
+        return "{\"RegisteredAgent\":{" + //
+                "\"agentName\":\"" + agentName + "\"" + ", " + //
+                "\"systemConfig\":" + systemConfig + ", " + //
+                "\"endpoint\":" + endpoint + ", " + //
+                "\"creationTime\":\"" + creationTime + "\"" + "}}";
+    }
 }

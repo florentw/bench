@@ -62,7 +62,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(name);
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(name, endpoint);
 
         log.info("{} Starting...", this);
 

@@ -34,13 +34,16 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
     private final State state;
     private final String agent;
     private final AgentRegistrationMessage registrationMessage;
+    private final Throwable throwable;
 
     private AgentLifecycleMessage(@NotNull final State state,
                                   @NotNull final String agent,
-                                  final AgentRegistrationMessage registrationMessage) {
+                                  final AgentRegistrationMessage registrationMessage,
+                                  final Throwable throwable) {
         this.state = checkNotNull(state);
         this.agent = checkNotNull(agent);
         this.registrationMessage = registrationMessage;
+        this.throwable = throwable;
     }
 
     /**
@@ -51,7 +54,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      */
     public static AgentLifecycleMessage created(@NotNull final AgentRegistrationMessage registrationMessage) {
         checkNotNull(registrationMessage);
-        return new AgentLifecycleMessage(State.CREATED, registrationMessage.getName(), registrationMessage);
+        return new AgentLifecycleMessage(State.CREATED, registrationMessage.getName(), registrationMessage, null);
     }
 
     /**
@@ -62,7 +65,20 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      */
     public static AgentLifecycleMessage closed(@NotNull final String agent) {
         checkNotNull(agent);
-        return new AgentLifecycleMessage(State.CLOSED, agent, null);
+        return new AgentLifecycleMessage(State.CLOSED, agent, null, null);
+    }
+
+
+    /**
+     * Creates an instance of {@link AgentLifecycleMessage} to notify of the agent failure.
+     *
+     * @param agent The agent name.
+     * @return A non-{@code null} instance of {@link AgentLifecycleMessage}
+     */
+    public static AgentLifecycleMessage failed(@NotNull final String agent, @NotNull final Throwable throwable) {
+        checkNotNull(agent);
+        checkNotNull(throwable);
+        return new AgentLifecycleMessage(State.FAILED, agent, null, throwable);
     }
 
     /**
@@ -87,15 +103,21 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
         return agent;
     }
 
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
     /**
      * State that can be taken by agent:
      * <ul>
      * <li>CREATED: Started and notifies the cluster of its availability</li>
      * <li>CLOSED: Stopped and notifies the cluster of its unavailability</li>
+     * <li>CLOSED: Failed and notifies the cluster of its unavailability</li>
      * </ul>
      */
     public enum State {
         CREATED, //
-        CLOSED,
+        CLOSED, //
+        FAILED
     }
 }

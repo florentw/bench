@@ -17,9 +17,11 @@ package io.amaze.bench.runtime.agent;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.Endpoint;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static junit.framework.TestCase.assertNull;
@@ -33,6 +35,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class AgentLifecycleMessageTest {
 
     private static final String AGENT = "agent";
+
+    @Mock
+    private Endpoint endpoint;
+
     private AgentLifecycleMessage outputMessage;
 
     @Before
@@ -51,7 +57,7 @@ public final class AgentLifecycleMessageTest {
 
     @Test
     public void created_returns_instance_of_AgentLifecycleMessage() {
-        AgentRegistrationMessage registrationMessage = AgentRegistrationMessage.create(AGENT);
+        AgentRegistrationMessage registrationMessage = AgentRegistrationMessage.create(AGENT, endpoint);
         AgentLifecycleMessage message = AgentLifecycleMessage.created(registrationMessage);
 
         assertThat(message.getState(), is(AgentLifecycleMessage.State.CREATED));
@@ -75,6 +81,7 @@ public final class AgentLifecycleMessageTest {
         assertThat(received.getState(), is(outputMessage.getState()));
         assertThat(received.getAgent(), is(outputMessage.getAgent()));
         assertThat(received.getRegistrationMessage(), is(outputMessage.getRegistrationMessage()));
+        assertThat(received.getThrowable(), is(outputMessage.getThrowable()));
     }
 
 }
