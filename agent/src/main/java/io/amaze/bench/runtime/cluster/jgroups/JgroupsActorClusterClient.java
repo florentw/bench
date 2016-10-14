@@ -22,6 +22,7 @@ import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.message.Message;
+import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
@@ -47,23 +48,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     public void startActorListener(@NotNull final RuntimeActor actor) {
         checkNotNull(actor);
 
-        multiplexer.addListener(ActorInputMessage.class, (msg, input) -> {
-            switch (input.getCommand()) { // NOSONAR
-                case INIT:
-                    actor.init();
-                    break;
-                case CLOSE:
-                    actor.close();
-                    break;
-                case DUMP_METRICS:
-                    actor.dumpAndFlushMetrics();
-                    break;
-                case MESSAGE:
-                    actor.onMessage(input.getFrom(), input.getPayload());
-                    break;
-                default:
-            }
-        });
+        multiplexer.addListener(ActorInputMessage.class, new MessageListener(actor));
     }
 
     @Override
@@ -91,5 +76,34 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     @Override
     public void close() {
         multiplexer.removeListenerFor(ActorInputMessage.class);
+    }
+
+
+    static final class MessageListener implements JgroupsListener<ActorInputMessage> {
+
+        private final RuntimeActor actor;
+
+        MessageListener(final RuntimeActor actor) {
+            this.actor = actor;
+        }
+
+        @Override
+        public void onMessage(@NotNull final org.jgroups.Message msg, @NotNull final ActorInputMessage input) {
+            switch (input.getCommand()) {
+                case INIT:
+                    actor.init();
+                    break;
+                case CLOSE:
+                    actor.close();
+                    break;
+                case DUMP_METRICS:
+                    actor.dumpAndFlushMetrics();
+                    break;
+                case MESSAGE:
+                    actor.onMessage(input.getFrom(), input.getPayload());
+                    break;
+                default:
+            }
+        }
     }
 }

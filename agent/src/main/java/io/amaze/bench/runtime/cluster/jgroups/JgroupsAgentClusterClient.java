@@ -23,6 +23,7 @@ import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.message.Message;
+import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
@@ -49,23 +50,8 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
         checkNotNull(agent);
         checkNotNull(listener);
 
-        multiplexer.addListener(AgentInputMessage.class, (msg, inputMessage) -> {
-
-            // Process messages only if sent to myself (topic)
-            if (!inputMessage.getTargetAgent().equals(agent)) {
-                return;
-            }
-
-            switch (inputMessage.getAction()) { // NOSONAR
-                case CREATE_ACTOR:
-                    createActor(listener, inputMessage);
-                    break;
-                case CLOSE_ACTOR:
-                    closeActor(listener, inputMessage);
-                    break;
-                default:
-            }
-        });
+        MessageListener jgroupsListener = new MessageListener(agent, listener);
+        multiplexer.addListener(AgentInputMessage.class, jgroupsListener);
     }
 
     @Override
@@ -88,13 +74,41 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
         multiplexer.removeListenerFor(AgentInputMessage.class);
     }
 
-    private void closeActor(final AgentClientListener listener, final AgentInputMessage msg) {
-        ActorKey actor = msg.getActorToClose();
-        listener.onActorCloseRequest(actor);
-    }
+    static final class MessageListener implements JgroupsListener<AgentInputMessage> {
+        private final String agent;
+        private final AgentClientListener listener;
 
-    private void createActor(final AgentClientListener listener, final AgentInputMessage msg) {
-        ActorCreationRequest data = msg.getCreationRequest();
-        listener.onActorCreationRequest(data.getActorConfig());
+        MessageListener(final String agent, final AgentClientListener listener) {
+            this.agent = agent;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onMessage(@NotNull final org.jgroups.Message msg, @NotNull final AgentInputMessage inputMessage) {
+            // Process messages only if sent to myself (topic)
+            if (!inputMessage.getTargetAgent().equals(agent)) {
+                return;
+            }
+
+            switch (inputMessage.getAction()) { // NOSONAR
+                case CREATE_ACTOR:
+                    createActor(listener, inputMessage);
+                    break;
+                case CLOSE_ACTOR:
+                    closeActor(listener, inputMessage);
+                    break;
+                default:
+            }
+        }
+
+        private void createActor(final AgentClientListener listener, final AgentInputMessage msg) {
+            ActorCreationRequest data = msg.getCreationRequest();
+            listener.onActorCreationRequest(data.getActorConfig());
+        }
+
+        private void closeActor(final AgentClientListener listener, final AgentInputMessage msg) {
+            ActorKey actor = msg.getActorToClose();
+            listener.onActorCloseRequest(actor);
+        }
     }
 }
