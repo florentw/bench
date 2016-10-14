@@ -48,10 +48,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public final class ActorRegistryTest {
 
-    private static final ActorDeployInfo DEPLOY_INFO = new ActorDeployInfo(10);
+    private static final Endpoint ENDPOINT = new RegisteredActorTest.DummyEndpoint("key");
+    private static final ActorDeployInfo DEPLOY_INFO = new ActorDeployInfo(ENDPOINT, 10);
 
-    @Mock
-    private Endpoint endpoint;
     @Mock
     private Endpoint anotherEndpoint;
     @Mock
@@ -88,20 +87,20 @@ public final class ActorRegistryTest {
 
     @Test
     public void actor_registered() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
 
         assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getAgentHost(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.CREATED));
 
-        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void list_all() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         Set<RegisteredActor> actors = registry.all();
         assertThat(actors.size(), is(1));
@@ -113,9 +112,9 @@ public final class ActorRegistryTest {
 
     @Test
     public void resetState_overrides_current_view() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         Set<RegisteredActor> newActorSet = new HashSet<>();
-        RegisteredActor newActor = RegisteredActor.created(new ActorKey("dummy-new"), "agent", endpoint);
+        RegisteredActor newActor = RegisteredActor.created(new ActorKey("dummy-new"), "agent");
         newActorSet.add(newActor);
 
         registry.resetState(newActorSet);
@@ -125,7 +124,7 @@ public final class ActorRegistryTest {
 
     @Test
     public void actor_registered_and_initialized() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         clusterListener.onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
 
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
@@ -134,7 +133,7 @@ public final class ActorRegistryTest {
         assertThat(actor.getAgentHost(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.INITIALIZED));
 
-        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verify(clientListener).onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
         verifyNoMoreInteractions(clientListener);
     }
@@ -151,13 +150,13 @@ public final class ActorRegistryTest {
 
     @Test
     public void actor_registered_and_closed_is_removed() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         clusterListener.onActorClosed(DUMMY_ACTOR);
 
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
-        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verify(clientListener).onActorClosed(DUMMY_ACTOR);
         verifyNoMoreInteractions(clientListener);
     }
@@ -176,13 +175,13 @@ public final class ActorRegistryTest {
     public void actor_registered_and_failed_is_removed() {
         Throwable dummyThrowable = new IllegalArgumentException();
 
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         clusterListener.onActorFailed(DUMMY_ACTOR, dummyThrowable);
 
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
         assertNull(actor);
 
-        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verify(clientListener).onActorFailed(DUMMY_ACTOR, dummyThrowable);
         verifyNoMoreInteractions(clientListener);
     }
@@ -203,7 +202,7 @@ public final class ActorRegistryTest {
     public void removed_listener_not_notified() {
         registry.removeListener(clientListener);
 
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         verifyNoMoreInteractions(clientListener);
     }
@@ -213,31 +212,33 @@ public final class ActorRegistryTest {
         registry.removeListener(clientListener);
         registry.removeListener(clientListener);
 
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void actor_is_removed_when_endpoint_disconnects_and_listeners_are_notified() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        clusterListener.onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
 
-        registry.onEndpointDisconnected(endpoint);
+        registry.onEndpointDisconnected(ENDPOINT);
 
         assertNull(registry.byKey(DUMMY_ACTOR));
-        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verify(clientListener).onActorInitialized(DUMMY_ACTOR, DEPLOY_INFO);
         verify(clientListener).onActorFailed(eq(DUMMY_ACTOR), any(ActorDisconnectedException.class));
         verifyNoMoreInteractions(clientListener);
     }
 
     @Test
     public void actor_is_not_removed_when_another_endpoint_disconnects() {
-        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
         registry.onEndpointDisconnected(anotherEndpoint);
 
         assertNotNull(registry.byKey(DUMMY_ACTOR));
-        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(clientListener);
     }
 

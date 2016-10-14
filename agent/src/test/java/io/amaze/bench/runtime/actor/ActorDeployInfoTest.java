@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,9 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class ActorDeployInfoTest {
 
+    private static final RegisteredActorTest.DummyEndpoint DUMMY_ENDPOINT = new RegisteredActorTest.DummyEndpoint(
+            "endpoint");
+
     @Test
     public void serializable() {
         ActorDeployInfo expected = deployInfo();
@@ -43,7 +47,7 @@ public final class ActorDeployInfoTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void pid_should_be_greater_than_zero() {
-        new ActorDeployInfo(0);
+        new ActorDeployInfo(DUMMY_ENDPOINT, 0);
     }
 
     @Test
@@ -61,7 +65,7 @@ public final class ActorDeployInfoTest {
     }
 
     private ActorDeployInfo deployInfo() {
-        return new ActorDeployInfo(10);
+        return new ActorDeployInfo(DUMMY_ENDPOINT, 10);
     }
 
 }

@@ -19,6 +19,8 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.JChannel;
 import org.jgroups.util.Util;
 
@@ -33,6 +35,8 @@ import static com.google.common.base.Throwables.propagate;
  * Created on 10/1/16.
  */
 public class JgroupsSender {
+
+    private static final Logger log = LogManager.getLogger();
 
     private final JChannel channel;
     private final ActorRegistry actorRegistry;
@@ -58,12 +62,12 @@ public class JgroupsSender {
 
         // We need to resolve the endpoint using the actor's name first
         RegisteredActor registeredActor = actorRegistry.byKey(actor);
-        if (registeredActor == null) {
-            throw new NoSuchElementException("Cannot find " + actor + ".");
+        if (registeredActor == null || registeredActor.getDeployInfo() == null) {
+            throw new NoSuchElementException("Cannot find endpoint for " + actor + ".");
         }
 
         try {
-            JgroupsEndpoint endpoint = registeredActor.getEndpoint();
+            JgroupsEndpoint endpoint = registeredActor.getDeployInfo().getEndpoint();
             channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));
         } catch (Exception e) {
             throw propagate(e);

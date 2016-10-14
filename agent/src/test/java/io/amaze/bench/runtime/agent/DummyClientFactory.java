@@ -28,15 +28,18 @@ import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
  */
 public final class DummyClientFactory implements ClusterClientFactory {
 
+    private final Endpoint endpoint;
     private final AgentClusterClient agentClient;
     private final ActorClusterClient actorClient;
     private final ActorRegistryClusterClient actorRegistryClient;
     private final ClusterConfigFactory clusterConfigFactory;
 
-    public DummyClientFactory(final AgentClusterClient agentClient,
+    public DummyClientFactory(final Endpoint endpoint,
+                              final AgentClusterClient agentClient,
                               final ActorClusterClient actorClient,
                               final ActorRegistryClusterClient actorRegistryClient,
                               final ClusterConfigFactory clusterConfigFactory) {
+        this.endpoint = endpoint;
         this.agentClient = agentClient;
         this.actorClient = actorClient;
         this.actorRegistryClient = actorRegistryClient;
@@ -44,8 +47,7 @@ public final class DummyClientFactory implements ClusterClientFactory {
     }
 
     public Endpoint getLocalEndpoint() {
-        return new Endpoint() {
-        };
+        return endpoint;
     }
 
     @Override

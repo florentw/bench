@@ -30,7 +30,7 @@ public final class RegisteredActorTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorKey.class, ACTOR_KEY);
-        tester.setDefault(ActorDeployInfo.class, new ActorDeployInfo(10));
+        tester.setDefault(ActorDeployInfo.class, new ActorDeployInfo(endpoint, 10));
         tester.setDefault(RegisteredActor.class, registeredActor(ACTOR_KEY));
 
         tester.testAllPublicConstructors(RegisteredActor.class);
@@ -47,11 +47,10 @@ public final class RegisteredActorTest {
         assertThat(expected.getDeployInfo(), is(actual.getDeployInfo()));
         assertThat(expected.getKey(), is(actual.getKey()));
         assertThat(expected.getState(), is(actual.getState()));
-        assertThat(expected.getEndpoint(), is(actual.<Endpoint>getEndpoint()));
     }
 
     private RegisteredActor registeredActor(final ActorKey actorKey) {
-        return RegisteredActor.created(actorKey, "dummy", new DummyEndpoint("dummy"));
+        return RegisteredActor.created(actorKey, "dummy");
     }
 
     public static class DummyEndpoint implements Endpoint, Serializable {

@@ -2,6 +2,7 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
@@ -20,6 +21,8 @@ import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.runtime.cluster.registry.RegisteredActor.created;
+import static io.amaze.bench.runtime.cluster.registry.RegisteredActor.initialized;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -35,8 +38,8 @@ public final class JgroupsSenderTest {
     @Mock
     private ActorRegistry actorRegistry;
 
-    private JgroupsSender sender;
     private Endpoint endpoint;
+    private JgroupsSender sender;
     private Address address;
 
     @Before
@@ -65,7 +68,8 @@ public final class JgroupsSenderTest {
 
     @Test
     public void send_to_actor_resolves_endpoint_through_registry_and_sends() throws Exception {
-        when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(RegisteredActor.created(DUMMY_ACTOR, "agent", endpoint));
+        RegisteredActor agent = created(DUMMY_ACTOR, "agent");
+        when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(initialized(agent, new ActorDeployInfo(endpoint, 10)));
 
         sender.sendToActor(DUMMY_ACTOR, "hello");
 
@@ -77,5 +81,13 @@ public final class JgroupsSenderTest {
     public void sending_to_unknown_actor_throws_NoSuchElementException() {
         sender.sendToActor(DUMMY_ACTOR, "hello");
     }
+
+    @Test(expected = NoSuchElementException.class)
+    public void sending_to_uninitialized_actor_throws_NoSuchElementException() {
+        when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(created(DUMMY_ACTOR, "agent"));
+
+        sender.sendToActor(DUMMY_ACTOR, "hello");
+    }
+
 
 }

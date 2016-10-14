@@ -16,11 +16,12 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
+import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
@@ -78,5 +79,10 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
         } catch (JMSException e) {
             throw propagate(e);
         }
+    }
+
+    @Override
+    public Endpoint getLocalEndpoint() {
+        return new JMSEndpoint("dummy", 1337);
     }
 }

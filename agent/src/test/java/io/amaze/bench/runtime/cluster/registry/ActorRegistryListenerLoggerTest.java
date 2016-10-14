@@ -51,7 +51,7 @@ public final class ActorRegistryListenerLoggerTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(ActorDeployInfo.class, new ActorDeployInfo(10));
+        tester.setDefault(ActorDeployInfo.class, new ActorDeployInfo(endpoint, 10));
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(ActorRegistryListenerLogger.class);
@@ -60,15 +60,15 @@ public final class ActorRegistryListenerLoggerTest {
 
     @Test
     public void actor_created() {
-        loggerListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        loggerListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 
-        verify(delegateListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(delegateListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(delegateListener);
     }
 
     @Test
     public void actor_started() {
-        ActorDeployInfo deployInfo = new ActorDeployInfo(10);
+        ActorDeployInfo deployInfo = new ActorDeployInfo(endpoint, 10);
         loggerListener.onActorInitialized(DUMMY_ACTOR, deployInfo);
 
         verify(delegateListener).onActorInitialized(DUMMY_ACTOR, deployInfo);

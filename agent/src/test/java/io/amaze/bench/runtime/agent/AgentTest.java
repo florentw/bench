@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.agent;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
@@ -67,13 +68,15 @@ public final class AgentTest {
     private ActorRegistryClusterClient actorRegistryClient;
     @Mock
     private ClusterConfigFactory clusterConfigFactory;
+    @Mock
+    private Endpoint localEndpoint;
 
     private Agent agent;
     private ClusterClientFactory clientFactory;
 
     @Before
     public void before() throws ValidationException {
-        clientFactory = new DummyClientFactory(agentClient, actorClient, actorRegistryClient, clusterConfigFactory);
+        clientFactory = new DummyClientFactory(localEndpoint, agentClient, actorClient, actorRegistryClient, clusterConfigFactory);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);

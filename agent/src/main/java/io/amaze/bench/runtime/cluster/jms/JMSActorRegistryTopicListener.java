@@ -74,7 +74,7 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
 
         switch (lfMsg.getState()) {
             case CREATED:
-                actorsListener.onActorCreated(actor, lfMsg.getAgent(), lfMsg.getEndpoint());
+                actorsListener.onActorCreated(actor, lfMsg.getAgent());
                 break;
             case INITIALIZED:
                 actorsListener.onActorInitialized(actor, lfMsg.getDeployInfo());

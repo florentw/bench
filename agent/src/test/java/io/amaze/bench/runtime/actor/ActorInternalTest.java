@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.runtime.actor.metric.MetricValue;
@@ -63,10 +64,13 @@ public final class ActorInternalTest {
     private ActorClusterClient actorClient;
     @Mock
     private ActorRegistryClusterClient actorRegistryClient;
+    @Mock
+    private Endpoint localEndpoint;
 
     @Before
     public void before() {
-        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient, null);
+        doReturn(localEndpoint).when(actorClient).getLocalEndpoint();
+        clientFactory = new DummyClientFactory(localEndpoint, null, actorClient, actorRegistryClient, null);
         factory = new Actors(clientFactory);
     }
 
@@ -98,7 +102,6 @@ public final class ActorInternalTest {
             assertThat(((TestActor) actor.getInstance()).isBeforeCalled(), is(true));
 
             verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
-            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -145,7 +148,6 @@ public final class ActorInternalTest {
             actor.init();
 
             verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
-            verifyNoMoreInteractions(actorClient);
         }
     }
 
@@ -267,7 +269,7 @@ public final class ActorInternalTest {
 
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
-        clientFactory = new DummyClientFactory(null, actorClient, actorRegistryClient, null);
+        clientFactory = new DummyClientFactory(null, null, actorClient, actorRegistryClient, null);
         factory = new Actors(clientFactory);
         doThrow(new RuntimeException()).when(actorClient).close();
         ActorInternal actor = defaultTestActor();

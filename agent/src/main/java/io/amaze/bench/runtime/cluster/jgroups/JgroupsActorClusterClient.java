@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
@@ -35,11 +36,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class JgroupsActorClusterClient implements ActorClusterClient {
 
+    private final Endpoint localEndpoint;
     private final JgroupsListenerMultiplexer multiplexer;
     private final JgroupsSender sender;
 
-    JgroupsActorClusterClient(@NotNull final JgroupsListenerMultiplexer multiplexer,
+    JgroupsActorClusterClient(@NotNull final Endpoint localEndpoint,
+                              @NotNull final JgroupsListenerMultiplexer multiplexer,
                               @NotNull final JgroupsSender sender) {
+
+        this.localEndpoint = localEndpoint;
         this.multiplexer = checkNotNull(multiplexer);
         this.sender = checkNotNull(sender);
     }
@@ -56,6 +61,11 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
         checkNotNull(message);
 
         sender.broadcast(message);
+    }
+
+    @Override
+    public Endpoint getLocalEndpoint() {
+        return localEndpoint;
     }
 
     @Override

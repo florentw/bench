@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.leader.cluster;
 
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
@@ -195,7 +194,7 @@ public final class ResourceManagerAgentTest {
         private final CountDownLatch actorClosed = new CountDownLatch(1);
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent, final Endpoint endpoint) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
             actorCreated.countDown();
         }
 

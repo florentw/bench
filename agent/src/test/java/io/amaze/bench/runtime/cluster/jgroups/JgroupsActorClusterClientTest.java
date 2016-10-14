@@ -1,6 +1,7 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
@@ -32,13 +33,15 @@ public final class JgroupsActorClusterClientTest {
     @Mock
     private JgroupsSender jgroupsSender;
     @Mock
+    private Endpoint endpoint;
+    @Mock
     private RuntimeActor runtimeActor;
 
     private JgroupsActorClusterClient clusterClient;
 
     @Before
     public void init() {
-        clusterClient = new JgroupsActorClusterClient(listenerMultiplexer, jgroupsSender);
+        clusterClient = new JgroupsActorClusterClient(endpoint, listenerMultiplexer, jgroupsSender);
     }
 
     @Test

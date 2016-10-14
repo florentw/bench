@@ -153,7 +153,7 @@ public final class ActorsTest {
     public void actorCreation_is_set_when_actor_created() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_NAME, endpoint);
+        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_NAME);
 
         ActorConfig actual = getUninterruptibly(actorHandle.actorCreation());
         assertSame(actual, actorConfig);
@@ -164,7 +164,7 @@ public final class ActorsTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(OTHER_ACTOR, AGENT_NAME, endpoint);
+        actorRegistryListener.onActorCreated(OTHER_ACTOR, AGENT_NAME);
 
         getUninterruptibly(actorHandle.actorCreation(), FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
@@ -173,7 +173,7 @@ public final class ActorsTest {
     public void actorInitialization_is_set_when_actor_initializes() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        ActorDeployInfo expected = new ActorDeployInfo(10);
+        ActorDeployInfo expected = new ActorDeployInfo(endpoint, 10);
         actorRegistryListener.onActorInitialized(ACTOR_KEY, expected);
 
         ActorDeployInfo actual = getUninterruptibly(actorHandle.actorInitialization());
@@ -185,7 +185,7 @@ public final class ActorsTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        ActorDeployInfo expected = new ActorDeployInfo(10);
+        ActorDeployInfo expected = new ActorDeployInfo(endpoint, 10);
         actorRegistryListener.onActorInitialized(OTHER_ACTOR, expected);
 
         getUninterruptibly(actorHandle.actorInitialization(), FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);

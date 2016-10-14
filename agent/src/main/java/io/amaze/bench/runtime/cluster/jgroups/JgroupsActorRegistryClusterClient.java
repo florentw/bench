@@ -44,10 +44,10 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
     private final ActorRegistry actorRegistry;
     private JgroupsViewListener viewListener;
 
-    public JgroupsActorRegistryClusterClient(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
-                                             @NotNull final JgroupsStateMultiplexer stateMultiplexer,
-                                             @NotNull final JgroupsViewMultiplexer viewMultiplexer,
-                                             @NotNull final ActorRegistry actorRegistry) {
+    JgroupsActorRegistryClusterClient(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
+                                      @NotNull final JgroupsStateMultiplexer stateMultiplexer,
+                                      @NotNull final JgroupsViewMultiplexer viewMultiplexer,
+                                      @NotNull final ActorRegistry actorRegistry) {
 
         this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
         this.stateMultiplexer = checkNotNull(stateMultiplexer);
@@ -103,7 +103,7 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
 
             switch (lfMsg.getState()) {
                 case CREATED:
-                    actorsListener.onActorCreated(actor, lfMsg.getAgent(), lfMsg.getEndpoint());
+                    actorsListener.onActorCreated(actor, lfMsg.getAgent());
                     break;
                 case INITIALIZED:
                     actorsListener.onActorInitialized(actor, lfMsg.getDeployInfo());

@@ -16,7 +16,6 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
@@ -114,7 +113,7 @@ public final class Actors {
         }
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent, final Endpoint endpoint) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
             if (key.equals(config.getKey())) {
                 handle.actorCreated.set(config);
             }

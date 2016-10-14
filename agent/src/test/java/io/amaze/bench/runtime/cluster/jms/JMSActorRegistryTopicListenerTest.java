@@ -84,17 +84,17 @@ public final class JMSActorRegistryTopicListenerTest {
 
     @Test
     public void actor_created() throws IOException, JMSException {
-        BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT, endpoint));
+        BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT));
 
         messageListener.onMessage(msg);
 
-        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
     public void actor_initialized() throws IOException, JMSException {
-        ActorDeployInfo deployInfo = new ActorDeployInfo(10);
+        ActorDeployInfo deployInfo = new ActorDeployInfo(endpoint, 10);
         BytesMessage msg = toBytesMessage(initialized(DUMMY_ACTOR, deployInfo));
 
         messageListener.onMessage(msg);

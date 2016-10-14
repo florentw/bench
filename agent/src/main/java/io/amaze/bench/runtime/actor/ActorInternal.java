@@ -186,7 +186,7 @@ public class ActorInternal implements RuntimeActor {
 
     private ActorDeployInfo deployInfo() {
         int pid = new SystemInfo().getOperatingSystem().getProcessId();
-        return new ActorDeployInfo(pid);
+        return new ActorDeployInfo(client.getLocalEndpoint(), pid);
     }
 
     private boolean tryToCallAfterMethod() {

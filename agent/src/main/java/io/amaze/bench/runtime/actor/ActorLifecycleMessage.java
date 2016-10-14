@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.runtime.actor;
 
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.LifecycleMessage;
 
 import javax.validation.constraints.NotNull;
@@ -31,32 +30,27 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
     private final ActorKey actor;
     private final State state;
     private final String agent;
-    private final Endpoint endpoint;
     private final ActorDeployInfo deployInfo;
     private final Throwable throwable;
 
     private ActorLifecycleMessage(@NotNull final State state,
                                   @NotNull final ActorKey actor,
                                   final String agent,
-                                  final Endpoint endpoint,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {
         this.actor = checkNotNull(actor);
         this.state = checkNotNull(state);
         this.agent = agent;
-        this.endpoint = endpoint;
         this.deployInfo = deployInfo;
         this.throwable = throwable;
     }
 
     public static ActorLifecycleMessage created(@NotNull final ActorKey actor,
-                                                @NotNull final String agent,
-                                                @NotNull final Endpoint endpoint) {
+                                                @NotNull final String agent) {
         checkNotNull(actor);
         checkNotNull(agent);
-        checkNotNull(endpoint);
 
-        return new ActorLifecycleMessage(State.CREATED, actor, agent, endpoint, null, null);
+        return new ActorLifecycleMessage(State.CREATED, actor, agent, null, null);
     }
 
     public static ActorLifecycleMessage initialized(@NotNull final ActorKey actor,
@@ -64,20 +58,20 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
         checkNotNull(actor);
         checkNotNull(deployInfo);
 
-        return new ActorLifecycleMessage(State.INITIALIZED, actor, null, null, deployInfo, null);
+        return new ActorLifecycleMessage(State.INITIALIZED, actor, null, deployInfo, null);
     }
 
     public static ActorLifecycleMessage failed(@NotNull final ActorKey actor, @NotNull final Throwable throwable) {
         checkNotNull(actor);
         checkNotNull(throwable);
 
-        return new ActorLifecycleMessage(State.FAILED, actor, null, null, null, throwable);
+        return new ActorLifecycleMessage(State.FAILED, actor, null, null, throwable);
     }
 
     public static ActorLifecycleMessage closed(@NotNull final ActorKey actor) {
         checkNotNull(actor);
 
-        return new ActorLifecycleMessage(State.CLOSED, actor, null, null, null, null);
+        return new ActorLifecycleMessage(State.CLOSED, actor, null, null, null);
     }
 
     @NotNull
@@ -100,10 +94,6 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
 
     public Throwable getThrowable() {
         return throwable;
-    }
-
-    public Endpoint getEndpoint() {
-        return endpoint;
     }
 
     @Override

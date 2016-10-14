@@ -16,10 +16,14 @@
 package io.amaze.bench.runtime.actor;
 
 
+import io.amaze.bench.Endpoint;
+
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 9/17/16.
@@ -27,10 +31,17 @@ import static com.google.common.base.Preconditions.checkArgument;
 public final class ActorDeployInfo implements Serializable {
 
     private final int pid;
+    private final Endpoint endpoint;
 
-    public ActorDeployInfo(final int pid) {
+    public ActorDeployInfo(@NotNull final Endpoint endpoint, final int pid) {
+        this.endpoint = checkNotNull(endpoint);
         checkArgument(pid > 0, "Invalid pid " + pid);
         this.pid = pid;
+    }
+
+    @NotNull
+    public <T extends Endpoint> T getEndpoint() {
+        return (T) endpoint;
     }
 
     public int getPid() {
@@ -56,6 +67,8 @@ public final class ActorDeployInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "{\"ActorDeployInfo\":{" + "\"pid\":\"" + pid + "\"" + "}}";
+        return "{\"ActorDeployInfo\":{" +  //
+                "\"pid\":\"" + pid + "\"" + ", " + //
+                "\"endpoint\":" + endpoint + "}}";
     }
 }

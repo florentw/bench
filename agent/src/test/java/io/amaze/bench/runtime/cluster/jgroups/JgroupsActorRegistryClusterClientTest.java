@@ -166,16 +166,16 @@ public final class JgroupsActorRegistryClusterClientTest {
     public void message_listener_forwards_actor_created() throws IOException {
         RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
 
-        registryMessageListener.onMessage(message, created(DUMMY_ACTOR, DUMMY_AGENT, endpoint));
+        registryMessageListener.onMessage(message, created(DUMMY_ACTOR, DUMMY_AGENT));
 
-        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT, endpoint);
+        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 
     @Test
     public void message_listener_forwards_actor_initialized() throws IOException {
         RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
-        ActorDeployInfo deployInfo = new ActorDeployInfo(10);
+        ActorDeployInfo deployInfo = new ActorDeployInfo(endpoint, 10);
 
         registryMessageListener.onMessage(message, initialized(DUMMY_ACTOR, deployInfo));
 
@@ -206,7 +206,7 @@ public final class JgroupsActorRegistryClusterClientTest {
 
     private Set<RegisteredActor> registeredActors() {
         Set<RegisteredActor> registeredActors = new HashSet<>();
-        registeredActors.add(RegisteredActor.created(DUMMY_ACTOR, "agent", mock(Endpoint.class)));
+        registeredActors.add(RegisteredActor.created(DUMMY_ACTOR, "agent"));
         return registeredActors;
     }
 }

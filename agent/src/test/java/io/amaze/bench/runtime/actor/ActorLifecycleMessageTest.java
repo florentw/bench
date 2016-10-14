@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,9 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class ActorLifecycleMessageTest {
 
-    private static final ActorDeployInfo ACTOR_DEPLOY_INFO = new ActorDeployInfo(10);
+    private static final RegisteredActorTest.DummyEndpoint DUMMY_ENDPOINT = new RegisteredActorTest.DummyEndpoint(
+            "endpoint");
+    private static final ActorDeployInfo ACTOR_DEPLOY_INFO = new ActorDeployInfo(DUMMY_ENDPOINT, 10);
     private static final ActorKey ACTOR_KEY = new ActorKey("actor");
 
     private ActorLifecycleMessage msg;

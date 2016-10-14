@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster;
 
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 
@@ -38,5 +39,10 @@ public interface ActorClusterClient extends ClusterClient {
      * @param message Payload to send
      */
     void sendMetrics(@NotNull final MetricValuesMessage message);
+
+    /**
+     * @return Local endpoint to be used by the cluster layer to discuss with this actor.
+     */
+    Endpoint getLocalEndpoint();
 
 }

@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 import org.apache.logging.log4j.LogManager;
@@ -40,15 +39,13 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorCreated(@NotNull final ActorKey key,
-                               @NotNull final String agent,
-                               @NotNull final Endpoint endpoint) {
+                               @NotNull final String agent) {
         checkNotNull(key);
         checkNotNull(agent);
-        checkNotNull(endpoint);
 
         log.info("Create actor {} by agent {}", key, agent);
 
-        delegate.onActorCreated(key, agent, endpoint);
+        delegate.onActorCreated(key, agent);
     }
 
     @Override

@@ -23,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -115,9 +114,13 @@ public class ActorRegistry {
 
         List<ActorKey> actorsThatLeft = new ArrayList<>();
         synchronized (actors) {
-            Predicate<RegisteredActor> endpointFilter = actor -> actor.getEndpoint().equals(endpoint);
-            Stream<RegisteredActor> filteredOnEndpoint = actors.values().stream().filter(endpointFilter);
-            actorsThatLeft.addAll(filteredOnEndpoint.map(RegisteredActor::getKey).collect(Collectors.toList()));
+            Stream<RegisteredActor> filteredOnEndpoint = actors.values().stream().filter(actor -> {
+                ActorDeployInfo deployInfo = actor.getDeployInfo();
+                return deployInfo != null && //
+                        deployInfo.getEndpoint().equals(endpoint);
+            });
+            List<ActorKey> collect = filteredOnEndpoint.map(RegisteredActor::getKey).collect(Collectors.toList());
+            actorsThatLeft.addAll(collect);
 
             if (!actorsThatLeft.isEmpty()) {
                 log.info("Detected actor disconnection for {}.", actorsThatLeft);
@@ -147,16 +150,14 @@ public class ActorRegistry {
     private final class ActorRegistryListenerState implements ActorRegistryListener {
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key,
-                                   @NotNull final String agent,
-                                   @NotNull final Endpoint endpoint) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
             synchronized (actors) {
-                actors.put(key, RegisteredActor.created(key, agent, endpoint));
+                actors.put(key, RegisteredActor.created(key, agent));
             }
 
             // Notify listeners
             for (ActorRegistryListener listener : listeners()) {
-                listener.onActorCreated(key, agent, endpoint);
+                listener.onActorCreated(key, agent);
             }
         }
 

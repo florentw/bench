@@ -77,7 +77,9 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     @Override
     public ActorClusterClient createForActor(@NotNull final ActorKey actor) {
         checkNotNull(actor);
-        return new JgroupsActorClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender);
+        return new JgroupsActorClusterClient(getLocalEndpoint(),
+                                             jgroupsClusterMember.listenerMultiplexer(),
+                                             jgroupsSender);
     }
 
     @Override
