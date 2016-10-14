@@ -78,7 +78,6 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
         multiplexer.removeListenerFor(ActorInputMessage.class);
     }
 
-
     static final class MessageListener implements JgroupsListener<ActorInputMessage> {
 
         private final RuntimeActor actor;

@@ -52,6 +52,7 @@ public class JgroupsListenerMultiplexer {
 
     public void dispatch(final Message msg) {
         checkNotNull(msg);
+
         Optional<JgroupsListener> targetListener = listenerFor(msg);
         if (!targetListener.isPresent()) {
             return;

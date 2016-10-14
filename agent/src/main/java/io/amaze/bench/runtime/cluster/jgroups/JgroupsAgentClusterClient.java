@@ -56,16 +56,23 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
 
     @Override
     public void sendToAgentRegistry(@NotNull final AgentLifecycleMessage message) {
+        checkNotNull(message);
+
         sender.broadcast(message);
     }
 
     @Override
     public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
+        checkNotNull(actorLifecycleMessage);
+
         sender.broadcast(actorLifecycleMessage);
     }
 
     @Override
     public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+        checkNotNull(to);
+        checkNotNull(message);
+
         sender.sendToActor(new ActorKey(to), message);
     }
 
