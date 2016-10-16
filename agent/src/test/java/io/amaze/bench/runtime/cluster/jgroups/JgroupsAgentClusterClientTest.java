@@ -1,12 +1,13 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.actor.ActorInputMessage;
+import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,8 @@ public final class JgroupsAgentClusterClientTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Message.class, new Message("", ""));
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(JgroupsAgentClusterClient.class);
         tester.testAllPublicInstanceMethods(clusterClient);

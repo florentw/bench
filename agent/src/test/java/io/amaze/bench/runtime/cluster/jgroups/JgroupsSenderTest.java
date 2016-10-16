@@ -7,7 +7,6 @@ import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
@@ -55,7 +54,7 @@ public final class JgroupsSenderTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorKey.class, new ActorKey("dummy"));
-        tester.setDefault(Message.class, new Message("", ""));
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
 
         tester.testAllPublicConstructors(JgroupsSender.class);
         tester.testAllPublicInstanceMethods(sender);
@@ -73,24 +72,24 @@ public final class JgroupsSenderTest {
     public void send_to_actor_resolves_endpoint_through_registry_and_sends() throws Exception {
         RegisteredActor agent = created(DUMMY_ACTOR, "agent");
         when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(initialized(agent, new ActorDeployInfo(endpoint, 10)));
-        Message<String> message = new Message<>("other", "hello");
+        ActorInputMessage message = ActorInputMessage.sendMessage("other", "hello");
 
         sender.sendToActor(DUMMY_ACTOR, message);
 
-        verify(jChannel).send(eq(address), aryEq(Util.objectToByteBuffer(ActorInputMessage.sendMessage(message.from(), message.data()))));
+        verify(jChannel).send(eq(address), aryEq(Util.objectToByteBuffer(message)));
         verifyNoMoreInteractions(jChannel);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void sending_to_unknown_actor_throws_NoSuchElementException() {
-        sender.sendToActor(DUMMY_ACTOR, new Message<>("other", "hello"));
+        sender.sendToActor(DUMMY_ACTOR, ActorInputMessage.sendMessage("other", "hello"));
     }
 
     @Test(expected = NoSuchElementException.class)
     public void sending_to_uninitialized_actor_throws_NoSuchElementException() {
         when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(created(DUMMY_ACTOR, "agent"));
 
-        sender.sendToActor(DUMMY_ACTOR, new Message<>("other", "hello"));
+        sender.sendToActor(DUMMY_ACTOR, ActorInputMessage.sendMessage("other", "hello"));
     }
 
 

@@ -28,7 +28,6 @@ import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.message.Message;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
@@ -101,11 +100,12 @@ public class Actors {
 
         pico.addComponent(config);
 
-        pico.addComponent((Sender) (to, message) -> {
+        pico.addComponent((Sender) (to, payload) -> {
             checkNotNull(to);
-            checkNotNull(message);
+            checkNotNull(payload);
 
-            client.sendToActor(to, new Message<>(key.getName(), message));
+            ActorInputMessage message = ActorInputMessage.sendMessage(key.getName(), payload);
+            client.sendToActor(new ActorKey(to), message);
         });
 
         pico.addComponent(metrics);

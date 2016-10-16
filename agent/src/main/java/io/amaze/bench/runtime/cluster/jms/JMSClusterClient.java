@@ -16,6 +16,8 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.amaze.bench.runtime.actor.ActorInputMessage;
+import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ClusterClient;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
@@ -24,7 +26,6 @@ import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
@@ -53,12 +54,12 @@ abstract class JMSClusterClient implements ClusterClient {
     }
 
     @Override
-    public final void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
         checkNotNull(to);
         checkNotNull(message);
 
         try {
-            client.sendToQueue(to, message);
+            client.sendToQueue(to.getName(), message);
         } catch (JMSException e) {
             throw propagate(e);
         }

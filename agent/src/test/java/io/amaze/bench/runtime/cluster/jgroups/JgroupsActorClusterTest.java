@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,7 +44,7 @@ public final class JgroupsActorClusterTest {
         jChannel.send(jChannel.getAddress(), ActorInputMessage.sendMessage("test", "hello"));
 
         TestActor testActor = (TestActor) actorInternal.getInstance();
-        testActor.awaitFirstReceivedMessage();
+        assertTrue(testActor.awaitFirstReceivedMessage());
         assertThat(testActor.getReceivedMessages().size(), is(1));
         assertThat(testActor.getReceivedMessages().get("test").get(0), is("hello"));
     }

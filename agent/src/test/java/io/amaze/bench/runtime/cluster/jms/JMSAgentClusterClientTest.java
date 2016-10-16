@@ -16,12 +16,13 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.actor.ActorInputMessage;
+import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.agent.Constants;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -34,6 +35,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
 
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 import static io.amaze.bench.util.Matchers.isActorLifecycle;
@@ -74,7 +76,8 @@ public final class JMSAgentClusterClientTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Message.class, new Message<>("", ""));
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(JMSAgentClusterClient.class);
         tester.testAllPublicInstanceMethods(client);

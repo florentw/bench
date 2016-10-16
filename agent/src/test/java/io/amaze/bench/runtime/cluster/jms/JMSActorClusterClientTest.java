@@ -16,10 +16,7 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.actor.RuntimeActor;
-import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.message.Message;
+import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.After;
@@ -32,6 +29,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import javax.jms.MessageListener;
 import java.io.Serializable;
 
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 import static io.amaze.bench.util.Matchers.isActorLifecycle;
 import static org.mockito.Matchers.any;
@@ -64,7 +62,8 @@ public final class JMSActorClusterClientTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Message.class, new Message<>("", ""));
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(JMSActorClusterClient.class);
         tester.testAllPublicInstanceMethods(client);
@@ -101,8 +100,8 @@ public final class JMSActorClusterClientTest {
 
     @Test
     public void send_to_actors_sends_to_jms_queue() throws JMSException {
-        Message<String> testMsg = getTestMsg();
-        client.sendToActor(TestActor.DUMMY_ACTOR.getName(), testMsg);
+        ActorInputMessage testMsg = getTestMsg();
+        client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
 
         verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR.getName(), testMsg);
         verifyNoMoreInteractions(jmsClient);
@@ -110,12 +109,12 @@ public final class JMSActorClusterClientTest {
 
     @Test(expected = RuntimeException.class)
     public void send_to_actors_sends_to_jms_queue_throws() throws JMSException {
-        Message<String> testMsg = getTestMsg();
+        ActorInputMessage testMsg = getTestMsg();
         doThrow(new JMSException(new IllegalArgumentException())) //
                 .when(jmsClient) //
                 .sendToQueue(anyString(), any(Serializable.class));
 
-        client.sendToActor(TestActor.DUMMY_ACTOR.getName(), testMsg);
+        client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
 
         verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR.getName(), testMsg);
         verifyNoMoreInteractions(jmsClient);
@@ -129,7 +128,7 @@ public final class JMSActorClusterClientTest {
         verifyNoMoreInteractions(jmsClient);
     }
 
-    private Message<String> getTestMsg() {
-        return new Message<>(TestActor.DUMMY_ACTOR.getName(), "data");
+    private ActorInputMessage getTestMsg() {
+        return ActorInputMessage.sendMessage(TestActor.DUMMY_ACTOR.getName(), "data");
     }
 }

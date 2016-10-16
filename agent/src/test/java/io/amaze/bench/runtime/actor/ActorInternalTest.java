@@ -25,7 +25,6 @@ import io.amaze.bench.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,7 +169,7 @@ public final class ActorInternalTest {
             Serializable payload = "world";
             reactor.getSender().send(to, payload);
 
-            verify(actorClient).sendToActor(eq(to), argThat(isMessage(payload)));
+            verify(actorClient).sendToActor(eq(new ActorKey(to)), argThat(isMessage(payload)));
             verifyNoMoreInteractions(actorClient);
         }
     }
@@ -334,12 +333,12 @@ public final class ActorInternalTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    private ArgumentMatcher<Message<? extends Serializable>> isMessage(final Serializable payload) {
-        return new ArgumentMatcher<Message<? extends Serializable>>() {
+    private ArgumentMatcher<ActorInputMessage> isMessage(final Serializable payload) {
+        return new ArgumentMatcher<ActorInputMessage>() {
             @Override
             public boolean matches(final Object argument) {
-                Message<? extends Serializable> msg = (Message<? extends Serializable>) argument;
-                return msg.data().equals(payload);
+                ActorInputMessage msg = (ActorInputMessage) argument;
+                return msg.getPayload().equals(payload);
             }
         };
     }

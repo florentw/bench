@@ -7,7 +7,6 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
 
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.cluster.jgroups.JgroupsActorClusterClient.MessageListener;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -47,7 +47,8 @@ public final class JgroupsActorClusterClientTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Message.class, new Message("", ""));
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(JgroupsActorClusterClient.class);
         tester.testAllPublicInstanceMethods(clusterClient);
@@ -87,12 +88,12 @@ public final class JgroupsActorClusterClientTest {
 
     @Test
     public void send_to_actor_sends_message() {
-        Message<String> payload = new Message<>("", "");
-        String actor = "actor";
+        ActorInputMessage input = ActorInputMessage.sendMessage("other", "hello");
+        ActorKey actor = new ActorKey("actor");
 
-        clusterClient.sendToActor(actor, payload);
+        clusterClient.sendToActor(actor, input);
 
-        verify(jgroupsSender).sendToActor(eq(new ActorKey(actor)), same(payload));
+        verify(jgroupsSender).sendToActor(eq(actor), same(input));
         verifyNoMoreInteractions(jgroupsSender);
         verifyZeroInteractions(listenerMultiplexer);
     }

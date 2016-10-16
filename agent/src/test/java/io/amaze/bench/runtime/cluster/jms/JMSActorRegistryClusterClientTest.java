@@ -16,9 +16,10 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.actor.ActorInputMessage;
+import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -50,7 +52,8 @@ public final class JMSActorRegistryClusterClientTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Message.class, new Message("from", "dummy"));
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(JMSActorRegistryClusterClient.class);
         tester.testAllPublicInstanceMethods(actorRegistryClient);

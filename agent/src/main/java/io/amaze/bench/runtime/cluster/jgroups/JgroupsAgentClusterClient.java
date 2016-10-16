@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
+import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentClientListener;
@@ -22,12 +23,10 @@ import io.amaze.bench.runtime.agent.AgentInputMessage;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -69,11 +68,11 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
     }
 
     @Override
-    public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
         checkNotNull(to);
         checkNotNull(message);
 
-        sender.sendToActor(new ActorKey(to), message);
+        sender.sendToActor(to, message);
     }
 
     @Override

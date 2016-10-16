@@ -17,9 +17,9 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +36,7 @@ import static com.google.common.base.Throwables.propagate;
 /**
  * Created on 10/1/16.
  */
-public class JgroupsSender {
+public class JgroupsSender implements ActorSender {
 
     private static final Logger log = LogManager.getLogger();
 
@@ -59,21 +59,21 @@ public class JgroupsSender {
         }
     }
 
-    public void sendToActor(@NotNull final ActorKey actor, @NotNull final Message<? extends Serializable> message) {
-        checkNotNull(actor);
+    @Override
+    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
+        checkNotNull(to);
         checkNotNull(message);
-        log.debug("Sending {} to actor {} on {}", message, actor, channel);
+        log.debug("Sending {} to actor {} on {}", message, to, channel);
 
         // We need to resolve the endpoint using the actor's name first
-        RegisteredActor registeredActor = actorRegistry.byKey(actor);
+        RegisteredActor registeredActor = actorRegistry.byKey(to);
         if (registeredActor == null || registeredActor.getDeployInfo() == null) {
-            throw new NoSuchElementException("Cannot find endpoint for " + actor + ".");
+            throw new NoSuchElementException("Cannot find endpoint for " + to + ".");
         }
 
         try {
             JgroupsEndpoint endpoint = registeredActor.getDeployInfo().getEndpoint();
-            ActorInputMessage inputMessage = ActorInputMessage.sendMessage(message.from(), message.data());
-            channel.send(endpoint.getAddress(), Util.objectToByteBuffer(inputMessage));
+            channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));
         } catch (Exception e) {
             throw propagate(e);
         }

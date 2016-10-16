@@ -22,12 +22,10 @@ import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -76,11 +74,11 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     }
 
     @Override
-    public void sendToActor(@NotNull final String to, @NotNull final Message<? extends Serializable> message) {
+    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
         checkNotNull(to);
         checkNotNull(message);
 
-        sender.sendToActor(new ActorKey(to), message);
+        sender.sendToActor(to, message);
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -29,15 +30,17 @@ public final class JgroupsAgentClusterTest {
         ActorCluster firstActor = createAndInitActor(DUMMY_ACTOR);
         ActorCluster otherActor = createAndInitActor(ANOTHER);
 
+        sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
         firstActor.jChannel.send(firstActor.jChannel.getAddress(),
                                  ActorInputMessage.sendMessage("another", TestActor.REPLY_MESSAGE));
 
         sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
         TestActor testActor1 = (TestActor) firstActor.actorInternal.getInstance();
-        testActor1.awaitFirstReceivedMessage();
+        assertTrue(testActor1.awaitFirstReceivedMessage());
         TestActor testActor2 = (TestActor) otherActor.actorInternal.getInstance();
-        testActor2.awaitFirstReceivedMessage();
+        assertTrue(testActor2.awaitFirstReceivedMessage());
 
         firstActor.actorInternal.close();
         otherActor.actorInternal.close();
@@ -50,7 +53,8 @@ public final class JgroupsAgentClusterTest {
 
     private ActorCluster createAndInitActor(final ActorKey key) throws Exception {
         ActorRegistry actorRegistry = new ActorRegistry();
-        JgroupsClusterClientFactory clientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), actorRegistry);
+        JgroupsClusterClientFactory clientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(),
+                                                                                    actorRegistry);
         JChannel jChannel = clientFactory.getJChannel();
         ActorClusterClient actorClusterClient = clientFactory.createForActor(key);
         actorClusterClient.sendToActorRegistry(ActorLifecycleMessage.created(key, "agent"));
