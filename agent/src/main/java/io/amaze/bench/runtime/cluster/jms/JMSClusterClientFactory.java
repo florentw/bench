@@ -38,9 +38,9 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
     private static final JMSEndpoint DUMMY_JMS_ENDPOINT = new JMSEndpoint("dummy", 1337);
     private final JMSEndpoint serverEndpoint;
 
-    public JMSClusterClientFactory(@NotNull final Config clusterConfig) {
-        checkNotNull(clusterConfig);
-        this.serverEndpoint = new JMSEndpoint(clusterConfig);
+    public JMSClusterClientFactory(@NotNull final Config factoryConfig) {
+        checkNotNull(factoryConfig);
+        this.serverEndpoint = new JMSEndpoint(factoryConfig);
     }
 
     @VisibleForTesting
@@ -72,5 +72,9 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
         return new JMSClusterConfigFactory(serverEndpoint);
     }
 
+    @Override
+    public void close() {
+        // Nothing to close
+    }
 }
 

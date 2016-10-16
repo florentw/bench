@@ -21,6 +21,7 @@ import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 
 /**
  * Factory to create clients to communicate with the cluster.
@@ -37,7 +38,7 @@ import javax.validation.constraints.NotNull;
  * @see ActorRegistryClusterClient
  * @see ClusterConfigFactory
  */
-public interface ClusterClientFactory {
+public interface ClusterClientFactory extends Closeable {
 
     @NotNull
     Endpoint getLocalEndpoint();
@@ -53,5 +54,8 @@ public interface ClusterClientFactory {
 
     @NotNull
     ClusterConfigFactory clusterConfigFactory();
+
+    @Override
+    void close();
 
 }

@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.typesafe.config.Config;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
@@ -30,22 +32,28 @@ import org.jgroups.JChannel;
 import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 10/2/16.
  */
 public final class JgroupsClusterClientFactory implements ClusterClientFactory {
 
+    public static final String XML_CONFIG = "xmlConfig";
+
     private final JgroupsClusterMember jgroupsClusterMember;
     private final JgroupsSender jgroupsSender;
-    private final ActorRegistry actorRegistry;
     private final JChannel jChannel;
+
     private JgroupsActorRegistryClusterClient registryClusterClient;
     private JgroupsClusterConfigFactory jgroupsClusterConfigFactory;
 
-    public JgroupsClusterClientFactory(@NotNull JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
-        this.jChannel = checkNotNull(jChannel);
-        this.actorRegistry = checkNotNull(actorRegistry);
+    public JgroupsClusterClientFactory(@NotNull final Config factoryConfig,
+                                       @NotNull final ActorRegistry actorRegistry) {
+        checkNotNull(factoryConfig);
+        checkNotNull(actorRegistry);
+
+        jChannel = createJChannel(factoryConfig);
 
         jgroupsSender = new JgroupsSender(jChannel, actorRegistry);
         jgroupsClusterMember = new JgroupsClusterMember(jChannel);
@@ -54,16 +62,12 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
                                                                       jgroupsClusterMember.viewMultiplexer(),
                                                                       actorRegistry);
         jgroupsClusterConfigFactory = new JgroupsClusterConfigFactory();
-    }
 
-    /**
-     * Joins the Jgroups cluster
-     */
-    public void join() {
         jgroupsClusterMember.join();
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
     }
 
+    @Override
     public Endpoint getLocalEndpoint() {
         return new JgroupsEndpoint(jChannel.getAddress());
     }
@@ -90,6 +94,24 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     @Override
     public ClusterConfigFactory clusterConfigFactory() {
         return jgroupsClusterConfigFactory;
+    }
+
+    @Override
+    public void close() {
+        jChannel.close();
+    }
+
+    @VisibleForTesting
+    public JChannel getJChannel() {
+        return jChannel;
+    }
+
+    private JChannel createJChannel(final Config clusterConfig) {
+        try {
+            return new JChannel(clusterConfig.getString(XML_CONFIG));
+        } catch (Exception e) {
+            throw propagate(e);
+        }
     }
 
 }

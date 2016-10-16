@@ -16,7 +16,7 @@ public final class AgentClusterRule extends ExternalResource {
     private JMSClient client;
 
     public AgentConfig agentConfig() {
-        return ClusterConfigs.agentConfig(jmsServerRule);
+        return ClusterConfigs.jmsAgentConfig(jmsServerRule);
     }
 
     public AgentRegistryClusterClient agentRegistryClusterClient() {

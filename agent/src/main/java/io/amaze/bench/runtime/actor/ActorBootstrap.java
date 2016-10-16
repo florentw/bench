@@ -22,6 +22,7 @@ import com.typesafe.config.ConfigFactory;
 import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterClients;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,7 +73,7 @@ public class ActorBootstrap implements Closeable {
         Config clusterConfig = parseClusterConfig(Files.readAndDelete(tmpClusterConfig));
         String jsonActorConfig = Files.readAndDelete(tmpActorConfig);
 
-        ClusterClientFactory clientFactory = ClusterClients.newFactory(clusterConfig);
+        ClusterClientFactory clientFactory = ClusterClients.newFactory(clusterConfig, new ActorRegistry());
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
         RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonActorConfig);

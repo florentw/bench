@@ -160,7 +160,7 @@ public final class ActorBootstrapTest {
     }
 
     private File writeClusterConfigFile() throws IOException {
-        Config clusterConfig = ClusterConfigs.clusterConfig();
+        Config clusterConfig = ClusterConfigs.defaultConfig();
         File clusterConfigFile = folder.newFile();
         Files.writeTo(clusterConfigFile, clusterConfig.root().render(ConfigRenderOptions.concise()));
         return clusterConfigFile;

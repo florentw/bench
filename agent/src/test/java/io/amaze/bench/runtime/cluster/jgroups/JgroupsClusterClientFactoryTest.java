@@ -6,6 +6,7 @@ import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.util.ClusterConfigs;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.View;
@@ -14,7 +15,6 @@ import org.jgroups.stack.IpAddress;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -22,9 +22,7 @@ import java.net.UnknownHostException;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static junit.framework.TestCase.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 10/5/16.
@@ -32,8 +30,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class JgroupsClusterClientFactoryTest {
 
-    @Mock
-    private JChannel jChannel;
     @Mock
     private ActorRegistry actorRegistry;
     @Mock
@@ -46,11 +42,13 @@ public final class JgroupsClusterClientFactoryTest {
     @Before
     public void init() throws UnknownHostException {
         View initialView = new View(new ViewId(), new Address[]{new IpAddress("localhost", 1337)});
-        when(jChannel.view()).thenReturn(initialView);
-
-        when(jChannel.getAddress()).thenReturn(address);
         when(actorRegistry.createClusterListener()).thenReturn(registryClusterListener);
-        clusterClientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
+
+        clusterClientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), actorRegistry);
+
+        JChannel jChannel = spy(clusterClientFactory.getJChannel());
+        when(jChannel.view()).thenReturn(initialView);
+        when(jChannel.getAddress()).thenReturn(address);
     }
 
     @Test
@@ -62,13 +60,9 @@ public final class JgroupsClusterClientFactoryTest {
     }
 
     @Test
-    public void joining_cluster_connects_then_adds_registry_listener() throws Exception {
+    public void constructor_adds_registry_listener() throws Exception {
 
-        clusterClientFactory.join();
-
-        InOrder inOrder = inOrder(jChannel, actorRegistry);
-        inOrder.verify(jChannel).connect(anyString());
-        inOrder.verify(actorRegistry).createClusterListener();
+        verify(actorRegistry).createClusterListener();
     }
 
     @Test

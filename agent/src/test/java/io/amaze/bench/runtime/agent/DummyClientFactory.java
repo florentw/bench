@@ -69,4 +69,9 @@ public final class DummyClientFactory implements ClusterClientFactory {
     public ClusterConfigFactory clusterConfigFactory() {
         return clusterConfigFactory;
     }
+
+    @Override
+    public void close() {
+        // Nothing to close
+    }
 }

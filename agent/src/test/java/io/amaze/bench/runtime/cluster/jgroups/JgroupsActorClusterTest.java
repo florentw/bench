@@ -7,6 +7,7 @@ import io.amaze.bench.runtime.actor.Actors;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
+import io.amaze.bench.util.ClusterConfigs;
 import org.jgroups.JChannel;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +28,9 @@ public final class JgroupsActorClusterTest {
 
     @Before
     public void init() throws Exception {
-        jChannel = new JChannel("fast.xml");
-        clientFactory = new JgroupsClusterClientFactory(jChannel, new ActorRegistry());
-        clientFactory.join();
+        clientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), new ActorRegistry());
 
+        jChannel = clientFactory.getJChannel();
         assertThat(jChannel.isConnected(), is(true));
     }
 

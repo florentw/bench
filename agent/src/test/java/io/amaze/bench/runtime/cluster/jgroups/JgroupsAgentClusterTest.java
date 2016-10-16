@@ -1,16 +1,17 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
+import io.amaze.bench.util.ClusterConfigs;
 import org.jgroups.JChannel;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -31,7 +32,7 @@ public final class JgroupsAgentClusterTest {
         firstActor.jChannel.send(firstActor.jChannel.getAddress(),
                                  ActorInputMessage.sendMessage("another", TestActor.REPLY_MESSAGE));
 
-        Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+        sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
         TestActor testActor1 = (TestActor) firstActor.actorInternal.getInstance();
         testActor1.awaitFirstReceivedMessage();
@@ -48,10 +49,9 @@ public final class JgroupsAgentClusterTest {
     }
 
     private ActorCluster createAndInitActor(final ActorKey key) throws Exception {
-        JChannel jChannel = new JChannel("fast.xml");
         ActorRegistry actorRegistry = new ActorRegistry();
-        JgroupsClusterClientFactory clientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
-        clientFactory.join();
+        JgroupsClusterClientFactory clientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), actorRegistry);
+        JChannel jChannel = clientFactory.getJChannel();
         ActorClusterClient actorClusterClient = clientFactory.createForActor(key);
         actorClusterClient.sendToActorRegistry(ActorLifecycleMessage.created(key, "agent"));
         ActorInternal actorInternal = (ActorInternal) new Actors(clientFactory).create(key,

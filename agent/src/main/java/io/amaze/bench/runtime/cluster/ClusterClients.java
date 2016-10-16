@@ -1,10 +1,11 @@
 package io.amaze.bench.runtime.cluster;
 
 import com.typesafe.config.Config;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
+import org.picocontainer.DefaultPicoContainer;
+import org.picocontainer.MutablePicoContainer;
 
 import javax.validation.constraints.NotNull;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
@@ -21,28 +22,25 @@ public final class ClusterClients {
         // Should not be instantiated
     }
 
-    public static ClusterClientFactory newFactory(@NotNull final Config clusterConfig) {
+    public static ClusterClientFactory newFactory(@NotNull final Config clusterConfig,
+                                                  @NotNull final ActorRegistry actorRegistry) {
         checkNotNull(clusterConfig);
+        checkNotNull(actorRegistry);
+
         String factoryClassName = clusterConfig.getString(FACTORY_CLASS);
         Config factoryConfig = clusterConfig.getConfig(FACTORY_CONFIG);
+
+        MutablePicoContainer container = new DefaultPicoContainer();
+        container.addComponent(factoryConfig);
+        container.addComponent(actorRegistry);
 
         try {
             Class<? extends ClusterClientFactory> factoryClass = Class.forName(factoryClassName).asSubclass(
                     ClusterClientFactory.class);
-            return newFactory(factoryClass, factoryConfig);
+            container.addComponent(factoryClass);
+            return container.getComponent(factoryClass);
         } catch (ClassNotFoundException e) {
             throw propagate(e);
         }
     }
-
-    private static ClusterClientFactory newFactory(@NotNull final Class<? extends ClusterClientFactory> factoryClass,
-                                                   @NotNull final Config clusterConfig) {
-        try {
-            Constructor<? extends ClusterClientFactory> constructor = factoryClass.getConstructor(Config.class);
-            return constructor.newInstance(clusterConfig);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-            throw propagate(e);
-        }
-    }
-
 }

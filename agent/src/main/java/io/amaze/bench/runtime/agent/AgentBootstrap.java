@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterClients;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +53,8 @@ public final class AgentBootstrap {
 
         File configFile = new File(configFileName);
         AgentConfig agentConfig = new AgentConfig(configFile);
-        ClusterClientFactory clientFactory = ClusterClients.newFactory(agentConfig.clusterConfig());
+        ClusterClientFactory clientFactory = ClusterClients.newFactory(agentConfig.clusterConfig(),
+                                                                       new ActorRegistry());
 
         Agent agent = createAgent(clientFactory);
         registerShutdownHook(agent);
