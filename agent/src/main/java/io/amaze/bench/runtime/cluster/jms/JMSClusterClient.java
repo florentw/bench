@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.jms;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.ClusterClient;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
@@ -34,7 +35,7 @@ import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 /**
  * Created on 3/3/16.
  */
-abstract class JMSClusterClient implements ClusterClient {
+abstract class JMSClusterClient implements ClusterClient, ActorSender {
 
     private final JMSClient client;
 

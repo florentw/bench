@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Interface for an actor to communicate with cluster members.
  */
-public interface ActorClusterClient extends ClusterClient {
+public interface ActorClusterClient extends ClusterClient, ActorSender {
 
     /**
      * Starts a listener for the specified actor name to listen to incoming messages.
@@ -43,6 +43,7 @@ public interface ActorClusterClient extends ClusterClient {
     /**
      * @return Local endpoint to be used by the cluster layer to discuss with this actor.
      */
+    @NotNull
     Endpoint getLocalEndpoint();
 
 }

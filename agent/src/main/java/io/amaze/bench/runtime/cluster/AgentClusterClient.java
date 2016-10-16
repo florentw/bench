@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Interface for an {@link Agent} to communicate with cluster members.
  */
-public interface AgentClusterClient extends ClusterClient {
+public interface AgentClusterClient extends ClusterClient, ActorSender {
 
     /**
      * Starts a listener for the agent to listen to incoming messages.

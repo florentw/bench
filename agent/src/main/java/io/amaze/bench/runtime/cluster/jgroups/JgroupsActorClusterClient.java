@@ -42,7 +42,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
                               @NotNull final JgroupsListenerMultiplexer multiplexer,
                               @NotNull final JgroupsSender sender) {
 
-        this.localEndpoint = localEndpoint;
+        this.localEndpoint = checkNotNull(localEndpoint);
         this.multiplexer = checkNotNull(multiplexer);
         this.sender = checkNotNull(sender);
     }
@@ -74,16 +74,16 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     }
 
     @Override
+    public void close() {
+        multiplexer.removeListenerFor(ActorInputMessage.class);
+    }
+
+    @Override
     public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
         checkNotNull(to);
         checkNotNull(message);
 
         sender.sendToActor(to, message);
-    }
-
-    @Override
-    public void close() {
-        multiplexer.removeListenerFor(ActorInputMessage.class);
     }
 
     static final class MessageListener implements JgroupsListener<ActorInputMessage> {

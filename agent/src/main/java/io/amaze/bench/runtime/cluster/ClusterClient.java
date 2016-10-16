@@ -16,7 +16,9 @@
 package io.amaze.bench.runtime.cluster;
 
 
-import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.actor.ActorInternal;
+import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.agent.Agent;
 
 import javax.validation.constraints.NotNull;
@@ -33,7 +35,7 @@ import javax.validation.constraints.NotNull;
  * @see ActorSender
  * @see ActorInternal
  */
-public interface ClusterClient extends ActorSender, AutoCloseable {
+public interface ClusterClient extends AutoCloseable {
 
     /**
      * A call to this method will send a message {@code message} to the actor registry topic
@@ -42,9 +44,6 @@ public interface ClusterClient extends ActorSender, AutoCloseable {
      * @param actorLifecycleMessage Message to send to the topic
      */
     void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage);
-
-    @Override
-    void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message);
 
     /**
      * Will release resource on the underlying messaging system
