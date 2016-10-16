@@ -15,9 +15,11 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
+import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
+import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,7 @@ public class JgroupsSender {
 
     public void broadcast(@NotNull final Serializable message) {
         checkNotNull(message);
+        log.debug("Broadcasting {} on {}", message, channel);
 
         try {
             channel.send(null, Util.objectToByteBuffer(message));
@@ -56,9 +59,10 @@ public class JgroupsSender {
         }
     }
 
-    public void sendToActor(@NotNull final ActorKey actor, @NotNull final Serializable message) {
+    public void sendToActor(@NotNull final ActorKey actor, @NotNull final Message<? extends Serializable> message) {
         checkNotNull(actor);
         checkNotNull(message);
+        log.debug("Sending {} to actor {} on {}", message, actor, channel);
 
         // We need to resolve the endpoint using the actor's name first
         RegisteredActor registeredActor = actorRegistry.byKey(actor);
@@ -68,7 +72,8 @@ public class JgroupsSender {
 
         try {
             JgroupsEndpoint endpoint = registeredActor.getDeployInfo().getEndpoint();
-            channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));
+            ActorInputMessage inputMessage = ActorInputMessage.sendMessage(message.from(), message.data());
+            channel.send(endpoint.getAddress(), Util.objectToByteBuffer(inputMessage));
         } catch (Exception e) {
             throw propagate(e);
         }

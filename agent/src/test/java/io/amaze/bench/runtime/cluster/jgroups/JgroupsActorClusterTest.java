@@ -1,7 +1,10 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.api.After;
-import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.actor.ActorInputMessage;
+import io.amaze.bench.runtime.actor.ActorInternal;
+import io.amaze.bench.runtime.actor.Actors;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
 import org.jgroups.JChannel;
@@ -47,7 +50,6 @@ public final class JgroupsActorClusterTest {
 
     @After
     public void close() {
-        clientFactory.join();
         jChannel.close();
     }
 }

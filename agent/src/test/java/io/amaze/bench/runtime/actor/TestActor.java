@@ -35,11 +35,11 @@ public class TestActor implements Reactor<String> {
 
     public static final ActorKey DUMMY_ACTOR = new ActorKey("test-actor");
     public static final String DUMMY_JSON_CONFIG = "{}";
+    public static final String REPLY_MESSAGE = "REPLY_TO";
     static final String FAIL_MSG = "DO_FAIL";
     static final String RECOVERABLE_EXCEPTION_MSG = "THROW_RECOVERABLE";
     static final String RUNTIME_EXCEPTION_MSG = "THROW_RUNTIME";
     static final String TERMINATE_MSG = "TERMINATE";
-    public static final String REPLY_MESSAGE = "REPLY_TO";
     private static final Logger log = LogManager.getLogger();
     private static final DeployConfig DUMMY_DEPLOY_CONFIG = createDeployConfig(false);
     public static final ActorConfig DUMMY_CONFIG = createActorConfig();
@@ -88,6 +88,7 @@ public class TestActor implements Reactor<String> {
         switch (message) {
             case REPLY_MESSAGE:
                 sender.send(from, REPLY_MESSAGE);
+                break;
             case FAIL_MSG:
                 throw new IrrecoverableException("Provoked failure.");
             case RECOVERABLE_EXCEPTION_MSG:

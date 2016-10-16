@@ -1,14 +1,15 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.api.After;
+import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
 import org.jgroups.JChannel;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.concurrent.TimeUnit;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.core.Is.is;
@@ -20,47 +21,54 @@ import static org.junit.Assert.assertThat;
 @Category(IntegrationTest.class)
 public final class JgroupsAgentClusterTest {
 
-    private JgroupsClusterClientFactory clientFactory;
-    private JChannel jChannel;
+    private static final ActorKey ANOTHER = new ActorKey("another");
 
-    @Before
-    public void init() throws Exception {
-        jChannel = new JChannel("fast.xml");
-        clientFactory = new JgroupsClusterClientFactory(jChannel, new ActorRegistry());
-        clientFactory.join();
-
-        //new Agent(clientFactory, new ActorManagers());
-
-        assertThat(jChannel.isConnected(), is(true));
-    }
-
-    @Ignore
     @Test
     public void actor_can_send_message_to_another_one() throws Exception {
-        JChannel jChannel2 = new JChannel("fast.xml");
-        JgroupsClusterClientFactory clientFactory2 = new JgroupsClusterClientFactory(jChannel2, new ActorRegistry());
-        clientFactory2.join();
-        ActorInternal actorInternal = (ActorInternal) new Actors(clientFactory).create(DUMMY_ACTOR,
-                                                                                       TestActor.class.getName(),
-                                                                                       "{}");
-        ActorInternal actorInternal2 = (ActorInternal) new Actors(clientFactory2).create(new ActorKey("another"),
-                                                                                         TestActor.class.getName(),
-                                                                                         "{}");
-        actorInternal.init();
-        actorInternal2.init();
+        ActorCluster firstActor = createAndInitActor(DUMMY_ACTOR);
+        ActorCluster otherActor = createAndInitActor(ANOTHER);
 
-        jChannel.send(jChannel.getAddress(), ActorInputMessage.sendMessage("another", TestActor.REPLY_MESSAGE));
+        firstActor.jChannel.send(firstActor.jChannel.getAddress(),
+                                 ActorInputMessage.sendMessage("another", TestActor.REPLY_MESSAGE));
 
-        TestActor testActor2 = (TestActor) actorInternal2.getInstance();
+        Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+        TestActor testActor1 = (TestActor) firstActor.actorInternal.getInstance();
+        testActor1.awaitFirstReceivedMessage();
+        TestActor testActor2 = (TestActor) otherActor.actorInternal.getInstance();
         testActor2.awaitFirstReceivedMessage();
+
+        firstActor.actorInternal.close();
+        otherActor.actorInternal.close();
+
+        assertThat(testActor1.getReceivedMessages().size(), is(1));
+        assertThat(testActor1.getReceivedMessages().get(ANOTHER.getName()).get(0), is(TestActor.REPLY_MESSAGE));
         assertThat(testActor2.getReceivedMessages().size(), is(1));
-        assertThat(testActor2.getReceivedMessages().get("another").get(0), is("hello"));
+        assertThat(testActor2.getReceivedMessages().get(DUMMY_ACTOR.getName()).get(0), is(TestActor.REPLY_MESSAGE));
     }
 
-    @After
-    public void close() {
+    private ActorCluster createAndInitActor(final ActorKey key) throws Exception {
+        JChannel jChannel = new JChannel("fast.xml");
+        ActorRegistry actorRegistry = new ActorRegistry();
+        JgroupsClusterClientFactory clientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
         clientFactory.join();
-        jChannel.close();
+        ActorClusterClient actorClusterClient = clientFactory.createForActor(key);
+        actorClusterClient.sendToActorRegistry(ActorLifecycleMessage.created(key, "agent"));
+        ActorInternal actorInternal = (ActorInternal) new Actors(clientFactory).create(key,
+                                                                                       TestActor.class.getName(),
+                                                                                       "{}");
+        actorInternal.init();
+        return new ActorCluster(jChannel, actorInternal);
+    }
+
+    private static final class ActorCluster {
+        private final JChannel jChannel;
+        private final ActorInternal actorInternal;
+
+        private ActorCluster(final JChannel jChannel, final ActorInternal actorInternal) {
+            this.jChannel = jChannel;
+            this.actorInternal = actorInternal;
+        }
     }
 
 }
