@@ -20,6 +20,7 @@ import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 

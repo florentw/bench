@@ -18,6 +18,7 @@ package io.amaze.bench.leader.cluster;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import org.junit.Before;
@@ -86,8 +87,8 @@ public final class ActorsTest {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorSender.class, actorSender);
-
         tester.setDefault(ResourceManager.class, resourceManager);
+
         tester.testAllPublicConstructors(Actors.class);
         tester.testAllPublicInstanceMethods(actors);
         tester.testAllPublicInstanceMethods(actorHandle);

@@ -16,9 +16,11 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
@@ -27,9 +29,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSClusterClientFactoryTest {
 
+    @Mock
+    private ActorRegistry actorRegistry;
+
     @Test
     public void null_parameters_are_invalid() {
-        JMSClusterClientFactory clientFactory = new JMSClusterClientFactory(new JMSEndpoint("", 1));
+        JMSClusterClientFactory clientFactory = new JMSClusterClientFactory(new JMSEndpoint("", 1), actorRegistry);
         NullPointerTester tester = new NullPointerTester();
         tester.testAllPublicConstructors(JMSClusterClientFactory.class);
         tester.testAllPublicInstanceMethods(clientFactory);

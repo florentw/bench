@@ -18,6 +18,7 @@ package io.amaze.bench.leader.cluster;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;

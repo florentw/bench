@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.leader.cluster;
+package io.amaze.bench.runtime.agent;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorManagers;
-import io.amaze.bench.runtime.agent.Agent;
-import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;

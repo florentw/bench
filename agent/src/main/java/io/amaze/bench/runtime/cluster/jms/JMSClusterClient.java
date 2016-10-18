@@ -38,10 +38,12 @@ import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 abstract class JMSClusterClient implements ClusterClient, ActorSender {
 
     private final JMSClient client;
+    private final JMSActorSender actorSender;
 
     @VisibleForTesting
     JMSClusterClient(@NotNull final JMSClient client) {
         this.client = checkNotNull(client);
+        actorSender = initActorSender(client);
     }
 
     JMSClusterClient(@NotNull final JMSEndpoint endpoint) {
@@ -52,6 +54,12 @@ abstract class JMSClusterClient implements ClusterClient, ActorSender {
         } catch (JMSException e) {
             throw propagate(e);
         }
+        actorSender = initActorSender(client);
+    }
+
+    @Override
+    public final void close() {
+        client.close();
     }
 
     @Override
@@ -59,16 +67,7 @@ abstract class JMSClusterClient implements ClusterClient, ActorSender {
         checkNotNull(to);
         checkNotNull(message);
 
-        try {
-            client.sendToQueue(to.getName(), message);
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
-    }
-
-    @Override
-    public final void close() {
-        client.close();
+        actorSender.sendToActor(to, message);
     }
 
     final void sendToActorRegistry(final Message msg) {
@@ -81,6 +80,10 @@ abstract class JMSClusterClient implements ClusterClient, ActorSender {
 
     final JMSClient getClient() {
         return client;
+    }
+
+    private JMSActorSender initActorSender(final JMSClient client) {
+        return new JMSActorSender(client);
     }
 
 }

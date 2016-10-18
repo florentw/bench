@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.leader.cluster;
+package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
  * Created on 9/16/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class ActorSenderTest {
+public final class JMSActorSenderTest {
 
     private static final ActorInputMessage DUMMY_MSG = ActorInputMessage.init();
 
@@ -49,11 +49,11 @@ public final class ActorSenderTest {
 
     @Mock
     private JMSClient jmsClient;
-    private ActorSender sender;
+    private JMSActorSender sender;
 
     @Before
     public void initSender() {
-        sender = new ActorSender(jmsClient);
+        sender = new JMSActorSender(jmsClient);
     }
 
     @Test
@@ -62,7 +62,7 @@ public final class ActorSenderTest {
         tester.setDefault(ActorInputMessage.class, DUMMY_MSG);
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
-        tester.testAllPublicConstructors(ActorSender.class);
+        tester.testAllPublicConstructors(JMSActorSender.class);
         tester.testAllPublicInstanceMethods(sender);
     }
 

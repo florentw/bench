@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.leader.cluster;
+package io.amaze.bench.runtime.cluster.jms;
 
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 
@@ -28,11 +29,11 @@ import static com.google.common.base.Throwables.propagate;
 /**
  * Interface to send messages to actors within the system.
  */
-public class ActorSender {
+public class JMSActorSender implements ActorSender {
 
     private final JMSClient client;
 
-    public ActorSender(@NotNull final JMSClient client) {
+    public JMSActorSender(@NotNull final JMSClient client) {
         this.client = checkNotNull(client);
     }
 
@@ -42,6 +43,7 @@ public class ActorSender {
      * @param key     The actor name to send the message to
      * @param message Contents of the message, {@link ActorInputMessage}
      */
+    @Override
     public void sendToActor(@NotNull final ActorKey key, @NotNull final ActorInputMessage message) {
         checkNotNull(key);
         checkNotNull(message);

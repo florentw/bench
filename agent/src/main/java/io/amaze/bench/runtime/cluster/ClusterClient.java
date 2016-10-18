@@ -32,7 +32,6 @@ import javax.validation.constraints.NotNull;
  *
  * @see ClusterClientFactory
  * @see Agent
- * @see ActorSender
  * @see ActorInternal
  */
 public interface ClusterClient extends AutoCloseable {
