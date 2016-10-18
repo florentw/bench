@@ -52,7 +52,6 @@ public final class BenchRule extends ExternalResource {
 
     private JMSClient actorsClient;
     private JMSClient resourceManagerJmsClient;
-    private JMSClient actorRegistryJmsClient;
     private JMSClient metricsRepositoryClient;
 
     private Agents agents;
@@ -96,9 +95,8 @@ public final class BenchRule extends ExternalResource {
         jmsServerRule.init();
 
         resourceManagerJmsClient = createClient();
-        actorRegistryJmsClient = createClient();
-        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(actorRegistryJmsClient);
         JMSEndpoint endpoint = jmsServerRule.getEndpoint();
+        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(endpoint);
         ActorRegistryClusterClient actorRegistryClient = new JMSActorRegistryClusterClient(endpoint);
         agentRegistry = new AgentRegistry();
         actorRegistry = new ActorRegistry();
@@ -126,7 +124,6 @@ public final class BenchRule extends ExternalResource {
     @Override
     protected void after() {
         resourceManagerJmsClient.close();
-        actorRegistryJmsClient.close();
         actorsClient.close();
         metricsRepositoryClient.close();
 

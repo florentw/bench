@@ -6,6 +6,7 @@ import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.shared.util.Network;
 import io.amaze.bench.util.ClusterConfigs;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
@@ -41,7 +42,7 @@ public final class JgroupsClusterClientFactoryTest {
 
     @Before
     public void init() throws UnknownHostException {
-        View initialView = new View(new ViewId(), new Address[]{new IpAddress("localhost", 1337)});
+        View initialView = new View(new ViewId(), new Address[]{new IpAddress(Network.LOCALHOST, 1337)});
         when(actorRegistry.createClusterListener()).thenReturn(registryClusterListener);
 
         clusterClientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), actorRegistry);

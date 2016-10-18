@@ -17,11 +17,12 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.ActorRegistrySender;
+import io.amaze.bench.runtime.cluster.ActorSender;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
@@ -36,15 +37,17 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
 
     private final Endpoint localEndpoint;
     private final JgroupsListenerMultiplexer multiplexer;
-    private final JgroupsSender sender;
+    private final JgroupsSender jgroupsSender;
+    private final ActorRegistry actorRegistry;
 
-    JgroupsActorClusterClient(@NotNull final Endpoint localEndpoint,
-                              @NotNull final JgroupsListenerMultiplexer multiplexer,
-                              @NotNull final JgroupsSender sender) {
-
+    public JgroupsActorClusterClient(@NotNull final Endpoint localEndpoint,
+                                     @NotNull final JgroupsListenerMultiplexer multiplexer,
+                                     @NotNull final JgroupsSender jgroupsSender,
+                                     @NotNull final ActorRegistry actorRegistry) {
         this.localEndpoint = checkNotNull(localEndpoint);
         this.multiplexer = checkNotNull(multiplexer);
-        this.sender = checkNotNull(sender);
+        this.jgroupsSender = checkNotNull(jgroupsSender);
+        this.actorRegistry = checkNotNull(actorRegistry);
     }
 
     @Override
@@ -58,7 +61,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     public void sendMetrics(@NotNull final MetricValuesMessage message) {
         checkNotNull(message);
 
-        sender.broadcast(message);
+        jgroupsSender.broadcast(message);
     }
 
     @Override
@@ -67,23 +70,18 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     }
 
     @Override
-    public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        checkNotNull(actorLifecycleMessage);
+    public ActorSender actorSender() {
+        return new JgroupsActorSender(jgroupsSender, actorRegistry);
+    }
 
-        sender.broadcast(actorLifecycleMessage);
+    @Override
+    public ActorRegistrySender actorRegistrySender() {
+        return new JgroupsActorRegistrySender(jgroupsSender);
     }
 
     @Override
     public void close() {
         multiplexer.removeListenerFor(ActorInputMessage.class);
-    }
-
-    @Override
-    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
-        checkNotNull(to);
-        checkNotNull(message);
-
-        sender.sendToActor(to, message);
     }
 
     static final class MessageListener implements JgroupsListener<ActorInputMessage> {

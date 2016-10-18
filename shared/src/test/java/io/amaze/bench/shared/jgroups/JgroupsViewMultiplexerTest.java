@@ -1,6 +1,7 @@
 package io.amaze.bench.shared.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.shared.util.Network;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.View;
@@ -33,7 +34,7 @@ public final class JgroupsViewMultiplexerTest {
 
     @Before
     public void init() throws Exception {
-        initialAddress = new IpAddress("localhost", 1337);
+        initialAddress = new IpAddress(Network.LOCALHOST, 1337);
         viewMultiplexer = viewMultiplexer();
         initialView = new View(new ViewId(), new Address[]{initialAddress});
         when(jChannel.view()).thenReturn(initialView);
@@ -89,7 +90,7 @@ public final class JgroupsViewMultiplexerTest {
     @Test
     public void view_update_is_propagated_to_registered_listeners() throws Exception {
         viewMultiplexer.addListener(listener);
-        Address joinedMember = new IpAddress("localhost", 1338);
+        Address joinedMember = new IpAddress(Network.LOCALHOST, 1338);
         View newView = new View(new ViewId(), new Address[]{joinedMember});
 
         viewMultiplexer.viewUpdate(newView);

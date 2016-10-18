@@ -16,11 +16,11 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
+import io.amaze.bench.runtime.cluster.ActorRegistrySender;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
-import io.amaze.bench.runtime.message.Message;
+import io.amaze.bench.runtime.cluster.AgentRegistrySender;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -30,7 +30,6 @@ import javax.validation.constraints.NotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.runtime.agent.Constants.AGENTS_TOPIC;
-import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 
 /**
  * Created on 4/24/16.
@@ -64,20 +63,18 @@ final class JMSAgentClusterClient extends JMSClusterClient implements AgentClust
     }
 
     @Override
-    public void sendToAgentRegistry(@NotNull final AgentLifecycleMessage message) {
-        checkNotNull(message);
-
-        try {
-            getClient().sendToTopic(AGENT_REGISTRY_TOPIC, new Message<>(agent, message));
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
+    public AgentRegistrySender agentRegistrySender() {
+        return new JMSAgentRegistrySender(getClient(), agent);
     }
 
     @Override
-    public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        Message msg = new Message<>(agent, actorLifecycleMessage);
-        sendToActorRegistry(msg);
+    public ActorRegistrySender actorRegistrySender() {
+        return new JMSActorRegistrySender(getClient(), agent);
+    }
+
+    @Override
+    public ActorSender actorSender() {
+        return new JMSActorSender(getClient());
     }
 
 }

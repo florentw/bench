@@ -24,6 +24,8 @@ import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.ActorRegistrySender;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
@@ -64,11 +66,17 @@ public final class ActorInternalTest {
     @Mock
     private ActorRegistryClusterClient actorRegistryClient;
     @Mock
+    private ActorSender actorSender;
+    @Mock
+    private ActorRegistrySender actorRegistrySender;
+    @Mock
     private Endpoint localEndpoint;
 
     @Before
     public void before() {
         doReturn(localEndpoint).when(actorClient).getLocalEndpoint();
+        doReturn(actorSender).when(actorClient).actorSender();
+        doReturn(actorRegistrySender).when(actorClient).actorRegistrySender();
         clientFactory = new DummyClientFactory(localEndpoint, null, actorClient, actorRegistryClient, null);
         factory = new Actors(clientFactory);
     }
@@ -100,7 +108,7 @@ public final class ActorInternalTest {
             assertThat(actor.getKey(), is(DUMMY_ACTOR));
             assertThat(((TestActor) actor.getInstance()).isBeforeCalled(), is(true));
 
-            verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
         }
     }
 
@@ -123,8 +131,8 @@ public final class ActorInternalTest {
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
 
-            verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
-            verifyNoMoreInteractions(actorClient);
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
         }
     }
 
@@ -134,8 +142,8 @@ public final class ActorInternalTest {
 
             actor.init();
 
-            verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
-            verifyNoMoreInteractions(actorClient);
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
         }
     }
 
@@ -146,7 +154,7 @@ public final class ActorInternalTest {
 
             actor.init();
 
-            verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
         }
     }
 
@@ -169,8 +177,8 @@ public final class ActorInternalTest {
             Serializable payload = "world";
             reactor.getSender().send(to, payload);
 
-            verify(actorClient).sendToActor(eq(new ActorKey(to)), argThat(isMessage(payload)));
-            verifyNoMoreInteractions(actorClient);
+            verify(actorSender).send(eq(new ActorKey(to)), argThat(isMessage(payload)));
+            verifyNoMoreInteractions(actorSender);
         }
     }
 
@@ -204,8 +212,8 @@ public final class ActorInternalTest {
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
 
-            InOrder inOrder = inOrder(actorClient);
-            inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
+            InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+            inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
             inOrder.verify(actorClient).close();
             inOrder.verifyNoMoreInteractions();
         }
@@ -217,8 +225,8 @@ public final class ActorInternalTest {
 
             actor.onMessage(DUMMY_ACTOR.getName(), FAIL_MSG);
 
-            verify(actorClient).sendToActorRegistry(argThat(isActorState(State.FAILED)));
-            verifyNoMoreInteractions(actorClient);
+            verify(actorRegistrySender).send(argThat(isActorState(State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
         }
     }
 
@@ -230,9 +238,9 @@ public final class ActorInternalTest {
             doThrow(new IllegalArgumentException()).when(actorClient).sendMetrics(any(MetricValuesMessage.class));
             actor.dumpAndFlushMetrics();
 
-            InOrder inOrder = inOrder(actorClient);
+            InOrder inOrder = inOrder(actorClient, actorRegistrySender);
             inOrder.verify(actorClient).sendMetrics(any(MetricValuesMessage.class));
-            inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+            inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
             inOrder.verifyNoMoreInteractions();
         }
     }
@@ -259,8 +267,8 @@ public final class ActorInternalTest {
                     return true;
                 }
             };
-            InOrder inOrder = inOrder(actorClient);
-            inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
+            InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+            inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.INITIALIZED)));
             inOrder.verify(actorClient).sendMetrics(argThat(matchesMetrics));
             inOrder.verifyNoMoreInteractions();
         }
@@ -275,8 +283,8 @@ public final class ActorInternalTest {
 
         actor.close();
 
-        InOrder inOrder = inOrder(actorClient);
-        inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
+        InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+        inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -288,8 +296,8 @@ public final class ActorInternalTest {
         actor.close();
 
         assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-        InOrder inOrder = inOrder(actorClient);
-        inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
+        InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+        inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -302,8 +310,8 @@ public final class ActorInternalTest {
         actor.close();
 
         assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-        InOrder inOrder = inOrder(actorClient);
-        inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
+        InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+        inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -313,8 +321,8 @@ public final class ActorInternalTest {
         ActorInternal actor = createActor(TestActorAfterThrows.class);
         actor.close();
 
-        InOrder inOrder = inOrder(actorClient);
-        inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+        InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+        inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -323,12 +331,12 @@ public final class ActorInternalTest {
     public void close_actor_and_sending_lifecycle_msg_throws() throws Exception {
         ActorInternal actor = defaultTestActor();
 
-        doThrow(new IllegalArgumentException()).when(actorClient).sendToActorRegistry(any(ActorLifecycleMessage.class));
+        doThrow(new IllegalArgumentException()).when(actorRegistrySender).send(any(ActorLifecycleMessage.class));
 
         actor.close();
 
-        InOrder inOrder = inOrder(actorClient);
-        inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
+        InOrder inOrder = inOrder(actorRegistrySender, actorClient);
+        inOrder.verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CLOSED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -350,8 +358,8 @@ public final class ActorInternalTest {
 
             // Assert after method was called
             assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
-            verify(actorClient).sendToActorRegistry(argThat(isActorState(State.FAILED)));
-            verifyNoMoreInteractions(actorClient);
+            verify(actorRegistrySender).send(argThat(isActorState(State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
         }
     }
 

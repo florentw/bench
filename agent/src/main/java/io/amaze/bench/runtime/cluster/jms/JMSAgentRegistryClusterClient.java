@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.jms;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
@@ -29,12 +30,14 @@ import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 /**
  * Created on 9/25/16.
  */
-public final class JMSAgentRegistryClusterClient implements AgentRegistryClusterClient {
+public final class JMSAgentRegistryClusterClient extends JMSClusterClient implements AgentRegistryClusterClient {
 
-    private final JMSClient client;
+    public JMSAgentRegistryClusterClient(@NotNull final JMSEndpoint endpoint) {
+        super(endpoint);
+    }
 
-    public JMSAgentRegistryClusterClient(@NotNull final JMSClient client) {
-        this.client = checkNotNull(client);
+    JMSAgentRegistryClusterClient(@NotNull final JMSClient client) {
+        super(client);
     }
 
     @Override
@@ -43,16 +46,11 @@ public final class JMSAgentRegistryClusterClient implements AgentRegistryCluster
 
         try {
             JMSAgentRegistryTopicListener msgListener = new JMSAgentRegistryTopicListener(agentsListener);
-            client.addTopicListener(AGENT_REGISTRY_TOPIC, msgListener);
-            client.startListening();
+            getClient().addTopicListener(AGENT_REGISTRY_TOPIC, msgListener);
+            getClient().startListening();
 
         } catch (JMSException e) {
             throw propagate(e);
         }
-    }
-
-    @Override
-    public void close() {
-        // Nothing to close
     }
 }

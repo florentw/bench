@@ -44,18 +44,19 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     private final JgroupsClusterMember jgroupsClusterMember;
     private final JgroupsSender jgroupsSender;
     private final JChannel jChannel;
+    private final ActorRegistry actorRegistry;
 
     private JgroupsActorRegistryClusterClient registryClusterClient;
     private JgroupsClusterConfigFactory jgroupsClusterConfigFactory;
 
     public JgroupsClusterClientFactory(@NotNull final Config factoryConfig,
                                        @NotNull final ActorRegistry actorRegistry) {
+        this.actorRegistry = checkNotNull(actorRegistry);
         checkNotNull(factoryConfig);
-        checkNotNull(actorRegistry);
 
         jChannel = createJChannel(factoryConfig);
 
-        jgroupsSender = new JgroupsSender(jChannel, actorRegistry);
+        jgroupsSender = new JgroupsSender(jChannel);
         jgroupsClusterMember = new JgroupsClusterMember(jChannel);
         registryClusterClient = new JgroupsActorRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
                                                                       jgroupsClusterMember.stateMultiplexer(),
@@ -75,15 +76,14 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     @Override
     public AgentClusterClient createForAgent(@NotNull final String agent) {
         checkNotNull(agent);
-        return new JgroupsAgentClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender);
+        return new JgroupsAgentClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender, actorRegistry);
     }
 
     @Override
     public ActorClusterClient createForActor(@NotNull final ActorKey actor) {
         checkNotNull(actor);
         return new JgroupsActorClusterClient(getLocalEndpoint(),
-                                             jgroupsClusterMember.listenerMultiplexer(),
-                                             jgroupsSender);
+                                             jgroupsClusterMember.listenerMultiplexer(),jgroupsSender, actorRegistry);
     }
 
     @Override

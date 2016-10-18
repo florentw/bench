@@ -15,14 +15,11 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
-import io.amaze.bench.runtime.cluster.ActorCreationRequest;
-import io.amaze.bench.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.runtime.cluster.*;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
@@ -36,12 +33,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class JgroupsAgentClusterClient implements AgentClusterClient {
 
     private final JgroupsListenerMultiplexer multiplexer;
-    private final JgroupsSender sender;
+    private final JgroupsSender jgroupsSender;
+    private final ActorRegistry actorRegistry;
 
     JgroupsAgentClusterClient(@NotNull final JgroupsListenerMultiplexer multiplexer,
-                              @NotNull final JgroupsSender sender) {
+                              @NotNull final JgroupsSender jgroupsSender,
+                              @NotNull final ActorRegistry actorRegistry) {
+
         this.multiplexer = checkNotNull(multiplexer);
-        this.sender = checkNotNull(sender);
+        this.jgroupsSender = checkNotNull(jgroupsSender);
+        this.actorRegistry = checkNotNull(actorRegistry);
     }
 
     @Override
@@ -54,25 +55,18 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
     }
 
     @Override
-    public void sendToAgentRegistry(@NotNull final AgentLifecycleMessage message) {
-        checkNotNull(message);
-
-        sender.broadcast(message);
+    public AgentRegistrySender agentRegistrySender() {
+        return new JgroupsAgentRegistrySender(jgroupsSender);
     }
 
     @Override
-    public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        checkNotNull(actorLifecycleMessage);
-
-        sender.broadcast(actorLifecycleMessage);
+    public ActorRegistrySender actorRegistrySender() {
+        return new JgroupsActorRegistrySender(jgroupsSender);
     }
 
     @Override
-    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
-        checkNotNull(to);
-        checkNotNull(message);
-
-        sender.sendToActor(to, message);
+    public ActorSender actorSender() {
+        return new JgroupsActorSender(jgroupsSender, actorRegistry);
     }
 
     @Override

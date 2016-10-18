@@ -18,10 +18,7 @@ package io.amaze.bench.runtime.cluster.jms;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
@@ -36,10 +33,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import javax.jms.MessageListener;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
-import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
-import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
-import static io.amaze.bench.util.Matchers.isActorLifecycle;
-import static io.amaze.bench.util.Matchers.isAgentLifecycle;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -89,26 +82,6 @@ public final class JMSAgentClusterClientTest {
 
         verify(jmsClient).addTopicListener(eq(Constants.AGENTS_TOPIC), any(MessageListener.class));
         verify(jmsClient).startListening();
-        verifyNoMoreInteractions(jmsClient);
-    }
-
-    @Test
-    public void send_to_actor_registry_sends_to_topic() throws JMSException {
-        ActorLifecycleMessage closed = ActorLifecycleMessage.closed(TestActor.DUMMY_ACTOR);
-        client.sendToActorRegistry(closed);
-
-        verify(jmsClient).sendToTopic(eq(ACTOR_REGISTRY_TOPIC), argThat(isActorLifecycle(TEST_AGENT, closed)));
-        verifyNoMoreInteractions(jmsClient);
-    }
-
-    @Test
-    public void send_to_agent_registry_sends_to_topic() throws JMSException {
-        AgentLifecycleMessage agentLifecycleMessage = AgentLifecycleMessage.closed(TEST_AGENT);
-
-        client.sendToAgentRegistry(agentLifecycleMessage);
-
-        verify(jmsClient).sendToTopic(eq(AGENT_REGISTRY_TOPIC),
-                                      argThat(isAgentLifecycle(TEST_AGENT, agentLifecycleMessage)));
         verifyNoMoreInteractions(jmsClient);
     }
 

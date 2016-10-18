@@ -70,20 +70,20 @@ public final class Actors {
         }
 
         public Future<ActorDeployInfo> initialize() {
-            actorSender.sendToActor(config.getKey(), ActorInputMessage.init());
+            actorSender.send(config.getKey(), ActorInputMessage.init());
             return actorInitialized;
         }
 
         public void dumpMetrics() {
-            actorSender.sendToActor(config.getKey(), ActorInputMessage.dumpMetrics());
+            actorSender.send(config.getKey(), ActorInputMessage.dumpMetrics());
         }
 
         public void send(final String from, final Serializable message) {
-            actorSender.sendToActor(config.getKey(), ActorInputMessage.sendMessage(from, message));
+            actorSender.send(config.getKey(), ActorInputMessage.sendMessage(from, message));
         }
 
         public Future<Void> close() {
-            actorSender.sendToActor(config.getKey(), ActorInputMessage.close());
+            actorSender.send(config.getKey(), ActorInputMessage.close());
             return actorClosed;
         }
 

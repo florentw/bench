@@ -113,7 +113,7 @@ public final class ActorsTest {
         Future<ActorDeployInfo> future = actorHandle.initialize();
 
         assertNotNull(future);
-        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.init());
+        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.init());
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -123,7 +123,7 @@ public final class ActorsTest {
 
         actorHandle.dumpMetrics();
 
-        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.dumpMetrics());
+        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.dumpMetrics());
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -135,7 +135,7 @@ public final class ActorsTest {
 
         actorHandle.send(from, message);
 
-        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.sendMessage(from, message));
+        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.sendMessage(from, message));
         verifyNoMoreInteractions(actorSender);
     }
 
@@ -146,7 +146,7 @@ public final class ActorsTest {
         Future<Void> close = actorHandle.close();
 
         assertNotNull(close);
-        verify(actorSender).sendToActor(ACTOR_KEY, ActorInputMessage.close());
+        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.close());
         verifyNoMoreInteractions(actorSender);
     }
 

@@ -33,8 +33,7 @@ import java.io.Serializable;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 9/16/16.
@@ -68,9 +67,10 @@ public final class JMSActorSenderTest {
 
     @Test
     public void send_to_actor() throws JMSException {
-        sender.sendToActor(DUMMY_ACTOR, DUMMY_MSG);
+        sender.send(DUMMY_ACTOR, DUMMY_MSG);
 
         verify(jmsClient).sendToQueue(DUMMY_ACTOR.getName(), DUMMY_MSG);
+        verifyNoMoreInteractions(jmsClient);
     }
 
     @Test
@@ -81,7 +81,7 @@ public final class JMSActorSenderTest {
         expectedException.expect(RuntimeException.class);
         expectedException.expectCause(is(expectedCause));
 
-        sender.sendToActor(DUMMY_ACTOR, DUMMY_MSG);
+        sender.send(DUMMY_ACTOR, DUMMY_MSG);
     }
 
 }

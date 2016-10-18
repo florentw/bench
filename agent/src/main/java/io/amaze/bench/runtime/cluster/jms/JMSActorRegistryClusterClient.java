@@ -18,7 +18,6 @@ package io.amaze.bench.runtime.cluster.jms;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -55,10 +54,5 @@ public final class JMSActorRegistryClusterClient extends JMSClusterClient implem
         } catch (JMSException e) {
             throw propagate(e);
         }
-    }
-
-    @Override
-    public void sendToActorRegistry(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        throw new UnsupportedOperationException();
     }
 }

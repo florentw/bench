@@ -57,7 +57,7 @@ public final class JgroupsAgentClusterTest {
                                                                                     actorRegistry);
         JChannel jChannel = clientFactory.getJChannel();
         ActorClusterClient actorClusterClient = clientFactory.createForActor(key);
-        actorClusterClient.sendToActorRegistry(ActorLifecycleMessage.created(key, "agent"));
+        actorClusterClient.actorRegistrySender().send(ActorLifecycleMessage.created(key, "agent"));
         ActorInternal actorInternal = (ActorInternal) new Actors(clientFactory).create(key,
                                                                                        TestActor.class.getName(),
                                                                                        "{}");

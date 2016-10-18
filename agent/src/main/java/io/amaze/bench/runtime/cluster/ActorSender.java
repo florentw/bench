@@ -18,6 +18,6 @@ public interface ActorSender {
      * @param to      Target actor key
      * @param message Payload to send
      */
-    void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message);
+    void send(@NotNull final ActorKey to, @NotNull final ActorInputMessage message);
 
 }

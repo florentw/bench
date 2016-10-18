@@ -110,7 +110,7 @@ public final class ResourceManagerAgentTest {
         sync.assertActorCreated();
 
         ActorInputMessage initMessage = ActorInputMessage.init();
-        actorSender.sendToActor(DUMMY_ACTOR, initMessage);
+        actorSender.send(DUMMY_ACTOR, initMessage);
 
         sync.assertActorInitialized();
 

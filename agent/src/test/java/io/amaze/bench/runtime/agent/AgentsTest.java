@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.runtime.cluster.AgentRegistrySender;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
@@ -68,9 +69,10 @@ public final class AgentsTest {
     private ClusterConfigFactory clusterConfigFactory;
     @Mock
     private Endpoint endpoint;
+    @Mock
+    private AgentRegistrySender agentRegistrySender;
 
     private AgentRegistryListener agentRegistryListener;
-
     private Agents agents;
 
     @Before
@@ -78,6 +80,7 @@ public final class AgentsTest {
         agents = new Agents(actorManagers, clusterClientFactory, agentRegistry);
         when(clusterClientFactory.createForAgent(AGENT_NAME)).thenReturn(agentClusterClient);
         when(clusterClientFactory.getLocalEndpoint()).thenReturn(endpoint);
+        when(agentClusterClient.agentRegistrySender()).thenReturn(agentRegistrySender);
 
         doAnswer(invocation -> agentRegistryListener = (AgentRegistryListener) invocation.getArguments()[0]).when(
                 agentRegistry).addListener(any(AgentRegistryListener.class));
@@ -149,8 +152,7 @@ public final class AgentsTest {
     }
 
     @Test
-    public void agent_failure_sets_throwable()
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public void agent_failure_sets_throwable() throws ExecutionException, InterruptedException, TimeoutException {
         Exception throwable = new IllegalArgumentException();
         Future<Agent> future = agents.create(AGENT_NAME);
 

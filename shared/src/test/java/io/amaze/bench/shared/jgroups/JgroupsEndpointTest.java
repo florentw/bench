@@ -4,6 +4,7 @@ import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.test.Json;
+import io.amaze.bench.shared.util.Network;
 import org.jgroups.stack.IpAddress;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +53,7 @@ public final class JgroupsEndpointTest {
     }
 
     private JgroupsEndpoint jgroupsEndpoint() throws Exception {
-        IpAddress address = new IpAddress("localhost:1337");
+        IpAddress address = new IpAddress(Network.LOCALHOST, 1337);
         return new JgroupsEndpoint(address);
     }
 

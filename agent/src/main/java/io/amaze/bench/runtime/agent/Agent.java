@@ -96,7 +96,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
             actors.put(actorKey, instance.get());
-            agentClient.sendToActorRegistry(created(actorKey, name));
+            agentClient.actorRegistrySender().send(created(actorKey, name));
         }
 
         log.info("{} Actor {} created.", this, actorKey);
@@ -145,11 +145,11 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void sendRegistrationMessage(@NotNull final AgentRegistrationMessage regMsg) {
-        agentClient.sendToAgentRegistry(AgentLifecycleMessage.created(regMsg));
+        agentClient.agentRegistrySender().send(AgentLifecycleMessage.created(regMsg));
     }
 
     private void signOff() {
-        agentClient.sendToAgentRegistry(AgentLifecycleMessage.closed(name));
+        agentClient.agentRegistrySender().send(AgentLifecycleMessage.closed(name));
     }
 
     private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {
@@ -173,6 +173,6 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     private void actorFailure(@NotNull final ActorKey actor, @NotNull final Throwable throwable) {
-        agentClient.sendToActorRegistry(failed(actor, throwable));
+        agentClient.actorRegistrySender().send(failed(actor, throwable));
     }
 }

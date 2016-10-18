@@ -18,10 +18,7 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
-import io.amaze.bench.runtime.cluster.ActorClusterClient;
-import io.amaze.bench.runtime.cluster.AgentClusterClient;
-import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
+import io.amaze.bench.runtime.cluster.*;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.test.Json;
 import org.junit.After;
@@ -69,6 +66,12 @@ public final class AgentTest {
     @Mock
     private ClusterConfigFactory clusterConfigFactory;
     @Mock
+    private ActorRegistrySender actorRegistrySender;
+    @Mock
+    private ActorRegistrySender agentActorRegistrySender;
+    @Mock
+    private AgentRegistrySender agentRegistrySender;
+    @Mock
     private Endpoint localEndpoint;
 
     private Agent agent;
@@ -76,13 +79,21 @@ public final class AgentTest {
 
     @Before
     public void before() throws ValidationException {
-        clientFactory = new DummyClientFactory(localEndpoint, agentClient, actorClient, actorRegistryClient, clusterConfigFactory);
+        clientFactory = new DummyClientFactory(localEndpoint,
+                                               agentClient,
+                                               actorClient,
+                                               actorRegistryClient,
+                                               clusterConfigFactory);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);
         when(actorManagers.createForked(anyString(), eq(clusterConfigFactory))).thenReturn(forkedManager);
         doReturn(embeddedManagedActor).when(embeddedManager).createActor(TestActor.DUMMY_CONFIG);
         doReturn(forkedManagedActor).when(forkedManager).createActor(TestActor.DUMMY_CONFIG);
+
+        doReturn(agentActorRegistrySender).when(agentClient).actorRegistrySender();
+        doReturn(actorRegistrySender).when(actorClient).actorRegistrySender();
+        doReturn(agentRegistrySender).when(agentClient).agentRegistrySender();
 
         agent = new Agent(DUMMY_AGENT, clientFactory, actorManagers);
 
@@ -133,9 +144,9 @@ public final class AgentTest {
         verify(embeddedManager).createActor(DUMMY_CONFIG);
         verifyZeroInteractions(forkedManager);
 
-        verify(agentClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
-        verifyNoMoreInteractions(agentClient);
-        verifyNoMoreInteractions(actorClient);
+        verify(agentActorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
+        verifyNoMoreInteractions(agentActorRegistrySender);
+        verifyNoMoreInteractions(actorRegistrySender);
     }
 
     @Test
@@ -157,10 +168,11 @@ public final class AgentTest {
         agent.onActorCloseRequest(DUMMY_ACTOR);
 
         // Check good flow of messages
-        verify(agentClient).sendToActorRegistry(argThat(isActorState(State.CREATED)));
+        verify(agentActorRegistrySender).send(argThat(isActorState(State.CREATED)));
         verify(embeddedManagedActor).close();
         verifyNoMoreInteractions(embeddedManagedActor);
-        verifyNoMoreInteractions(agentClient);
+        verifyNoMoreInteractions(agentActorRegistrySender);
+        verifyNoMoreInteractions(actorRegistrySender);
     }
 
     @Test
@@ -179,10 +191,10 @@ public final class AgentTest {
 
         agent.onActorCloseRequest(DUMMY_ACTOR);
 
-        InOrder inOrder = inOrder(actorClient, agentClient);
+        InOrder inOrder = inOrder(actorClient, agentActorRegistrySender, actorRegistrySender);
         inOrder.verify(actorClient).startActorListener(any(RuntimeActor.class));
-        inOrder.verify(agentClient).sendToActorRegistry(argThat(isActorState(State.CREATED)));
-        inOrder.verify(actorClient).sendToActorRegistry(argThat(isActorState(State.FAILED)));
+        inOrder.verify(agentActorRegistrySender).send(argThat(isActorState(State.CREATED)));
+        inOrder.verify(actorRegistrySender).send(argThat(isActorState(State.FAILED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -195,10 +207,10 @@ public final class AgentTest {
 
         assertThat(agent.getActors().isEmpty(), is(true));
 
-        InOrder inOrder = inOrder(agentClient, actorClient, embeddedManagedActor);
-        inOrder.verify(agentClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
+        InOrder inOrder = inOrder(agentActorRegistrySender, agentRegistrySender, embeddedManagedActor);
+        inOrder.verify(agentActorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
         inOrder.verify(embeddedManagedActor).close();
-        inOrder.verify(agentClient).sendToAgentRegistry(argThat(isAgentState(AgentLifecycleMessage.State.CLOSED)));
+        inOrder.verify(agentRegistrySender).send(argThat(isAgentState(AgentLifecycleMessage.State.CLOSED)));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -209,9 +221,9 @@ public final class AgentTest {
         agent.onActorCreationRequest(DUMMY_CONFIG);
         assertThat(agent.getActors().size(), is(1));
 
-        verify(agentClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
-        verifyNoMoreInteractions(actorClient);
-        verifyNoMoreInteractions(agentClient);
+        verify(agentActorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
+        verifyNoMoreInteractions(actorRegistrySender);
+        verifyNoMoreInteractions(agentActorRegistrySender);
     }
 
     @Test
@@ -220,13 +232,14 @@ public final class AgentTest {
         agent.onActorCreationRequest(configForActor(String.class));
 
         assertThat(agent.getActors().isEmpty(), is(true));
-        verify(agentClient).sendToActorRegistry(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+        verify(agentActorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
         verifyNoMoreInteractions(actorClient);
-        verifyNoMoreInteractions(agentClient);
+        verifyNoMoreInteractions(actorRegistrySender);
     }
 
     private void start_agent_registers_properly() {
         verify(agentClient).startAgentListener(eq(DUMMY_AGENT), any(AgentClientListener.class));
-        verify(agentClient).sendToAgentRegistry(argThat(isAgentState(AgentLifecycleMessage.State.CREATED)));
+        verify(agentRegistrySender).send(argThat(isAgentState(AgentLifecycleMessage.State.CREATED)));
+        verify(agentClient).agentRegistrySender();
     }
 }

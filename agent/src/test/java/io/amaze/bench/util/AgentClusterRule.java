@@ -20,7 +20,7 @@ public final class AgentClusterRule extends ExternalResource {
     }
 
     public AgentRegistryClusterClient agentRegistryClusterClient() {
-        return new JMSAgentRegistryClusterClient(client);
+        return new JMSAgentRegistryClusterClient(jmsServerRule.getEndpoint());
     }
 
     @Override

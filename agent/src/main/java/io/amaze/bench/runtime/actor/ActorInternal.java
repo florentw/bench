@@ -215,12 +215,12 @@ public class ActorInternal implements RuntimeActor {
     }
 
     private void sendLifecycleMessage(@NotNull final ActorLifecycleMessage msg) {
-        client.sendToActorRegistry(msg);
+        client.actorRegistrySender().send(msg);
     }
 
     private void actorFailure(@NotNull final Throwable throwable) {
         log.warn("{} failure.", this, throwable);
 
-        client.sendToActorRegistry(failed(actorKey, throwable));
+        client.actorRegistrySender().send(failed(actorKey, throwable));
     }
 }

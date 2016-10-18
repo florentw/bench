@@ -44,7 +44,7 @@ public class JMSActorSender implements ActorSender {
      * @param message Contents of the message, {@link ActorInputMessage}
      */
     @Override
-    public void sendToActor(@NotNull final ActorKey key, @NotNull final ActorInputMessage message) {
+    public void send(@NotNull final ActorKey key, @NotNull final ActorInputMessage message) {
         checkNotNull(key);
         checkNotNull(message);
 

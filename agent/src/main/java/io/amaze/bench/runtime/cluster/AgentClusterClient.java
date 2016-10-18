@@ -17,14 +17,13 @@ package io.amaze.bench.runtime.cluster;
 
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 
 import javax.validation.constraints.NotNull;
 
 /**
  * Interface for an {@link Agent} to communicate with cluster members.
  */
-public interface AgentClusterClient extends ClusterClient, ActorSender {
+public interface AgentClusterClient extends ClusterClient {
 
     /**
      * Starts a listener for the agent to listen to incoming messages.
@@ -34,12 +33,13 @@ public interface AgentClusterClient extends ClusterClient, ActorSender {
      */
     void startAgentListener(@NotNull final String agent, @NotNull final AgentClientListener listener);
 
-    /**
-     * A call to this method will send a message {@code message} to the agent registry topic
-     * using the underlying messaging system.
-     *
-     * @param message Payload to send
-     */
-    void sendToAgentRegistry(@NotNull final AgentLifecycleMessage message);
+    @NotNull
+    AgentRegistrySender agentRegistrySender();
+
+    @NotNull
+    ActorRegistrySender actorRegistrySender();
+
+    @NotNull
+    ActorSender actorSender();
 
 }

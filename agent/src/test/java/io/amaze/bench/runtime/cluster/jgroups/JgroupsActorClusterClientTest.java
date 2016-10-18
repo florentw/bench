@@ -4,9 +4,9 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,12 +36,14 @@ public final class JgroupsActorClusterClientTest {
     private Endpoint endpoint;
     @Mock
     private RuntimeActor runtimeActor;
+    @Mock
+    private ActorRegistry actorRegistry;
 
     private JgroupsActorClusterClient clusterClient;
 
     @Before
     public void init() {
-        clusterClient = new JgroupsActorClusterClient(endpoint, listenerMultiplexer, jgroupsSender);
+        clusterClient = new JgroupsActorClusterClient(endpoint, listenerMultiplexer, jgroupsSender, actorRegistry);
     }
 
     @Test
@@ -49,6 +51,7 @@ public final class JgroupsActorClusterClientTest {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
+        tester.setDefault(JgroupsSender.class, jgroupsSender);
 
         tester.testAllPublicConstructors(JgroupsActorClusterClient.class);
         tester.testAllPublicInstanceMethods(clusterClient);
@@ -71,29 +74,6 @@ public final class JgroupsActorClusterClientTest {
         clusterClient.sendMetrics(message);
 
         verify(jgroupsSender).broadcast(message);
-        verifyNoMoreInteractions(jgroupsSender);
-        verifyZeroInteractions(listenerMultiplexer);
-    }
-
-    @Test
-    public void send_to_actor_registry_broadcasts() {
-        ActorLifecycleMessage message = ActorLifecycleMessage.closed(new ActorKey("key"));
-
-        clusterClient.sendToActorRegistry(message);
-
-        verify(jgroupsSender).broadcast(message);
-        verifyNoMoreInteractions(jgroupsSender);
-        verifyZeroInteractions(listenerMultiplexer);
-    }
-
-    @Test
-    public void send_to_actor_sends_message() {
-        ActorInputMessage input = ActorInputMessage.sendMessage("other", "hello");
-        ActorKey actor = new ActorKey("actor");
-
-        clusterClient.sendToActor(actor, input);
-
-        verify(jgroupsSender).sendToActor(eq(actor), same(input));
         verifyNoMoreInteractions(jgroupsSender);
         verifyZeroInteractions(listenerMultiplexer);
     }

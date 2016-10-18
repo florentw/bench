@@ -23,6 +23,7 @@ import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSHelper;
+import io.amaze.bench.shared.util.Network;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +48,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSActorRegistryTopicListenerTest {
 
-    private final Endpoint endpoint = new JMSEndpoint("localhost", 1337);
+    private final Endpoint endpoint = new JMSEndpoint(Network.LOCALHOST, 1337);
 
     @Mock
     private ActorRegistryListener actorRegistryListener;

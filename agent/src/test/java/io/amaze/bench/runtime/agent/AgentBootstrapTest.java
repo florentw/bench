@@ -19,12 +19,16 @@ import com.typesafe.config.ConfigException;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.runtime.cluster.AgentRegistrySender;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.runtime.agent.AgentBootstrap.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -35,17 +39,22 @@ import static org.mockito.Mockito.*;
 /**
  * Created on 4/10/16.
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class AgentBootstrapTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
+    @Mock
+    private AgentRegistrySender agentRegistrySender;
 
     private DummyClientFactory clientFactory;
 
     @Before
     public void before() {
+        AgentClusterClient agentClusterClient = mock(AgentClusterClient.class);
+        when(agentClusterClient.agentRegistrySender()).thenReturn(agentRegistrySender);
         clientFactory = new DummyClientFactory(mock(Endpoint.class),
-                                               mock(AgentClusterClient.class),
+                                               agentClusterClient,
                                                mock(ActorClusterClient.class),
                                                mock(ActorRegistryClusterClient.class),
                                                mock(ClusterConfigFactory.class));

@@ -16,11 +16,7 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.ClusterClient;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.FFMQClient;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
@@ -30,20 +26,17 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
 
 /**
  * Created on 3/3/16.
  */
-abstract class JMSClusterClient implements ClusterClient, ActorSender {
+abstract class JMSClusterClient implements ClusterClient {
 
     private final JMSClient client;
-    private final JMSActorSender actorSender;
 
     @VisibleForTesting
     JMSClusterClient(@NotNull final JMSClient client) {
         this.client = checkNotNull(client);
-        actorSender = initActorSender(client);
     }
 
     JMSClusterClient(@NotNull final JMSEndpoint endpoint) {
@@ -54,7 +47,6 @@ abstract class JMSClusterClient implements ClusterClient, ActorSender {
         } catch (JMSException e) {
             throw propagate(e);
         }
-        actorSender = initActorSender(client);
     }
 
     @Override
@@ -62,28 +54,8 @@ abstract class JMSClusterClient implements ClusterClient, ActorSender {
         client.close();
     }
 
-    @Override
-    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
-        checkNotNull(to);
-        checkNotNull(message);
-
-        actorSender.sendToActor(to, message);
-    }
-
-    final void sendToActorRegistry(final Message msg) {
-        try {
-            getClient().sendToTopic(ACTOR_REGISTRY_TOPIC, msg);
-        } catch (JMSException e) {
-            throw propagate(e);
-        }
-    }
-
     final JMSClient getClient() {
         return client;
-    }
-
-    private JMSActorSender initActorSender(final JMSClient client) {
-        return new JMSActorSender(client);
     }
 
 }

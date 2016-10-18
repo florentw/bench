@@ -6,8 +6,8 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
+import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,12 +34,14 @@ public final class JgroupsAgentClusterClientTest {
     private JgroupsSender jgroupsSender;
     @Mock
     private AgentClientListener agentClientListener;
+    @Mock
+    private ActorRegistry actorRegistry;
 
     private JgroupsAgentClusterClient clusterClient;
 
     @Before
     public void init() {
-        clusterClient = new JgroupsAgentClusterClient(listenerMultiplexer, jgroupsSender);
+        clusterClient = new JgroupsAgentClusterClient(listenerMultiplexer, jgroupsSender, actorRegistry);
     }
 
     @Test
@@ -61,17 +63,6 @@ public final class JgroupsAgentClusterClientTest {
                                                 any(JgroupsAgentClusterClient.MessageListener.class));
         verifyNoMoreInteractions(listenerMultiplexer);
         verifyZeroInteractions(jgroupsSender);
-    }
-
-    @Test
-    public void send_to_agent_registry_broadcasts() {
-        AgentLifecycleMessage message = AgentLifecycleMessage.closed("key");
-
-        clusterClient.sendToAgentRegistry(message);
-
-        verify(jgroupsSender).broadcast(message);
-        verifyNoMoreInteractions(jgroupsSender);
-        verifyZeroInteractions(listenerMultiplexer);
     }
 
     @Test

@@ -105,7 +105,7 @@ public class Actors {
             checkNotNull(payload);
 
             ActorInputMessage message = ActorInputMessage.sendMessage(key.getName(), payload);
-            client.sendToActor(new ActorKey(to), message);
+            client.actorSender().send(new ActorKey(to), message);
         });
 
         pico.addComponent(metrics);

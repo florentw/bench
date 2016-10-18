@@ -15,11 +15,6 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.ActorSender;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +23,6 @@ import org.jgroups.util.Util;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.NoSuchElementException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
@@ -36,16 +30,14 @@ import static com.google.common.base.Throwables.propagate;
 /**
  * Created on 10/1/16.
  */
-public class JgroupsSender implements ActorSender {
+public class JgroupsSender {
 
     private static final Logger log = LogManager.getLogger();
 
     private final JChannel channel;
-    private final ActorRegistry actorRegistry;
 
-    public JgroupsSender(@NotNull final JChannel channel, @NotNull final ActorRegistry actorRegistry) {
+    public JgroupsSender(@NotNull final JChannel channel) {
         this.channel = checkNotNull(channel);
-        this.actorRegistry = checkNotNull(actorRegistry);
     }
 
     public void broadcast(@NotNull final Serializable message) {
@@ -59,20 +51,11 @@ public class JgroupsSender implements ActorSender {
         }
     }
 
-    @Override
-    public void sendToActor(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
-        checkNotNull(to);
+    public void sendToEndpoint(JgroupsEndpoint endpoint, Serializable message) {
+        checkNotNull(endpoint);
         checkNotNull(message);
-        log.debug("Sending {} to actor {} on {}", message, to, channel);
-
-        // We need to resolve the endpoint using the actor's name first
-        RegisteredActor registeredActor = actorRegistry.byKey(to);
-        if (registeredActor == null || registeredActor.getDeployInfo() == null) {
-            throw new NoSuchElementException("Cannot find endpoint for " + to + ".");
-        }
 
         try {
-            JgroupsEndpoint endpoint = registeredActor.getDeployInfo().getEndpoint();
             channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));
         } catch (Exception e) {
             throw propagate(e);

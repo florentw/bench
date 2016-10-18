@@ -16,7 +16,10 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.actor.ActorInputMessage;
+import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.actor.RuntimeActor;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.After;
@@ -27,11 +30,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
-import java.io.Serializable;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
-import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
-import static io.amaze.bench.util.Matchers.isActorLifecycle;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -89,46 +89,10 @@ public final class JMSActorClusterClientTest {
     }
 
     @Test
-    public void send_to_actor_registry_sends_to_topic() throws JMSException {
-        ActorLifecycleMessage closed = ActorLifecycleMessage.closed(TestActor.DUMMY_ACTOR);
-        client.sendToActorRegistry(closed);
-
-        verify(jmsClient).sendToTopic(eq(ACTOR_REGISTRY_TOPIC),
-                                      argThat(isActorLifecycle(TestActor.DUMMY_ACTOR.getName(), closed)));
-        verifyNoMoreInteractions(jmsClient);
-    }
-
-    @Test
-    public void send_to_actors_sends_to_jms_queue() throws JMSException {
-        ActorInputMessage testMsg = getTestMsg();
-        client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
-
-        verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR.getName(), testMsg);
-        verifyNoMoreInteractions(jmsClient);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void send_to_actors_sends_to_jms_queue_throws() throws JMSException {
-        ActorInputMessage testMsg = getTestMsg();
-        doThrow(new JMSException(new IllegalArgumentException())) //
-                .when(jmsClient) //
-                .sendToQueue(anyString(), any(Serializable.class));
-
-        client.sendToActor(TestActor.DUMMY_ACTOR, testMsg);
-
-        verify(jmsClient).sendToQueue(TestActor.DUMMY_ACTOR.getName(), testMsg);
-        verifyNoMoreInteractions(jmsClient);
-    }
-
-    @Test
     public void close_closes_jms_client() throws JMSException {
         client.close();
 
         verify(jmsClient).close();
         verifyNoMoreInteractions(jmsClient);
-    }
-
-    private ActorInputMessage getTestMsg() {
-        return ActorInputMessage.sendMessage(TestActor.DUMMY_ACTOR.getName(), "data");
     }
 }

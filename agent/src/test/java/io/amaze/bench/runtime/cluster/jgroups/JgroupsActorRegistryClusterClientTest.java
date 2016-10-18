@@ -8,6 +8,7 @@ import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
 import io.amaze.bench.shared.jgroups.*;
+import io.amaze.bench.shared.util.Network;
 import org.jgroups.Address;
 import org.jgroups.Message;
 import org.jgroups.stack.IpAddress;
@@ -58,7 +59,7 @@ public final class JgroupsActorRegistryClusterClientTest {
 
     @Before
     public void init() throws UnknownHostException {
-        address = new IpAddress("localhost", 1337);
+        address = new IpAddress(Network.LOCALHOST, 1337);
         endpoint = new JgroupsEndpoint(address);
         registryClusterClient = new JgroupsActorRegistryClusterClient(listenerMultiplexer,
                                                                       stateMultiplexer,
