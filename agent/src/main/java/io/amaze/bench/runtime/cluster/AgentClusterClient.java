@@ -29,7 +29,7 @@ public interface AgentClusterClient extends ClusterClient {
      * Starts a listener for the agent to listen to incoming messages.
      *
      * @param agent    The name of the agent that will be notified of messages addressed to him on the given listener.
-     * @param listener An listener for the agent to be notified of incoming messages.
+     * @param listener The agent's listener, to be notified of incoming messages.
      */
     void startAgentListener(@NotNull final String agent, @NotNull final AgentClientListener listener);
 

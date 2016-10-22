@@ -4,7 +4,7 @@ import io.amaze.bench.runtime.agent.AgentConfig;
 import io.amaze.bench.runtime.cluster.jms.JMSAgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
-import io.amaze.bench.shared.test.JMSServerRule;
+import io.amaze.bench.shared.jms.JMSServerRule;
 import org.junit.rules.ExternalResource;
 
 /**

@@ -40,10 +40,11 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     private final JgroupsSender jgroupsSender;
     private final ActorRegistry actorRegistry;
 
-    public JgroupsActorClusterClient(@NotNull final Endpoint localEndpoint,
-                                     @NotNull final JgroupsListenerMultiplexer multiplexer,
-                                     @NotNull final JgroupsSender jgroupsSender,
-                                     @NotNull final ActorRegistry actorRegistry) {
+    JgroupsActorClusterClient(@NotNull final Endpoint localEndpoint,
+                              @NotNull final JgroupsListenerMultiplexer multiplexer,
+                              @NotNull final JgroupsSender jgroupsSender,
+                              @NotNull final ActorRegistry actorRegistry) {
+
         this.localEndpoint = checkNotNull(localEndpoint);
         this.multiplexer = checkNotNull(multiplexer);
         this.jgroupsSender = checkNotNull(jgroupsSender);

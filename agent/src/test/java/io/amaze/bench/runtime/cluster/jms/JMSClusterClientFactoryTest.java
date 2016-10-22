@@ -36,6 +36,7 @@ public final class JMSClusterClientFactoryTest {
     public void null_parameters_are_invalid() {
         JMSClusterClientFactory clientFactory = new JMSClusterClientFactory(new JMSEndpoint("", 1), actorRegistry);
         NullPointerTester tester = new NullPointerTester();
+
         tester.testAllPublicConstructors(JMSClusterClientFactory.class);
         tester.testAllPublicInstanceMethods(clientFactory);
     }

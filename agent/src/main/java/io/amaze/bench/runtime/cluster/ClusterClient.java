@@ -20,6 +20,8 @@ import io.amaze.bench.runtime.actor.ActorInternal;
 import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.agent.Agent;
 
+import java.io.Closeable;
+
 /**
  * Facade to interact with the underlying messaging system for:
  * <ul>
@@ -31,7 +33,7 @@ import io.amaze.bench.runtime.agent.Agent;
  * @see Agent
  * @see ActorInternal
  */
-public interface ClusterClient extends AutoCloseable {
+public interface ClusterClient extends Closeable {
 
     /**
      * Will release resource on the underlying messaging system

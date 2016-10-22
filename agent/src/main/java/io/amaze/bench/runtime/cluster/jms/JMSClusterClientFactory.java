@@ -25,6 +25,8 @@ import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 
 import javax.validation.constraints.NotNull;
@@ -52,6 +54,7 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
         this.actorRegistry = checkNotNull(actorRegistry);
     }
 
+    @Override
     public Endpoint getLocalEndpoint() {
         return DUMMY_JMS_ENDPOINT;
     }
@@ -71,6 +74,14 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
         JMSActorRegistryClusterClient registryClusterClient = new JMSActorRegistryClusterClient(serverEndpoint);
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
         return registryClusterClient;
+    }
+
+    @Override
+    public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
+        checkNotNull(agentRegistry);
+        JMSAgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
+        agentRegistryClient.startRegistryListener(agentRegistry.createClusterListener());
+        return agentRegistryClient;
     }
 
     @Override

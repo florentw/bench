@@ -29,6 +29,7 @@ public final class SystemConfigsTest {
     @Test
     public void creates_non_null_system_info() {
         SystemConfig systemConfig = SystemConfigs.get();
+
         assertNotNull(systemConfig);
         assertFalse(systemConfig.getHostName().isEmpty());
     }
@@ -37,6 +38,7 @@ public final class SystemConfigsTest {
     public void second_call_returns_same_instance() {
         SystemConfig first = SystemConfigs.get();
         SystemConfig second = SystemConfigs.get();
+
         assertSame(first, second);
     }
 

@@ -9,7 +9,7 @@ import io.amaze.bench.runtime.cluster.ClusterClients;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsClusterClientFactory;
 import io.amaze.bench.runtime.cluster.jms.JMSClusterClientFactory;
 import io.amaze.bench.shared.jms.JMSEndpoint;
-import io.amaze.bench.shared.test.JMSServerRule;
+import io.amaze.bench.shared.jms.JMSServerRule;
 
 /**
  * Created on 10/13/16.
@@ -29,9 +29,9 @@ public final class ClusterConfigs {
     public static Config dummyConfigFor(final Class<? extends ClusterClientFactory> factoryClass) {
         String factoryConfig;
         if (factoryClass.equals(JMS_FACTORY_CLASS)) {
-            factoryConfig = ClusterConfigs.jmsFactoryConfig(DUMMY_ENDPOINT);
+            factoryConfig = jmsFactoryConfigJson(DUMMY_ENDPOINT);
         } else if (factoryClass.equals(JGROUPS_FACTORY_CLASS)) {
-            factoryConfig = ClusterConfigs.jgroupsFactoryConfig().root().render(ConfigRenderOptions.concise());
+            factoryConfig = jgroupsFactoryConfigJson();
         } else {
             throw new UnsupportedOperationException();
         }
@@ -46,9 +46,7 @@ public final class ClusterConfigs {
     }
 
     public static AgentConfig jmsAgentConfig(final JMSServerRule server) {
-        String factoryConfig = ClusterConfigs.jmsFactoryConfig(server.getEndpoint());
-        Config clusterConfig = ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JMS_FACTORY_CLASS.getName() + "\"," + //
-                                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":" + factoryConfig + "}");
+        Config clusterConfig = jmsClusterConfig(server.getEndpoint());
         return new AgentConfig(clusterConfig);
     }
 
@@ -56,7 +54,17 @@ public final class ClusterConfigs {
         return ConfigFactory.parseString("{\"" + JgroupsClusterClientFactory.XML_CONFIG + "\":\"fast.xml\"}");
     }
 
-    public static String jmsFactoryConfig(final JMSEndpoint endpoint) {
+    public static Config jmsClusterConfig(final JMSEndpoint endpoint) {
+        return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JMS_FACTORY_CLASS.getName() + "\"," + //
+                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":" + jmsFactoryConfigJson(
+                endpoint) + "}");
+    }
+
+    private static String jgroupsFactoryConfigJson() {
+        return jgroupsFactoryConfig().root().render(ConfigRenderOptions.concise());
+    }
+
+    private static String jmsFactoryConfigJson(final JMSEndpoint endpoint) {
         return endpoint.toConfig().root().render(ConfigRenderOptions.concise());
     }
 

@@ -17,7 +17,6 @@ package io.amaze.bench.shared.jms;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.amaze.bench.shared.test.IntegrationTest;
-import io.amaze.bench.shared.test.JMSServerRule;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Rule;

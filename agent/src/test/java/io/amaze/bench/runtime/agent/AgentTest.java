@@ -82,8 +82,7 @@ public final class AgentTest {
         clientFactory = new DummyClientFactory(localEndpoint,
                                                agentClient,
                                                actorClient,
-                                               actorRegistryClient,
-                                               clusterConfigFactory);
+                                               actorRegistryClient, clusterConfigFactory, null);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);

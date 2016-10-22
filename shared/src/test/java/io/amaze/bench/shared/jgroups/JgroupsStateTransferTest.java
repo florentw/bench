@@ -47,7 +47,7 @@ public final class JgroupsStateTransferTest {
         private final JgroupsStateKey key;
         private String state;
 
-        public MemberStateHolder(final JgroupsStateKey key, final String state) {
+        MemberStateHolder(final JgroupsStateKey key, final String state) {
             this.key = key;
             this.state = state;
         }

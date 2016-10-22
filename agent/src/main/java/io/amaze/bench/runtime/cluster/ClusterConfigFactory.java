@@ -7,7 +7,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Closeable;
 
 /**
- * Created on 10/10/16.
+ * Used to generate a specific cluster configuration for a new forked actor.
+ * It could be used to generate a different port for each.
  */
 public interface ClusterConfigFactory extends Closeable {
 

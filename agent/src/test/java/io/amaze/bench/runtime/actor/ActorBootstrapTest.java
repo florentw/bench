@@ -64,7 +64,7 @@ public final class ActorBootstrapTest {
 
     @Before
     public void before() throws IOException, ValidationException {
-        ClusterClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null);
+        ClusterClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null, null);
         actorBootstrap = spy(new ActorBootstrap(factory));
     }
 

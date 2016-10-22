@@ -16,7 +16,6 @@
 package io.amaze.bench.shared.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.shared.test.JMSServerRule;
 import io.amaze.bench.shared.util.Network;
 import org.junit.Rule;
 import org.junit.Test;

@@ -47,7 +47,7 @@ public final class EmbeddedActorManagerTest {
 
     @Before
     public void before() {
-        DummyClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null);
+        DummyClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null, null);
         actorManager = new EmbeddedActorManager(DUMMY_AGENT, factory);
     }
 

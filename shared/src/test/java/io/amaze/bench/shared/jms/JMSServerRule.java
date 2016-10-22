@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.shared.test;
+package io.amaze.bench.shared.jms;
 
-import io.amaze.bench.shared.jms.*;
 import io.amaze.bench.shared.util.Network;
 import org.junit.rules.ExternalResource;
 
@@ -26,7 +25,7 @@ import static com.google.common.base.Throwables.propagate;
  */
 public final class JMSServerRule extends ExternalResource {
 
-    public static final String DEFAULT_HOST = Network.LOCALHOST;
+    static final String DEFAULT_HOST = Network.LOCALHOST;
 
     private JMSServer server;
     private JMSEndpoint endpoint;

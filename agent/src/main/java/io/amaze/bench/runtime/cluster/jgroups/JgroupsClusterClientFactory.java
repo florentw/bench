@@ -25,6 +25,8 @@ import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.jgroups.JChannel;
@@ -83,12 +85,25 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     public ActorClusterClient createForActor(@NotNull final ActorKey actor) {
         checkNotNull(actor);
         return new JgroupsActorClusterClient(getLocalEndpoint(),
-                                             jgroupsClusterMember.listenerMultiplexer(),jgroupsSender, actorRegistry);
+                                             jgroupsClusterMember.listenerMultiplexer(),
+                                             jgroupsSender,
+                                             actorRegistry);
     }
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
         return registryClusterClient;
+    }
+
+    @Override
+    public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
+        checkNotNull(agentRegistry);
+        AgentRegistryClusterClient clusterClient = new JgroupsAgentRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
+                                                                                         jgroupsClusterMember.stateMultiplexer(),
+                                                                                         jgroupsClusterMember.viewMultiplexer(),
+                                                                                         agentRegistry);
+        clusterClient.startRegistryListener(agentRegistry.createClusterListener());
+        return clusterClient;
     }
 
     @Override

@@ -77,7 +77,7 @@ public final class ActorInternalTest {
         doReturn(localEndpoint).when(actorClient).getLocalEndpoint();
         doReturn(actorSender).when(actorClient).actorSender();
         doReturn(actorRegistrySender).when(actorClient).actorRegistrySender();
-        clientFactory = new DummyClientFactory(localEndpoint, null, actorClient, actorRegistryClient, null);
+        clientFactory = new DummyClientFactory(localEndpoint, null, actorClient, actorRegistryClient, null, null);
         factory = new Actors(clientFactory);
     }
 
@@ -276,7 +276,7 @@ public final class ActorInternalTest {
 
     @Test
     public void close_actor_and_closing_client_throws() throws Exception {
-        clientFactory = new DummyClientFactory(null, null, actorClient, actorRegistryClient, null);
+        clientFactory = new DummyClientFactory(null, null, actorClient, actorRegistryClient, null, null);
         factory = new Actors(clientFactory);
         doThrow(new RuntimeException()).when(actorClient).close();
         ActorInternal actor = defaultTestActor();

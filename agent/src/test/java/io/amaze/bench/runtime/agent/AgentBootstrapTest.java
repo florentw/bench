@@ -57,7 +57,8 @@ public final class AgentBootstrapTest {
                                                agentClusterClient,
                                                mock(ActorClusterClient.class),
                                                mock(ActorRegistryClusterClient.class),
-                                               mock(ClusterConfigFactory.class));
+                                               mock(ClusterConfigFactory.class),
+                                               null);
     }
 
     @Test

@@ -22,6 +22,10 @@ import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created on 3/30/16.
@@ -33,17 +37,20 @@ public final class DummyClientFactory implements ClusterClientFactory {
     private final ActorClusterClient actorClient;
     private final ActorRegistryClusterClient actorRegistryClient;
     private final ClusterConfigFactory clusterConfigFactory;
+    private final AgentRegistryClusterClient agentRegistryClient;
 
     public DummyClientFactory(final Endpoint endpoint,
                               final AgentClusterClient agentClient,
                               final ActorClusterClient actorClient,
                               final ActorRegistryClusterClient actorRegistryClient,
-                              final ClusterConfigFactory clusterConfigFactory) {
+                              final ClusterConfigFactory clusterConfigFactory,
+                              final AgentRegistryClusterClient agentRegistryClient) {
         this.endpoint = endpoint;
         this.agentClient = agentClient;
         this.actorClient = actorClient;
         this.actorRegistryClient = actorRegistryClient;
         this.clusterConfigFactory = clusterConfigFactory;
+        this.agentRegistryClient = agentRegistryClient;
     }
 
     public Endpoint getLocalEndpoint() {
@@ -63,6 +70,11 @@ public final class DummyClientFactory implements ClusterClientFactory {
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
         return actorRegistryClient;
+    }
+
+    @Override
+    public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
+        return agentRegistryClient;
     }
 
     @Override
