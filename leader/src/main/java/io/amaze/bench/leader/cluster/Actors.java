@@ -70,7 +70,6 @@ public final class Actors {
         }
 
         public Future<ActorDeployInfo> initialize() {
-            actorSender.send(config.getKey(), ActorInputMessage.init());
             return actorInitialized;
         }
 

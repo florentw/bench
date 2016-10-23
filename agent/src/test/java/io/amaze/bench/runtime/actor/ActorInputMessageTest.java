@@ -58,7 +58,6 @@ public final class ActorInputMessageTest {
     public void equality() {
         EqualsTester tester = new EqualsTester();
         tester.addEqualityGroup(ActorInputMessage.close(), ActorInputMessage.close());
-        tester.addEqualityGroup(ActorInputMessage.init(), ActorInputMessage.init());
         tester.addEqualityGroup(ActorInputMessage.dumpMetrics(), ActorInputMessage.dumpMetrics());
         tester.testEquals();
     }

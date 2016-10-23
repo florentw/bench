@@ -16,8 +16,10 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.ActorRegistrySender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +49,8 @@ public final class EmbeddedActorManagerTest {
 
     @Before
     public void before() {
+        when(client.actorRegistrySender()).thenReturn(mock(ActorRegistrySender.class));
+        when(client.localEndpoint()).thenReturn(mock(Endpoint.class));
         DummyClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null, null);
         actorManager = new EmbeddedActorManager(DUMMY_AGENT, factory);
     }
@@ -65,6 +69,8 @@ public final class EmbeddedActorManagerTest {
         assertNotNull(actor);
 
         verify(client).startActorListener(any(RuntimeActor.class));
+        verify(client).localEndpoint();
+        verify(client).actorRegistrySender();
         verifyNoMoreInteractions(client);
         verifyNoMoreInteractions(actorRegistryClient);
     }

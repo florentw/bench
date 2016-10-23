@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 8/15/16.
@@ -37,7 +39,7 @@ public final class AgentInputMessageTest {
 
     @Before
     public void before() {
-        inputMessage = AgentInputMessage.createActor("", new ActorCreationRequest(TestActor.DUMMY_CONFIG));
+        inputMessage = AgentInputMessage.createActor("agent", new ActorCreationRequest(TestActor.DUMMY_CONFIG));
     }
 
     @Test
@@ -55,6 +57,11 @@ public final class AgentInputMessageTest {
         assertThat(received.getAction(), is(inputMessage.getAction()));
         assertThat(received.getCreationRequest(), is(inputMessage.getCreationRequest()));
         assertThat(received.getTargetAgent(), is(inputMessage.getTargetAgent()));
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(inputMessage.toString()));
     }
 
 }

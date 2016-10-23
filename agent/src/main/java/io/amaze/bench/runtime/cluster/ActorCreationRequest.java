@@ -54,4 +54,9 @@ public final class ActorCreationRequest implements Serializable {
         ActorCreationRequest that = (ActorCreationRequest) o;
         return Objects.equals(actorConfig, that.actorConfig);
     }
+
+    @Override
+    public String toString() {
+        return "{\"actorConfig\":" + actorConfig + "}";
+    }
 }

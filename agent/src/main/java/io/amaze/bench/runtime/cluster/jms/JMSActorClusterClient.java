@@ -75,7 +75,7 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
     }
 
     @Override
-    public Endpoint getLocalEndpoint() {
+    public Endpoint localEndpoint() {
         return new JMSEndpoint("dummy", 1337);
     }
 

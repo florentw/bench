@@ -41,6 +41,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
 
         final ActorKey key = actorConfig.getKey();
         final RuntimeActor actor = actors.create(key, actorConfig.getClassName(), actorConfig.getActorJsonConfig());
+        actor.init();
 
         return new ManagedActor() {
             @NotNull

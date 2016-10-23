@@ -109,6 +109,7 @@ public class ActorBootstrap implements Closeable {
                              final String className, //
                              final String jsonConfig) throws ValidationException, IOException {
         actor = actors.create(key, className, jsonConfig);
+        actor.init();
         return actor;
     }
 

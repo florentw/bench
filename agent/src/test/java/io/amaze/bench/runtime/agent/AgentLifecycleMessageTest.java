@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 8/15/16.
@@ -82,6 +84,15 @@ public final class AgentLifecycleMessageTest {
         assertThat(received.getAgent(), is(outputMessage.getAgent()));
         assertThat(received.getRegistrationMessage(), is(outputMessage.getRegistrationMessage()));
         assertThat(received.getThrowable(), is(outputMessage.getThrowable()));
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        AgentRegistrationMessage registrationMessage = AgentRegistrationMessage.create(AGENT, endpoint);
+        AgentLifecycleMessage createdMessage = AgentLifecycleMessage.created(registrationMessage);
+
+        assertTrue(Json.isValid(outputMessage.toString()));
+        assertTrue(Json.isValid(createdMessage.toString()));
     }
 
 }

@@ -1,21 +1,21 @@
 package io.amaze.bench.leader.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
 import io.amaze.bench.leader.cluster.LeaderClusterClientFactory;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.jms.JMSActorRegistryClusterClient;
+import io.amaze.bench.runtime.cluster.jms.JMSActorSender;
 import io.amaze.bench.runtime.cluster.jms.JMSAgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
-import io.amaze.bench.shared.jms.FFMQServer;
-import io.amaze.bench.shared.jms.JMSEndpoint;
-import io.amaze.bench.shared.jms.JMSException;
-import io.amaze.bench.shared.jms.JMSServer;
+import io.amaze.bench.shared.jms.*;
 
 import javax.validation.constraints.NotNull;
 
@@ -30,6 +30,7 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
     private final JMSServer server;
     private final JMSEndpoint serverEndpoint;
     private final ActorRegistry actorRegistry;
+    private volatile JMSClient senderJmsClient;
 
     public JMSLeaderClusterClientFactory(@NotNull final Config factoryConfig,
                                          @NotNull final ActorRegistry actorRegistry) {
@@ -50,6 +51,12 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
         this.actorRegistry = checkNotNull(actorRegistry);
         this.serverEndpoint = checkNotNull(serverEndpoint);
         this.server = checkNotNull(server);
+    }
+
+    @Override
+    public ActorSender actorSender() {
+        senderJmsClient = createJmsClient();
+        return new JMSActorSender(senderJmsClient);
     }
 
     @Override
@@ -82,6 +89,19 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
 
     @Override
     public void close() {
+        if (senderJmsClient != null) {
+            senderJmsClient.close();
+        }
         server.close();
+    }
+
+    private JMSClient createJmsClient() {
+        JMSClient client;
+        try {
+            client = new FFMQClient(serverEndpoint);
+        } catch (JMSException e) {
+            throw Throwables.propagate(e);
+        }
+        return client;
     }
 }

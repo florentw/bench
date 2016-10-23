@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSActorSenderTest {
 
-    private static final ActorInputMessage DUMMY_MSG = ActorInputMessage.init();
+    private static final ActorInputMessage DUMMY_MSG = ActorInputMessage.dumpMetrics();
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

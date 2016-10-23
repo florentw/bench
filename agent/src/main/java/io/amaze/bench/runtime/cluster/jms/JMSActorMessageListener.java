@@ -54,9 +54,6 @@ final class JMSActorMessageListener implements MessageListener {
 
         ActorInputMessage input = msg.get();
         switch (input.getCommand()) { // NOSONAR
-            case INIT:
-                actor.init();
-                break;
             case CLOSE:
                 actor.close();
                 break;

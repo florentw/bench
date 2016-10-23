@@ -15,14 +15,14 @@
  */
 package io.amaze.bench.actor;
 
+import io.amaze.bench.leader.cluster.Actors;
+import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.DeployConfig;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.agent.Agent;
-import io.amaze.bench.leader.cluster.Actors;
-import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;
@@ -62,7 +62,7 @@ public final class WatcherActorsIntegrationTest {
     private static final ActorKey PROCESS_WATCHER = new ActorKey("ProcessWatcher");
 
     @Rule
-    public final BenchRule benchRule = new BenchRule();
+    public final BenchRule benchRule = BenchRule.newJmsCluster();
     @Rule
     public final Timeout globalTimeout = new Timeout(15, TimeUnit.SECONDS);
 

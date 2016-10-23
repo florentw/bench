@@ -53,6 +53,16 @@ public final class ClusterConfigs {
         return ConfigFactory.parseString("{\"" + JgroupsClusterClientFactory.XML_CONFIG + "\":\"fast.xml\"}");
     }
 
+    public static Config jgroupsClusterConfig() {
+        return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JGROUPS_FACTORY_CLASS.getName() + "\"," + //
+                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":" + jgroupsFactoryConfigJson() + "}");
+    }
+
+    public static Config leaderJgroupsClusterConfig(final Class<?> factoryClass) {
+        return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + factoryClass.getName() + "\"," + //
+                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":" + jgroupsFactoryConfigJson() + "}");
+    }
+
     public static Config jmsClusterConfig(final JMSEndpoint endpoint) {
         return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JMS_AGENT_FACTORY_CLASS.getName() + "\"," + //
                                                  "\"" + ClusterClients.FACTORY_CONFIG + "\":" + jmsFactoryConfigJson(

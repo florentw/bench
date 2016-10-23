@@ -66,7 +66,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     }
 
     @Override
-    public Endpoint getLocalEndpoint() {
+    public Endpoint localEndpoint() {
         return localEndpoint;
     }
 
@@ -96,9 +96,6 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
         @Override
         public void onMessage(@NotNull final org.jgroups.Message msg, @NotNull final ActorInputMessage input) {
             switch (input.getCommand()) {
-                case INIT:
-                    actor.init();
-                    break;
                 case CLOSE:
                     actor.close();
                     break;

@@ -51,7 +51,7 @@ public final class JgroupsSenderTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorKey.class, new ActorKey("dummy"));
-        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.dumpMetrics());
         tester.setDefault(JgroupsEndpoint.class, endpoint);
 
         tester.testAllPublicConstructors(JgroupsSender.class);

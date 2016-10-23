@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -25,6 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_CONFIG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 9/30/16.
@@ -53,8 +55,12 @@ public final class ActorCreationRequestTest {
         tester.testEquals();
     }
 
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(makeRequest().toString()));
+    }
+
     private ActorCreationRequest makeRequest() {
         return new ActorCreationRequest(DUMMY_CONFIG);
     }
-
 }

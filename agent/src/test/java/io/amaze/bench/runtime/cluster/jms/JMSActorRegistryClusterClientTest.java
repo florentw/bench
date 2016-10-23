@@ -52,7 +52,7 @@ public final class JMSActorRegistryClusterClientTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.dumpMetrics());
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(JMSActorRegistryClusterClient.class);

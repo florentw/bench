@@ -107,6 +107,15 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
         return throwable;
     }
 
+    @Override
+    public String toString() {
+        return "{\"AgentLifecycleMessage\":{" +  //
+                "\"state\":\"" + state + "\"" + ", " + //
+                "\"agent\":\"" + agent + "\"" + ", " + //
+                "\"registrationMessage\":" + registrationMessage + ", " + //
+                "\"throwable\":" + throwable + "}}";
+    }
+
     /**
      * State that can be taken by agent:
      * <ul>

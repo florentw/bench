@@ -50,7 +50,7 @@ public final class JgroupsActorClusterClientTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(ActorInputMessage.class, ActorInputMessage.init());
+        tester.setDefault(ActorInputMessage.class, ActorInputMessage.dumpMetrics());
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
         tester.setDefault(JgroupsSender.class, jgroupsSender);
 
@@ -87,16 +87,6 @@ public final class JgroupsActorClusterClientTest {
         verify(listenerMultiplexer).removeListenerFor(ActorInputMessage.class);
         verifyNoMoreInteractions(listenerMultiplexer);
         verifyZeroInteractions(jgroupsSender);
-    }
-
-    @Test
-    public void message_listener_forwards_init() {
-        MessageListener messageListener = new MessageListener(runtimeActor);
-
-        messageListener.onMessage(mock(org.jgroups.Message.class), ActorInputMessage.init());
-
-        verify(runtimeActor).init();
-        verifyNoMoreInteractions(runtimeActor);
     }
 
     @Test

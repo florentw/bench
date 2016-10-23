@@ -6,7 +6,9 @@ import io.amaze.bench.leader.cluster.LeaderClusterClientFactory;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
+import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsAbstractClusterClientFactory;
+import io.amaze.bench.runtime.cluster.jgroups.JgroupsActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import org.jgroups.JChannel;
 
@@ -27,6 +29,11 @@ public final class JgroupsLeaderClusterClientFactory extends JgroupsAbstractClus
     @VisibleForTesting
     JgroupsLeaderClusterClientFactory(@NotNull final JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
         super(jChannel, actorRegistry);
+    }
+
+    @Override
+    public ActorSender actorSender() {
+        return new JgroupsActorSender(jgroupsSender, actorRegistry);
     }
 
     @Override

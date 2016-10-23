@@ -18,7 +18,6 @@ package io.amaze.bench.leader.cluster;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
-import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
@@ -50,15 +49,14 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public final class ResourceManagerAgentTest {
 
-    private static final int TEST_TIMEOUT_SEC = 5;
+    private static final int TEST_TIMEOUT_SEC = 15;
 
     @Rule
     public final Timeout globalTimeout = new Timeout(TEST_TIMEOUT_SEC * 2, TimeUnit.SECONDS);
 
     @Rule
-    public final BenchRule benchRule = new BenchRule();
+    public final BenchRule benchRule = BenchRule.newJgroupsCluster();
 
-    private ActorSender actorSender;
     private ResourceManager resourceManager;
 
     private ActorRegistry actorRegistry;
@@ -69,7 +67,6 @@ public final class ResourceManagerAgentTest {
 
     @Before
     public void before() throws ExecutionException {
-        actorSender = benchRule.actorSender();
         resourceManager = benchRule.resourceManager();
 
         actorRegistry = benchRule.actorRegistry();
@@ -94,25 +91,8 @@ public final class ResourceManagerAgentTest {
         List<String> preferredHosts = new ArrayList<>();
         ActorSync sync = createActorWith(preferredHosts);
 
-        sync.assertActorCreated();
-        assertThat(actorRegistry.all().size(), is(1));
-
-        RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
-        assertThat(actor.getAgentHost(), is(agent.getName()));
-        assertThat(actor.getKey(), is(DUMMY_ACTOR));
-        assertThat(actor.getState(), is(State.CREATED));
-    }
-
-    @Test
-    public void init_embedded_actor_on_agent() throws InterruptedException {
-        List<String> preferredHosts = new ArrayList<>();
-        ActorSync sync = createActorWith(preferredHosts);
-        sync.assertActorCreated();
-
-        ActorInputMessage initMessage = ActorInputMessage.init();
-        actorSender.send(DUMMY_ACTOR, initMessage);
-
         sync.assertActorInitialized();
+        assertThat(actorRegistry.all().size(), is(1));
 
         RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
         assertThat(actor.getAgentHost(), is(agent.getName()));

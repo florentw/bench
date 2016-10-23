@@ -97,7 +97,6 @@ public class Agent implements AgentClientListener, AutoCloseable {
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
         if (instance.isPresent()) {
             actors.put(actorKey, instance.get());
-            agentClient.actorRegistrySender().send(created(actorKey, name));
         }
 
         log.info("{} Actor {} created.", this, actorKey);
@@ -156,6 +155,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
     private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {
         try {
             ActorManager manager = actorManager(actorConfig);
+            agentClient.actorRegistrySender().send(created(actorConfig.getKey(), name));
             return Optional.of(manager.createActor(actorConfig));
 
         } catch (Exception e) {

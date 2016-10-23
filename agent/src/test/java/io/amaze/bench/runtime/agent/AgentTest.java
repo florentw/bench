@@ -81,10 +81,10 @@ public final class AgentTest {
     public void before() throws ValidationException {
         clientFactory = new DummyClientFactory(localEndpoint,
                                                agentClient,
-                                               actorClient,
-                                               actorRegistryClient, clusterConfigFactory, null);
+                                               actorClient, actorRegistryClient, clusterConfigFactory, null);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
+        when(actorClient.localEndpoint()).thenReturn(localEndpoint);
         when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);
         when(actorManagers.createForked(anyString(), eq(clusterConfigFactory))).thenReturn(forkedManager);
         doReturn(embeddedManagedActor).when(embeddedManager).createActor(TestActor.DUMMY_CONFIG);
@@ -192,7 +192,6 @@ public final class AgentTest {
 
         InOrder inOrder = inOrder(actorClient, agentActorRegistrySender, actorRegistrySender);
         inOrder.verify(actorClient).startActorListener(any(RuntimeActor.class));
-        inOrder.verify(agentActorRegistrySender).send(argThat(isActorState(State.CREATED)));
         inOrder.verify(actorRegistrySender).send(argThat(isActorState(State.FAILED)));
         inOrder.verify(actorClient).close();
         inOrder.verifyNoMoreInteractions();

@@ -74,7 +74,7 @@ public final class ActorInternalTest {
 
     @Before
     public void before() {
-        doReturn(localEndpoint).when(actorClient).getLocalEndpoint();
+        doReturn(localEndpoint).when(actorClient).localEndpoint();
         doReturn(actorSender).when(actorClient).actorSender();
         doReturn(actorRegistrySender).when(actorClient).actorRegistrySender();
         clientFactory = new DummyClientFactory(localEndpoint, null, actorClient, actorRegistryClient, null, null);

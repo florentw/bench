@@ -79,6 +79,15 @@ public final class AgentInputMessage implements Serializable {
         return actorToClose;
     }
 
+    @Override
+    public String toString() {
+        return "{\"AgentInputMessage\":{" + //
+                "\"targetAgent\":\"" + targetAgent + "\"" + ", " + //
+                "\"action\":\"" + action + "\"" + ", " + //
+                "\"creationRequest\":" + creationRequest + ", " + //
+                "\"actorToClose\":" + actorToClose + "}}";
+    }
+
     public enum Action {
         CREATE_ACTOR, //
         CLOSE_ACTOR //

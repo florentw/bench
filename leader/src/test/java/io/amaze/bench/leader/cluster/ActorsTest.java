@@ -107,13 +107,12 @@ public final class ActorsTest {
     }
 
     @Test
-    public void initialize_sends_message_to_actor() {
+    public void initialize_awaits_initialization() {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
         Future<ActorDeployInfo> future = actorHandle.initialize();
 
         assertNotNull(future);
-        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.init());
         verifyNoMoreInteractions(actorSender);
     }
 

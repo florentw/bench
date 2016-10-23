@@ -44,7 +44,7 @@ public interface ActorClusterClient extends ClusterClient {
      * @return Local endpoint to be used by the cluster layer to discuss with this actor.
      */
     @NotNull
-    Endpoint getLocalEndpoint();
+    Endpoint localEndpoint();
 
     @NotNull
     ActorSender actorSender();
