@@ -49,7 +49,6 @@ public final class JMSResourceManagerClusterClient extends JMSClusterClient impl
         this.server = checkNotNull(server);
     }
 
-
     @Override
     public void initForActor(@NotNull final ActorKey actorKey) {
         checkNotNull(actorKey);

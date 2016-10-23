@@ -22,6 +22,8 @@ public final class JgroupsMetricsRepositoryClusterClient implements MetricsRepos
 
     @Override
     public void startMetricsListener(@NotNull final MetricsRepositoryListener metricsListener) {
+        checkNotNull(metricsListener);
+
         multiplexer.addListener(MetricValuesMessage.class, (msg, payload) -> {
             checkNotNull(msg);
             checkNotNull(payload);
@@ -33,4 +35,5 @@ public final class JgroupsMetricsRepositoryClusterClient implements MetricsRepos
     public void close() {
         multiplexer.removeListenerFor(MetricValuesMessage.class);
     }
+
 }
