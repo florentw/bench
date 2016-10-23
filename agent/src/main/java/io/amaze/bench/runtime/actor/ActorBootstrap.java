@@ -73,7 +73,9 @@ public class ActorBootstrap implements Closeable {
         Config clusterConfig = parseClusterConfig(Files.readAndDelete(tmpClusterConfig));
         String jsonActorConfig = Files.readAndDelete(tmpActorConfig);
 
-        ClusterClientFactory clientFactory = ClusterClients.newFactory(clusterConfig, new ActorRegistry());
+        ClusterClientFactory clientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
+                                                                       clusterConfig,
+                                                                       new ActorRegistry());
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
         RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonActorConfig);

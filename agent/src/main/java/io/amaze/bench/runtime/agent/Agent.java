@@ -58,7 +58,7 @@ public class Agent implements AgentClientListener, AutoCloseable {
                  @NotNull final ActorManagers actorManagers) {
 
         this.name = checkNotNull(name);
-        Endpoint endpoint = clientFactory.getLocalEndpoint();
+        Endpoint endpoint = clientFactory.localEndpoint();
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 

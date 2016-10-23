@@ -43,7 +43,7 @@ import java.io.Closeable;
 public interface ClusterClientFactory extends Closeable {
 
     @NotNull
-    Endpoint getLocalEndpoint();
+    Endpoint localEndpoint();
 
     @NotNull
     AgentClusterClient createForAgent(@NotNull String agent);

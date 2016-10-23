@@ -84,7 +84,7 @@ public final class ActorInternalTest {
     @Test
     public void null_parameters_are_invalid() throws ValidationException {
         NullPointerTester tester = new NullPointerTester();
-        tester.setDefault(Metrics.class, MetricsInternal.create());
+        tester.setDefault(Metrics.class, MetricsInternal.create(TestActor.DUMMY_ACTOR));
         tester.setDefault(Method.class, ActorInternalTest.class.getMethods()[0]);
         try (ActorInternal actor = defaultTestActor()) {
             tester.testAllPublicInstanceMethods(actor);

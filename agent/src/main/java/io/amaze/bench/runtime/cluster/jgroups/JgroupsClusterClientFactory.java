@@ -71,7 +71,7 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public Endpoint getLocalEndpoint() {
+    public Endpoint localEndpoint() {
         return new JgroupsEndpoint(jChannel.getAddress());
     }
 
@@ -84,7 +84,7 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     @Override
     public ActorClusterClient createForActor(@NotNull final ActorKey actor) {
         checkNotNull(actor);
-        return new JgroupsActorClusterClient(getLocalEndpoint(),
+        return new JgroupsActorClusterClient(localEndpoint(),
                                              jgroupsClusterMember.listenerMultiplexer(),
                                              jgroupsSender,
                                              actorRegistry);
@@ -117,7 +117,7 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     }
 
     @VisibleForTesting
-    public JChannel getJChannel() {
+    JChannel getJChannel() {
         return jChannel;
     }
 

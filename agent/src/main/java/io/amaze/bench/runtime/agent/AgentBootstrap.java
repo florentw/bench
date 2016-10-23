@@ -53,7 +53,8 @@ public final class AgentBootstrap {
 
         File configFile = new File(configFileName);
         AgentConfig agentConfig = new AgentConfig(configFile);
-        ClusterClientFactory clientFactory = ClusterClients.newFactory(agentConfig.clusterConfig(),
+        ClusterClientFactory clientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
+                                                                       agentConfig.clusterConfig(),
                                                                        new ActorRegistry());
 
         Agent agent = createAgent(clientFactory);

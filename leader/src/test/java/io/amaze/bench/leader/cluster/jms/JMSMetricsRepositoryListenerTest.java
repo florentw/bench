@@ -20,7 +20,6 @@ import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryListener;
 import io.amaze.bench.runtime.actor.metric.MetricValue;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
@@ -78,20 +77,19 @@ public final class JMSMetricsRepositoryListenerTest {
 
         jmsListener.onMessage(jmsMessage);
 
-        verify(metricsListener).onMetricValues(DUMMY_ACTOR, valuesMessage);
+        verify(metricsListener).onMetricValues(valuesMessage);
     }
 
     private BytesMessage jmsMetricsMessage(final MetricValuesMessage valuesMessage)
             throws IOException, javax.jms.JMSException {
-        Message message = new Message<>(DUMMY_ACTOR.getName(), valuesMessage);
-        final byte[] data = JMSHelper.convertToBytes(message);
+        final byte[] data = JMSHelper.convertToBytes(valuesMessage);
         return createTestBytesMessage(data);
     }
 
     private MetricValuesMessage metricValuesMessage(final List<MetricValue> values) {
         Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         metricValues.put(Metric.metric("metric", "sec").build(), values);
-        return new MetricValuesMessage(metricValues);
+        return new MetricValuesMessage(DUMMY_ACTOR, metricValues);
     }
 
 }

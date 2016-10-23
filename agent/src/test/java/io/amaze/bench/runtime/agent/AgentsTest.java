@@ -79,7 +79,7 @@ public final class AgentsTest {
     public void createAgentsAndMockRegistry() {
         agents = new Agents(actorManagers, clusterClientFactory, agentRegistry);
         when(clusterClientFactory.createForAgent(AGENT_NAME)).thenReturn(agentClusterClient);
-        when(clusterClientFactory.getLocalEndpoint()).thenReturn(endpoint);
+        when(clusterClientFactory.localEndpoint()).thenReturn(endpoint);
         when(agentClusterClient.agentRegistrySender()).thenReturn(agentRegistrySender);
 
         doAnswer(invocation -> agentRegistryListener = (AgentRegistryListener) invocation.getArguments()[0]).when(

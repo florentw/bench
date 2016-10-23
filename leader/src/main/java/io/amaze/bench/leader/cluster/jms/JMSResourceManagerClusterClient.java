@@ -15,10 +15,13 @@
  */
 package io.amaze.bench.leader.cluster.jms;
 
+import com.google.common.annotations.VisibleForTesting;
+import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
-import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
+import io.amaze.bench.runtime.cluster.jms.JMSClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
 
@@ -31,15 +34,21 @@ import static io.amaze.bench.runtime.agent.Constants.AGENTS_TOPIC;
 /**
  * Created on 3/8/16.
  */
-public final class JMSResourceManagerClusterClient implements ResourceManagerClusterClient {
+public final class JMSResourceManagerClusterClient extends JMSClusterClient implements ResourceManagerClusterClient {
 
     private final JMSServer server;
-    private final JMSClient client;
 
-    public JMSResourceManagerClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
+    @VisibleForTesting
+    JMSResourceManagerClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
+        super(client);
         this.server = checkNotNull(server);
-        this.client = checkNotNull(client);
     }
+
+    JMSResourceManagerClusterClient(@NotNull final JMSServer server, @NotNull final JMSEndpoint endpoint) {
+        super(endpoint);
+        this.server = checkNotNull(server);
+    }
+
 
     @Override
     public void initForActor(@NotNull final ActorKey actorKey) {
@@ -64,7 +73,7 @@ public final class JMSResourceManagerClusterClient implements ResourceManagerClu
         checkNotNull(message);
 
         try {
-            client.sendToTopic(AGENTS_TOPIC, message);
+            getClient().sendToTopic(AGENTS_TOPIC, message);
         } catch (JMSException e) {
             throw propagate(e);
         }

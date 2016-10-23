@@ -32,7 +32,9 @@ public final class ClusterClientsTest {
 
     @Test
     public void factory_is_created_from_cluster_config() {
-        ClusterClientFactory factory = ClusterClients.newFactory(ClusterConfigs.defaultConfig(), actorRegistry);
+        ClusterClientFactory factory = ClusterClients.newFactory(ClusterClientFactory.class,
+                                                                 ClusterConfigs.defaultConfig(),
+                                                                 actorRegistry);
 
         assertNotNull(factory);
         assertThat(factory, instanceOf(JMS_FACTORY_CLASS));
@@ -40,7 +42,9 @@ public final class ClusterClientsTest {
 
     @Test(expected = RuntimeException.class)
     public void factory_propagates_class_not_found() {
-        ClusterClients.newFactory(ClusterConfigs.invalidClassClusterConfig(), actorRegistry);
+        ClusterClients.newFactory(ClusterClientFactory.class,
+                                  ClusterConfigs.invalidClassClusterConfig(),
+                                  actorRegistry);
     }
 
 }

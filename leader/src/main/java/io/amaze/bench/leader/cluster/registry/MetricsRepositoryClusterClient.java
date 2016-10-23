@@ -16,14 +16,14 @@
 package io.amaze.bench.leader.cluster.registry;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 
 /**
  * Facade to add a listener on metrics produced by actors.
  *
  * @see MetricsRepositoryListener
  */
-@FunctionalInterface
-public interface MetricsRepositoryClusterClient {
+public interface MetricsRepositoryClusterClient extends Closeable {
 
     /**
      * Register the given listeners to be plugged to the underlying message system.
@@ -32,5 +32,8 @@ public interface MetricsRepositoryClusterClient {
      * @param metricsListener Listener that will be called upon new metrics notifications.
      */
     void startMetricsListener(@NotNull MetricsRepositoryListener metricsListener);
+
+    @Override
+    void close();
 
 }

@@ -84,12 +84,13 @@ public final class MetricsRepository {
 
     @NotNull
     public MetricsRepositoryListener createClusterListener() {
-        return (actor, metrics) -> {
-            log.info("Received metric values from {}: {}", actor, metrics);
+        return (metrics) -> {
+            ActorKey from = metrics.fromActor();
+            log.info("Received metric values from {}: {}", from, metrics);
 
             synchronized (actorValues) {
-                MetricValuesMessage currentActorMetrics = updateActorMetricValues(actor, metrics);
-                setExpectedActorFutures(actor, currentActorMetrics);
+                MetricValuesMessage currentActorMetrics = updateActorMetricValues(from, metrics);
+                setExpectedActorFutures(from, currentActorMetrics);
             }
         };
     }

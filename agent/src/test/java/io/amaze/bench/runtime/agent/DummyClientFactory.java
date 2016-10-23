@@ -53,7 +53,7 @@ public final class DummyClientFactory implements ClusterClientFactory {
         this.agentRegistryClient = agentRegistryClient;
     }
 
-    public Endpoint getLocalEndpoint() {
+    public Endpoint localEndpoint() {
         return endpoint;
     }
 

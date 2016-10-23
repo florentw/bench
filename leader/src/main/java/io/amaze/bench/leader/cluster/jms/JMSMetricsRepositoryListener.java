@@ -16,7 +16,6 @@
 package io.amaze.bench.leader.cluster.jms;
 
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryListener;
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
@@ -47,18 +46,15 @@ final class JMSMetricsRepositoryListener implements MessageListener {
     public void onMessage(final Message jmsMessage) {
         checkNotNull(jmsMessage);
 
-        Optional<io.amaze.bench.runtime.message.Message> input = readMessage(jmsMessage);
-        if (!input.isPresent()) {
+        Optional<MetricValuesMessage> metrics = readMessage(jmsMessage);
+        if (!metrics.isPresent()) {
             return;
         }
 
-        ActorKey actor = new ActorKey(input.get().from());
-        MetricValuesMessage metrics = (MetricValuesMessage) input.get().data();
-
-        metricsListener.onMetricValues(actor, metrics);
+        metricsListener.onMetricValues(metrics.get());
     }
 
-    private Optional<io.amaze.bench.runtime.message.Message> readMessage(final Message jmsMessage) {
+    private Optional<MetricValuesMessage> readMessage(final Message jmsMessage) {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
         } catch (Exception e) {

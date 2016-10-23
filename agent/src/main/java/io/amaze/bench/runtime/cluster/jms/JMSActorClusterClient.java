@@ -23,7 +23,6 @@ import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ActorRegistrySender;
 import io.amaze.bench.runtime.cluster.ActorSender;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -68,9 +67,8 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
     public void sendMetrics(@NotNull final MetricValuesMessage metricValuesMessage) {
         checkNotNull(metricValuesMessage);
 
-        Message msg = new Message<>(actor.getName(), metricValuesMessage);
         try {
-            getClient().sendToTopic(METRICS_TOPIC, msg);
+            getClient().sendToTopic(METRICS_TOPIC, metricValuesMessage);
         } catch (JMSException e) {
             throw propagate(e);
         }

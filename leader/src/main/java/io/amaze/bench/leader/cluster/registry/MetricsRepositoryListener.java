@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.leader.cluster.registry;
 
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 
 import javax.validation.constraints.NotNull;
@@ -26,6 +25,6 @@ import javax.validation.constraints.NotNull;
 @FunctionalInterface
 public interface MetricsRepositoryListener {
 
-    void onMetricValues(@NotNull ActorKey actor, @NotNull MetricValuesMessage metrics);
+    void onMetricValues(@NotNull MetricValuesMessage metrics);
 
 }

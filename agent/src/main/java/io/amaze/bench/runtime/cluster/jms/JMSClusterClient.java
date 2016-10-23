@@ -30,16 +30,16 @@ import static com.google.common.base.Throwables.propagate;
 /**
  * Created on 3/3/16.
  */
-abstract class JMSClusterClient implements ClusterClient {
+public abstract class JMSClusterClient implements ClusterClient {
 
     private final JMSClient client;
 
     @VisibleForTesting
-    JMSClusterClient(@NotNull final JMSClient client) {
+    protected JMSClusterClient(@NotNull final JMSClient client) {
         this.client = checkNotNull(client);
     }
 
-    JMSClusterClient(@NotNull final JMSEndpoint endpoint) {
+    public JMSClusterClient(@NotNull final JMSEndpoint endpoint) {
         checkNotNull(endpoint);
 
         try {
@@ -54,7 +54,7 @@ abstract class JMSClusterClient implements ClusterClient {
         client.close();
     }
 
-    final JMSClient getClient() {
+    protected final JMSClient getClient() {
         return client;
     }
 

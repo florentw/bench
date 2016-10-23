@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor.metric;
 
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.runtime.actor.TestActor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public final class MetricsInternalConcurrencyTest {
     private static final Metric DUMMY = metric("test", "sec").build();
     private static final int ITERATIONS = 25000;
 
-    private final MetricsInternal metricsInternal = MetricsInternal.create();
+    private final MetricsInternal metricsInternal = MetricsInternal.create(TestActor.DUMMY_ACTOR);
     private ExecutorService executorService;
 
     @Before

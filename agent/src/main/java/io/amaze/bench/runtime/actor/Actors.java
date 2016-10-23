@@ -71,7 +71,7 @@ public class Actors {
         Method beforeMethod = findAtMostOneAnnotatedMethod(clazz, Before.class);
         Method afterMethod = findAtMostOneAnnotatedMethod(clazz, After.class);
 
-        MetricsInternal metrics = MetricsInternal.create();
+        MetricsInternal metrics = MetricsInternal.create(actorKey);
 
         ActorClusterClient client = clientFactory.createForActor(actorKey);
         Reactor reactor = createReactor(actorKey, metrics, clazz, client, config);

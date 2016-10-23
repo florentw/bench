@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor.metric;
 
 import io.amaze.bench.api.metric.Metric;
+import io.amaze.bench.runtime.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -30,9 +31,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class MetricValuesMessage implements Serializable {
 
+    private final ActorKey fromActor;
     private final Map<Metric, List<MetricValue>> metricValues; // NOSONAR: Serializable
 
-    public MetricValuesMessage(@NotNull final Map<Metric, List<MetricValue>> metricValues) {
+    public MetricValuesMessage(final ActorKey fromActor, @NotNull final Map<Metric, List<MetricValue>> metricValues) {
+        this.fromActor = checkNotNull(fromActor);
         this.metricValues = checkNotNull(metricValues);
     }
 
@@ -71,12 +74,20 @@ public final class MetricValuesMessage implements Serializable {
      */
     @NotNull
     public synchronized MetricValuesMessage copy() {
-        return new MetricValuesMessage(metrics());
+        return new MetricValuesMessage(fromActor, metrics());
+    }
+
+    /**
+     * @return The actor key that produced the metric values.
+     */
+    @NotNull
+    public ActorKey fromActor() {
+        return fromActor;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metricValues);
+        return Objects.hash(fromActor, metricValues);
     }
 
     @Override
@@ -88,7 +99,7 @@ public final class MetricValuesMessage implements Serializable {
             return false;
         }
         MetricValuesMessage that = (MetricValuesMessage) o;
-        return Objects.equals(metricValues, that.metricValues);
+        return Objects.equals(fromActor, that.fromActor) && Objects.equals(metricValues, that.metricValues);
     }
 
     @Override

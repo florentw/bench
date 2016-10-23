@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.actor.metric;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +39,14 @@ public final class MetricsInternalTest {
 
     @Before
     public void before() {
-        metrics = MetricsInternal.create();
+        metrics = MetricsInternal.create(TestActor.DUMMY_ACTOR);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(Metric.class, DUMMY_METRIC);
+
         tester.testAllPublicConstructors(Metrics.class);
         tester.testAllPublicInstanceMethods(metrics);
     }
@@ -56,6 +58,7 @@ public final class MetricsInternalTest {
         sink.add(10);
 
         MetricValuesMessage values = metrics.dumpAndFlush();
+        assertThat(values.fromActor(), is(TestActor.DUMMY_ACTOR));
         assertThat(values.metrics().size(), is(1));
         assertThat(values.metrics().get(DUMMY_METRIC).size(), is(1));
         assertThat(values.metrics().get(DUMMY_METRIC).get(0).getValue(), is(10));
@@ -69,6 +72,7 @@ public final class MetricsInternalTest {
         sink.timed(1337L, 11);
 
         MetricValuesMessage values = metrics.dumpAndFlush();
+        assertThat(values.fromActor(), is(TestActor.DUMMY_ACTOR));
         assertThat(values.metrics().size(), is(1));
         assertThat(values.metrics().get(DUMMY_METRIC).size(), is(2));
         assertThat(values.metrics().get(DUMMY_METRIC).get(0).getValue(), is(10));
@@ -83,6 +87,7 @@ public final class MetricsInternalTest {
         metrics.sinkFor(DUMMY_METRIC).add(11);
 
         MetricValuesMessage values = metrics.dumpAndFlush();
+        assertThat(values.fromActor(), is(TestActor.DUMMY_ACTOR));
         assertThat(values.metrics().size(), is(1));
         assertThat(values.metrics().get(DUMMY_METRIC).size(), is(2));
         assertThat(values.metrics().get(DUMMY_METRIC).get(0).getValue(), is(10));

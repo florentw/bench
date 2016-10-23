@@ -15,9 +15,12 @@
  */
 package io.amaze.bench.leader.cluster.jms;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryListener;
+import io.amaze.bench.runtime.cluster.jms.JMSClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
+import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
@@ -29,12 +32,15 @@ import static io.amaze.bench.runtime.agent.Constants.METRICS_TOPIC;
 /**
  * Created on 10/3/16.
  */
-public final class JMSMetricsRepositoryClusterClient implements MetricsRepositoryClusterClient {
+public final class JMSMetricsRepositoryClusterClient extends JMSClusterClient implements MetricsRepositoryClusterClient {
 
-    private final JMSClient client;
+    public JMSMetricsRepositoryClusterClient(@NotNull final JMSEndpoint endpoint) {
+        super(endpoint);
+    }
 
-    public JMSMetricsRepositoryClusterClient(@NotNull final JMSClient client) {
-        this.client = checkNotNull(client);
+    @VisibleForTesting
+    JMSMetricsRepositoryClusterClient(@NotNull final JMSClient client) {
+        super(client);
     }
 
     @Override
@@ -42,8 +48,8 @@ public final class JMSMetricsRepositoryClusterClient implements MetricsRepositor
         checkNotNull(metricsListener);
         try {
             JMSMetricsRepositoryListener msgListener = new JMSMetricsRepositoryListener(metricsListener);
-            client.addTopicListener(METRICS_TOPIC, msgListener);
-            client.startListening();
+            getClient().addTopicListener(METRICS_TOPIC, msgListener);
+            getClient().startListening();
 
         } catch (JMSException e) {
             throw propagate(e);

@@ -5,6 +5,7 @@ import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.RuntimeActor;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
@@ -69,7 +70,7 @@ public final class JgroupsActorClusterClientTest {
 
     @Test
     public void send_metrics_broadcasts() {
-        MetricValuesMessage message = new MetricValuesMessage(new HashMap<>());
+        MetricValuesMessage message = new MetricValuesMessage(TestActor.DUMMY_ACTOR, new HashMap<>());
 
         clusterClient.sendMetrics(message);
 

@@ -21,6 +21,7 @@ import io.amaze.bench.runtime.cluster.ClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 
 /**
  * Facade for the {@link ResourceManager} to interact with the cluster messaging system.
@@ -28,7 +29,7 @@ import javax.validation.constraints.NotNull;
  * @see ClusterClient
  * @see ClusterClientFactory
  */
-public interface ResourceManagerClusterClient {
+public interface ResourceManagerClusterClient extends Closeable {
 
     /**
      * Will create an endpoint for the actor to receive messages.<br>
@@ -53,5 +54,8 @@ public interface ResourceManagerClusterClient {
      * @param message Contents of the message, {@link AgentInputMessage}
      */
     void sendToAgent(@NotNull AgentInputMessage message);
+
+    @Override
+    void close();
 
 }

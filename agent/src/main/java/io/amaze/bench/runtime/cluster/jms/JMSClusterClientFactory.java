@@ -55,7 +55,7 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public Endpoint getLocalEndpoint() {
+    public Endpoint localEndpoint() {
         return DUMMY_JMS_ENDPOINT;
     }
 

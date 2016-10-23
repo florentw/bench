@@ -18,7 +18,9 @@ package io.amaze.bench.runtime.actor.metric;
 import com.google.common.collect.ImmutableMap;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.runtime.actor.ActorKey;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +37,14 @@ public final class MetricsInternal implements Metrics {
 
     private final Map<Metric, List<MetricValue>> values = new HashMap<>();
 
-    private MetricsInternal() {
-        // Should not be public
+    private final ActorKey actor;
+
+    private MetricsInternal(@NotNull final ActorKey actor) {
+        this.actor = checkNotNull(actor);
     }
 
-    public static MetricsInternal create() {
-        return new MetricsInternal();
+    public static MetricsInternal create(@NotNull final ActorKey actorKey) {
+        return new MetricsInternal(actorKey);
     }
 
     @Override
@@ -58,7 +62,7 @@ public final class MetricsInternal implements Metrics {
         synchronized (values) {
             Map<Metric, List<MetricValue>> copy = ImmutableMap.copyOf(values);
             flush();
-            return new MetricValuesMessage(copy);
+            return new MetricValuesMessage(actor, copy);
         }
     }
 

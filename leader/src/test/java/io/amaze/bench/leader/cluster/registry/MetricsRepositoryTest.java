@@ -18,6 +18,7 @@ package io.amaze.bench.leader.cluster.registry;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.actor.metric.MetricValue;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.shared.jms.JMSException;
@@ -71,7 +72,7 @@ public final class MetricsRepositoryTest {
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
 
-        clusterListener.onMetricValues(DUMMY_ACTOR, valuesMessage);
+        clusterListener.onMetricValues(valuesMessage);
 
         MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(DUMMY_ACTOR);
         assertThat(metricValuesMessage.metrics().size(), is(1));
@@ -81,7 +82,7 @@ public final class MetricsRepositoryTest {
     public void all_metrics_return_copy() throws javax.jms.JMSException, IOException {
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
-        clusterListener.onMetricValues(DUMMY_ACTOR, valuesMessage);
+        clusterListener.onMetricValues(valuesMessage);
 
         Map<ActorKey, MetricValuesMessage> allMetrics = metricsRepository.allValues();
 
@@ -98,8 +99,8 @@ public final class MetricsRepositoryTest {
         values.add(new MetricValue(1));
         MetricValuesMessage secondMessage = metricsMessage(values);
 
-        clusterListener.onMetricValues(DUMMY_ACTOR, valuesMessage);
-        clusterListener.onMetricValues(DUMMY_ACTOR, secondMessage);
+        clusterListener.onMetricValues(valuesMessage);
+        clusterListener.onMetricValues(secondMessage);
 
         MetricValuesMessage metricValuesMessage = metricsRepository.valuesFor(DUMMY_ACTOR);
         assertThat(metricValuesMessage.metrics().size(), is(1));
@@ -111,7 +112,7 @@ public final class MetricsRepositoryTest {
             throws IOException, javax.jms.JMSException, ExecutionException {
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
-        clusterListener.onMetricValues(DUMMY_ACTOR, valuesMessage);
+        clusterListener.onMetricValues(valuesMessage);
 
         Future<MetricValuesMessage> future = metricsRepository.expectValuesFor(DUMMY_ACTOR);
 
@@ -126,7 +127,7 @@ public final class MetricsRepositoryTest {
         Future<MetricValuesMessage> secondFuture = metricsRepository.expectValuesFor(DUMMY_ACTOR);
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
 
-        clusterListener.onMetricValues(DUMMY_ACTOR, valuesMessage);
+        clusterListener.onMetricValues(valuesMessage);
 
         assertThat(getUninterruptibly(firstFuture).metrics().size(), is(1));
         assertThat(getUninterruptibly(secondFuture).metrics().size(), is(1));
@@ -136,7 +137,7 @@ public final class MetricsRepositoryTest {
             throws IOException, javax.jms.JMSException {
         Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         metricValues.put(Metric.metric("metric", "sec").build(), values);
-        return new MetricValuesMessage(metricValues);
+        return new MetricValuesMessage(TestActor.DUMMY_ACTOR, metricValues);
     }
 
 }

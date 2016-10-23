@@ -22,8 +22,11 @@ public final class ClusterClients {
         // Should not be instantiated
     }
 
-    public static ClusterClientFactory newFactory(@NotNull final Config clusterConfig,
-                                                  @NotNull final ActorRegistry actorRegistry) {
+    public static <T> T newFactory(@NotNull final Class<T> clusterClientInterface,
+                                   @NotNull final Config clusterConfig,
+                                   @NotNull final ActorRegistry actorRegistry) {
+
+        checkNotNull(clusterClientInterface);
         checkNotNull(clusterConfig);
         checkNotNull(actorRegistry);
 
@@ -35,8 +38,7 @@ public final class ClusterClients {
         container.addComponent(actorRegistry);
 
         try {
-            Class<? extends ClusterClientFactory> factoryClass = Class.forName(factoryClassName).asSubclass(
-                    ClusterClientFactory.class);
+            Class<? extends T> factoryClass = Class.forName(factoryClassName).asSubclass(clusterClientInterface);
             container.addComponent(factoryClass);
             return container.getComponent(factoryClass);
         } catch (ClassNotFoundException e) {

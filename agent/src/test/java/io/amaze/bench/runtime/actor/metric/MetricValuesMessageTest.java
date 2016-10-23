@@ -19,6 +19,8 @@ import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.api.metric.Metric;
+import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +48,7 @@ public final class MetricValuesMessageTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(ActorKey.class, TestActor.DUMMY_ACTOR);
 
         tester.testAllPublicConstructors(MetricValuesMessage.class);
     }
@@ -54,6 +57,7 @@ public final class MetricValuesMessageTest {
     public void equality() {
         EqualsTester tester = new EqualsTester();
         tester.addEqualityGroup(metricValues(3), metricValues(3));
+
         tester.testEquals();
     }
 
@@ -99,7 +103,7 @@ public final class MetricValuesMessageTest {
         List<MetricValue> values = new ArrayList<>();
         values.add(new MetricValue(1));
         metricValues.put(DUMMY_METRIC, values);
-        MetricValuesMessage metricValuesMessage = new MetricValuesMessage(metricValues);
+        MetricValuesMessage metricValuesMessage = new MetricValuesMessage(TestActor.DUMMY_ACTOR, metricValues);
 
         assertNotSame(metricValuesMessage, metricValuesMessage.copy());
         assertNotSame(metricValues, metricValuesMessage.metrics());
@@ -107,7 +111,7 @@ public final class MetricValuesMessageTest {
     }
 
     private MetricValuesMessage emptyMetricValues() {
-        return new MetricValuesMessage(new HashMap<>());
+        return new MetricValuesMessage(TestActor.DUMMY_ACTOR, new HashMap<>());
     }
 
     private MetricValuesMessage metricValues(int nbValues) {
@@ -119,7 +123,7 @@ public final class MetricValuesMessageTest {
         metricValues.put(DUMMY_METRIC, values);
         metricValues.put(metric("test2", "seconds").build(), new ArrayList<>());
 
-        return new MetricValuesMessage(metricValues);
+        return new MetricValuesMessage(TestActor.DUMMY_ACTOR, metricValues);
     }
 
 }
