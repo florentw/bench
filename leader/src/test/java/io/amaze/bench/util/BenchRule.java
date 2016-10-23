@@ -35,15 +35,13 @@ import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
-import io.amaze.bench.shared.jms.JMSServerRule;
+import io.amaze.bench.shared.util.Network;
 import org.junit.rules.ExternalResource;
 
 /**
  * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.
  */
 public final class BenchRule extends ExternalResource {
-
-    private final JMSServerRule jmsServerRule;
 
     private AgentRegistry agentRegistry;
     private ActorRegistry actorRegistry;
@@ -58,10 +56,7 @@ public final class BenchRule extends ExternalResource {
     private AgentRegistryClusterClient agentRegistryClient;
     private ResourceManagerClusterClient resourceManagerClient;
     private MetricsRepositoryClusterClient metricsClusterClient;
-
-    public BenchRule() {
-        this.jmsServerRule = new JMSServerRule();
-    }
+    private LeaderClusterClientFactory leaderClientFactory;
 
     public AgentRegistry agentRegistry() {
         return agentRegistry;
@@ -93,24 +88,20 @@ public final class BenchRule extends ExternalResource {
 
     @Override
     protected void before() {
-        jmsServerRule.init();
-
-        JMSEndpoint endpoint = jmsServerRule.getEndpoint();
-        Config clusterConfig = ClusterConfigs.jmsClusterConfig(endpoint);
-
+        JMSEndpoint endpoint = new JMSEndpoint(Network.LOCALHOST, Network.findFreePort());
+        Config leaderConfig = ClusterConfigs.leaderJmsClusterConfig(endpoint, JMSLeaderClusterClientFactory.class);
         actorRegistry = new ActorRegistry();
-        ClusterClientFactory ruleFactory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                                     clusterConfig,
-                                                                     actorRegistry);
+        leaderClientFactory = ClusterClients.newFactory(LeaderClusterClientFactory.class, leaderConfig, actorRegistry);
 
-        actorRegistryClient = ruleFactory.createForActorRegistry();
+        Config clusterConfig = ClusterConfigs.jmsClusterConfig(endpoint);
+        ClusterClientFactory ruleFactory = ClusterClients.newFactory(ClusterClientFactory.class,
+                                                                     clusterConfig, new ActorRegistry());
+
+        actorRegistryClient = leaderClientFactory.createForActorRegistry();
 
         agentRegistry = new AgentRegistry();
-        agentRegistryClient = ruleFactory.createForAgentRegistry(agentRegistry);
+        agentRegistryClient = leaderClientFactory.createForAgentRegistry(agentRegistry);
 
-        LeaderClusterClientFactory leaderClientFactory = new JMSLeaderClusterClientFactory(jmsServerRule.getServer(),
-                                                                                           endpoint,
-                                                                                           new ActorRegistry());
         resourceManagerClient = leaderClientFactory.createForResourceManager();
         resourceManager = new ResourceManager(resourceManagerClient, agentRegistry);
 
@@ -135,7 +126,7 @@ public final class BenchRule extends ExternalResource {
         actorRegistryClient.close();
         agentRegistryClient.close();
 
-        jmsServerRule.close();
+        leaderClientFactory.close();
     }
 
 }

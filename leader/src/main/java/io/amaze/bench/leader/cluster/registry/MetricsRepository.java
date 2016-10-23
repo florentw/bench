@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Implementation of the MetricsRepository (aggregate incoming metrics from actors).
  */
-public final class MetricsRepository {
+public class MetricsRepository {
 
     private static final Logger log = LogManager.getLogger();
 

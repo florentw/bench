@@ -53,10 +53,13 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
 
     public JgroupsClusterClientFactory(@NotNull final Config factoryConfig,
                                        @NotNull final ActorRegistry actorRegistry) {
-        this.actorRegistry = checkNotNull(actorRegistry);
-        checkNotNull(factoryConfig);
+        this(createJChannel(checkNotNull(factoryConfig)), checkNotNull(actorRegistry));
+    }
 
-        jChannel = createJChannel(factoryConfig);
+    @VisibleForTesting
+    JgroupsClusterClientFactory(@NotNull final JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
+        this.actorRegistry = checkNotNull(actorRegistry);
+        this.jChannel = checkNotNull(jChannel);
 
         jgroupsSender = new JgroupsSender(jChannel);
         jgroupsClusterMember = new JgroupsClusterMember(jChannel);
@@ -68,6 +71,14 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
 
         jgroupsClusterMember.join();
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
+    }
+
+    private static JChannel createJChannel(final Config clusterConfig) {
+        try {
+            return new JChannel(clusterConfig.getString(XML_CONFIG));
+        } catch (Exception e) {
+            throw propagate(e);
+        }
     }
 
     @Override
@@ -119,14 +130,6 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     @VisibleForTesting
     JChannel getJChannel() {
         return jChannel;
-    }
-
-    private JChannel createJChannel(final Config clusterConfig) {
-        try {
-            return new JChannel(clusterConfig.getString(XML_CONFIG));
-        } catch (Exception e) {
-            throw propagate(e);
-        }
     }
 
 }

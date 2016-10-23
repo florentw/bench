@@ -1,11 +1,11 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import com.typesafe.config.ConfigException;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.runtime.cluster.registry.*;
+import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
 import io.amaze.bench.shared.util.Network;
 import io.amaze.bench.util.ClusterConfigs;
 import org.jgroups.Address;
@@ -34,36 +34,52 @@ public final class JgroupsClusterClientFactoryTest {
     @Mock
     private ActorRegistry actorRegistry;
     @Mock
+    private AgentRegistry agentRegistry;
+    @Mock
     private Address address;
     @Mock
     private ActorRegistryListener registryClusterListener;
+    @Mock
+    private JChannel jChannel;
 
     private JgroupsClusterClientFactory clusterClientFactory;
 
     @Before
     public void init() throws UnknownHostException {
         View initialView = new View(new ViewId(), new Address[]{new IpAddress(Network.LOCALHOST, 1337)});
-        when(actorRegistry.createClusterListener()).thenReturn(registryClusterListener);
-
-        clusterClientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), actorRegistry);
-
-        JChannel jChannel = spy(clusterClientFactory.getJChannel());
         when(jChannel.view()).thenReturn(initialView);
         when(jChannel.getAddress()).thenReturn(address);
+        when(actorRegistry.createClusterListener()).thenReturn(registryClusterListener);
+
+        clusterClientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
 
-        tester.testAllPublicConstructors(JgroupsClusterClientFactory.class);
         tester.testAllPublicInstanceMethods(clusterClientFactory);
     }
 
     @Test
-    public void constructor_adds_registry_listener() throws Exception {
+    public void constructor_with_config_parameter_creates_jChannel() {
+        clusterClientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), actorRegistry);
+
+        assertNotNull(clusterClientFactory.getJChannel());
+    }
+
+    @Test(expected = ConfigException.class)
+    public void constructor_with_config_parameter_invalid_config_throws() {
+        clusterClientFactory = new JgroupsClusterClientFactory(ClusterConfigs.invalidClassClusterConfig(),
+                                                               actorRegistry);
+    }
+
+    @Test
+    public void constructor_adds_registry_listener_and_joins_cluster() throws Exception {
 
         verify(actorRegistry).createClusterListener();
+        verify(jChannel).receiver(any(JgroupsClusterMember.class));
+        verify(jChannel).connect(anyString());
     }
 
     @Test
@@ -85,5 +101,28 @@ public final class JgroupsClusterClientFactoryTest {
         ActorRegistryClusterClient actorRegistryClient = clusterClientFactory.createForActorRegistry();
 
         assertNotNull(actorRegistryClient);
+    }
+
+    @Test
+    public void create_for_agent_registry_returns_instance() {
+        when(agentRegistry.createClusterListener()).thenReturn(mock(AgentRegistryListener.class));
+
+        AgentRegistryClusterClient clusterClient = clusterClientFactory.createForAgentRegistry(agentRegistry);
+
+        assertNotNull(clusterClient);
+        verify(agentRegistry).createClusterListener();
+        verifyNoMoreInteractions(agentRegistry);
+    }
+
+    @Test
+    public void clusterConfigFactory_returns_instance() {
+        assertNotNull(clusterClientFactory.clusterConfigFactory());
+    }
+
+    @Test
+    public void close_closes_jChannel() {
+        clusterClientFactory.close();
+
+        verify(jChannel).close();
     }
 }

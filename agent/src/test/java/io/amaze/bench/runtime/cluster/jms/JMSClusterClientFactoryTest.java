@@ -16,29 +16,113 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
+import io.amaze.bench.runtime.actor.TestActor;
+import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.AgentClusterClient;
+import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.jms.JMSEndpoint;
+import io.amaze.bench.shared.jms.JMSServerRule;
+import io.amaze.bench.shared.test.IntegrationTest;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 8/16/16.
  */
 @RunWith(MockitoJUnitRunner.class)
+@Category(IntegrationTest.class)
 public final class JMSClusterClientFactoryTest {
 
+    @Rule
+    public final JMSServerRule jmsServerRule = new JMSServerRule();
     @Mock
     private ActorRegistry actorRegistry;
+    @Mock
+    private AgentRegistry agentRegistry;
+
+    private ClusterClientFactory clientFactory;
+
+    @Before
+    public void init() {
+        clientFactory = new JMSClusterClientFactory(jmsServerRule.getEndpoint(), actorRegistry);
+    }
 
     @Test
     public void null_parameters_are_invalid() {
-        JMSClusterClientFactory clientFactory = new JMSClusterClientFactory(new JMSEndpoint("", 1), actorRegistry);
         NullPointerTester tester = new NullPointerTester();
 
         tester.testAllPublicConstructors(JMSClusterClientFactory.class);
         tester.testAllPublicInstanceMethods(clientFactory);
+    }
+
+    @Test
+    public void constructor_with_config_parameter_does_not_throw() {
+        new JMSClusterClientFactory(jmsServerRule.getEndpoint().toConfig(), actorRegistry);
+    }
+
+    @Test
+    public void createForAgent_returns_instance() {
+        AgentClusterClient client = clientFactory.createForAgent("agent");
+
+        assertNotNull(client);
+    }
+
+    @Test
+    public void createForActor_returns_instance() {
+        ActorClusterClient client = clientFactory.createForActor(TestActor.DUMMY_ACTOR);
+
+        assertNotNull(client);
+    }
+
+    @Test
+    public void createForActorRegistry_adds_listener_and_returns_instance() {
+        when(actorRegistry.createClusterListener()).thenReturn(mock(ActorRegistryListener.class));
+
+        ActorRegistryClusterClient client = clientFactory.createForActorRegistry();
+
+        assertNotNull(client);
+        verify(actorRegistry).createClusterListener();
+        verifyNoMoreInteractions(actorRegistry);
+    }
+
+    @Test
+    public void createForAgentRegistry_adds_listener_and_returns_instance() {
+        when(agentRegistry.createClusterListener()).thenReturn(mock(AgentRegistryListener.class));
+
+        AgentRegistryClusterClient client = clientFactory.createForAgentRegistry(agentRegistry);
+
+        assertNotNull(client);
+        verify(agentRegistry).createClusterListener();
+        verifyNoMoreInteractions(agentRegistry);
+    }
+
+    @Test
+    public void clusterConfigFactory_returns_instance() {
+        assertNotNull(clientFactory.clusterConfigFactory());
+    }
+
+    @Test
+    public void close_does_nothing() {
+        clientFactory.close();
+
+        verifyZeroInteractions(actorRegistry);
+    }
+
+    @Test
+    public void localEndpoint_returns_JMSEndpoint() {
+        assertNotNull(clientFactory.localEndpoint());
+        assertThat(clientFactory.localEndpoint(), instanceOf(JMSEndpoint.class));
     }
 
 }

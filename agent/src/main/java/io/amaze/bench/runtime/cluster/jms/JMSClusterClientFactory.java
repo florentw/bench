@@ -39,6 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class JMSClusterClientFactory implements ClusterClientFactory {
 
     private static final JMSEndpoint DUMMY_JMS_ENDPOINT = new JMSEndpoint("dummy", 1337);
+
     private final JMSEndpoint serverEndpoint;
     private final ActorRegistry actorRegistry;
 
@@ -71,7 +72,7 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
-        JMSActorRegistryClusterClient registryClusterClient = new JMSActorRegistryClusterClient(serverEndpoint);
+        ActorRegistryClusterClient registryClusterClient = new JMSActorRegistryClusterClient(serverEndpoint);
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
         return registryClusterClient;
     }
@@ -79,7 +80,7 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
     @Override
     public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
         checkNotNull(agentRegistry);
-        JMSAgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
+        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
         agentRegistryClient.startRegistryListener(agentRegistry.createClusterListener());
         return agentRegistryClient;
     }

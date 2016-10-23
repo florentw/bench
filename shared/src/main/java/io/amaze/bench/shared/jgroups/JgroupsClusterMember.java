@@ -58,6 +58,7 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
                          @NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
                          @NotNull final JgroupsStateMultiplexer stateMultiplexer,
                          @NotNull final JgroupsViewMultiplexer viewMultiplexer) {
+
         this.jChannel = checkNotNull(jChannel);
         this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
         this.stateMultiplexer = checkNotNull(stateMultiplexer);

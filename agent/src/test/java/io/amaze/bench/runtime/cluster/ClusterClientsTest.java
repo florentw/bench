@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static io.amaze.bench.util.ClusterConfigs.JMS_FACTORY_CLASS;
+import static io.amaze.bench.util.ClusterConfigs.JMS_AGENT_FACTORY_CLASS;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +37,7 @@ public final class ClusterClientsTest {
                                                                  actorRegistry);
 
         assertNotNull(factory);
-        assertThat(factory, instanceOf(JMS_FACTORY_CLASS));
+        assertThat(factory, instanceOf(JMS_AGENT_FACTORY_CLASS));
     }
 
     @Test(expected = RuntimeException.class)

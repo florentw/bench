@@ -2,7 +2,6 @@ package io.amaze.bench.leader.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.leader.cluster.LeaderClusterClientFactory;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
@@ -54,11 +53,6 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
     }
 
     @Override
-    public Endpoint localEndpoint() {
-        return serverEndpoint;
-    }
-
-    @Override
     public ResourceManagerClusterClient createForResourceManager() {
         return new JMSResourceManagerClusterClient(server, serverEndpoint);
     }
@@ -73,7 +67,7 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
 
     @Override
     public ActorRegistryClusterClient createForActorRegistry() {
-        JMSActorRegistryClusterClient registryClusterClient = new JMSActorRegistryClusterClient(serverEndpoint);
+        ActorRegistryClusterClient registryClusterClient = new JMSActorRegistryClusterClient(serverEndpoint);
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
         return registryClusterClient;
     }
@@ -81,7 +75,7 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
     @Override
     public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
         checkNotNull(agentRegistry);
-        JMSAgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
+        AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
         agentRegistryClient.startRegistryListener(agentRegistry.createClusterListener());
         return agentRegistryClient;
     }
