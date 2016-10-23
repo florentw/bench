@@ -24,31 +24,18 @@ import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
-import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.jgroups.JChannel;
 
 import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 10/2/16.
  */
-public final class JgroupsClusterClientFactory implements ClusterClientFactory {
+public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterClientFactory implements ClusterClientFactory {
 
-    public static final String XML_CONFIG = "xmlConfig";
-
-    private final JgroupsClusterMember jgroupsClusterMember;
-    private final JgroupsSender jgroupsSender;
-    private final JChannel jChannel;
-    private final ActorRegistry actorRegistry;
-
-    private JgroupsActorRegistryClusterClient registryClusterClient;
     private JgroupsClusterConfigFactory jgroupsClusterConfigFactory;
 
     public JgroupsClusterClientFactory(@NotNull final Config factoryConfig,
@@ -58,27 +45,9 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
 
     @VisibleForTesting
     JgroupsClusterClientFactory(@NotNull final JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
-        this.actorRegistry = checkNotNull(actorRegistry);
-        this.jChannel = checkNotNull(jChannel);
+        super(jChannel, actorRegistry);
 
-        jgroupsSender = new JgroupsSender(jChannel);
-        jgroupsClusterMember = new JgroupsClusterMember(jChannel);
-        registryClusterClient = new JgroupsActorRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
-                                                                      jgroupsClusterMember.stateMultiplexer(),
-                                                                      jgroupsClusterMember.viewMultiplexer(),
-                                                                      actorRegistry);
         jgroupsClusterConfigFactory = new JgroupsClusterConfigFactory();
-
-        jgroupsClusterMember.join();
-        registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
-    }
-
-    private static JChannel createJChannel(final Config clusterConfig) {
-        try {
-            return new JChannel(clusterConfig.getString(XML_CONFIG));
-        } catch (Exception e) {
-            throw propagate(e);
-        }
     }
 
     @Override
@@ -102,34 +71,8 @@ public final class JgroupsClusterClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public ActorRegistryClusterClient createForActorRegistry() {
-        return registryClusterClient;
-    }
-
-    @Override
-    public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
-        checkNotNull(agentRegistry);
-        AgentRegistryClusterClient clusterClient = new JgroupsAgentRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
-                                                                                         jgroupsClusterMember.stateMultiplexer(),
-                                                                                         jgroupsClusterMember.viewMultiplexer(),
-                                                                                         agentRegistry);
-        clusterClient.startRegistryListener(agentRegistry.createClusterListener());
-        return clusterClient;
-    }
-
-    @Override
     public ClusterConfigFactory clusterConfigFactory() {
         return jgroupsClusterConfigFactory;
-    }
-
-    @Override
-    public void close() {
-        jChannel.close();
-    }
-
-    @VisibleForTesting
-    JChannel getJChannel() {
-        return jChannel;
     }
 
 }

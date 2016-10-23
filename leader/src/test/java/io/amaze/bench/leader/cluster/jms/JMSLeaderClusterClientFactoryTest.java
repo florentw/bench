@@ -2,6 +2,7 @@ package io.amaze.bench.leader.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import com.typesafe.config.Config;
+import io.amaze.bench.api.After;
 import io.amaze.bench.leader.cluster.LeaderClusterClientFactory;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
@@ -47,6 +48,11 @@ public final class JMSLeaderClusterClientFactoryTest {
         clientFactory = new JMSLeaderClusterClientFactory(jmsServerRule.getServer(),
                                                           jmsServerRule.getEndpoint(),
                                                           actorRegistry);
+    }
+
+    @After
+    public void close() {
+        clientFactory.close();
     }
 
     @Test

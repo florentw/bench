@@ -95,7 +95,8 @@ public final class BenchRule extends ExternalResource {
 
         Config clusterConfig = ClusterConfigs.jmsClusterConfig(endpoint);
         ClusterClientFactory ruleFactory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                                     clusterConfig, new ActorRegistry());
+                                                                     clusterConfig,
+                                                                     new ActorRegistry());
 
         actorRegistryClient = leaderClientFactory.createForActorRegistry();
 

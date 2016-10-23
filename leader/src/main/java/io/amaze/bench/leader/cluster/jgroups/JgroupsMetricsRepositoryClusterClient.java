@@ -27,6 +27,7 @@ public final class JgroupsMetricsRepositoryClusterClient implements MetricsRepos
         multiplexer.addListener(MetricValuesMessage.class, (msg, payload) -> {
             checkNotNull(msg);
             checkNotNull(payload);
+
             metricsListener.onMetricValues(payload);
         });
     }
