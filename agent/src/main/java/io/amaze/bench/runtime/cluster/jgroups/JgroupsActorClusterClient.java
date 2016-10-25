@@ -39,6 +39,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     private final JgroupsListenerMultiplexer multiplexer;
     private final JgroupsSender jgroupsSender;
     private final ActorRegistry actorRegistry;
+    private MessageListener listener;
 
     JgroupsActorClusterClient(@NotNull final Endpoint localEndpoint,
                               @NotNull final JgroupsListenerMultiplexer multiplexer,
@@ -55,7 +56,8 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
     public void startActorListener(@NotNull final RuntimeActor actor) {
         checkNotNull(actor);
 
-        multiplexer.addListener(ActorInputMessage.class, new MessageListener(actor));
+        listener = new MessageListener(actor);
+        multiplexer.addListener(ActorInputMessage.class, listener);
     }
 
     @Override
@@ -82,7 +84,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
 
     @Override
     public void close() {
-        multiplexer.removeListenerFor(ActorInputMessage.class);
+        multiplexer.removeListener(listener);
     }
 
     static final class MessageListener implements JgroupsListener<ActorInputMessage> {

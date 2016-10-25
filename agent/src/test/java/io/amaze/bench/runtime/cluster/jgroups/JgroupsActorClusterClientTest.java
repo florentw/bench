@@ -84,7 +84,7 @@ public final class JgroupsActorClusterClientTest {
 
         clusterClient.close();
 
-        verify(listenerMultiplexer).removeListenerFor(ActorInputMessage.class);
+        verify(listenerMultiplexer).removeListener(any(MessageListener.class));
         verifyNoMoreInteractions(listenerMultiplexer);
         verifyZeroInteractions(jgroupsSender);
     }

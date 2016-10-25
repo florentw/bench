@@ -70,7 +70,7 @@ public final class JgroupsAgentClusterClientTest {
 
         clusterClient.close();
 
-        verify(listenerMultiplexer).removeListenerFor(AgentInputMessage.class);
+        verify(listenerMultiplexer).removeListener(any(JgroupsAgentClusterClient.MessageListener.class));
         verifyNoMoreInteractions(listenerMultiplexer);
         verifyZeroInteractions(jgroupsSender);
     }

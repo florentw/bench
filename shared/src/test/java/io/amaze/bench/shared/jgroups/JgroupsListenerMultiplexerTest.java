@@ -61,7 +61,7 @@ public final class JgroupsListenerMultiplexerTest {
         listenerMultiplexer.addListener(String.class, listener);
 
         assertThat(listenerMultiplexer.getListeners().size(), is(1));
-        assertThat(listenerMultiplexer.getListeners().get(String.class), is(listener));
+        assertThat(listenerMultiplexer.getListeners().get(String.class).iterator().next(), is(listener));
         verifyZeroInteractions(listener);
     }
 
@@ -76,15 +76,16 @@ public final class JgroupsListenerMultiplexerTest {
     public void remove_listener_should_unregister_listener() {
         listenerMultiplexer.addListener(String.class, listener);
 
-        listenerMultiplexer.removeListenerFor(String.class);
+        listenerMultiplexer.removeListener(listener);
 
-        assertThat(listenerMultiplexer.getListeners().size(), is(0));
+        assertThat(listenerMultiplexer.getListeners().size(), is(1));
+        assertThat(listenerMultiplexer.getListeners().get(String.class).size(), is(0));
         verifyZeroInteractions(listener);
     }
 
     @Test
     public void remove_unknown_listener_does_not_throw() {
-        listenerMultiplexer.removeListenerFor(String.class);
+        listenerMultiplexer.removeListener(listener);
 
         assertThat(listenerMultiplexer.getListeners().size(), is(0));
         verifyZeroInteractions(listener);

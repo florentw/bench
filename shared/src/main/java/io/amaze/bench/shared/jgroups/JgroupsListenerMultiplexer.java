@@ -22,9 +22,7 @@ import org.jgroups.Message;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,7 +33,7 @@ public class JgroupsListenerMultiplexer {
 
     private static final Logger log = LogManager.getLogger();
 
-    private final Map<Class<? extends Serializable>, JgroupsListener<? extends Serializable>> listeners = new HashMap<>();
+    private final Map<Class<? extends Serializable>, Set<JgroupsListener<? extends Serializable>>> listeners = new HashMap<>();
 
     public <T extends Serializable> void addListener(@NotNull final Class<T> inputMessageType,
                                                      @NotNull final JgroupsListener<T> listener) {
@@ -46,49 +44,54 @@ public class JgroupsListenerMultiplexer {
             if (listeners.containsKey(inputMessageType)) {
                 throw new IllegalStateException("A listener is already registered for " + inputMessageType.getName());
             }
-            listeners.put(inputMessageType, listener);
+            Set<JgroupsListener<? extends Serializable>> listenersByKey = listeners.get(inputMessageType);
+            if (listenersByKey == null) {
+                listenersByKey = new HashSet<>();
+            }
+
+            listenersByKey.add(listener);
+            listeners.put(inputMessageType, listenersByKey);
         }
     }
 
     public void dispatch(final Message msg) {
         checkNotNull(msg);
 
-        Optional<JgroupsListener> targetListener = listenerFor(msg);
-        if (!targetListener.isPresent()) {
-            return;
-        }
-        try {
-            targetListener.get().onMessage(msg, msg.getObject());
-        } catch (Exception e) {
-            log.warn("Error while processing message {}, listener is {}", msg, targetListener.get(), e);
-        }
+        Set<JgroupsListener<? extends Serializable>> targetListeners = listenersFor(msg);
+        targetListeners.forEach(listener -> {
+            try {
+                listener.onMessage(msg, msg.getObject());
+            } catch (Exception e) {
+                log.warn("Error while processing message {}, listener is {}", msg, listener, e);
+            }
+        });
     }
 
-    public void removeListenerFor(@NotNull final Class<? extends Serializable> inputMessageType) {
-        checkNotNull(inputMessageType);
+    public void removeListener(@NotNull final JgroupsListener<? extends Serializable> listener) {
+        checkNotNull(listener);
         synchronized (listeners) {
-            JgroupsListener listener = listeners.remove(inputMessageType);
-            if (listener == null) {
-                log.warn("Tried to remove an non-existent listener for {}", inputMessageType);
-            }
+            listeners.values().forEach(listenersForKey -> {
+                if (!listenersForKey.remove(listener)) {
+                    log.warn("Tried to remove an non-existent listener for {}", listener);
+                }
+            });
         }
     }
 
     @VisibleForTesting
-    Map<Class<? extends Serializable>, JgroupsListener<? extends Serializable>> getListeners() {
+    Map<Class<? extends Serializable>, Set<JgroupsListener<? extends Serializable>>> getListeners() { // NOSONAR
         return listeners;
     }
 
-    private Optional<JgroupsListener> listenerFor(final Message msg) {
+    private Set<JgroupsListener<? extends Serializable>> listenersFor(final Message msg) {
         checkNotNull(msg);
         synchronized (listeners) {
-            JgroupsListener targetListener = listeners.get(msg.getObject().getClass());
-            if (targetListener == null) {
-                log.warn("Could not find a listener for message {}", msg);
-                return Optional.empty();
+            Set<JgroupsListener<? extends Serializable>> targetListeners = listeners.get(msg.getObject().getClass()); // NOSONAR
+            if (targetListeners == null) {
+                log.debug("No listeners for message {}", msg);
+                return Collections.emptySet();
             }
-            return Optional.of(targetListener);
+            return new HashSet<>(targetListeners);
         }
     }
-
 }

@@ -102,7 +102,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
         verify(stateMultiplexer).removeStateHolder(any(JgroupsStateKey.class));
         verify(viewMultiplexer).removeListener(any(JgroupsViewListener.class));
-        verify(listenerMultiplexer).removeListenerFor(AgentLifecycleMessage.class);
+        verify(listenerMultiplexer).removeListener(any(JgroupsListener.class));
     }
 
     @Test

@@ -29,6 +29,7 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
     private final AgentRegistry agentRegistry;
 
     private JgroupsViewListener viewListener;
+    private JgroupsListener<AgentLifecycleMessage> listener;
 
     public JgroupsAgentRegistryClusterClient(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
                                              @NotNull final JgroupsStateMultiplexer stateMultiplexer,
@@ -47,7 +48,8 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
     public void startRegistryListener(@NotNull final AgentRegistryListener agentsListener) {
         checkNotNull(agentsListener);
 
-        listenerMultiplexer.addListener(AgentLifecycleMessage.class, registryListener(agentsListener));
+        listener = registryListener(agentsListener);
+        listenerMultiplexer.addListener(AgentLifecycleMessage.class, listener);
         viewListener = viewListener();
         viewMultiplexer.addListener(viewListener);
     }
@@ -58,7 +60,7 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
 
         // to be done only if startRegistryListener was called
         if (viewListener != null) {
-            listenerMultiplexer.removeListenerFor(AgentLifecycleMessage.class);
+            listenerMultiplexer.removeListener(listener);
             viewMultiplexer.removeListener(viewListener);
         }
     }

@@ -43,6 +43,7 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
     private final JgroupsViewMultiplexer viewMultiplexer;
     private final ActorRegistry actorRegistry;
     private JgroupsViewListener viewListener;
+    private JgroupsListener<ActorLifecycleMessage> listener;
 
     JgroupsActorRegistryClusterClient(@NotNull final JgroupsListenerMultiplexer listenerMultiplexer,
                                       @NotNull final JgroupsStateMultiplexer stateMultiplexer,
@@ -61,7 +62,8 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
     public void startRegistryListener(@NotNull final ActorRegistryListener actorsListener) {
         checkNotNull(actorsListener);
 
-        listenerMultiplexer.addListener(ActorLifecycleMessage.class, registryListener(actorsListener));
+        listener = registryListener(actorsListener);
+        listenerMultiplexer.addListener(ActorLifecycleMessage.class, listener);
         viewListener = viewListener();
         viewMultiplexer.addListener(viewListener);
     }
@@ -72,7 +74,7 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
 
         // to be done only if startRegistryListener was called
         if (viewListener != null) {
-            listenerMultiplexer.removeListenerFor(ActorLifecycleMessage.class);
+            listenerMultiplexer.removeListener(listener);
             viewMultiplexer.removeListener(viewListener);
         }
     }

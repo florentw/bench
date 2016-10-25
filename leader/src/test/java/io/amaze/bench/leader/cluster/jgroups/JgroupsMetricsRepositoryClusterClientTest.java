@@ -56,10 +56,7 @@ public final class JgroupsMetricsRepositoryClusterClientTest {
 
     @Test
     public void jgroups_metrics_listener_forwards_messages() {
-        doAnswer(invocation -> {
-            jgroupsListener = (JgroupsListener<MetricValuesMessage>) invocation.getArguments()[1];
-            return null;
-        }).when(listenerMultiplexer).addListener(eq(MetricValuesMessage.class), any(JgroupsListener.class));
+        spyOnListener();
         MetricsRepositoryListener repositoryListener = mock(MetricsRepositoryListener.class);
         clusterClient.startMetricsListener(repositoryListener);
         MetricValuesMessage metricValues = new MetricValuesMessage(TestActor.DUMMY_ACTOR, new HashMap<>());
@@ -72,11 +69,19 @@ public final class JgroupsMetricsRepositoryClusterClientTest {
 
     @Test
     public void close_removes_listener() {
+        spyOnListener();
 
         clusterClient.close();
 
-        verify(listenerMultiplexer).removeListenerFor(eq(MetricValuesMessage.class));
+        verify(listenerMultiplexer).removeListener(jgroupsListener);
         verifyNoMoreInteractions(listenerMultiplexer);
+    }
+
+    private void spyOnListener() {
+        doAnswer(invocation -> {
+            jgroupsListener = (JgroupsListener<MetricValuesMessage>) invocation.getArguments()[1];
+            return null;
+        }).when(listenerMultiplexer).addListener(eq(MetricValuesMessage.class), any(JgroupsListener.class));
     }
 
 }
