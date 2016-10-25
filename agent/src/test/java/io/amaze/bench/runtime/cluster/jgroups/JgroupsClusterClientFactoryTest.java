@@ -121,6 +121,7 @@ public final class JgroupsClusterClientFactoryTest {
 
     @Test
     public void close_closes_jChannel() {
+
         clusterClientFactory.close();
 
         verify(jChannel).close();

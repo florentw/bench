@@ -43,6 +43,7 @@ public abstract class JgroupsAbstractClusterClientFactory {
     }
 
     protected static JChannel createJChannel(final Config clusterConfig) {
+        checkNotNull(clusterConfig);
         try {
             return new JChannel(clusterConfig.getString(XML_CONFIG));
         } catch (Exception e) {
@@ -65,6 +66,7 @@ public abstract class JgroupsAbstractClusterClientFactory {
     }
 
     public void close() {
+        registryClusterClient.close();
         jChannel.close();
     }
 

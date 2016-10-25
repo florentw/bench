@@ -152,6 +152,10 @@ public class ActorRegistry {
         @Override
         public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
             synchronized (actors) {
+                if (actors.containsKey(key)) {
+                    log.warn("An actor {} already exists for key {}", actors.get(key), key);
+                    return;
+                }
                 actors.put(key, RegisteredActor.created(key, agent));
             }
 

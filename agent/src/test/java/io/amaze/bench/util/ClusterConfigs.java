@@ -19,6 +19,7 @@ public final class ClusterConfigs {
     public static final Class<? extends ClusterClientFactory> JMS_AGENT_FACTORY_CLASS = JMSClusterClientFactory.class;
     public static final Class<? extends ClusterClientFactory> JGROUPS_FACTORY_CLASS = JgroupsClusterClientFactory.class;
     public static final Class<? extends ClusterClientFactory> DEFAULT_FACTORY_CLASS = JMS_AGENT_FACTORY_CLASS;
+    public static final String JGROUPS_XML_PROTOCOLS = "fast.xml";
     private static final JMSEndpoint DUMMY_ENDPOINT = new JMSEndpoint("dummy", 1337);
 
     public static Config defaultConfig() {
@@ -50,7 +51,7 @@ public final class ClusterConfigs {
     }
 
     public static Config jgroupsFactoryConfig() {
-        return ConfigFactory.parseString("{\"" + JgroupsClusterClientFactory.XML_CONFIG + "\":\"fast.xml\"}");
+        return ConfigFactory.parseString("{\"" + JgroupsClusterClientFactory.XML_CONFIG + "\":\"" + JGROUPS_XML_PROTOCOLS + "\"}");
     }
 
     public static Config jgroupsClusterConfig() {

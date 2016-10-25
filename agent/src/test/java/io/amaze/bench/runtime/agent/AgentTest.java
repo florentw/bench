@@ -81,7 +81,10 @@ public final class AgentTest {
     public void before() throws ValidationException {
         clientFactory = new DummyClientFactory(localEndpoint,
                                                agentClient,
-                                               actorClient, actorRegistryClient, clusterConfigFactory, null);
+                                               actorClient,
+                                               actorRegistryClient,
+                                               clusterConfigFactory,
+                                               null);
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorClient.localEndpoint()).thenReturn(localEndpoint);
@@ -205,11 +208,30 @@ public final class AgentTest {
 
         assertThat(agent.getActors().isEmpty(), is(true));
 
-        InOrder inOrder = inOrder(agentActorRegistrySender, agentRegistrySender, embeddedManagedActor);
+        InOrder inOrder = inOrder(agentClient,
+                                  agentActorRegistrySender,
+                                  agentRegistrySender,
+                                  embeddedManagedActor,
+                                  forkedManager,
+                                  embeddedManager);
+
         inOrder.verify(agentActorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.CREATED)));
         inOrder.verify(embeddedManagedActor).close();
         inOrder.verify(agentRegistrySender).send(argThat(isAgentState(AgentLifecycleMessage.State.CLOSED)));
+        inOrder.verify(forkedManager).close();
+        inOrder.verify(embeddedManager).close();
+        inOrder.verify(agentClient).close();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void closing_agent_twice_closes_only_once() {
+        agent.onActorCreationRequest(DUMMY_CONFIG);
+
+        agent.close();
+        agent.close();
+
+        verify(agentClient).close();
     }
 
     @Test

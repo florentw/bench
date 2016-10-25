@@ -26,10 +26,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.runtime.actor.ActorLifecycleMessage.created;
@@ -38,7 +40,7 @@ import static io.amaze.bench.runtime.actor.ActorLifecycleMessage.failed;
 /**
  * Created on 3/3/16.
  */
-public class Agent implements AgentClientListener, AutoCloseable {
+public class Agent implements AgentClientListener, Closeable {
 
     private static final String DEFAULT_AGENT_PREFIX = "agent-";
     private static final Logger log = LogManager.getLogger();
@@ -48,6 +50,8 @@ public class Agent implements AgentClientListener, AutoCloseable {
     private final ActorManager embeddedManager;
     private final ActorManager forkedManager;
     private final String name;
+
+    private final AtomicBoolean isClosed = new AtomicBoolean(false);
 
     public Agent(@NotNull final ClusterClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
         this(defaultName(), clientFactory, actorManagers);
@@ -117,13 +121,22 @@ public class Agent implements AgentClientListener, AutoCloseable {
     }
 
     @Override
-    public synchronized void close() throws Exception {
+    public synchronized void close() {
+        if (!isClosed.compareAndSet(false, true)) {
+            return;
+        }
+
         log.info("{} Closing...", this);
 
         actors.values().forEach(ManagedActor::close);
         actors.clear();
 
         signOff();
+
+        forkedManager.close();
+        embeddedManager.close();
+
+        agentClient.close();
 
         log.info("{} Closed.", this);
     }

@@ -99,6 +99,21 @@ public final class ActorRegistryTest {
     }
 
     @Test
+    public void actor_created_twice_is_registered_only_once() {
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+
+        RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
+
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
+        assertThat(actor.getAgentHost(), is(DUMMY_AGENT));
+        assertThat(actor.getState(), is(State.CREATED));
+
+        verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verifyNoMoreInteractions(clientListener);
+    }
+
+    @Test
     public void list_all() {
         clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
 

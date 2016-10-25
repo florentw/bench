@@ -39,6 +39,8 @@ import static org.mockito.Mockito.*;
 @Category(IntegrationTest.class)
 public final class AgentBootstrapIntegrationTest {
 
+    private static final int TIMEOUT_MS = 10000;
+
     @Rule
     public final AgentClusterRule cluster = new AgentClusterRule();
     @Rule
@@ -73,7 +75,7 @@ public final class AgentBootstrapIntegrationTest {
 
         agentBootstrapThread.start();
 
-        verify(listener, timeout(2000)).onAgentRegistration(any(AgentRegistrationMessage.class));
+        verify(listener, timeout(TIMEOUT_MS)).onAgentRegistration(any(AgentRegistrationMessage.class));
         verifyNoMoreInteractions(listener);
     }
 

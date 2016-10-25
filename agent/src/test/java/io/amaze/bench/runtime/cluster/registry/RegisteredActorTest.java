@@ -5,6 +5,7 @@ import com.google.common.testing.SerializableTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -15,6 +16,7 @@ import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created on 10/14/16.
@@ -47,6 +49,11 @@ public final class RegisteredActorTest {
         assertThat(expected.getDeployInfo(), is(actual.getDeployInfo()));
         assertThat(expected.getKey(), is(actual.getKey()));
         assertThat(expected.getState(), is(actual.getState()));
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(registeredActor(ACTOR_KEY).toString()));
     }
 
     private RegisteredActor registeredActor(final ActorKey actorKey) {

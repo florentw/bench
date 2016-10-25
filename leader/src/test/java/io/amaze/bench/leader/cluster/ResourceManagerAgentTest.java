@@ -21,12 +21,13 @@ import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
 import org.junit.rules.Timeout;
+import org.junit.runner.RunWith;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -46,16 +47,19 @@ import static org.junit.Assert.*;
 /**
  * Test interactions between the ResourceManager and an Agent
  */
+@RunWith(Theories.class)
 @Category(IntegrationTest.class)
 public final class ResourceManagerAgentTest {
+
+    @DataPoints
+    public static final BenchRule[] benchRules = new BenchRule[]{ //
+            BenchRule.newJmsCluster(), //
+            BenchRule.newJgroupsCluster()};
 
     private static final int TEST_TIMEOUT_SEC = 15;
 
     @Rule
     public final Timeout globalTimeout = new Timeout(TEST_TIMEOUT_SEC * 2, TimeUnit.SECONDS);
-
-    @Rule
-    public final BenchRule benchRule = BenchRule.newJgroupsCluster();
 
     private ResourceManager resourceManager;
 
@@ -65,8 +69,64 @@ public final class ResourceManagerAgentTest {
     private Agent agent;
     private AgentSync agentSync;
 
-    @Before
-    public void before() throws ExecutionException {
+    @Theory
+    public void agent_registration_complete(final BenchRule benchRule) throws Exception {
+        before(benchRule);
+
+        assertThat(agentRegistry.all().size(), is(1));
+        RegisteredAgent registeredAgent = agentRegistry.all().iterator().next();
+        assertThat(registeredAgent.getAgentName(), is(agent.getName()));
+        assertTrue(registeredAgent.getCreationTime() > 0);
+        assertNotNull(registeredAgent.getSystemConfig());
+        after(benchRule);
+    }
+
+    @Theory
+    public void create_embedded_actor_on_agent(final BenchRule benchRule) throws Exception {
+        before(benchRule);
+
+        List<String> preferredHosts = new ArrayList<>();
+        ActorSync sync = createActorWith(preferredHosts);
+
+        sync.assertActorCreated();
+        sync.assertActorInitialized();
+        assertThat(actorRegistry.all().size(), is(1));
+
+        RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
+        assertThat(actor.getAgentHost(), is(agent.getName()));
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
+        assertThat(actor.getState(), is(State.INITIALIZED));
+        after(benchRule);
+    }
+
+    @Theory
+    public void create_and_close_embedded_actor_on_agent(final BenchRule benchRule) throws Exception {
+        before(benchRule);
+
+        List<String> preferredHosts = new ArrayList<>();
+        ActorSync sync = createActorWith(preferredHosts);
+        sync.assertActorCreated();
+
+        resourceManager.closeActor(DUMMY_ACTOR);
+
+        sync.assertActorClosed();
+        assertThat(actorRegistry.all().size(), is(0));
+        after(benchRule);
+    }
+
+    @Theory
+    public void closing_agent_unregisters(final BenchRule benchRule) throws Exception {
+        before(benchRule);
+
+        agent.close();
+
+        assertTrue(agentSync.agentClosed.await(TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
+        after(benchRule);
+    }
+
+    private void before(final BenchRule benchRule) throws ExecutionException {
+        benchRule.before();
+
         resourceManager = benchRule.resourceManager();
 
         actorRegistry = benchRule.actorRegistry();
@@ -76,53 +136,11 @@ public final class ResourceManagerAgentTest {
         agent = getUninterruptibly(benchRule.agents().create("test-agent"));
     }
 
-    @Test
-    public void agent_registration_complete() throws InterruptedException {
-
-        assertThat(agentRegistry.all().size(), is(1));
-        RegisteredAgent registeredAgent = agentRegistry.all().iterator().next();
-        assertThat(registeredAgent.getAgentName(), is(agent.getName()));
-        assertTrue(registeredAgent.getCreationTime() > 0);
-        assertNotNull(registeredAgent.getSystemConfig());
-    }
-
-    @Test
-    public void create_embedded_actor_on_agent() throws InterruptedException {
-        List<String> preferredHosts = new ArrayList<>();
-        ActorSync sync = createActorWith(preferredHosts);
-
-        sync.assertActorInitialized();
-        assertThat(actorRegistry.all().size(), is(1));
-
-        RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
-        assertThat(actor.getAgentHost(), is(agent.getName()));
-        assertThat(actor.getKey(), is(DUMMY_ACTOR));
-        assertThat(actor.getState(), is(State.INITIALIZED));
-    }
-
-    @Test
-    public void create_and_close_embedded_actor_on_agent() throws InterruptedException {
-        List<String> preferredHosts = new ArrayList<>();
-        ActorSync sync = createActorWith(preferredHosts);
-        sync.assertActorCreated();
-
-        resourceManager.closeActor(DUMMY_ACTOR);
-
-        sync.assertActorClosed();
-        assertThat(actorRegistry.all().size(), is(0));
-    }
-
-    @Test
-    public void closing_agent_unregisters() throws Exception {
-        agent.close();
-
-        assertTrue(agentSync.agentClosed.await(TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
-    }
-
-    @After
-    public void after() throws Exception {
+    private void after(final BenchRule benchRule) throws Exception {
         resourceManager.close();
         agent.close();
+
+        benchRule.after();
     }
 
     private ActorSync createActorWith(final List<String> preferredHosts) {

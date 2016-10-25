@@ -75,6 +75,15 @@ public final class RegisteredActor implements Serializable {
         return deployInfo;
     }
 
+    @Override
+    public String toString() {
+        return "{\"RegisteredActor\":{" + //
+                "\"actor\":" + actor + ", " + //
+                "\"agentHost\":\"" + agentHost + "\"" + ", " + //
+                "\"state\":\"" + state + "\"" + ", " + //
+                "\"deployInfo\":" + deployInfo + "}}";
+    }
+
     public enum State {
         CREATED, //
         INITIALIZED //

@@ -35,6 +35,8 @@ import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.util.Network;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.rules.ExternalResource;
 
 import javax.validation.constraints.NotNull;
@@ -45,6 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.
  */
 public final class BenchRule extends ExternalResource {
+    private static final Logger log = LogManager.getLogger();
 
     private final Config leaderConfig;
     private final Config clusterConfig;
@@ -52,7 +55,6 @@ public final class BenchRule extends ExternalResource {
     private AgentRegistry agentRegistry;
     private ActorRegistry actorRegistry;
     private ResourceManager resourceManager;
-    private ActorSender actorSender;
 
     private Agents agents;
     private Actors actors;
@@ -63,6 +65,7 @@ public final class BenchRule extends ExternalResource {
     private ResourceManagerClusterClient resourceManagerClient;
     private MetricsRepositoryClusterClient metricsClusterClient;
     private LeaderClusterClientFactory leaderClientFactory;
+    private ClusterClientFactory clusterClientFactory;
 
     private BenchRule(@NotNull final Config leaderConfig, @NotNull final Config clusterConfig) {
         this.leaderConfig = checkNotNull(leaderConfig);
@@ -107,7 +110,8 @@ public final class BenchRule extends ExternalResource {
     }
 
     @Override
-    protected void before() {
+    public void before() {
+        log.debug("----- Initializing rule for {} -----", leaderConfig);
         actorRegistry = new ActorRegistry();
         leaderClientFactory = ClusterClients.newFactory(LeaderClusterClientFactory.class, leaderConfig, actorRegistry);
         actorRegistryClient = leaderClientFactory.createForActorRegistry();
@@ -120,24 +124,30 @@ public final class BenchRule extends ExternalResource {
 
         ActorSender actorSender = leaderClientFactory.actorSender();
 
-        ClusterClientFactory clusterClientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                                              clusterConfig,
-                                                                              new ActorRegistry());
+        clusterClientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
+                                                         clusterConfig,
+                                                         new ActorRegistry());
 
         agents = new Agents(new ActorManagers(), clusterClientFactory, agentRegistry);
         actors = new Actors(actorSender, resourceManager, actorRegistry);
 
         metricsRepository = new MetricsRepository();
         metricsClusterClient = leaderClientFactory.createForMetricsRepository(metricsRepository);
+        log.debug("----- Rule initialized for {} -----", leaderConfig);
     }
 
     @Override
-    protected void after() {
-        resourceManagerClient.close();
-        metricsClusterClient.close();
-        actorRegistryClient.close();
-        agentRegistryClient.close();
+    public void after() {
+        log.debug("----- Closing rule for {} -----", leaderConfig);
 
+        metricsClusterClient.close();
+        resourceManagerClient.close();
+        agentRegistryClient.close();
+        actorRegistryClient.close();
+
+        clusterClientFactory.close();
         leaderClientFactory.close();
+
+        log.debug("----- Rule closed for {} -----", leaderConfig);
     }
 }
