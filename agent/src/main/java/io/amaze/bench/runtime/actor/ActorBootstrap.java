@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigRenderOptions;
 import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterClients;
@@ -43,10 +44,12 @@ public class ActorBootstrap implements Closeable {
     private static final Logger log = LogManager.getLogger();
 
     private final Actors actors;
+    private final ClusterClientFactory clientFactory;
     private volatile RuntimeActor actor;
 
     public ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) throws IOException, ValidationException {
-        actors = new Actors(clientFactory);
+        this.clientFactory = checkNotNull(clientFactory);
+        actors = new Actors(this.clientFactory);
     }
 
     /**
@@ -69,9 +72,16 @@ public class ActorBootstrap implements Closeable {
         String tmpClusterConfig = args[2];
         String tmpActorConfig = args[3];
 
+        log.info("{} starting...", actorKey);
+
         // Read and delete temporary config files
         Config clusterConfig = parseClusterConfig(Files.readAndDelete(tmpClusterConfig));
         String jsonActorConfig = Files.readAndDelete(tmpActorConfig);
+
+        log.debug("{} bootstrap with clusterConfig {}, actorConfig {}",
+                  actorKey,
+                  clusterConfig.root().render(ConfigRenderOptions.concise()),
+                  jsonActorConfig);
 
         ClusterClientFactory clientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
                                                                        clusterConfig,
@@ -81,6 +91,8 @@ public class ActorBootstrap implements Closeable {
         RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonActorConfig);
 
         installShutdownHook(actorBootstrap, actor);
+
+        log.info("{} started.", actorKey);
     }
 
     @VisibleForTesting
@@ -103,6 +115,7 @@ public class ActorBootstrap implements Closeable {
         if (actor != null) {
             actor.close();
         }
+        clientFactory.close();
     }
 
     RuntimeActor createActor(final ActorKey key, //

@@ -13,8 +13,9 @@ import java.io.Closeable;
 public interface ClusterConfigFactory extends Closeable {
 
     /**
-     * @param actorKey
-     * @return
+     * @param actorKey The key of the forked actor to create the cluster configuration for.
+     * @return The configuration that will be passed to a forked actor to connect to the cluster by creating a
+     * {@link ClusterClientFactory} instance.
      */
     @NotNull
     Config clusterConfigFor(@NotNull ActorKey actorKey);

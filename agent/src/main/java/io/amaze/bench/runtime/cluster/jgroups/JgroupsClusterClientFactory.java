@@ -40,14 +40,17 @@ public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterCli
 
     public JgroupsClusterClientFactory(@NotNull final Config factoryConfig,
                                        @NotNull final ActorRegistry actorRegistry) {
-        this(createJChannel(factoryConfig), checkNotNull(actorRegistry));
+        this(createJChannel(factoryConfig), checkNotNull(actorRegistry), factoryConfig);
     }
 
     @VisibleForTesting
-    JgroupsClusterClientFactory(@NotNull final JChannel jChannel, @NotNull final ActorRegistry actorRegistry) {
+    JgroupsClusterClientFactory(@NotNull final JChannel jChannel,
+                                @NotNull final ActorRegistry actorRegistry,
+                                @NotNull final Config factoryConfig) {
         super(jChannel, actorRegistry);
+        checkNotNull(factoryConfig);
 
-        jgroupsClusterConfigFactory = new JgroupsClusterConfigFactory();
+        jgroupsClusterConfigFactory = new JgroupsClusterConfigFactory(factoryConfig);
     }
 
     @Override

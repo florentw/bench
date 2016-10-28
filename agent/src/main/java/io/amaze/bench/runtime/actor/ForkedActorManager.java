@@ -83,6 +83,13 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         checkNotNull(actorConfig);
 
         final ActorKey actor = actorConfig.getKey();
+
+        synchronized (processes) {
+            if (processes.containsKey(actor)) {
+                throw new IllegalArgumentException("An actorKey with the name " + actor + " already exists.");
+            }
+        }
+
         Process process = createActorProcess(actorConfig, clusterConfigFactory.clusterConfigFor(actor));
 
         ProcessWatchDogThread watchDog = new ProcessWatchDogThread(actor.getName(), process, this);
@@ -173,7 +180,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
                 .redirectErrorStream(true) //
                 .redirectOutput(actorLogFile);
 
-        log.info("Started process with command {}, logging to {}", builder.command(), actorLogFileName);
+        log.info("Started process for {} with command {}, logging to {}", name, builder.command(), actorLogFileName);
 
         return builder.start();
     }

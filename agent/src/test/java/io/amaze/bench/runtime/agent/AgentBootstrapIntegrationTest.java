@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 public final class AgentBootstrapIntegrationTest {
 
     @DataPoints
-    public static final AgentClusterRule[] agentCluster = new AgentClusterRule[]{ //
+    public static final AgentClusterRule[] agentClusters = new AgentClusterRule[]{ //
             AgentClusterRule.newJmsAgentCluster(), //
             AgentClusterRule.newJgroupsAgentCluster() //
     };

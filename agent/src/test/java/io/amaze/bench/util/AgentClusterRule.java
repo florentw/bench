@@ -1,6 +1,7 @@
 package io.amaze.bench.util;
 
 import io.amaze.bench.runtime.agent.AgentConfig;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import org.junit.rules.ExternalResource;
 
@@ -19,12 +20,17 @@ public final class AgentClusterRule extends ExternalResource implements AgentClu
         this.delegateCluster = checkNotNull(delegateCluster);
     }
 
-    public static AgentClusterRule newJgroupsAgentCluster() {
+    public static AgentClusterRule newJmsAgentCluster() {
         return new AgentClusterRule(new JMSAgentCluster());
     }
 
-    public static AgentClusterRule newJmsAgentCluster() {
+    public static AgentClusterRule newJgroupsAgentCluster() {
         return new AgentClusterRule(new JgroupsAgentCluster());
+    }
+
+    @Override
+    public ClusterConfigFactory clusterConfigFactory() {
+        return delegateCluster.clusterConfigFactory();
     }
 
     @Override

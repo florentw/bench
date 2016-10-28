@@ -1,6 +1,7 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
@@ -41,6 +42,8 @@ public final class JgroupsClusterClientFactoryTest {
     private ActorRegistryListener registryClusterListener;
     @Mock
     private JChannel jChannel;
+    @Mock
+    private Config config;
 
     private JgroupsClusterClientFactory clusterClientFactory;
 
@@ -51,7 +54,7 @@ public final class JgroupsClusterClientFactoryTest {
         when(jChannel.getAddress()).thenReturn(address);
         when(actorRegistry.createClusterListener()).thenReturn(registryClusterListener);
 
-        clusterClientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry);
+        clusterClientFactory = new JgroupsClusterClientFactory(jChannel, actorRegistry, config);
     }
 
     @Test

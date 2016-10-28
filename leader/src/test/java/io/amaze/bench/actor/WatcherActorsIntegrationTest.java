@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.actor;
 
+import com.google.common.base.Throwables;
 import io.amaze.bench.leader.cluster.Actors;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.runtime.actor.ActorConfig;
@@ -26,7 +27,6 @@ import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.experimental.categories.Category;
 import org.junit.experimental.theories.DataPoints;
@@ -56,32 +56,33 @@ public final class WatcherActorsIntegrationTest {
 
     @DataPoints
     public static final boolean[] forked = {false, true};
+    @DataPoints
+    public static final BenchRule[] benchRules = new BenchRule[]{ //
+            BenchRule.newJmsCluster(), //
+            BenchRule.newJgroupsCluster() //
+    };
 
     private static final String METRIC_KEY = "metric_key";
     private static final ActorKey SYSTEM_WATCHER = new ActorKey("SystemWatcher");
     private static final ActorKey PROCESS_WATCHER = new ActorKey("ProcessWatcher");
 
     @Rule
-    public final BenchRule benchRule = BenchRule.newJmsCluster();
-    @Rule
     public final Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
 
     private Agent agent;
     private MetricsRepository metricsRepository;
-
-    @Before
-    public void initAgent() throws ExecutionException {
-        agent = getUninterruptibly(benchRule.agents().create("test-agent-1"));
-        metricsRepository = benchRule.metricsRepository();
-    }
+    private BenchRule benchRule;
 
     @After
-    public void closeAgent() throws Exception {
+    public void after() throws Exception {
         agent.close();
+        benchRule.after();
     }
 
     @Theory
-    public void create_and_initialize_watcher_actors(boolean forked) throws ExecutionException {
+    public void create_and_initialize_watcher_actors(boolean forked, final BenchRule benchRule)
+            throws ExecutionException {
+        before(benchRule);
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
 
@@ -90,7 +91,8 @@ public final class WatcherActorsIntegrationTest {
     }
 
     @Theory
-    public void close_watcher_actors(boolean forked) throws ExecutionException {
+    public void close_watcher_actors(boolean forked, final BenchRule benchRule) throws ExecutionException {
+        before(benchRule);
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
         getUninterruptibly(systemWatcher.initialize());
@@ -101,7 +103,8 @@ public final class WatcherActorsIntegrationTest {
     }
 
     @Theory
-    public void start_system_monitoring(boolean forked) throws ExecutionException {
+    public void start_system_monitoring(boolean forked, final BenchRule benchRule) throws ExecutionException {
+        before(benchRule);
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
 
         systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.start(1));
@@ -123,7 +126,8 @@ public final class WatcherActorsIntegrationTest {
      * @throws ExecutionException No expected
      */
     @Theory
-    public void stopWatch_process_monitoring(boolean forked) throws ExecutionException {
+    public void stopWatch_process_monitoring(boolean forked, final BenchRule benchRule) throws ExecutionException {
+        before(benchRule);
         MetricsRepository metricsRepository = benchRule.metricsRepository();
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
@@ -145,7 +149,8 @@ public final class WatcherActorsIntegrationTest {
     }
 
     @Theory
-    public void sampling_process_monitoring(boolean forked) throws ExecutionException {
+    public void sampling_process_monitoring(boolean forked, final BenchRule benchRule) throws ExecutionException {
+        before(benchRule);
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
@@ -163,6 +168,17 @@ public final class WatcherActorsIntegrationTest {
         assertTrue(getUninterruptibly(metrics).metrics().size() > 0);
         getUninterruptibly(systemWatcher.close());
         getUninterruptibly(processesWatcher.close());
+    }
+
+    private void before(final BenchRule benchRule) {
+        this.benchRule = benchRule;
+        benchRule.before();
+        try {
+            agent = getUninterruptibly(this.benchRule.agents().create("test-agent-1"));
+        } catch (ExecutionException e) {
+            throw Throwables.propagate(e);
+        }
+        metricsRepository = benchRule.metricsRepository();
     }
 
     private Actors.ActorHandle createSystemWatcher(final boolean forked) throws ExecutionException {

@@ -50,8 +50,7 @@ public final class ClusterConfigs {
     }
 
     public static AgentConfig jmsAgentConfig(final JMSServerRule server) {
-        Config clusterConfig = jmsClusterConfig(server.getEndpoint());
-        return new AgentConfig(clusterConfig);
+        return new AgentConfig(jmsClusterConfig(server.getEndpoint()));
     }
 
     public static Config jgroupsFactoryConfig() {

@@ -17,21 +17,22 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.jms.JMSClusterConfigFactory;
-import io.amaze.bench.shared.jms.JMSEndpoint;
-import io.amaze.bench.shared.jms.JMSException;
-import io.amaze.bench.shared.jms.JMSServerRule;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.util.Files;
+import io.amaze.bench.util.AgentClusterRule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.Timeout;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,47 +53,42 @@ import static org.mockito.Mockito.*;
  * Created on 3/16/16.
  */
 @Category(IntegrationTest.class)
+@RunWith(Theories.class)
 public final class ForkedActorManagerTest {
 
-    private static final Logger log = LogManager.getLogger();
+    @DataPoints
+    public static final AgentClusterRule[] agentClusters = new AgentClusterRule[]{ //
+            AgentClusterRule.newJmsAgentCluster(), //
+            AgentClusterRule.newJgroupsAgentCluster() //
+    };
 
+    private static final Logger log = LogManager.getLogger();
     private static final int MAX_TIMEOUT_SEC = 30;
 
     @Rule
-    public final Timeout globalTimeout = new Timeout(5, TimeUnit.SECONDS);
+    public final Timeout globalTimeout = new Timeout(MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
     @Rule
-    public final JMSServerRule server = new JMSServerRule();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     private ForkedActorManager actorManager;
-    private JMSClusterConfigFactory clusterConfigFactory;
+    private ClusterConfigFactory clusterConfigFactory;
+    private AgentClusterRule agentCluster;
 
-    @Before
-    public void before() throws JMSException, IOException {
-        JMSEndpoint masterEndpoint = server.getEndpoint();
-        clusterConfigFactory = new JMSClusterConfigFactory(masterEndpoint);
-
-        actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, new File("target/logs"));
-
-        server.getServer().createQueue(DUMMY_ACTOR.getName());
-    }
-
-    @After
-    public void after() {
-        actorManager.close();
-    }
-
-    @Test
-    public void null_parameters_invalid() {
+    @Theory
+    public void null_parameters_invalid(final AgentClusterRule agentCluster) {
+        before(agentCluster);
         NullPointerTester tester = new NullPointerTester();
 
         tester.testAllPublicConstructors(ForkedActorManager.class);
         tester.testAllPublicInstanceMethods(actorManager);
     }
 
-    @Test
-    public void create_actor_init_called() throws ValidationException, IOException, InterruptedException {
+    @Theory
+    public void create_actor_init_called(final AgentClusterRule agentCluster)
+            throws ValidationException, IOException, InterruptedException {
+        before(agentCluster);
         File rdvFile = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFile);
 
@@ -103,18 +99,27 @@ public final class ForkedActorManagerTest {
         verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void create_actor_twice_throws() throws ValidationException, IOException, InterruptedException {
+    @Theory
+    public void create_actor_twice_throws(final AgentClusterRule agentCluster)
+            throws ValidationException, IOException, InterruptedException {
+        before(agentCluster);
         File rdvFile = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFile);
-        actorManager.createActor(actorConfig);
+        ManagedActor actor = actorManager.createActor(actorConfig);
         verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
 
-        actorManager.createActor(actorConfig);
+        try {
+            expectedException.expect(IllegalArgumentException.class);
+            actorManager.createActor(actorConfig);
+        } finally {
+            actor.close();
+        }
     }
 
-    @Test
-    public void close_actor_and_watchdog_detects() throws ValidationException, IOException, InterruptedException {
+    @Theory
+    public void close_actor_and_watchdog_detects(final AgentClusterRule agentCluster)
+            throws ValidationException, IOException, InterruptedException {
+        before(agentCluster);
         File rdvFileInit = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
         ManagedActor actor = actorManager.createActor(actorConfig);
@@ -132,14 +137,12 @@ public final class ForkedActorManagerTest {
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasProcessExited(), is(true));
-
-        actorManager.close();
     }
 
-    @Test
-    public void actor_process_is_killed_and_watchdog_detects()
+    @Theory
+    public void actor_process_is_killed_and_watchdog_detects(final AgentClusterRule agentCluster)
             throws ValidationException, IOException, InterruptedException {
-
+        before(agentCluster);
         File rdvFileInit = folder.newFile();
         ActorConfig actorConfig = suicideConfig(TestActorWriter.class.getName(), rdvFileInit);
         actorManager.createActor(actorConfig);
@@ -152,12 +155,12 @@ public final class ForkedActorManagerTest {
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasProcessExited(), is(true));
-
-        actorManager.close();
     }
 
-    @Test
-    public void close_actor_twice() throws ValidationException, IOException, InterruptedException {
+    @Theory
+    public void close_actor_twice(final AgentClusterRule agentCluster)
+            throws ValidationException, IOException, InterruptedException {
+        before(agentCluster);
         File rdvFileInit = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
         ManagedActor actor = actorManager.createActor(actorConfig);
@@ -174,12 +177,12 @@ public final class ForkedActorManagerTest {
 
         assertThat(actorManager.getProcesses().size(), is(0));
         assertThat(watchDogThread.hasProcessExited(), is(true));
-
-        actorManager.close();
     }
 
-    @Test
-    public void close_manager_closes_actor() throws ValidationException, IOException, InterruptedException {
+    @Theory
+    public void close_manager_closes_actor(final AgentClusterRule agentCluster)
+            throws ValidationException, IOException, InterruptedException {
+        before(agentCluster);
         File rdvFileInit = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFileInit);
         ManagedActor actor = actorManager.createActor(actorConfig);
@@ -198,18 +201,22 @@ public final class ForkedActorManagerTest {
         assertThat(watchDogThread.hasProcessExited(), is(true));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void create_manager_but_cant_create_local_log_dir() throws IOException {
+    @Theory
+    public void create_manager_but_cant_create_local_log_dir(final AgentClusterRule agentCluster) throws IOException {
+        before(agentCluster);
         File folder = this.folder.newFolder();
         File localLogDir = spy(folder);
         doReturn(false).when(localLogDir).mkdirs(); // NOSONAR
         doReturn(false).when(localLogDir).exists(); // NOSONAR
 
+        expectedException.expect(IllegalStateException.class);
         actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, localLogDir);
     }
 
-    @Test
-    public void watchdog_thread_is_interrupted_while_waitfor() throws InterruptedException {
+    @Theory
+    public void watchdog_thread_is_interrupted_while_waitfor(final AgentClusterRule agentCluster)
+            throws InterruptedException {
+        before(agentCluster);
         Process mockedProcess = mock(Process.class);
         when(mockedProcess.waitFor()).thenThrow(new InterruptedException());
         ProcessWatchDogThread watchdog = new ProcessWatchDogThread(DUMMY_ACTOR.getName(), mockedProcess, actorManager);
@@ -220,6 +227,19 @@ public final class ForkedActorManagerTest {
         joinUninterruptibly(watchdog);
 
         assertThat(watchdog.hasProcessExited(), is(false));
+    }
+
+    @After
+    public void after() {
+        actorManager.close();
+        agentCluster.after();
+    }
+
+    private void before(final AgentClusterRule agentCluster) {
+        this.agentCluster = agentCluster;
+        this.agentCluster.before();
+        clusterConfigFactory = agentCluster.clusterConfigFactory();
+        actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, new File("target/logs"));
     }
 
     private ActorConfig suicideConfig(final String className, final File rdvFileInit) {
@@ -254,7 +274,7 @@ public final class ForkedActorManagerTest {
             try {
                 content = Files.read(file.getAbsolutePath());
             } catch (IOException e) {
-                Throwables.propagate(e);
+                throw Throwables.propagate(e);
             }
             if (expectedContent.equals(content)) {
                 return;

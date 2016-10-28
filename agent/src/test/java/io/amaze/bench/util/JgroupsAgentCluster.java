@@ -2,8 +2,10 @@ package io.amaze.bench.util;
 
 import com.google.common.base.Throwables;
 import io.amaze.bench.runtime.agent.AgentConfig;
+import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsAgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsClusterClientFactory;
+import io.amaze.bench.runtime.cluster.jgroups.JgroupsClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
@@ -15,9 +17,14 @@ import org.jgroups.JChannel;
  */
 final class JgroupsAgentCluster implements AgentCluster {
 
-    private JgroupsClusterClientFactory clusterClientFactory;
     private JChannel jChannel;
+    private JgroupsClusterClientFactory clusterClientFactory;
     private JgroupsAgentRegistryClusterClient jgroupsClusterClient;
+
+    @Override
+    public ClusterConfigFactory clusterConfigFactory() {
+        return new JgroupsClusterConfigFactory(ClusterConfigs.jgroupsFactoryConfig());
+    }
 
     @Override
     public AgentConfig agentConfig() {

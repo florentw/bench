@@ -11,7 +11,7 @@ import io.amaze.bench.shared.jms.JMSEndpoint;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 10/11/16.
+ * JMS implementation of ClusterConfigFactory
  */
 public final class JMSClusterConfigFactory implements ClusterConfigFactory {
 
