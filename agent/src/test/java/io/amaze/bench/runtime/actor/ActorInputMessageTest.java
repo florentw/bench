@@ -18,10 +18,12 @@ package io.amaze.bench.runtime.actor;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -60,6 +62,14 @@ public final class ActorInputMessageTest {
         tester.addEqualityGroup(ActorInputMessage.close(), ActorInputMessage.close());
         tester.addEqualityGroup(ActorInputMessage.dumpMetrics(), ActorInputMessage.dumpMetrics());
         tester.testEquals();
+    }
+
+    @Test
+    public void toString_yields_valid_json() {
+        assertTrue(Json.isValid(ActorInputMessage.close().toString()));
+        assertTrue(Json.isValid(ActorInputMessage.dumpMetrics().toString()));
+        assertTrue(Json.isValid(ActorInputMessage.dumpMetrics().toString()));
+        assertTrue(Json.isValid(ActorInputMessage.sendMessage("from", "payload").toString()));
     }
 
 }

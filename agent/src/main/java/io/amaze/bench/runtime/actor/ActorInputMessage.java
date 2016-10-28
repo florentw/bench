@@ -86,6 +86,14 @@ public final class ActorInputMessage implements Serializable {
                 Objects.equals(payload, that.payload);
     }
 
+    @Override
+    public String toString() {
+        return "{\"ActorInputMessage\":{" + //
+                "\"command\":\"" + command + "\"" + ", " + //
+                "\"from\":\"" + from + "\"" + ", " + //
+                "\"payload\":\"" + payload + "\"}}";
+    }
+
     public enum Command {
         CLOSE, //
         DUMP_METRICS, //

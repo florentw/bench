@@ -63,7 +63,7 @@ public final class JgroupsActorSenderTest {
 
         sender.send(DUMMY_ACTOR, message);
 
-        verify(jgroupsSender).sendToEndpoint(endpoint, message);
+        verify(jgroupsSender).sendToEndpoint(eq(endpoint), any(JgroupsActorMessage.class));
         verifyNoMoreInteractions(jgroupsSender);
     }
 

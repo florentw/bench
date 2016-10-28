@@ -30,8 +30,8 @@ public final class JgroupsActorClusterTest {
     @Before
     public void init() throws Exception {
         clientFactory = new JgroupsClusterClientFactory(ClusterConfigs.jgroupsFactoryConfig(), new ActorRegistry());
-
         jChannel = clientFactory.getJChannel();
+
         assertThat(jChannel.isConnected(), is(true));
     }
 
@@ -41,7 +41,8 @@ public final class JgroupsActorClusterTest {
         ActorInternal actorInternal = (ActorInternal) actors.create(DUMMY_ACTOR, TestActor.class.getName(), "{}");
         actorInternal.init();
 
-        jChannel.send(jChannel.getAddress(), ActorInputMessage.sendMessage("test", "hello"));
+        jChannel.send(jChannel.getAddress(),
+                      new JgroupsActorMessage(DUMMY_ACTOR, ActorInputMessage.sendMessage("test", "hello")));
 
         TestActor testActor = (TestActor) actorInternal.getInstance();
         assertTrue(testActor.awaitFirstReceivedMessage());

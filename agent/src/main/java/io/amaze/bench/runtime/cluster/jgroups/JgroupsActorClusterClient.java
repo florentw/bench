@@ -57,7 +57,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
         checkNotNull(actor);
 
         listener = new MessageListener(actor);
-        multiplexer.addListener(ActorInputMessage.class, listener);
+        multiplexer.addListener(JgroupsActorMessage.class, listener);
     }
 
     @Override
@@ -87,7 +87,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
         multiplexer.removeListener(listener);
     }
 
-    static final class MessageListener implements JgroupsListener<ActorInputMessage> {
+    static final class MessageListener implements JgroupsListener<JgroupsActorMessage> {
 
         private final RuntimeActor actor;
 
@@ -96,7 +96,12 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
         }
 
         @Override
-        public void onMessage(@NotNull final org.jgroups.Message msg, @NotNull final ActorInputMessage input) {
+        public void onMessage(@NotNull final org.jgroups.Message msg, @NotNull final JgroupsActorMessage jgroupsMsg) {
+            if (!jgroupsMsg.to().equals(actor.getKey())) {
+                return;
+            }
+
+            ActorInputMessage input = jgroupsMsg.inputMessage();
             switch (input.getCommand()) {
                 case CLOSE:
                     actor.close();

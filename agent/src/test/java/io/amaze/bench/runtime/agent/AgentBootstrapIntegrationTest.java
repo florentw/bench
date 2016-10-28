@@ -21,11 +21,13 @@ import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.util.Files;
 import io.amaze.bench.util.AgentClusterRule;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,21 +39,40 @@ import static org.mockito.Mockito.*;
  * Created on 3/5/16.
  */
 @Category(IntegrationTest.class)
+@RunWith(Theories.class)
 public final class AgentBootstrapIntegrationTest {
+
+    @DataPoints
+    public static final AgentClusterRule[] agentCluster = new AgentClusterRule[]{ //
+            AgentClusterRule.newJmsAgentCluster(), //
+            AgentClusterRule.newJgroupsAgentCluster() //
+    };
 
     private static final int TIMEOUT_MS = 10000;
 
-    @Rule
-    public final AgentClusterRule cluster = new AgentClusterRule();
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private Thread agentBootstrapThread;
     private AgentRegistryClusterClient registryClusterClient;
 
-    @Before
-    public void before() throws IOException {
-        AgentConfig agentConfig = cluster.agentConfig();
+    @Theory
+    public void bootstrap_with_server(final AgentClusterRule clusterRule) throws Exception {
+        before(clusterRule);
+        AgentRegistryListener listener = mock(AgentRegistryListener.class);
+        registryClusterClient.startRegistryListener(listener);
+
+        agentBootstrapThread.start();
+
+        verify(listener, timeout(TIMEOUT_MS)).onAgentRegistration(any(AgentRegistrationMessage.class));
+        verifyNoMoreInteractions(listener);
+        after(clusterRule);
+    }
+
+    private void before(final AgentClusterRule clusterRule) throws IOException {
+        clusterRule.before();
+
+        AgentConfig agentConfig = clusterRule.agentConfig();
         File configFile = temporaryFolder.newFile();
         Files.writeTo(configFile, agentConfig.toJson());
         agentBootstrapThread = new Thread() {
@@ -65,18 +86,12 @@ public final class AgentBootstrapIntegrationTest {
             }
         };
 
-        registryClusterClient = cluster.agentRegistryClusterClient();
+        registryClusterClient = clusterRule.agentRegistryClusterClient();
     }
 
-    @Test
-    public void bootstrap_with_server() throws Exception {
-        AgentRegistryListener listener = mock(AgentRegistryListener.class);
-        registryClusterClient.startRegistryListener(listener);
-
-        agentBootstrapThread.start();
-
-        verify(listener, timeout(TIMEOUT_MS)).onAgentRegistration(any(AgentRegistrationMessage.class));
-        verifyNoMoreInteractions(listener);
+    private void after(final AgentClusterRule clusterRule) {
+        registryClusterClient.close();
+        clusterRule.after();
     }
 
 }

@@ -44,6 +44,7 @@ public final class JgroupsActorClusterClientTest {
 
     @Before
     public void init() {
+        when(runtimeActor.getKey()).thenReturn(DUMMY_ACTOR);
         clusterClient = new JgroupsActorClusterClient(endpoint, listenerMultiplexer, jgroupsSender, actorRegistry);
     }
 
@@ -63,7 +64,7 @@ public final class JgroupsActorClusterClientTest {
 
         clusterClient.startActorListener(runtimeActor);
 
-        verify(listenerMultiplexer).addListener(eq(ActorInputMessage.class), any(MessageListener.class));
+        verify(listenerMultiplexer).addListener(eq(JgroupsActorMessage.class), any(MessageListener.class));
         verifyNoMoreInteractions(listenerMultiplexer);
         verifyZeroInteractions(jgroupsSender);
     }
@@ -93,8 +94,9 @@ public final class JgroupsActorClusterClientTest {
     public void message_listener_forwards_dumpMetrics() {
         MessageListener messageListener = new MessageListener(runtimeActor);
 
-        messageListener.onMessage(mock(org.jgroups.Message.class), ActorInputMessage.dumpMetrics());
+        messageListener.onMessage(mock(org.jgroups.Message.class), createMessage(ActorInputMessage.dumpMetrics()));
 
+        verify(runtimeActor).getKey();
         verify(runtimeActor).dumpAndFlushMetrics();
         verifyNoMoreInteractions(runtimeActor);
     }
@@ -105,8 +107,10 @@ public final class JgroupsActorClusterClientTest {
         String from = "from";
         String payload = "payload";
 
-        messageListener.onMessage(mock(org.jgroups.Message.class), ActorInputMessage.sendMessage(from, payload));
+        messageListener.onMessage(mock(org.jgroups.Message.class),
+                                  createMessage(ActorInputMessage.sendMessage(from, payload)));
 
+        verify(runtimeActor).getKey();
         verify(runtimeActor).onMessage(from, payload);
         verifyNoMoreInteractions(runtimeActor);
     }
@@ -115,10 +119,15 @@ public final class JgroupsActorClusterClientTest {
     public void message_listener_forwards_close() {
         MessageListener messageListener = new MessageListener(runtimeActor);
 
-        messageListener.onMessage(mock(org.jgroups.Message.class), ActorInputMessage.close());
+        messageListener.onMessage(mock(org.jgroups.Message.class), createMessage(ActorInputMessage.close()));
 
+        verify(runtimeActor).getKey();
         verify(runtimeActor).close();
         verifyNoMoreInteractions(runtimeActor);
+    }
+
+    private JgroupsActorMessage createMessage(ActorInputMessage input) {
+        return new JgroupsActorMessage(DUMMY_ACTOR, input);
     }
 
 }

@@ -33,33 +33,33 @@ public class JgroupsListenerMultiplexer {
 
     private static final Logger log = LogManager.getLogger();
 
-    private final Map<Class<? extends Serializable>, Set<JgroupsListener<? extends Serializable>>> listeners = new HashMap<>();
+    private final Map<String, Set<JgroupsListener<? extends Serializable>>> listeners = new HashMap<>();
 
     public <T extends Serializable> void addListener(@NotNull final Class<T> inputMessageType,
                                                      @NotNull final JgroupsListener<T> listener) {
         checkNotNull(inputMessageType);
         checkNotNull(listener);
+        String msgClassName = inputMessageType.getName();
 
         synchronized (listeners) {
-            if (listeners.containsKey(inputMessageType)) {
-                throw new IllegalStateException("A listener is already registered for " + inputMessageType.getName());
-            }
-            Set<JgroupsListener<? extends Serializable>> listenersByKey = listeners.get(inputMessageType);
+            Set<JgroupsListener<? extends Serializable>> listenersByKey = listeners.get(msgClassName);
             if (listenersByKey == null) {
                 listenersByKey = new HashSet<>();
+            } else if (listenersByKey.contains(listener)) {
+                throw new IllegalStateException("This listener is already registered for " + msgClassName);
             }
 
             listenersByKey.add(listener);
-            listeners.put(inputMessageType, listenersByKey);
+            listeners.put(msgClassName, listenersByKey);
         }
     }
 
-    public void dispatch(final Message msg) {
+    public void dispatch(@NotNull final Message msg) {
         checkNotNull(msg);
 
-        Set<JgroupsListener<? extends Serializable>> targetListeners = listenersFor(msg);
-        targetListeners.forEach(listener -> {
+        listenersFor(msg).forEach(listener -> {
             try {
+
                 listener.onMessage(msg, msg.getObject());
             } catch (Exception e) {
                 log.warn("Error while processing message {}, listener is {}", msg, listener, e);
@@ -69,26 +69,30 @@ public class JgroupsListenerMultiplexer {
 
     public void removeListener(@NotNull final JgroupsListener<? extends Serializable> listener) {
         checkNotNull(listener);
+
         synchronized (listeners) {
-            listeners.values().forEach(listenersForKey -> {
-                if (!listenersForKey.remove(listener)) {
-                    log.warn("Tried to remove an non-existent listener for {}", listener);
+            listeners.entrySet().forEach(entry -> {
+                if (!entry.getValue().remove(listener)) {
+                    log.warn("Tried to remove an non-existent listener for {}, {}", entry.getKey(), listener);
+                } else {
+                    log.debug("Removing listener for {}, {}", entry.getKey(), listener);
                 }
             });
         }
     }
 
     @VisibleForTesting
-    Map<Class<? extends Serializable>, Set<JgroupsListener<? extends Serializable>>> getListeners() { // NOSONAR
+    Map<String, Set<JgroupsListener<? extends Serializable>>> getListeners() { // NOSONAR
         return listeners;
     }
 
     private Set<JgroupsListener<? extends Serializable>> listenersFor(final Message msg) {
         checkNotNull(msg);
+        String msgClassName = msg.getObject().getClass().getName();
         synchronized (listeners) {
-            Set<JgroupsListener<? extends Serializable>> targetListeners = listeners.get(msg.getObject().getClass()); // NOSONAR
+            Set<JgroupsListener<? extends Serializable>> targetListeners = listeners.get(msgClassName); // NOSONAR
             if (targetListeners == null) {
-                log.debug("No listeners for message {}", msg);
+                log.debug("No listeners for {}, message {}", msgClassName, msg);
                 return Collections.emptySet();
             }
             return new HashSet<>(targetListeners);

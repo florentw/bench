@@ -64,7 +64,7 @@ public final class WatcherActorsIntegrationTest {
     @Rule
     public final BenchRule benchRule = BenchRule.newJmsCluster();
     @Rule
-    public final Timeout globalTimeout = new Timeout(15, TimeUnit.SECONDS);
+    public final Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
 
     private Agent agent;
     private MetricsRepository metricsRepository;

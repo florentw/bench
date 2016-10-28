@@ -40,6 +40,7 @@ public final class JgroupsActorSender implements ActorSender {
             throw new NoSuchElementException("Cannot find endpoint for " + to + ".");
         }
 
-        sender.sendToEndpoint(registeredActor.getDeployInfo().getEndpoint(), message);
+        JgroupsActorMessage jgroupsMsg = new JgroupsActorMessage(to, message);
+        sender.sendToEndpoint(registeredActor.getDeployInfo().getEndpoint(), jgroupsMsg);
     }
 }

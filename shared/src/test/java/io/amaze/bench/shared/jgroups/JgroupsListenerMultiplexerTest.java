@@ -61,7 +61,7 @@ public final class JgroupsListenerMultiplexerTest {
         listenerMultiplexer.addListener(String.class, listener);
 
         assertThat(listenerMultiplexer.getListeners().size(), is(1));
-        assertThat(listenerMultiplexer.getListeners().get(String.class).iterator().next(), is(listener));
+        assertThat(listenerMultiplexer.getListeners().get(String.class.getName()).iterator().next(), is(listener));
         verifyZeroInteractions(listener);
     }
 
@@ -79,7 +79,7 @@ public final class JgroupsListenerMultiplexerTest {
         listenerMultiplexer.removeListener(listener);
 
         assertThat(listenerMultiplexer.getListeners().size(), is(1));
-        assertThat(listenerMultiplexer.getListeners().get(String.class).size(), is(0));
+        assertThat(listenerMultiplexer.getListeners().get(String.class.getName()).size(), is(0));
         verifyZeroInteractions(listener);
     }
 
@@ -99,6 +99,32 @@ public final class JgroupsListenerMultiplexerTest {
 
         verify(listener).onMessage(same(dummyMessage), eq(DUMMY_PAYLOAD));
         verifyNoMoreInteractions(listener);
+    }
+
+    @Test
+    public void dispatch_sends_message_to_two_registered_listener() {
+        JgroupsListener<String> listener2 = mock(JgroupsListener.class);
+        listenerMultiplexer.addListener(String.class, listener);
+        listenerMultiplexer.addListener(String.class, listener2);
+
+        listenerMultiplexer.dispatch(dummyMessage);
+
+        verify(listener).onMessage(same(dummyMessage), eq(DUMMY_PAYLOAD));
+        verify(listener2).onMessage(same(dummyMessage), eq(DUMMY_PAYLOAD));
+        verifyNoMoreInteractions(listener);
+    }
+
+    @Test
+    public void dispatch_sends_message_to_one_of_two_registered_listeners() {
+        JgroupsListener<Integer> listener2 = mock(JgroupsListener.class);
+        listenerMultiplexer.addListener(String.class, listener);
+        listenerMultiplexer.addListener(Integer.class, listener2);
+
+        listenerMultiplexer.dispatch(dummyMessage);
+
+        verify(listener).onMessage(same(dummyMessage), eq(DUMMY_PAYLOAD));
+        verifyNoMoreInteractions(listener);
+        verifyZeroInteractions(listener2);
     }
 
     @Test

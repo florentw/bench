@@ -1,37 +1,49 @@
 package io.amaze.bench.util;
 
 import io.amaze.bench.runtime.agent.AgentConfig;
-import io.amaze.bench.runtime.cluster.jms.JMSAgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
-import io.amaze.bench.shared.jms.JMSClient;
-import io.amaze.bench.shared.jms.JMSServerRule;
 import org.junit.rules.ExternalResource;
+
+import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 10/13/16.
  */
-public final class AgentClusterRule extends ExternalResource {
+public final class AgentClusterRule extends ExternalResource implements AgentCluster {
 
-    private final JMSServerRule jmsServerRule = new JMSServerRule();
-    private JMSClient client;
+    private final AgentCluster delegateCluster;
 
+    private AgentClusterRule(@NotNull final AgentCluster delegateCluster) {
+        this.delegateCluster = checkNotNull(delegateCluster);
+    }
+
+    public static AgentClusterRule newJgroupsAgentCluster() {
+        return new AgentClusterRule(new JMSAgentCluster());
+    }
+
+    public static AgentClusterRule newJmsAgentCluster() {
+        return new AgentClusterRule(new JgroupsAgentCluster());
+    }
+
+    @Override
     public AgentConfig agentConfig() {
-        return ClusterConfigs.jmsAgentConfig(jmsServerRule);
+        return delegateCluster.agentConfig();
     }
 
+    @Override
     public AgentRegistryClusterClient agentRegistryClusterClient() {
-        return new JMSAgentRegistryClusterClient(jmsServerRule.getEndpoint());
+        return delegateCluster.agentRegistryClusterClient();
     }
 
     @Override
-    protected void before() throws Throwable {
-        jmsServerRule.init();
-        client = jmsServerRule.createClient();
+    public void before() {
+        delegateCluster.before();
     }
 
     @Override
-    protected void after() {
-        client.close();
-        jmsServerRule.close();
+    public void after() {
+        delegateCluster.after();
     }
 }

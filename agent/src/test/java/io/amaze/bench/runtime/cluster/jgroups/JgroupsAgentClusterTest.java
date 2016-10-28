@@ -33,7 +33,9 @@ public final class JgroupsAgentClusterTest {
         sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
         firstActor.jChannel.send(firstActor.jChannel.getAddress(),
-                                 ActorInputMessage.sendMessage("another", TestActor.REPLY_MESSAGE));
+                                 new JgroupsActorMessage(DUMMY_ACTOR,
+                                                         ActorInputMessage.sendMessage("another",
+                                                                                       TestActor.REPLY_MESSAGE)));
 
         sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
