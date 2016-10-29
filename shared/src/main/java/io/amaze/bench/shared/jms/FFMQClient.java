@@ -55,7 +55,7 @@ public final class FFMQClient implements JMSClient {
             context = initContext(endpoint);
             conn = initConnection();
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        } catch (Exception e) {
+        } catch (javax.jms.JMSException | NamingException e) {
             throw new JMSException(e);
         }
     }

@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,7 +43,7 @@ public class ResourceManager implements AutoCloseable {
     private final AgentRegistry agentRegistry;
 
     private final Map<ActorKey, RegisteredAgent> actorsToAgents = new ConcurrentHashMap<>();
-    private final Random rand = new Random();
+    private final Random rand = new SecureRandom();
 
     public ResourceManager(@NotNull final ResourceManagerClusterClient resourceManagerClusterClient,
                            @NotNull final AgentRegistry agentRegistry) {

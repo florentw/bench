@@ -30,13 +30,17 @@ public final class Files {
         // Should not be instantiated
     }
 
-    public static String readAndDelete(final String path) throws IOException {
-        String content = read(path);
+    public static String readAndDelete(final String path) {
+        String content;
+        try {
+            content = read(path);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
 
         File fileToDelete = new File(path);
-        fileToDelete.deleteOnExit();
         if (!fileToDelete.delete()) {
-            throw new IOException("Could not delete temporary file \"" + path + "\".");
+            throw new IllegalStateException("Could not delete temporary file \"" + path + "\".");
         }
         return content;
     }

@@ -67,8 +67,8 @@ public final class FilesTest {
         }
     }
 
-    @Test(expected = IOException.class)
-    public void read_file_and_delete_unknown_file_throws() throws IOException {
+    @Test(expected = IllegalStateException.class)
+    public void read_file_and_delete_unknown_file_throws() {
         Files.readAndDelete("dummy.file");
     }
 

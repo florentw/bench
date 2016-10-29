@@ -53,7 +53,8 @@ public final class ClusterClients {
         container.addComponent(actorRegistry);
 
         try {
-            Class<? extends T> factoryClass = Class.forName(factoryClassName).asSubclass(clusterClientInterface);
+            Class<? extends T> factoryClass = Class.forName(factoryClassName) //
+                    .asSubclass(clusterClientInterface); // NOSONAR
             container.addComponent(factoryClass);
             return container.getComponent(factoryClass);
         } catch (ClassNotFoundException e) {

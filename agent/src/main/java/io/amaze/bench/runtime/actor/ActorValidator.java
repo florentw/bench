@@ -83,8 +83,8 @@ public final class ActorValidator {
 
     private Class<?> loadClass(@NotNull final String className) throws ValidationException {
         try {
-            return Class.forName(className);
-        } catch (Exception e) {
+            return Class.forName(className); // NOSONAR
+        } catch (ClassNotFoundException e) {
             throw ValidationException.create(String.format(LOAD_MSG, className), e);
         }
     }
@@ -102,7 +102,7 @@ public final class ActorValidator {
 
         @NotNull
         List<Exception> causes() {
-            return causes;
+            return new ArrayList<>(causes);
         }
 
         Class<? extends Reactor> resultingClass() {
