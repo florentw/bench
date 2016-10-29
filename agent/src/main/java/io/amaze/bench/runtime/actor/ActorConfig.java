@@ -22,7 +22,9 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 3/9/16.
+ * Configuration object for Actors to be created.
+ * It is used by the {@link Actors} class.
+ * Configuration of the {@link io.amaze.bench.api.Reactor} instance is stored in JSON format ({@link #actorJsonConfig})
  */
 public final class ActorConfig implements Serializable {
 
