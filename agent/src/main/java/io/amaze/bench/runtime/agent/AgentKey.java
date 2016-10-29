@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.actor;
+package io.amaze.bench.runtime.agent;
 
 import io.amaze.bench.runtime.Key;
 
@@ -23,15 +23,15 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Identifies uniquely an actor instance across the cluster.
+ * Identifies uniquely an agent instance across the cluster.
  *
- * @see RuntimeActor
+ * @see Agent
  */
-public final class ActorKey implements Key {
+public final class AgentKey implements Key {
 
     private final String name;
 
-    public ActorKey(@NotNull final String name) {
+    public AgentKey(@NotNull final String name) {
         this.name = checkNotNull(name);
     }
 
@@ -53,12 +53,14 @@ public final class ActorKey implements Key {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ActorKey actorKey = (ActorKey) o;
-        return Objects.equals(name, actorKey.name);
+        AgentKey agentKey = (AgentKey) o;
+        return Objects.equals(name, agentKey.name);
     }
 
     @Override
     public String toString() {
-        return "{\"actor\":\"" + name + "\"}";
+        return "{\"agent\":\"" + name + "\"}";
     }
+
+
 }
