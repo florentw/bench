@@ -19,16 +19,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.agent.*;
 import io.amaze.bench.runtime.actor.ActorManager;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.actor.ManagedActor;
-import io.amaze.bench.runtime.cluster.AgentClusterClient;
-import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,8 +38,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage.created;
-import static io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage.failed;
+import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.created;
+import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.failed;
 
 /**
  * Created on 3/3/16.

@@ -17,12 +17,12 @@ package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.cluster.LifecycleMessage;
-import io.amaze.bench.runtime.cluster.Message;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.LifecycleMessage;
+import io.amaze.bench.cluster.Message;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.agent.AgentLifecycleMessage;
+import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
+import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;

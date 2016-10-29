@@ -16,10 +16,9 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
+import io.amaze.bench.cluster.actor.ActorInputMessage;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.After;
@@ -51,7 +50,7 @@ public final class JMSActorClusterClientTest {
 
     @Before
     public void before() {
-        client = new JMSActorClusterClient(jmsClient, TestActor.DUMMY_ACTOR);
+        client = new JMSActorClusterClient(jmsClient, DUMMY_ACTOR);
     }
 
     @After
@@ -71,18 +70,18 @@ public final class JMSActorClusterClientTest {
 
     @Test
     public void start_actor_listener() throws JMSException {
-        when(actor.getKey()).thenReturn(TestActor.DUMMY_ACTOR);
+        when(actor.getKey()).thenReturn(DUMMY_ACTOR);
 
         client.startActorListener(actor);
 
-        verify(jmsClient).addQueueListener(eq(TestActor.DUMMY_ACTOR.getName()), any(MessageListener.class));
+        verify(jmsClient).addQueueListener(eq(DUMMY_ACTOR.getName()), any(MessageListener.class));
         verify(jmsClient).startListening();
         verifyNoMoreInteractions(jmsClient);
     }
 
     @Test(expected = RuntimeException.class)
     public void start_actor_listener_and_listening_throws() throws JMSException {
-        when(actor.getKey()).thenReturn(TestActor.DUMMY_ACTOR);
+        when(actor.getKey()).thenReturn(DUMMY_ACTOR);
         doThrow(new JMSException(new IllegalArgumentException())).when(jmsClient).startListening();
 
         client.startActorListener(actor);

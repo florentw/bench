@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
+import io.amaze.bench.cluster.registry.RegisteredActor;
 
 import java.io.Serializable;
 import java.util.Set;

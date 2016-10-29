@@ -15,11 +15,11 @@
  */
 package io.amaze.bench.util;
 
-import io.amaze.bench.runtime.cluster.LifecycleMessage;
-import io.amaze.bench.runtime.cluster.Message;
-import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
+import io.amaze.bench.cluster.LifecycleMessage;
+import io.amaze.bench.cluster.Message;
+import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.agent.AgentLifecycleMessage;
 import org.mockito.ArgumentMatcher;
 
 import java.io.Serializable;

@@ -17,11 +17,11 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
-import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
+import io.amaze.bench.cluster.agent.AgentLifecycleMessage;
+import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.registry.RegisteredAgent;
 import io.amaze.bench.shared.jgroups.*;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.util.Network;
@@ -40,8 +40,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static io.amaze.bench.cluster.agent.AgentLifecycleMessage.closed;
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
-import static io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage.closed;
 import static io.amaze.bench.runtime.cluster.jgroups.JgroupsAgentRegistryClusterClient.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

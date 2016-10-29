@@ -17,15 +17,12 @@ package io.amaze.bench.runtime.agent;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.ClusterConfigFactory;
+import io.amaze.bench.cluster.actor.*;
+import io.amaze.bench.cluster.agent.*;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.actor.*;
-import io.amaze.bench.runtime.cluster.*;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
-import io.amaze.bench.runtime.cluster.actor.ValidationException;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.shared.test.Json;
 import org.junit.After;
 import org.junit.Before;
@@ -35,8 +32,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.State;
 import static io.amaze.bench.runtime.actor.TestActor.*;
-import static io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage.State;
 import static io.amaze.bench.util.Matchers.isActorState;
 import static io.amaze.bench.util.Matchers.isAgentState;
 import static junit.framework.TestCase.assertNotNull;
@@ -97,8 +94,8 @@ public final class AgentTest {
         when(actorManagers.createEmbedded(any(AgentKey.class), any(ClusterClientFactory.class))).thenReturn(
                 embeddedManager);
         when(actorManagers.createForked(any(AgentKey.class), eq(clusterConfigFactory))).thenReturn(forkedManager);
-        doReturn(embeddedManagedActor).when(embeddedManager).createActor(TestActor.DUMMY_CONFIG);
-        doReturn(forkedManagedActor).when(forkedManager).createActor(TestActor.DUMMY_CONFIG);
+        doReturn(embeddedManagedActor).when(embeddedManager).createActor(DUMMY_CONFIG);
+        doReturn(forkedManagedActor).when(forkedManager).createActor(DUMMY_CONFIG);
 
         doReturn(agentActorRegistrySender).when(agentClient).actorRegistrySender();
         doReturn(actorRegistrySender).when(actorClient).actorRegistrySender();

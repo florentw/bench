@@ -18,6 +18,8 @@ package io.amaze.bench.runtime.actor.metric;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.cluster.metric.MetricTimedValue;
+import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;

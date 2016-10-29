@@ -17,11 +17,11 @@ package io.amaze.bench.runtime.agent;
 
 import com.typesafe.config.ConfigException;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.cluster.ActorClusterClient;
-import io.amaze.bench.runtime.cluster.AgentClusterClient;
-import io.amaze.bench.runtime.cluster.AgentRegistrySender;
-import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.ClusterConfigFactory;
+import io.amaze.bench.cluster.actor.ActorClusterClient;
+import io.amaze.bench.cluster.agent.AgentClusterClient;
+import io.amaze.bench.cluster.agent.AgentRegistrySender;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

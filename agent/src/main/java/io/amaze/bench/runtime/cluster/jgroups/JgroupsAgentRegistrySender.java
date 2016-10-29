@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.runtime.cluster.AgentRegistrySender;
-import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
+import io.amaze.bench.cluster.agent.AgentLifecycleMessage;
+import io.amaze.bench.cluster.agent.AgentRegistrySender;
 
 import javax.validation.constraints.NotNull;
 

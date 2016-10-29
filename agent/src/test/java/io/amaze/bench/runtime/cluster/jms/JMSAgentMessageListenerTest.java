@@ -16,11 +16,10 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.cluster.ActorCreationRequest;
-import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.actor.ActorCreationRequest;
+import io.amaze.bench.cluster.agent.AgentClientListener;
+import io.amaze.bench.cluster.agent.AgentInputMessage;
+import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +32,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_CONFIG;
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Mockito.*;
@@ -61,20 +62,20 @@ public final class JMSAgentMessageListenerTest {
 
     @Test
     public void create_actor_calls_listener() throws IOException, ClassNotFoundException, JMSException {
-        ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
+        ActorCreationRequest creationRequest = new ActorCreationRequest(DUMMY_CONFIG);
 
         AgentInputMessage toAgent = AgentInputMessage.createActor(DUMMY_AGENT, creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
         listener.onMessage(testBytesMessage);
 
-        verify(agentListener).onActorCreationRequest(eq(TestActor.DUMMY_CONFIG));
+        verify(agentListener).onActorCreationRequest(eq(DUMMY_CONFIG));
         verifyNoMoreInteractions(agentListener);
     }
 
     @Test
     public void create_actor_for_wrong_agent_does_nothing() throws IOException, ClassNotFoundException, JMSException {
-        ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
+        ActorCreationRequest creationRequest = new ActorCreationRequest(DUMMY_CONFIG);
         AgentInputMessage toAgent = AgentInputMessage.createActor(new AgentKey("another-agent"), creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
@@ -85,12 +86,12 @@ public final class JMSAgentMessageListenerTest {
 
     @Test
     public void close_actor_calls_listener() throws IOException, ClassNotFoundException, JMSException {
-        AgentInputMessage toAgent = AgentInputMessage.closeActor(DUMMY_AGENT, TestActor.DUMMY_ACTOR);
+        AgentInputMessage toAgent = AgentInputMessage.closeActor(DUMMY_AGENT, DUMMY_ACTOR);
         BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
         listener.onMessage(testBytesMessage);
 
-        verify(agentListener).onActorCloseRequest(TestActor.DUMMY_ACTOR);
+        verify(agentListener).onActorCloseRequest(DUMMY_ACTOR);
         verifyNoMoreInteractions(agentListener);
     }
 

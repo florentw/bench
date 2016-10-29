@@ -16,14 +16,14 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.cluster.actor.ActorCreationRequest;
+import io.amaze.bench.cluster.actor.ActorInputMessage;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.agent.AgentClientListener;
+import io.amaze.bench.cluster.agent.AgentInputMessage;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.cluster.ActorCreationRequest;
-import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 import org.junit.Before;
 import org.junit.Test;

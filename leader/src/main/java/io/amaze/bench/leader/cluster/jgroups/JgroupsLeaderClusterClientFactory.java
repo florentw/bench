@@ -17,14 +17,14 @@ package io.amaze.bench.leader.cluster.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
+import io.amaze.bench.cluster.actor.ActorSender;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.leader.cluster.LeaderClusterClientFactory;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
-import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsAbstractClusterClientFactory;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsActorSender;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import org.jgroups.JChannel;
 
 import javax.validation.constraints.NotNull;

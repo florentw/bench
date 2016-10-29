@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.leader.cluster.registry;
 
-import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
+import io.amaze.bench.cluster.metric.MetricValuesMessage;
 
 import javax.validation.constraints.NotNull;
 

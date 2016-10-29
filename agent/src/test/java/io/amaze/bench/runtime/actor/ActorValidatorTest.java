@@ -17,7 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.*;
-import io.amaze.bench.runtime.cluster.actor.ValidationException;
+import io.amaze.bench.cluster.actor.ValidationException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

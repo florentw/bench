@@ -21,11 +21,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.ValidationException;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.ClusterConfigFactory;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.ValidationException;
+import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
 import static com.google.common.base.StandardSystemProperty.JAVA_HOME;
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
-import static io.amaze.bench.runtime.cluster.agent.Constants.LOG_DIRECTORY_NAME;
+import static io.amaze.bench.cluster.agent.Constants.LOG_DIRECTORY_NAME;
 
 /**
  * Forks a new JVM to host the actorKey.<br>

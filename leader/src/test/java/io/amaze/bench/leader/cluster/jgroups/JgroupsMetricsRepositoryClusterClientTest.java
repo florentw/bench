@@ -16,9 +16,9 @@
 package io.amaze.bench.leader.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryListener;
 import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 import org.jgroups.Message;

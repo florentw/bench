@@ -16,6 +16,13 @@
 package io.amaze.bench.util;
 
 import com.typesafe.config.Config;
+import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.ClusterClients;
+import io.amaze.bench.cluster.actor.ActorSender;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.leader.cluster.Actors;
 import io.amaze.bench.leader.cluster.LeaderClusterClientFactory;
 import io.amaze.bench.leader.cluster.ResourceManager;
@@ -26,13 +33,6 @@ import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.agent.Agents;
-import io.amaze.bench.runtime.cluster.ActorSender;
-import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.ClusterClients;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.util.Network;
 import org.apache.logging.log4j.LogManager;

@@ -16,15 +16,15 @@
 package io.amaze.bench.actor;
 
 import com.google.common.base.Throwables;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.DeployConfig;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.leader.cluster.Actors;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
-import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.agent.Agent;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.DeployConfig;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;

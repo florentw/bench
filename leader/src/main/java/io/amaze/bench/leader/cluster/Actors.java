@@ -16,14 +16,10 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.runtime.cluster.ActorSender;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.cluster.actor.*;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryListener;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

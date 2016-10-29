@@ -17,12 +17,8 @@ package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
-import io.amaze.bench.runtime.cluster.ActorClusterClient;
-import io.amaze.bench.runtime.cluster.ActorRegistrySender;
-import io.amaze.bench.runtime.cluster.ActorSender;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
+import io.amaze.bench.cluster.actor.*;
+import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -31,7 +27,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.runtime.cluster.agent.Constants.METRICS_TOPIC;
+import static io.amaze.bench.cluster.agent.Constants.METRICS_TOPIC;
 
 /**
  * Created on 4/24/16.

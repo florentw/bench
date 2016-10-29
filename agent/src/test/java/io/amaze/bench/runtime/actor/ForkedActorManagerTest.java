@@ -17,10 +17,10 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.DeployConfig;
-import io.amaze.bench.runtime.cluster.actor.ValidationException;
+import io.amaze.bench.cluster.ClusterConfigFactory;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.DeployConfig;
+import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.util.Files;
 import io.amaze.bench.util.AgentClusterRule;

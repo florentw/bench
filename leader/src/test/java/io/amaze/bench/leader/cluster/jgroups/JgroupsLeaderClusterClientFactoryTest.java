@@ -17,12 +17,12 @@ package io.amaze.bench.leader.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.After;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryListener;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.shared.util.Network;
 import io.amaze.bench.util.ClusterConfigs;

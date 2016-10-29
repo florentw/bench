@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.cluster.ClusterClient;
+import io.amaze.bench.cluster.ClusterClient;
 import io.amaze.bench.shared.jms.FFMQClient;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;

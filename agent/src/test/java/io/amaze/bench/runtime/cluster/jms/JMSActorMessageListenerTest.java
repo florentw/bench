@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
-import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
+import io.amaze.bench.cluster.actor.ActorInputMessage;
+import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;

@@ -15,10 +15,10 @@
  */
 package io.amaze.bench.leader.cluster;
 
-import io.amaze.bench.runtime.cluster.ClusterClient;
-import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
+import io.amaze.bench.cluster.ClusterClient;
+import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.agent.AgentInputMessage;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;

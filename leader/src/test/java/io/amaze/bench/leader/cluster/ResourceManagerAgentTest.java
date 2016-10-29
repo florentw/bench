@@ -15,15 +15,15 @@
  */
 package io.amaze.bench.leader.cluster;
 
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.DeployConfig;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
+import io.amaze.bench.cluster.registry.*;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.Agent;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.DeployConfig;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
-import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.Rule;
@@ -43,9 +43,9 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
+import static io.amaze.bench.cluster.registry.RegisteredActor.State;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_JSON_CONFIG;
-import static io.amaze.bench.runtime.cluster.registry.RegisteredActor.State;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 

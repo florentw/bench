@@ -16,12 +16,12 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.cluster.ActorCreationRequest;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorCreationRequest;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.agent.AgentInputMessage;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.RegisteredAgent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

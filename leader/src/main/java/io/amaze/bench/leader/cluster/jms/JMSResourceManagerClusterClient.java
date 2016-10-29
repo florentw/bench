@@ -16,9 +16,9 @@
 package io.amaze.bench.leader.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.agent.AgentInputMessage;
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
 import io.amaze.bench.runtime.cluster.jms.JMSClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
@@ -29,7 +29,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.runtime.cluster.agent.Constants.AGENTS_TOPIC;
+import static io.amaze.bench.cluster.agent.Constants.AGENTS_TOPIC;
 
 /**
  * Created on 3/8/16.

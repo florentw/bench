@@ -16,12 +16,12 @@
 package io.amaze.bench.runtime.actor;
 
 
-import io.amaze.bench.runtime.cluster.ClusterClientFactory;
-import io.amaze.bench.runtime.cluster.actor.ActorConfig;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
-import io.amaze.bench.runtime.cluster.actor.ValidationException;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.RuntimeActor;
+import io.amaze.bench.cluster.actor.ValidationException;
+import io.amaze.bench.cluster.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 

@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor.metric;
 
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.TestActor;
 import org.junit.After;
 import org.junit.Before;

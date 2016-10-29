@@ -15,15 +15,15 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
+import io.amaze.bench.cluster.actor.ActorClusterClient;
+import io.amaze.bench.cluster.actor.ActorInputMessage;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
+import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.ActorInternal;
 import io.amaze.bench.runtime.actor.Actors;
 import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.cluster.ActorClusterClient;
-import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.cluster.agent.AgentKey;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.ClusterConfigs;
 import org.jgroups.JChannel;
@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.runtime.actor.TestActor.REPLY_MESSAGE;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -55,8 +56,7 @@ public final class JgroupsAgentClusterTest {
 
         firstActor.jChannel.send(firstActor.jChannel.getAddress(),
                                  new JgroupsActorMessage(DUMMY_ACTOR,
-                                                         ActorInputMessage.sendMessage("another",
-                                                                                       TestActor.REPLY_MESSAGE)));
+                                                         ActorInputMessage.sendMessage("another", REPLY_MESSAGE)));
 
         sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
@@ -69,9 +69,9 @@ public final class JgroupsAgentClusterTest {
         otherActor.actorInternal.close();
 
         assertThat(testActor1.getReceivedMessages().size(), is(1));
-        assertThat(testActor1.getReceivedMessages().get(ANOTHER.getName()).get(0), is(TestActor.REPLY_MESSAGE));
+        assertThat(testActor1.getReceivedMessages().get(ANOTHER.getName()).get(0), is(REPLY_MESSAGE));
         assertThat(testActor2.getReceivedMessages().size(), is(1));
-        assertThat(testActor2.getReceivedMessages().get(DUMMY_ACTOR.getName()).get(0), is(TestActor.REPLY_MESSAGE));
+        assertThat(testActor2.getReceivedMessages().get(DUMMY_ACTOR.getName()).get(0), is(REPLY_MESSAGE));
     }
 
     private ActorCluster createAndInitActor(final ActorKey key) throws Exception {

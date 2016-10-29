@@ -19,7 +19,7 @@ import io.amaze.bench.api.After;
 import io.amaze.bench.api.Before;
 import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.Sender;
-import io.amaze.bench.runtime.cluster.actor.ValidationException;
+import io.amaze.bench.cluster.actor.ValidationException;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Modifier;

@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;
@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.runtime.cluster.agent.Constants.AGENT_REGISTRY_TOPIC;
+import static io.amaze.bench.cluster.agent.Constants.AGENT_REGISTRY_TOPIC;
 
 /**
  * Created on 9/25/16.

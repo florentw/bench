@@ -16,12 +16,12 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.cluster.actor.ActorKey;
-import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.cluster.agent.Constants;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
+import io.amaze.bench.cluster.agent.Constants;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jgroups.*;
 import org.jgroups.Address;
 import org.jgroups.Message;

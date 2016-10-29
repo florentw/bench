@@ -15,12 +15,12 @@
  */
 package io.amaze.bench.leader.cluster;
 
+import io.amaze.bench.cluster.actor.ActorSender;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.leader.cluster.registry.MetricsRepository;
 import io.amaze.bench.leader.cluster.registry.MetricsRepositoryClusterClient;
-import io.amaze.bench.runtime.cluster.ActorSender;
-import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;

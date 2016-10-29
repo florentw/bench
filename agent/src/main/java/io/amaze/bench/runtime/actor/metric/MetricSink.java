@@ -17,6 +17,8 @@ package io.amaze.bench.runtime.actor.metric;
 
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.cluster.metric.MetricTimedValue;
+import io.amaze.bench.cluster.metric.MetricValue;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
