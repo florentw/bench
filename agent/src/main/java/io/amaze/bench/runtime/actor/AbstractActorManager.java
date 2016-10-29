@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.runtime.actor;
 
+import io.amaze.bench.runtime.agent.AgentKey;
+
 import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -24,13 +26,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 abstract class AbstractActorManager implements ActorManager {
 
-    private final String agent;
+    private final AgentKey agent;
 
-    AbstractActorManager(@NotNull final String agent) {
+    AbstractActorManager(@NotNull final AgentKey agent) {
         this.agent = checkNotNull(agent);
     }
 
-    protected final String getAgent() {
+    protected final AgentKey getAgent() {
         return agent;
     }
 }

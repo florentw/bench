@@ -17,6 +17,7 @@ package io.amaze.bench.leader.cluster;
 
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
@@ -75,7 +76,7 @@ public final class ResourceManagerAgentTest {
 
         assertThat(agentRegistry.all().size(), is(1));
         RegisteredAgent registeredAgent = agentRegistry.all().iterator().next();
-        assertThat(registeredAgent.getAgentName(), is(agent.getName()));
+        assertThat(registeredAgent.getAgentKey(), is(agent.getKey()));
         assertTrue(registeredAgent.getCreationTime() > 0);
         assertNotNull(registeredAgent.getSystemConfig());
         after(benchRule);
@@ -93,7 +94,7 @@ public final class ResourceManagerAgentTest {
         assertThat(actorRegistry.all().size(), is(1));
 
         RegisteredActor actor = actorRegistry.byKey(DUMMY_ACTOR);
-        assertThat(actor.getAgentHost(), is(agent.getName()));
+        assertThat(actor.getAgent(), is(agent.getKey()));
         assertThat(actor.getKey(), is(DUMMY_ACTOR));
         assertThat(actor.getState(), is(State.INITIALIZED));
         after(benchRule);
@@ -133,7 +134,7 @@ public final class ResourceManagerAgentTest {
         agentRegistry = benchRule.agentRegistry();
         agentSync = registerAgentSync();
 
-        agent = getUninterruptibly(benchRule.agents().create("test-agent"));
+        agent = getUninterruptibly(benchRule.agents().create(new AgentKey("test-agent")));
     }
 
     private void after(final BenchRule benchRule) throws Exception {
@@ -176,12 +177,12 @@ public final class ResourceManagerAgentTest {
         }
 
         @Override
-        public void onAgentSignOff(@NotNull final String agent) {
+        public void onAgentSignOff(@NotNull final AgentKey agent) {
             agentClosed.countDown();
         }
 
         @Override
-        public void onAgentFailed(@NotNull final String agent, @NotNull final Throwable throwable) {
+        public void onAgentFailed(@NotNull final AgentKey agent, @NotNull final Throwable throwable) {
             agentFailed.countDown();
         }
     }
@@ -193,7 +194,7 @@ public final class ResourceManagerAgentTest {
         private final CountDownLatch actorClosed = new CountDownLatch(1);
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final AgentKey agent) {
             actorCreated.countDown();
         }
 

@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.shared.metric.SystemConfig;
 
 import javax.validation.constraints.NotNull;
@@ -29,24 +30,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class RegisteredAgent implements Serializable {
 
-    private final String agentName;
+    private final AgentKey agentKey;
     private final SystemConfig systemConfig;
     private final Endpoint endpoint;
     private final long creationTime;
 
-    public RegisteredAgent(@NotNull final String agentName,
+    public RegisteredAgent(@NotNull final AgentKey agentKey,
                            @NotNull final SystemConfig systemConfig,
                            @NotNull final long creationTime,
                            @NotNull final Endpoint endpoint) {
 
-        this.agentName = checkNotNull(agentName);
+        this.agentKey = checkNotNull(agentKey);
         this.systemConfig = checkNotNull(systemConfig);
         this.creationTime = checkNotNull(creationTime);
         this.endpoint = checkNotNull(endpoint);
     }
 
-    public String getAgentName() {
-        return agentName;
+    public AgentKey getAgentKey() {
+        return agentKey;
     }
 
     public SystemConfig getSystemConfig() {
@@ -63,7 +64,7 @@ public final class RegisteredAgent implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(agentName, systemConfig, endpoint, creationTime);
+        return Objects.hash(agentKey, systemConfig, endpoint, creationTime);
     }
 
     @Override
@@ -76,7 +77,7 @@ public final class RegisteredAgent implements Serializable {
         }
         RegisteredAgent that = (RegisteredAgent) o;
         return creationTime == that.creationTime && //
-                Objects.equals(agentName, that.agentName) && //
+                Objects.equals(agentKey, that.agentKey) && //
                 Objects.equals(systemConfig, that.systemConfig) && //
                 Objects.equals(endpoint, that.endpoint);
     }
@@ -84,7 +85,7 @@ public final class RegisteredAgent implements Serializable {
     @Override
     public String toString() {
         return "{\"RegisteredAgent\":{" + //
-                "\"agentName\":\"" + agentName + "\"" + ", " + //
+                "\"agentKey\":\"" + agentKey + "\"" + ", " + //
                 "\"systemConfig\":" + systemConfig + ", " + //
                 "\"endpoint\":" + endpoint + ", " + //
                 "\"creationTime\":\"" + creationTime + "\"" + "}}";

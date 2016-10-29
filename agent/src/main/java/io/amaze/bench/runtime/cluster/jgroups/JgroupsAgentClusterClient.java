@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.*;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
@@ -47,7 +48,7 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
     }
 
     @Override
-    public void startAgentListener(@NotNull final String agent, @NotNull final AgentClientListener listener) {
+    public void startAgentListener(@NotNull final AgentKey agent, @NotNull final AgentClientListener listener) {
         checkNotNull(agent);
         checkNotNull(listener);
 
@@ -76,10 +77,10 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
     }
 
     static final class MessageListener implements JgroupsListener<AgentInputMessage> {
-        private final String agent;
+        private final AgentKey agent;
         private final AgentClientListener listener;
 
-        MessageListener(final String agent, final AgentClientListener listener) {
+        MessageListener(final AgentKey agent, final AgentClientListener listener) {
             this.agent = agent;
             this.listener = listener;
         }

@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
@@ -222,7 +223,7 @@ public final class JgroupsActorRegistryClusterClientTest {
 
     private Set<RegisteredActor> registeredActors() {
         Set<RegisteredActor> registeredActors = new HashSet<>();
-        registeredActors.add(RegisteredActor.created(DUMMY_ACTOR, "agent"));
+        registeredActors.add(RegisteredActor.created(DUMMY_ACTOR, new AgentKey("agent")));
         return registeredActors;
     }
 }

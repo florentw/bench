@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
@@ -41,6 +42,8 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class JgroupsActorSenderTest {
+
+    private static final AgentKey AGENT = new AgentKey("agent");
 
     @Mock
     private JgroupsSender jgroupsSender;
@@ -72,7 +75,7 @@ public final class JgroupsActorSenderTest {
 
     @Test
     public void send_to_actor_resolves_endpoint_through_registry_and_sends() throws Exception {
-        RegisteredActor agent = created(DUMMY_ACTOR, "agent");
+        RegisteredActor agent = created(DUMMY_ACTOR, AGENT);
         when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(initialized(agent, new ActorDeployInfo(endpoint, 10)));
         ActorInputMessage message = ActorInputMessage.sendMessage("other", "hello");
 
@@ -89,7 +92,7 @@ public final class JgroupsActorSenderTest {
 
     @Test(expected = NoSuchElementException.class)
     public void sending_to_uninitialized_actor_throws_NoSuchElementException() {
-        when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(created(DUMMY_ACTOR, "agent"));
+        when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(created(DUMMY_ACTOR, AGENT));
 
         sender.send(DUMMY_ACTOR, ActorInputMessage.sendMessage("other", "hello"));
     }

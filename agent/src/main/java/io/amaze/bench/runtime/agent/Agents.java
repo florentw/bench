@@ -49,12 +49,13 @@ public final class Agents {
     /**
      * Triggers an {@link Agent} instance creation. Returns a future that is set when it successfully registered.
      *
-     * @param agentName Name of the agent to be created.
+     * @param agentKey Key of the agent to be created.
      * @return A future that will be set with the Agent instance is successful registration.
      * If a sign off message is received, a {@link AgentSignOffException} is set.
      */
-    public Future<Agent> create(String agentName) {
-        WaitAgentRegistration waitAgentRegistration = new WaitAgentRegistration(agentName);
+    public Future<Agent> create(@NotNull final AgentKey agentKey) {
+        checkNotNull(agentKey);
+        WaitAgentRegistration waitAgentRegistration = new WaitAgentRegistration(agentKey);
         agentRegistry.addListener(waitAgentRegistration);
         return waitAgentRegistration.createAgent();
     }
@@ -74,13 +75,13 @@ public final class Agents {
     }
 
     private final class WaitAgentRegistration implements AgentRegistryListener {
-        private final String agentName;
+        private final AgentKey agentKey;
         private final SettableFuture<Agent> future = SettableFuture.create();
         private final CountDownLatch agentCreated = new CountDownLatch(1);
         private Agent agent;
 
-        WaitAgentRegistration(final String agentName) {
-            this.agentName = agentName;
+        WaitAgentRegistration(final AgentKey agentKey) {
+            this.agentKey = agentKey;
         }
 
         @Override
@@ -89,39 +90,39 @@ public final class Agents {
 
             awaitUninterruptibly(agentCreated);
 
-            if (msg.getName().equals(agent.getName())) {
+            if (msg.getKey().equals(agent.getKey())) {
                 future.set(agent);
                 agentRegistry.removeListener(this);
             }
         }
 
         @Override
-        public void onAgentSignOff(@NotNull final String agentName) {
-            checkNotNull(agentName);
+        public void onAgentSignOff(@NotNull final AgentKey agentKey) {
+            checkNotNull(agentKey);
 
             awaitUninterruptibly(agentCreated);
 
-            if (agentName.equals(agent.getName())) {
+            if (agentKey.equals(agent.getKey())) {
                 future.setException(new AgentSignOffException());
                 agentRegistry.removeListener(this);
             }
         }
 
         @Override
-        public void onAgentFailed(@NotNull final String agent, @NotNull final Throwable throwable) {
-            checkNotNull(agentName);
+        public void onAgentFailed(@NotNull final AgentKey agent, @NotNull final Throwable throwable) {
+            checkNotNull(agentKey);
             checkNotNull(throwable);
 
             awaitUninterruptibly(agentCreated);
 
-            if (agentName.equals(agent)) {
+            if (agentKey.equals(agent)) {
                 future.setException(new AgentFailureException());
                 agentRegistry.removeListener(this);
             }
         }
 
         Future<Agent> createAgent() {
-            agent = new Agent(agentName, clientFactory, actorManagers);
+            agent = new Agent(agentKey, clientFactory, actorManagers);
             agentCreated.countDown();
             return future;
         }

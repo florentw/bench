@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +51,7 @@ public final class JgroupsAgentRegistrySenderTest {
 
     @Test
     public void send_to_agent_registry_broadcasts() {
-        AgentLifecycleMessage message = AgentLifecycleMessage.closed("key");
+        AgentLifecycleMessage message = AgentLifecycleMessage.closed(new AgentKey("key"));
 
         sender.send(message);
 

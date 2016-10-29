@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.message.Message;
@@ -89,8 +90,8 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
     }
 
     private void onAgentSignOff(final AgentLifecycleMessage received) {
-        String agentName = received.getAgent();
-        agentsListener.onAgentSignOff(agentName);
+        AgentKey agentKey = received.getAgent();
+        agentsListener.onAgentSignOff(agentKey);
     }
 
     private void onAgentRegistration(final AgentLifecycleMessage received) {

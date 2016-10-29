@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
@@ -24,6 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -37,20 +40,20 @@ public final class ActorLifecycleMessageTest {
     private static final RegisteredActorTest.DummyEndpoint DUMMY_ENDPOINT = new RegisteredActorTest.DummyEndpoint(
             "endpoint");
     private static final ActorDeployInfo ACTOR_DEPLOY_INFO = new ActorDeployInfo(DUMMY_ENDPOINT, 10);
-    private static final ActorKey ACTOR_KEY = new ActorKey("actor");
 
     private ActorLifecycleMessage msg;
 
     @Before
     public void init() {
-        msg = ActorLifecycleMessage.initialized(ACTOR_KEY, ACTOR_DEPLOY_INFO);
+        msg = ActorLifecycleMessage.initialized(DUMMY_ACTOR, ACTOR_DEPLOY_INFO);
     }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorDeployInfo.class, ACTOR_DEPLOY_INFO);
-        tester.setDefault(ActorKey.class, TestActor.DUMMY_ACTOR);
+        tester.setDefault(ActorKey.class, DUMMY_ACTOR);
+        tester.setDefault(AgentKey.class, DUMMY_AGENT);
 
         tester.testAllPublicStaticMethods(ActorLifecycleMessage.class);
         tester.testAllPublicInstanceMethods(msg);
@@ -70,6 +73,7 @@ public final class ActorLifecycleMessageTest {
     @Test
     public void toString_should_yield_valid_json() {
         assertTrue(Json.isValid(msg.toString()));
+        assertTrue(Json.isValid(ActorLifecycleMessage.created(DUMMY_ACTOR, DUMMY_AGENT).toString()));
     }
 
 }

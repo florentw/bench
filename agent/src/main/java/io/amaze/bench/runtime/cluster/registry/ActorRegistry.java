@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.registry;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -150,7 +151,7 @@ public class ActorRegistry {
     private final class ActorRegistryListenerState implements ActorRegistryListener {
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final AgentKey agent) {
             synchronized (actors) {
                 if (actors.containsKey(key)) {
                     log.warn("An actor {} already exists for key {}", actors.get(key), key);

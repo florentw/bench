@@ -95,8 +95,8 @@ public final class AgentRegistryTest {
     public void agent_registered() {
         clusterListener.onAgentRegistration(regMsg);
 
-        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
-        assertThat(agent.getAgentName(), is(DUMMY_AGENT));
+        RegisteredAgent agent = registry.byKey(DUMMY_AGENT);
+        assertThat(agent.getAgentKey(), is(DUMMY_AGENT));
         assertThat(agent.getSystemConfig(), is(regMsg.getSystemConfig()));
         assertThat(agent.getCreationTime(), is(regMsg.getCreationTime()));
 
@@ -110,7 +110,7 @@ public final class AgentRegistryTest {
 
         clusterListener.onAgentSignOff(DUMMY_AGENT);
 
-        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
+        RegisteredAgent agent = registry.byKey(DUMMY_AGENT);
         assertNull(agent);
         verify(clientListener).onAgentRegistration(regMsg);
         verify(clientListener).onAgentSignOff(DUMMY_AGENT);
@@ -121,7 +121,7 @@ public final class AgentRegistryTest {
     public void unknown_agent_signs_off_does_nothing() {
         clusterListener.onAgentSignOff(DUMMY_AGENT);
 
-        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
+        RegisteredAgent agent = registry.byKey(DUMMY_AGENT);
         assertNull(agent);
 
         verifyNoMoreInteractions(clientListener);
@@ -134,7 +134,7 @@ public final class AgentRegistryTest {
 
         clusterListener.onAgentFailed(DUMMY_AGENT, throwable);
 
-        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
+        RegisteredAgent agent = registry.byKey(DUMMY_AGENT);
         assertNull(agent);
         verify(clientListener).onAgentRegistration(regMsg);
         verify(clientListener).onAgentFailed(DUMMY_AGENT, throwable);
@@ -145,7 +145,7 @@ public final class AgentRegistryTest {
     public void unknown_agent_failure_does_nothing() {
         clusterListener.onAgentFailed(DUMMY_AGENT, new IllegalArgumentException());
 
-        RegisteredAgent agent = registry.byName(DUMMY_AGENT);
+        RegisteredAgent agent = registry.byKey(DUMMY_AGENT);
         assertNull(agent);
 
         verifyNoMoreInteractions(clientListener);
@@ -160,7 +160,7 @@ public final class AgentRegistryTest {
         assertThat(agents.size(), is(1));
 
         RegisteredAgent agent = agents.iterator().next();
-        assertThat(agent.getAgentName(), is(DUMMY_AGENT));
+        assertThat(agent.getAgentKey(), is(DUMMY_AGENT));
     }
 
     @Test
@@ -184,7 +184,7 @@ public final class AgentRegistryTest {
 
         registry.onEndpointDisconnected(endpoint);
 
-        assertNull(registry.byName(DUMMY_AGENT));
+        assertNull(registry.byKey(DUMMY_AGENT));
         verify(clientListener).onAgentRegistration(regMsg);
         verify(clientListener).onAgentFailed(eq(DUMMY_AGENT), any(AgentDisconnectedException.class));
         verifyNoMoreInteractions(clientListener);
@@ -196,7 +196,7 @@ public final class AgentRegistryTest {
 
         registry.onEndpointDisconnected(anotherEndpoint);
 
-        assertNotNull(registry.byName(DUMMY_AGENT));
+        assertNotNull(registry.byKey(DUMMY_AGENT));
         verify(clientListener).onAgentRegistration(regMsg);
         verifyNoMoreInteractions(clientListener);
     }

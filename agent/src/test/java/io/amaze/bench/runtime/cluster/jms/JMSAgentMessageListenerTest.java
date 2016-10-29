@@ -16,10 +16,11 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public final class JMSAgentMessageListenerTest {
     @Test
     public void create_actor_for_wrong_agent_does_nothing() throws IOException, ClassNotFoundException, JMSException {
         ActorCreationRequest creationRequest = new ActorCreationRequest(TestActor.DUMMY_CONFIG);
-        AgentInputMessage toAgent = AgentInputMessage.createActor(DUMMY_AGENT + "2", creationRequest);
+        AgentInputMessage toAgent = AgentInputMessage.createActor(new AgentKey("another-agent"), creationRequest);
         BytesMessage testBytesMessage = toBytesMessage(toAgent);
 
         listener.onMessage(testBytesMessage);

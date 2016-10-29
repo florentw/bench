@@ -28,12 +28,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentInputMessage implements Serializable {
 
-    private final String targetAgent;
+    private final AgentKey targetAgent;
     private final Action action;
     private final ActorCreationRequest creationRequest;
     private final ActorKey actorToClose;
 
-    private AgentInputMessage(@NotNull final String targetAgent,
+    private AgentInputMessage(@NotNull final AgentKey targetAgent,
                               @NotNull final Action action,
                               final ActorCreationRequest creationRequest,
                               final ActorKey actorToClose) {
@@ -44,14 +44,14 @@ public final class AgentInputMessage implements Serializable {
         this.actorToClose = actorToClose;
     }
 
-    public static AgentInputMessage createActor(@NotNull final String targetAgent,
+    public static AgentInputMessage createActor(@NotNull final AgentKey targetAgent,
                                                 @NotNull final ActorCreationRequest actorCreationRequest) {
         checkNotNull(targetAgent);
         checkNotNull(actorCreationRequest);
         return new AgentInputMessage(targetAgent, Action.CREATE_ACTOR, actorCreationRequest, null);
     }
 
-    public static AgentInputMessage closeActor(@NotNull final String targetAgent, @NotNull final ActorKey actorKey) {
+    public static AgentInputMessage closeActor(@NotNull final AgentKey targetAgent, @NotNull final ActorKey actorKey) {
         checkNotNull(targetAgent);
         checkNotNull(actorKey);
         return new AgentInputMessage(targetAgent, Action.CLOSE_ACTOR, null, actorKey);
@@ -61,7 +61,7 @@ public final class AgentInputMessage implements Serializable {
         return action;
     }
 
-    public String getTargetAgent() {
+    public AgentKey getTargetAgent() {
         return targetAgent;
     }
 
@@ -82,7 +82,7 @@ public final class AgentInputMessage implements Serializable {
     @Override
     public String toString() {
         return "{\"AgentInputMessage\":{" + //
-                "\"targetAgent\":\"" + targetAgent + "\"" + ", " + //
+                "\"targetAgent\":" + targetAgent + ", " + //
                 "\"action\":\"" + action + "\"" + ", " + //
                 "\"creationRequest\":" + creationRequest + ", " + //
                 "\"actorToClose\":" + actorToClose + "}}";

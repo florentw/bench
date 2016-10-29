@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -29,31 +30,31 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class RegisteredActor implements Serializable {
 
     private final ActorKey actor;
-    private final String agentHost;
+    private final AgentKey agent;
     private final State state;
     private final ActorDeployInfo deployInfo;
 
     private RegisteredActor(@NotNull final ActorKey actor, //
-                            @NotNull final String agentHost, //
+                            @NotNull final AgentKey agent, //
                             @NotNull final State state, //
                             final ActorDeployInfo deployInfo) {
 
         this.actor = checkNotNull(actor);
-        this.agentHost = checkNotNull(agentHost);
+        this.agent = checkNotNull(agent);
         this.state = checkNotNull(state);
         this.deployInfo = deployInfo;
     }
 
     public static RegisteredActor created(@NotNull final ActorKey actor, //
-                                          @NotNull final String agentHost) {
-        return new RegisteredActor(actor, agentHost, State.CREATED, null);
+                                          @NotNull final AgentKey agent) {
+        return new RegisteredActor(actor, agent, State.CREATED, null);
     }
 
     public static RegisteredActor initialized(@NotNull RegisteredActor created, //
                                               @NotNull final ActorDeployInfo deployInfo) {
         checkNotNull(created);
         checkNotNull(deployInfo);
-        return new RegisteredActor(created.getKey(), created.getAgentHost(), State.INITIALIZED, deployInfo);
+        return new RegisteredActor(created.getKey(), created.getAgent(), State.INITIALIZED, deployInfo);
     }
 
     @NotNull
@@ -67,8 +68,8 @@ public final class RegisteredActor implements Serializable {
     }
 
     @NotNull
-    public String getAgentHost() {
-        return agentHost;
+    public AgentKey getAgent() {
+        return agent;
     }
 
     public ActorDeployInfo getDeployInfo() {
@@ -79,7 +80,7 @@ public final class RegisteredActor implements Serializable {
     public String toString() {
         return "{\"RegisteredActor\":{" + //
                 "\"actor\":" + actor + ", " + //
-                "\"agentHost\":\"" + agentHost + "\"" + ", " + //
+                "\"agent\":" + agent + ", " + //
                 "\"state\":\"" + state + "\"" + ", " + //
                 "\"deployInfo\":" + deployInfo + "}}";
     }

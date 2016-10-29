@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,13 +41,13 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
         checkNotNull(msg);
 
-        log.info("Agent {} registering, msg: {}", msg.getName(), msg);
+        log.info("Agent {} registering, msg: {}", msg.getKey(), msg);
 
         delegate.onAgentRegistration(msg);
     }
 
     @Override
-    public void onAgentSignOff(@NotNull final String agent) {
+    public void onAgentSignOff(@NotNull final AgentKey agent) {
         checkNotNull(agent);
 
         log.info("Agent {} signing off.", agent);
@@ -55,7 +56,7 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     }
 
     @Override
-    public void onAgentFailed(final String agent, final Throwable throwable) {
+    public void onAgentFailed(final AgentKey agent, final Throwable throwable) {
         checkNotNull(agent);
         checkNotNull(throwable);
 

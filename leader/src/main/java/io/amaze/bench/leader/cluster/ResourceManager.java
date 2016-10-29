@@ -16,12 +16,12 @@
 package io.amaze.bench.leader.cluster;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
-import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
 import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
+import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
+import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,20 +59,20 @@ public class ResourceManager implements AutoCloseable {
     public void createActor(@NotNull final ActorConfig actorConfig) {
         checkNotNull(actorConfig);
 
-        ActorKey name = actorConfig.getKey();
-        resourceManagerClusterClient.initForActor(name);
+        ActorKey actorKey = actorConfig.getKey();
+        resourceManagerClusterClient.initForActor(actorKey);
 
         ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig);
 
         Optional<RegisteredAgent> agent = applyDeployStrategy(actorConfig);
         if (!agent.isPresent()) {
-            throw new IllegalStateException("No agents found to create actor " + name);
+            throw new IllegalStateException("No agents found to create actor " + actorKey);
         }
 
-        AgentInputMessage msg = AgentInputMessage.createActor(agent.get().getAgentName(), actorCreationMsg);
+        AgentInputMessage msg = AgentInputMessage.createActor(agent.get().getAgentKey(), actorCreationMsg);
 
         resourceManagerClusterClient.sendToAgent(msg);
-        actorsToAgents.put(name, agent.get());
+        actorsToAgents.put(actorKey, agent.get());
     }
 
     /**
@@ -90,7 +90,7 @@ public class ResourceManager implements AutoCloseable {
         }
 
         resourceManagerClusterClient.closeForActor(actor);
-        AgentInputMessage msg = AgentInputMessage.closeActor(agent.getAgentName(), actor);
+        AgentInputMessage msg = AgentInputMessage.closeActor(agent.getAgentKey(), actor);
         resourceManagerClusterClient.sendToAgent(msg);
     }
 

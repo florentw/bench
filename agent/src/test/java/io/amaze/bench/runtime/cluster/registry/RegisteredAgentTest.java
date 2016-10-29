@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.registry;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.shared.metric.SystemConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,7 @@ public final class RegisteredAgentTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(SystemConfig.class, SystemConfig.createWithHostname("dummy"));
+        tester.setDefault(AgentKey.class, DUMMY_AGENT);
 
         tester.testAllPublicConstructors(RegisteredAgent.class);
     }
@@ -46,7 +48,7 @@ public final class RegisteredAgentTest {
         RegisteredAgent expected = registeredAgent();
         RegisteredAgent actual = SerializableTester.reserialize(expected);
 
-        assertThat(expected.getAgentName(), is(actual.getAgentName()));
+        assertThat(expected.getAgentKey(), is(actual.getAgentKey()));
         assertThat(expected.getCreationTime(), is(actual.getCreationTime()));
         assertThat(expected.getEndpoint(), is(actual.getEndpoint()));
         assertThat(expected.getSystemConfig(), is(actual.getSystemConfig()));

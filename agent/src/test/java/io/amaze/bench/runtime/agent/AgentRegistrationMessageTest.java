@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class AgentRegistrationMessageTest {
 
-    private static final String AGENT_NAME = "dummy-agent";
+    private static final AgentKey AGENT = new AgentKey("dummy-agent");
 
     private AgentRegistrationMessage msg;
     private RegisteredActorTest.DummyEndpoint endpoint;
@@ -47,31 +47,33 @@ public final class AgentRegistrationMessageTest {
     @Before
     public void before() {
         endpoint = new RegisteredActorTest.DummyEndpoint("endpoint");
-        msg = AgentRegistrationMessage.create(AGENT_NAME, endpoint);
+        msg = AgentRegistrationMessage.create(AGENT, endpoint);
     }
 
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(SystemConfig.class, SystemConfigs.get());
+        tester.setDefault(AgentKey.class, new AgentKey("agent"));
+
         tester.testAllPublicConstructors(AgentRegistrationMessage.class);
         tester.testAllPublicStaticMethods(AgentRegistrationMessage.class);
     }
 
     @Test
     public void create_msg() {
-        assertTrue(msg.getName().equals(AGENT_NAME));
+        assertTrue(msg.getKey().equals(AGENT));
         assertNotNull(msg.getSystemConfig());
         assertTrue(msg.getCreationTime() > 0);
     }
 
     @Test
     public void equality() {
-        AgentRegistrationMessage other = AgentRegistrationMessage.create("different", endpoint);
+        AgentRegistrationMessage other = AgentRegistrationMessage.create(new AgentKey("different"), endpoint);
 
         new EqualsTester() //
                 .addEqualityGroup(msg, msg) //
-                .addEqualityGroup(msg.getName(), msg.getName()) //
+                .addEqualityGroup(msg.getKey(), msg.getKey()) //
                 .addEqualityGroup(msg.hashCode(), msg.hashCode()) //
                 .testEquals();
 
@@ -83,7 +85,7 @@ public final class AgentRegistrationMessageTest {
         AgentRegistrationMessage received = SerializableTester.reserialize(msg);
 
         assertThat(received.getCreationTime(), is(msg.getCreationTime()));
-        assertThat(received.getName(), is(msg.getName()));
+        assertThat(received.getKey(), is(msg.getKey()));
         assertThat(received.getEndpoint(), is(msg.getEndpoint()));
         assertNotNull(received.getSystemConfig());
     }

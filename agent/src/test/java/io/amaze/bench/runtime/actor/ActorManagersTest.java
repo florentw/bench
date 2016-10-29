@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
@@ -55,6 +56,7 @@ public final class ActorManagersTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(AgentKey.class, DUMMY_AGENT);
 
         tester.testAllPublicConstructors(ActorManagers.class);
         tester.testAllPublicInstanceMethods(actorManagers);

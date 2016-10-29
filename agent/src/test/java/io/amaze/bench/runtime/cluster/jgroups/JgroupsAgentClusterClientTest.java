@@ -21,6 +21,7 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class JgroupsAgentClusterClientTest {
 
-    private static final String DUMMY_AGENT = "agent";
+    private static final AgentKey DUMMY_AGENT = new AgentKey("agent");
 
     @Mock
     private JgroupsListenerMultiplexer listenerMultiplexer;
@@ -64,6 +65,7 @@ public final class JgroupsAgentClusterClientTest {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorInputMessage.class, ActorInputMessage.dumpMetrics());
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
+        tester.setDefault(AgentKey.class, DUMMY_AGENT);
 
         tester.testAllPublicConstructors(JgroupsAgentClusterClient.class);
         tester.testAllPublicInstanceMethods(clusterClient);

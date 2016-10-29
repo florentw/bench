@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class AgentRegistry {
 
     private static final Logger log = LogManager.getLogger();
 
-    private final Map<String, RegisteredAgent> agents = new HashMap<>();
+    private final Map<AgentKey, RegisteredAgent> agents = new HashMap<>();
     private final Set<AgentRegistryListener> clientListeners = new HashSet<>();
 
     public void addListener(@NotNull final AgentRegistryListener listener) {
@@ -63,11 +64,11 @@ public class AgentRegistry {
         }
     }
 
-    public RegisteredAgent byName(@NotNull final String agentName) {
-        checkNotNull(agentName);
+    public RegisteredAgent byKey(@NotNull final AgentKey agentKey) {
+        checkNotNull(agentKey);
 
         synchronized (agents) {
-            return agents.get(agentName);
+            return agents.get(agentKey);
         }
     }
 
@@ -81,18 +82,18 @@ public class AgentRegistry {
         synchronized (agents) {
             agents.clear();
             for (RegisteredAgent agent : initialAgents) {
-                agents.put(agent.getAgentName(), agent);
+                agents.put(agent.getAgentKey(), agent);
             }
         }
     }
 
     public void onEndpointDisconnected(final Endpoint endpoint) {
         checkNotNull(endpoint);
-        List<String> agentsThatLeft = new ArrayList<>();
+        List<AgentKey> agentsThatLeft = new ArrayList<>();
         synchronized (agents) {
             Predicate<RegisteredAgent> endpointFilter = agent -> agent.getEndpoint().equals(endpoint);
             Stream<RegisteredAgent> filtered = agents.values().stream().filter(endpointFilter);
-            agentsThatLeft.addAll(filtered.map(RegisteredAgent::getAgentName).collect(Collectors.toList()));
+            agentsThatLeft.addAll(filtered.map(RegisteredAgent::getAgentKey).collect(Collectors.toList()));
 
             if (!agentsThatLeft.isEmpty()) {
                 log.info("Detected agent disconnection for {}.", agentsThatLeft);
@@ -119,11 +120,11 @@ public class AgentRegistry {
         @Override
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
             synchronized (agents) {
-                RegisteredAgent agent = new RegisteredAgent(msg.getName(),
+                RegisteredAgent agent = new RegisteredAgent(msg.getKey(),
                                                             msg.getSystemConfig(),
                                                             msg.getCreationTime(),
                                                             msg.getEndpoint());
-                agents.put(msg.getName(), agent);
+                agents.put(msg.getKey(), agent);
             }
 
             for (AgentRegistryListener listener : listeners()) {
@@ -132,7 +133,7 @@ public class AgentRegistry {
         }
 
         @Override
-        public void onAgentSignOff(@NotNull final String agent) {
+        public void onAgentSignOff(@NotNull final AgentKey agent) {
             if (!removeAgent(agent)) {
                 return;
             }
@@ -143,7 +144,7 @@ public class AgentRegistry {
         }
 
         @Override
-        public void onAgentFailed(final String agent, final Throwable throwable) {
+        public void onAgentFailed(final AgentKey agent, final Throwable throwable) {
             if (!removeAgent(agent)) {
                 return;
             }
@@ -153,7 +154,7 @@ public class AgentRegistry {
             }
         }
 
-        private boolean removeAgent(final String agent) {
+        private boolean removeAgent(final AgentKey agent) {
             synchronized (agents) {
                 RegisteredAgent removed = agents.remove(agent);
                 if (removed == null) {

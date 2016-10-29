@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
@@ -46,7 +47,7 @@ public interface ClusterClientFactory extends Closeable {
     Endpoint localEndpoint();
 
     @NotNull
-    AgentClusterClient createForAgent(@NotNull String agent);
+    AgentClusterClient createForAgent(@NotNull AgentKey agent);
 
     @NotNull
     ActorClusterClient createForActor(@NotNull ActorKey actor);

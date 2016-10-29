@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentClientListener;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSAgentClusterClientTest {
 
-    private static final String TEST_AGENT = "agent1";
+    private static final AgentKey TEST_AGENT = new AgentKey("agent1");
 
     @Mock
     private JMSClient jmsClient;
@@ -71,6 +72,7 @@ public final class JMSAgentClusterClientTest {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorInputMessage.class, ActorInputMessage.dumpMetrics());
         tester.setDefault(ActorKey.class, DUMMY_ACTOR);
+        tester.setDefault(AgentKey.class, TEST_AGENT);
 
         tester.testAllPublicConstructors(JMSAgentClusterClient.class);
         tester.testAllPublicInstanceMethods(client);

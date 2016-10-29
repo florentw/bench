@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.cluster.AgentRegistrySender;
 import io.amaze.bench.runtime.message.Message;
@@ -33,9 +34,9 @@ import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
 public final class JMSAgentRegistrySender implements AgentRegistrySender {
 
     private final JMSClient client;
-    private final String agent;
+    private final AgentKey agent;
 
-    public JMSAgentRegistrySender(@NotNull final JMSClient client, @NotNull final String agent) {
+    public JMSAgentRegistrySender(@NotNull final JMSClient client, @NotNull final AgentKey agent) {
         this.client = checkNotNull(client);
         this.agent = checkNotNull(agent);
     }
@@ -45,7 +46,7 @@ public final class JMSAgentRegistrySender implements AgentRegistrySender {
         checkNotNull(message);
 
         try {
-            client.sendToTopic(AGENT_REGISTRY_TOPIC, new Message<>(agent, message));
+            client.sendToTopic(AGENT_REGISTRY_TOPIC, new Message<>(agent.getName(), message));
         } catch (JMSException e) {
             throw propagate(e);
         }

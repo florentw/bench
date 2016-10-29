@@ -49,7 +49,7 @@ public final class JgroupsActorSender implements ActorSender {
         checkNotNull(message);
         log.debug("Sending {} to {}", message, to);
 
-        // We need to resolve the endpoint using the actor's name first
+        // We need to resolve the endpoint using the actor's key first
         RegisteredActor registeredActor = actorRegistry.byKey(to);
         if (registeredActor == null || registeredActor.getDeployInfo() == null) {
             throw new NoSuchElementException("Cannot find endpoint for " + to + ".");

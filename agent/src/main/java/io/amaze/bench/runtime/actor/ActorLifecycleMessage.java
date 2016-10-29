@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import io.amaze.bench.runtime.LifecycleMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -29,13 +30,12 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
 
     private final ActorKey actor;
     private final State state;
-    private final String agent;
+    private final AgentKey agent;
     private final ActorDeployInfo deployInfo;
     private final Throwable throwable;
 
     private ActorLifecycleMessage(@NotNull final State state,
-                                  @NotNull final ActorKey actor,
-                                  final String agent,
+                                  @NotNull final ActorKey actor, final AgentKey agent,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {
         this.actor = checkNotNull(actor);
@@ -45,8 +45,7 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
         this.throwable = throwable;
     }
 
-    public static ActorLifecycleMessage created(@NotNull final ActorKey actor,
-                                                @NotNull final String agent) {
+    public static ActorLifecycleMessage created(@NotNull final ActorKey actor, @NotNull final AgentKey agent) {
         checkNotNull(actor);
         checkNotNull(agent);
 
@@ -84,7 +83,7 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
         return state;
     }
 
-    public String getAgent() {
+    public AgentKey getAgent() {
         return agent;
     }
 
@@ -102,7 +101,7 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
                 "\"actor\":" + actor + ", " + //
                 "\"state\":\"" + state + "\", " + //
                 "\"throwable\":" + throwable + ", " + //
-                "\"agent\":\"" + agent + "\", " + //
+                "\"agent\":" + agent + ", " + //
                 "\"deployInfo\":" + deployInfo + "}}";
     }
 

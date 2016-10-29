@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 
 import javax.validation.constraints.NotNull;
@@ -29,7 +30,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
 
     private final Actors actors;
 
-    public EmbeddedActorManager(@NotNull final String agent, @NotNull final ClusterClientFactory clientFactory) {
+    public EmbeddedActorManager(@NotNull final AgentKey agent, @NotNull final ClusterClientFactory clientFactory) {
         super(agent);
         actors = new Actors(clientFactory);
     }

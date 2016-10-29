@@ -53,7 +53,7 @@ public class ActorBootstrap implements Closeable {
     }
 
     /**
-     * @param args [agentName] [actorName] [className] [jmsServerHost] [jmsServerPort] [temporaryConfigFile]
+     * @param args [actorName] [className] [temporaryClusterConfigFile] [temporaryActorConfigFile]
      * @throws ValidationException if an invalid actor is being created
      * @throws IOException         if an error occurs while reading the actors configuration file
      */

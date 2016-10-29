@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.agent.Constants;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
@@ -167,8 +168,8 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
         }
 
         private void onAgentSignOff(final AgentLifecycleMessage received) {
-            String agentName = received.getAgent();
-            agentsListener.onAgentSignOff(agentName);
+            AgentKey agentKey = received.getAgent();
+            agentsListener.onAgentSignOff(agentKey);
         }
 
         private void onAgentRegistration(final AgentLifecycleMessage received) {

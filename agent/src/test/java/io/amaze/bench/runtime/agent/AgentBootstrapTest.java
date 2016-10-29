@@ -108,7 +108,7 @@ public final class AgentBootstrapTest {
         Agent agent = createAgent(clientFactory);
 
         assertNotNull(agent);
-        assertNotNull(agent.getName());
+        assertNotNull(agent.getKey());
     }
 
 }

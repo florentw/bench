@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import com.google.common.testing.NullPointerTester;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.registry.*;
@@ -109,7 +110,7 @@ public final class JgroupsClusterClientFactoryTest {
 
     @Test
     public void create_for_agent_returns_instance() {
-        AgentClusterClient agentClient = clusterClientFactory.createForAgent("agent");
+        AgentClusterClient agentClient = clusterClientFactory.createForAgent(new AgentKey("agent"));
 
         assertNotNull(agentClient);
     }

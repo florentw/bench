@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.runtime.agent.AgentClientListener;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorRegistrySender;
 import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
@@ -36,26 +37,26 @@ import static io.amaze.bench.runtime.agent.Constants.AGENTS_TOPIC;
  */
 final class JMSAgentClusterClient extends JMSClusterClient implements AgentClusterClient {
 
-    private final String agent;
+    private final AgentKey agent;
 
     @VisibleForTesting
-    JMSAgentClusterClient(@NotNull final JMSClient client, @NotNull final String agent) {
+    JMSAgentClusterClient(@NotNull final JMSClient client, @NotNull final AgentKey agent) {
         super(client);
         this.agent = checkNotNull(agent);
     }
 
-    JMSAgentClusterClient(@NotNull final JMSEndpoint endpoint, @NotNull final String agent) {
+    JMSAgentClusterClient(@NotNull final JMSEndpoint endpoint, @NotNull final AgentKey agent) {
         super(endpoint);
         this.agent = checkNotNull(agent);
     }
 
     @Override
-    public void startAgentListener(@NotNull final String agentName, @NotNull final AgentClientListener listener) {
-        checkNotNull(agentName);
+    public void startAgentListener(@NotNull final AgentKey agentKey, @NotNull final AgentClientListener listener) {
+        checkNotNull(agentKey);
         checkNotNull(listener);
 
         try {
-            getClient().addTopicListener(AGENTS_TOPIC, new JMSAgentMessageListener(agentName, listener));
+            getClient().addTopicListener(AGENTS_TOPIC, new JMSAgentMessageListener(agentKey, listener));
             getClient().startListening();
         } catch (JMSException e) {
             throw propagate(e);
@@ -69,7 +70,7 @@ final class JMSAgentClusterClient extends JMSClusterClient implements AgentClust
 
     @Override
     public ActorRegistrySender actorRegistrySender() {
-        return new JMSActorRegistrySender(getClient(), agent);
+        return new JMSActorRegistrySender(getClient(), agent.getName());
     }
 
     @Override

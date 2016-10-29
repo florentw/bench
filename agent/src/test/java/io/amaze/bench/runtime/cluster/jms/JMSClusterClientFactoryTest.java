@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.TestActor;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
@@ -73,7 +74,7 @@ public final class JMSClusterClientFactoryTest {
 
     @Test
     public void createForAgent_returns_instance() {
-        AgentClusterClient client = clientFactory.createForAgent("agent");
+        AgentClusterClient client = clientFactory.createForAgent(new AgentKey("agent"));
 
         assertNotNull(client);
     }

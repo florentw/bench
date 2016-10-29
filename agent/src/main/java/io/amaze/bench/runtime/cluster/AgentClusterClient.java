@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.cluster;
 
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentClientListener;
+import io.amaze.bench.runtime.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,7 +32,7 @@ public interface AgentClusterClient extends ClusterClient {
      * @param agent    The name of the agent that will be notified of messages addressed to him on the given listener.
      * @param listener The agent's listener, to be notified of incoming messages.
      */
-    void startAgentListener(@NotNull final String agent, @NotNull final AgentClientListener listener);
+    void startAgentListener(@NotNull final AgentKey agent, @NotNull final AgentClientListener listener);
 
     @NotNull
     AgentRegistrySender agentRegistrySender();

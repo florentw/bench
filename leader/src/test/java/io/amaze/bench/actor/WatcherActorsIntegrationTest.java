@@ -24,6 +24,7 @@ import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.DeployConfig;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;
 import org.junit.After;
@@ -174,7 +175,7 @@ public final class WatcherActorsIntegrationTest {
         this.benchRule = benchRule;
         benchRule.before();
         try {
-            agent = getUninterruptibly(this.benchRule.agents().create("test-agent-1"));
+            agent = getUninterruptibly(this.benchRule.agents().create(new AgentKey("test-agent-1")));
         } catch (ExecutionException e) {
             throw Throwables.propagate(e);
         }

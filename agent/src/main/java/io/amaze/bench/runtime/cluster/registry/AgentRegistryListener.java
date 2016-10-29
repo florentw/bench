@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster.registry;
 
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 
 import javax.validation.constraints.NotNull;
@@ -26,8 +27,8 @@ public interface AgentRegistryListener {
 
     void onAgentRegistration(@NotNull AgentRegistrationMessage msg);
 
-    void onAgentSignOff(@NotNull String agent);
+    void onAgentSignOff(@NotNull AgentKey agent);
 
-    void onAgentFailed(@NotNull String agent, @NotNull Throwable throwable);
+    void onAgentFailed(@NotNull AgentKey agent, @NotNull Throwable throwable);
 
 }

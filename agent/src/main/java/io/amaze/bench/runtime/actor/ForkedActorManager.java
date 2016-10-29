@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
@@ -60,7 +61,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     private final File localLogDir;
 
     @VisibleForTesting
-    ForkedActorManager(@NotNull final String agent,
+    ForkedActorManager(@NotNull final AgentKey agent,
                        @NotNull final ClusterConfigFactory clusterConfigFactory,
                        @NotNull final File localLogDir) {
         super(agent);
@@ -73,7 +74,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         }
     }
 
-    ForkedActorManager(@NotNull final String agent, @NotNull final ClusterConfigFactory clusterConfigFactory) {
+    ForkedActorManager(@NotNull final AgentKey agent, @NotNull final ClusterConfigFactory clusterConfigFactory) {
         this(agent, clusterConfigFactory, new File(LOG_DIRECTORY_NAME));
     }
 

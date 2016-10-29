@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
@@ -61,7 +62,7 @@ public final class JMSClusterClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public AgentClusterClient createForAgent(@NotNull String agent) {
+    public AgentClusterClient createForAgent(@NotNull AgentKey agent) {
         return new JMSAgentClusterClient(serverEndpoint, checkNotNull(agent));
     }
 

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class AgentLifecycleMessageTest {
 
-    private static final String AGENT = "agent";
+    private static final AgentKey AGENT = new AgentKey("agent");
 
     @Mock
     private Endpoint endpoint;
@@ -51,6 +51,7 @@ public final class AgentLifecycleMessageTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(AgentKey.class, new AgentKey("agent"));
 
         tester.testAllPublicConstructors(AgentLifecycleMessage.class);
         tester.testAllPublicStaticMethods(AgentLifecycleMessage.class);

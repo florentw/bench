@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class AgentTest {
 
-    public static final String DUMMY_AGENT = "DUMMY_AGENT";
+    public static final AgentKey DUMMY_AGENT = new AgentKey("DUMMY_AGENT");
 
     @Mock
     private ActorClusterClient actorClient;
@@ -88,8 +88,9 @@ public final class AgentTest {
         embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
 
         when(actorClient.localEndpoint()).thenReturn(localEndpoint);
-        when(actorManagers.createEmbedded(anyString(), any(ClusterClientFactory.class))).thenReturn(embeddedManager);
-        when(actorManagers.createForked(anyString(), eq(clusterConfigFactory))).thenReturn(forkedManager);
+        when(actorManagers.createEmbedded(any(AgentKey.class), any(ClusterClientFactory.class))).thenReturn(
+                embeddedManager);
+        when(actorManagers.createForked(any(AgentKey.class), eq(clusterConfigFactory))).thenReturn(forkedManager);
         doReturn(embeddedManagedActor).when(embeddedManager).createActor(TestActor.DUMMY_CONFIG);
         doReturn(forkedManagedActor).when(forkedManager).createActor(TestActor.DUMMY_CONFIG);
 
@@ -116,6 +117,7 @@ public final class AgentTest {
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
         tester.setDefault(ActorManagers.class, new ActorManagers());
+        tester.setDefault(AgentKey.class, DUMMY_AGENT);
 
         tester.testAllPublicConstructors(Agent.class);
         tester.testAllPublicInstanceMethods(agent);
@@ -125,11 +127,11 @@ public final class AgentTest {
     public void agent_is_created_properly() {
         // Smoke tests
         assertNotNull(agent);
-        assertNotNull(agent.getName());
+        assertNotNull(agent.getKey());
 
         // Check ActorManagers created
-        verify(actorManagers).createEmbedded(agent.getName(), clientFactory);
-        verify(actorManagers).createForked(agent.getName(), clusterConfigFactory);
+        verify(actorManagers).createEmbedded(agent.getKey(), clientFactory);
+        verify(actorManagers).createForked(agent.getKey(), clusterConfigFactory);
         verifyNoMoreInteractions(actorManagers);
 
         verifyNoMoreInteractions(agentClient);

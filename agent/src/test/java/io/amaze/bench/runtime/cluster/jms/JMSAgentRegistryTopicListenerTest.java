@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.jms;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.LifecycleMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
@@ -81,7 +82,7 @@ public final class JMSAgentRegistryTopicListenerTest {
 
     @Test
     public void agent_registered() throws IOException, JMSException {
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create("dummy-agent", endpoint);
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(new AgentKey("dummy-agent"), endpoint);
         BytesMessage msg = toBytesMessage(AgentLifecycleMessage.created(regMsg));
 
         messageListener.onMessage(msg);

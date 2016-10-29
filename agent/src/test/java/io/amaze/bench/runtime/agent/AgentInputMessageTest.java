@@ -39,7 +39,8 @@ public final class AgentInputMessageTest {
 
     @Before
     public void before() {
-        inputMessage = AgentInputMessage.createActor("agent", new ActorCreationRequest(TestActor.DUMMY_CONFIG));
+        inputMessage = AgentInputMessage.createActor(new AgentKey("agent"),
+                                                     new ActorCreationRequest(TestActor.DUMMY_CONFIG));
     }
 
     @Test

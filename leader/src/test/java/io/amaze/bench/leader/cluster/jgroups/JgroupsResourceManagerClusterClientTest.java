@@ -18,6 +18,7 @@ package io.amaze.bench.leader.cluster.jgroups;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsSender;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public final class JgroupsResourceManagerClusterClientTest {
 
     @Test
     public void send_to_agent_broadcasts_message() {
-        AgentInputMessage msg = AgentInputMessage.closeActor("agent", TestActor.DUMMY_ACTOR);
+        AgentInputMessage msg = AgentInputMessage.closeActor(new AgentKey("agent"), TestActor.DUMMY_ACTOR);
 
         clusterClient.sendToAgent(msg);
 

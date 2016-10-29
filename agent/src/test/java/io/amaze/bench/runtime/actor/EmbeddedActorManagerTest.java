@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ActorRegistrySender;
@@ -58,6 +59,7 @@ public final class EmbeddedActorManagerTest {
     @Test
     public void null_parameters_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(AgentKey.class, new AgentKey("agent"));
 
         tester.testAllPublicConstructors(EmbeddedActorManager.class);
         tester.testAllPublicInstanceMethods(actorManager);

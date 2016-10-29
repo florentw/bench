@@ -58,7 +58,7 @@ public final class DummyClientFactory implements ClusterClientFactory {
     }
 
     @Override
-    public AgentClusterClient createForAgent(String agent) {
+    public AgentClusterClient createForAgent(AgentKey agent) {
         return agentClient;
     }
 

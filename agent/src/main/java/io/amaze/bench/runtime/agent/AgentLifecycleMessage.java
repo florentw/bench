@@ -32,12 +32,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class AgentLifecycleMessage implements LifecycleMessage {
 
     private final State state;
-    private final String agent;
+    private final AgentKey agent;
     private final AgentRegistrationMessage registrationMessage;
     private final Throwable throwable;
 
-    private AgentLifecycleMessage(@NotNull final State state,
-                                  @NotNull final String agent,
+    private AgentLifecycleMessage(@NotNull final State state, @NotNull final AgentKey agent,
                                   final AgentRegistrationMessage registrationMessage,
                                   final Throwable throwable) {
         this.state = checkNotNull(state);
@@ -54,7 +53,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      */
     public static AgentLifecycleMessage created(@NotNull final AgentRegistrationMessage registrationMessage) {
         checkNotNull(registrationMessage);
-        return new AgentLifecycleMessage(State.CREATED, registrationMessage.getName(), registrationMessage, null);
+        return new AgentLifecycleMessage(State.CREATED, registrationMessage.getKey(), registrationMessage, null);
     }
 
     /**
@@ -63,7 +62,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      * @param agent The agent name.
      * @return A non-{@code null} instance of {@link AgentLifecycleMessage}
      */
-    public static AgentLifecycleMessage closed(@NotNull final String agent) {
+    public static AgentLifecycleMessage closed(@NotNull final AgentKey agent) {
         checkNotNull(agent);
         return new AgentLifecycleMessage(State.CLOSED, agent, null, null);
     }
@@ -75,7 +74,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      * @param agent The agent name.
      * @return A non-{@code null} instance of {@link AgentLifecycleMessage}
      */
-    public static AgentLifecycleMessage failed(@NotNull final String agent, @NotNull final Throwable throwable) {
+    public static AgentLifecycleMessage failed(@NotNull final AgentKey agent, @NotNull final Throwable throwable) {
         checkNotNull(agent);
         checkNotNull(throwable);
         return new AgentLifecycleMessage(State.FAILED, agent, null, throwable);
@@ -99,7 +98,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
     /**
      * @return The agent name.
      */
-    public String getAgent() {
+    public AgentKey getAgent() {
         return agent;
     }
 
@@ -111,7 +110,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
     public String toString() {
         return "{\"AgentLifecycleMessage\":{" +  //
                 "\"state\":\"" + state + "\"" + ", " + //
-                "\"agent\":\"" + agent + "\"" + ", " + //
+                "\"agent\":" + agent + ", " + //
                 "\"registrationMessage\":" + registrationMessage + ", " + //
                 "\"throwable\":" + throwable + "}}";
     }

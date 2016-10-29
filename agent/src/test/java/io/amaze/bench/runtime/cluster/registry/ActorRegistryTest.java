@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor.State;
 import org.junit.After;
 import org.junit.Before;
@@ -91,7 +92,7 @@ public final class ActorRegistryTest {
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
 
         assertThat(actor.getKey(), is(DUMMY_ACTOR));
-        assertThat(actor.getAgentHost(), is(DUMMY_AGENT));
+        assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.CREATED));
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
@@ -106,7 +107,7 @@ public final class ActorRegistryTest {
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
 
         assertThat(actor.getKey(), is(DUMMY_ACTOR));
-        assertThat(actor.getAgentHost(), is(DUMMY_AGENT));
+        assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.CREATED));
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
@@ -129,7 +130,7 @@ public final class ActorRegistryTest {
     public void resetState_overrides_current_view() {
         clusterListener.onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
         Set<RegisteredActor> newActorSet = new HashSet<>();
-        RegisteredActor newActor = RegisteredActor.created(new ActorKey("dummy-new"), "agent");
+        RegisteredActor newActor = RegisteredActor.created(new ActorKey("dummy-new"), new AgentKey("agent"));
         newActorSet.add(newActor);
 
         registry.resetState(newActorSet);
@@ -145,7 +146,7 @@ public final class ActorRegistryTest {
         RegisteredActor actor = registry.byKey(DUMMY_ACTOR);
 
         assertThat(actor.getKey(), is(DUMMY_ACTOR));
-        assertThat(actor.getAgentHost(), is(DUMMY_AGENT));
+        assertThat(actor.getAgent(), is(DUMMY_AGENT));
         assertThat(actor.getState(), is(State.INITIALIZED));
 
         verify(clientListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);

@@ -20,6 +20,7 @@ import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorInputMessage;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
@@ -113,7 +114,7 @@ public final class Actors {
         }
 
         @Override
-        public void onActorCreated(@NotNull final ActorKey key, @NotNull final String agent) {
+        public void onActorCreated(@NotNull final ActorKey key, @NotNull final AgentKey agent) {
             if (key.equals(config.getKey())) {
                 handle.actorCreated.set(config);
             }

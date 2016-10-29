@@ -30,31 +30,31 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class AgentRegistrationMessage implements Serializable {
 
-    private final String name;
+    private final AgentKey key;
     private final SystemConfig systemConfig;
     private final Endpoint endpoint;
     private final long creationTime;
 
-    public AgentRegistrationMessage(@NotNull final String name,
+    public AgentRegistrationMessage(@NotNull final AgentKey key,
                                     @NotNull final SystemConfig systemConfig,
                                     @NotNull final Endpoint endpoint,
                                     final long creationTime) {
-        this.name = checkNotNull(name);
+        this.key = checkNotNull(key);
         this.systemConfig = checkNotNull(systemConfig);
         this.endpoint = checkNotNull(endpoint);
         this.creationTime = creationTime;
     }
 
-    public static AgentRegistrationMessage create(@NotNull final String name, @NotNull final Endpoint endpoint) {
-        checkNotNull(name);
+    public static AgentRegistrationMessage create(@NotNull final AgentKey key, @NotNull final Endpoint endpoint) {
+        checkNotNull(key);
 
         SystemConfig systemConfig = SystemConfigs.get();
         long creationTime = System.currentTimeMillis();
-        return new AgentRegistrationMessage(name, systemConfig, endpoint, creationTime);
+        return new AgentRegistrationMessage(key, systemConfig, endpoint, creationTime);
     }
 
-    public String getName() {
-        return name;
+    public AgentKey getKey() {
+        return key;
     }
 
     public Endpoint getEndpoint() {
@@ -71,7 +71,7 @@ public final class AgentRegistrationMessage implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(key);
     }
 
     @Override
@@ -83,13 +83,13 @@ public final class AgentRegistrationMessage implements Serializable {
             return false;
         }
         AgentRegistrationMessage that = (AgentRegistrationMessage) o;
-        return Objects.equals(name, that.name);
+        return Objects.equals(key, that.key);
     }
 
     @Override
     public String toString() {
         return "{\"AgentRegistrationMessage\":{" + //
-                "\"name\":\"" + name + "\"" + ", " + //
+                "\"key\":" + key + ", " + //
                 "\"systemConfig\":" + systemConfig + ", " + //
                 "\"endpoint\":" + endpoint + ", " + //
                 "\"creationTime\":\"" + creationTime + "\"" + "}}";

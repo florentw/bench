@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSAgentRegistrySenderTest {
 
-    private static final String TEST_AGENT = "agent";
+    private static final AgentKey TEST_AGENT = new AgentKey("agent");
 
     @Mock
     private JMSClient client;
@@ -53,6 +54,8 @@ public final class JMSAgentRegistrySenderTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+        tester.setDefault(AgentKey.class, TEST_AGENT);
+
         tester.testAllPublicConstructors(JMSAgentRegistrySender.class);
         tester.testAllPublicInstanceMethods(sender);
     }

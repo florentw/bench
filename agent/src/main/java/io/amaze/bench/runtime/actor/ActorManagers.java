@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.actor;
 
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
@@ -38,33 +39,33 @@ public class ActorManagers {
     /**
      * Will create a new instance of {@link ActorManager} that will instantiate actors in the current JVM.
      *
-     * @param agentName The host agent name.
-     * @param factory   An {@link ClusterClientFactory} to be used to create
-     *                  {@link ActorClusterClient} instances.
+     * @param agent   The host agent key.
+     * @param factory An {@link ClusterClientFactory} to be used to create
+     *                {@link ActorClusterClient} instances.
      * @return An instantiated {@link EmbeddedActorManager}
      */
     @NotNull
-    public ActorManager createEmbedded(@NotNull final String agentName, @NotNull final ClusterClientFactory factory) {
-        checkNotNull(agentName);
+    public ActorManager createEmbedded(@NotNull final AgentKey agent, @NotNull final ClusterClientFactory factory) {
+        checkNotNull(agent);
         checkNotNull(factory);
 
-        return new EmbeddedActorManager(agentName, factory);
+        return new EmbeddedActorManager(agent, factory);
     }
 
     /**
      * Will create a new instance of {@link ActorManager} that will instantiate each actor in a new JVM.
      *
-     * @param agentName            The host agent name.
+     * @param agent                The host agent key.
      * @param clusterConfigFactory Factory to generate cluster config for forked actor to join.
      * @return An instantiated {@link ForkedActorManager}
      */
     @NotNull
-    public ActorManager createForked(@NotNull final String agentName,
+    public ActorManager createForked(@NotNull final AgentKey agent,
                                      @NotNull final ClusterConfigFactory clusterConfigFactory) {
-        checkNotNull(agentName);
+        checkNotNull(agent);
         checkNotNull(clusterConfigFactory);
 
-        return new ForkedActorManager(agentName, clusterConfigFactory);
+        return new ForkedActorManager(agent, clusterConfigFactory);
     }
 
 }

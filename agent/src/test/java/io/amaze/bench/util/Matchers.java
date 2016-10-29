@@ -17,6 +17,7 @@ package io.amaze.bench.util;
 
 import io.amaze.bench.runtime.LifecycleMessage;
 import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
 import io.amaze.bench.runtime.message.Message;
 import org.mockito.ArgumentMatcher;
@@ -44,12 +45,13 @@ public final class Matchers {
         };
     }
 
-    public static ArgumentMatcher<Serializable> isAgentLifecycle(final String from, final AgentLifecycleMessage input) {
+    public static ArgumentMatcher<Serializable> isAgentLifecycle(final AgentKey from,
+                                                                 final AgentLifecycleMessage input) {
         return new ArgumentMatcher<Serializable>() {
             @Override
             public boolean matches(final Object argument) {
                 Message<AgentLifecycleMessage> msg = (Message<AgentLifecycleMessage>) argument;
-                return msg.data().equals(input) && msg.from().equals(from);
+                return msg.data().equals(input) && msg.from().equals(from.getName());
             }
         };
     }

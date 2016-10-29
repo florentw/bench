@@ -18,6 +18,7 @@ package io.amaze.bench.leader.cluster;
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorSender;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.*;
 public final class ActorsTest {
 
     private static final int FUTURE_TIMEOUT = 100;
-    private static final String AGENT_NAME = "agent";
+    private static final AgentKey AGENT_KEY = new AgentKey("agent");
     private static final ActorKey ACTOR_KEY = new ActorKey("actor");
     private static final ActorKey OTHER_ACTOR = new ActorKey("other-actor");
 
@@ -153,7 +154,7 @@ public final class ActorsTest {
     public void actorCreation_is_set_when_actor_created() throws ExecutionException, InterruptedException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_NAME);
+        actorRegistryListener.onActorCreated(ACTOR_KEY, AGENT_KEY);
 
         ActorConfig actual = getUninterruptibly(actorHandle.actorCreation());
         assertSame(actual, actorConfig);
@@ -164,7 +165,7 @@ public final class ActorsTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        actorRegistryListener.onActorCreated(OTHER_ACTOR, AGENT_NAME);
+        actorRegistryListener.onActorCreated(OTHER_ACTOR, AGENT_KEY);
 
         getUninterruptibly(actorHandle.actorCreation(), FUTURE_TIMEOUT, TimeUnit.MILLISECONDS);
     }

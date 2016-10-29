@@ -17,6 +17,7 @@ package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,7 +26,7 @@ import javax.validation.constraints.NotNull;
  */
 public interface ActorRegistryListener {
 
-    void onActorCreated(@NotNull ActorKey actorKey, @NotNull String agent);
+    void onActorCreated(@NotNull ActorKey actorKey, @NotNull AgentKey agent);
 
     void onActorInitialized(@NotNull ActorKey actorKey, @NotNull ActorDeployInfo deployInfo);
 

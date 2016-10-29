@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
@@ -59,7 +60,7 @@ public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterCli
     }
 
     @Override
-    public AgentClusterClient createForAgent(@NotNull final String agent) {
+    public AgentClusterClient createForAgent(@NotNull final AgentKey agent) {
         checkNotNull(agent);
         return new JgroupsAgentClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender, actorRegistry);
     }

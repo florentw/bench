@@ -16,10 +16,11 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import io.amaze.bench.api.Reactor;
-import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentClientListener;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,10 +41,10 @@ final class JMSAgentMessageListener implements MessageListener {
     private static final Logger log = LogManager.getLogger();
 
     private final AgentClientListener listener;
-    private final String agentName;
+    private final AgentKey agentKey;
 
-    JMSAgentMessageListener(@NotNull final String agentName, @NotNull final AgentClientListener listener) {
-        this.agentName = checkNotNull(agentName);
+    JMSAgentMessageListener(@NotNull final AgentKey agentKey, @NotNull final AgentClientListener listener) {
+        this.agentKey = checkNotNull(agentKey);
         this.listener = checkNotNull(listener);
     }
 
@@ -59,7 +60,7 @@ final class JMSAgentMessageListener implements MessageListener {
         AgentInputMessage inputMessage = msg.get();
 
         // Process messages only if sent to myself (topic)
-        if (!inputMessage.getTargetAgent().equals(agentName)) {
+        if (!inputMessage.getTargetAgent().equals(agentKey)) {
             return;
         }
 

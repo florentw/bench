@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.test.IntegrationTest;
@@ -74,7 +75,7 @@ public final class JgroupsAgentClusterTest {
                                                                                     actorRegistry);
         JChannel jChannel = clientFactory.getJChannel();
         ActorClusterClient actorClusterClient = clientFactory.createForActor(key);
-        actorClusterClient.actorRegistrySender().send(ActorLifecycleMessage.created(key, "agent"));
+        actorClusterClient.actorRegistrySender().send(ActorLifecycleMessage.created(key, new AgentKey("agent")));
         ActorInternal actorInternal = (ActorInternal) new Actors(clientFactory).create(key,
                                                                                        TestActor.class.getName(),
                                                                                        "{}");

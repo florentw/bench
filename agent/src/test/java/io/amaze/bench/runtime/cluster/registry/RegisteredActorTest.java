@@ -20,6 +20,7 @@ import com.google.common.testing.SerializableTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.runtime.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.Serializable;
 import java.util.Objects;
 
+import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
@@ -49,6 +51,7 @@ public final class RegisteredActorTest {
         tester.setDefault(ActorKey.class, ACTOR_KEY);
         tester.setDefault(ActorDeployInfo.class, new ActorDeployInfo(endpoint, 10));
         tester.setDefault(RegisteredActor.class, registeredActor(ACTOR_KEY));
+        tester.setDefault(AgentKey.class, DUMMY_AGENT);
 
         tester.testAllPublicConstructors(RegisteredActor.class);
         tester.testAllPublicStaticMethods(RegisteredActor.class);
@@ -60,7 +63,7 @@ public final class RegisteredActorTest {
         RegisteredActor expected = registeredActor(ACTOR_KEY);
         RegisteredActor actual = SerializableTester.reserialize(expected);
 
-        assertThat(expected.getAgentHost(), is(actual.getAgentHost()));
+        assertThat(expected.getAgent(), is(actual.getAgent()));
         assertThat(expected.getDeployInfo(), is(actual.getDeployInfo()));
         assertThat(expected.getKey(), is(actual.getKey()));
         assertThat(expected.getState(), is(actual.getState()));
@@ -72,7 +75,7 @@ public final class RegisteredActorTest {
     }
 
     private RegisteredActor registeredActor(final ActorKey actorKey) {
-        return RegisteredActor.created(actorKey, "dummy");
+        return RegisteredActor.created(actorKey, DUMMY_AGENT);
     }
 
     public static class DummyEndpoint implements Endpoint, Serializable {

@@ -21,6 +21,7 @@ import io.amaze.bench.runtime.actor.ActorConfig;
 import io.amaze.bench.runtime.actor.DeployConfig;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.RegisteredAgent;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public final class ResourceManagerTest {
 
-    private static final String OTHER_DUMMY_AGENT = DUMMY_AGENT + "-other";
+    private static final AgentKey OTHER_DUMMY_AGENT = new AgentKey(DUMMY_AGENT.getName() + "-other");
     private static final String OTHER_HOST = "other";
 
     private ResourceManager resourceManager;
@@ -95,7 +96,7 @@ public final class ResourceManagerTest {
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
-        assertThat(pickedAgent.getAgentName(), is(DUMMY_AGENT));
+        assertThat(pickedAgent.getAgentKey(), is(DUMMY_AGENT));
     }
 
     @Test
@@ -149,7 +150,7 @@ public final class ResourceManagerTest {
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
-        assertThat(pickedAgent.getAgentName(), is(DUMMY_AGENT));
+        assertThat(pickedAgent.getAgentKey(), is(DUMMY_AGENT));
     }
 
     @Test
@@ -165,15 +166,15 @@ public final class ResourceManagerTest {
 
         assertThat(resourceManager.getActorsToAgents().size(), is(1));
         RegisteredAgent pickedAgent = resourceManager.getActorsToAgents().get(DUMMY_ACTOR);
-        assertThat(pickedAgent.getAgentName(), is(DUMMY_AGENT));
+        assertThat(pickedAgent.getAgentKey(), is(DUMMY_AGENT));
     }
 
     @Test
     public void create_actor_no_preferred_host_picks_one_agent() {
         registerAgentOnOurHost(); // Agent 1
         registerDummyAgentOnOtherHost(OTHER_DUMMY_AGENT); // Agent 2
-        registerDummyAgentOnOtherHost(OTHER_DUMMY_AGENT + "-2"); // Agent 3
-        registerDummyAgentOnOtherHost(OTHER_DUMMY_AGENT + "-3"); // Agent 3
+        registerDummyAgentOnOtherHost(new AgentKey(OTHER_DUMMY_AGENT.getName() + "-2")); // Agent 3
+        registerDummyAgentOnOtherHost(new AgentKey(OTHER_DUMMY_AGENT.getName() + "-3")); // Agent 3
 
         List<String> preferredHosts = Collections.emptyList();
 
@@ -195,9 +196,9 @@ public final class ResourceManagerTest {
         return regMsgAgentOnPHost;
     }
 
-    private AgentRegistrationMessage registerDummyAgentOnOtherHost(final String agentName) {
+    private AgentRegistrationMessage registerDummyAgentOnOtherHost(final AgentKey agentKey) {
         SystemConfig sysInfoOtherHost = SystemConfig.createWithHostname(OTHER_HOST);
-        AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentName,
+        AgentRegistrationMessage regMsgAgentOnOtherHost = new AgentRegistrationMessage(agentKey,
                                                                                        sysInfoOtherHost,
                                                                                        endpoint,
                                                                                        0);

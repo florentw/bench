@@ -49,41 +49,41 @@ public class Agent implements AgentClientListener, Closeable {
     private final AgentClusterClient agentClient;
     private final ActorManager embeddedManager;
     private final ActorManager forkedManager;
-    private final String name;
 
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
+    private final AgentKey key;
 
     public Agent(@NotNull final ClusterClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
-        this(defaultName(), clientFactory, actorManagers);
+        this(defaultKey(), clientFactory, actorManagers);
     }
 
-    public Agent(@NotNull final String name, //
+    public Agent(@NotNull final AgentKey key, //
                  @NotNull final ClusterClientFactory clientFactory, //
                  @NotNull final ActorManagers actorManagers) {
 
-        this.name = checkNotNull(name);
+        this.key = checkNotNull(key);
         Endpoint endpoint = clientFactory.localEndpoint();
         checkNotNull(clientFactory);
         checkNotNull(actorManagers);
 
-        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(name, endpoint);
+        AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(key, endpoint);
 
         log.info("{} Starting...", this);
 
-        embeddedManager = actorManagers.createEmbedded(name, clientFactory);
-        forkedManager = actorManagers.createForked(name, clientFactory.clusterConfigFactory());
+        embeddedManager = actorManagers.createEmbedded(key, clientFactory);
+        forkedManager = actorManagers.createForked(key, clientFactory.clusterConfigFactory());
 
-        agentClient = clientFactory.createForAgent(name);
+        agentClient = clientFactory.createForAgent(key);
 
-        agentClient.startAgentListener(name, this);
+        agentClient.startAgentListener(key, this);
         sendRegistrationMessage(regMsg);
 
         log.info("{} Started.", this);
     }
 
-    private static String defaultName() {
-        String name = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@", "-");
-        return DEFAULT_AGENT_PREFIX + name;
+    private static AgentKey defaultKey() {
+        String suffix = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@", "-");
+        return new AgentKey(DEFAULT_AGENT_PREFIX + suffix);
     }
 
     @Override
@@ -142,13 +142,13 @@ public class Agent implements AgentClientListener, Closeable {
     }
 
     @NotNull
-    public String getName() {
-        return name;
+    public AgentKey getKey() {
+        return key;
     }
 
     @Override
     public String toString() {
-        return "{\"agent\":\"" + name + "\"" + "}";
+        return key.toString();
     }
 
     @NotNull
@@ -162,13 +162,13 @@ public class Agent implements AgentClientListener, Closeable {
     }
 
     private void signOff() {
-        agentClient.agentRegistrySender().send(AgentLifecycleMessage.closed(name));
+        agentClient.agentRegistrySender().send(AgentLifecycleMessage.closed(key));
     }
 
     private Optional<ManagedActor> createManagedActor(@NotNull final ActorConfig actorConfig) {
         try {
             ActorManager manager = actorManager(actorConfig);
-            agentClient.actorRegistrySender().send(created(actorConfig.getKey(), name));
+            agentClient.actorRegistrySender().send(created(actorConfig.getKey(), key));
             return Optional.of(manager.createActor(actorConfig));
 
         } catch (Exception e) {
