@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.agent;
+package io.amaze.bench.runtime.cluster.agent;
 
-import io.amaze.bench.runtime.LifecycleMessage;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.cluster.LifecycleMessage;
+import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
 
 import javax.validation.constraints.NotNull;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.actor;
+package io.amaze.bench.runtime.cluster.actor;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.SerializableTester;

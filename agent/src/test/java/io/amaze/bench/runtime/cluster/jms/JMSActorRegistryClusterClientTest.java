@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
-import static io.amaze.bench.runtime.agent.Constants.ACTOR_REGISTRY_TOPIC;
+import static io.amaze.bench.runtime.cluster.agent.Constants.ACTOR_REGISTRY_TOPIC;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;

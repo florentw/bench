@@ -15,10 +15,14 @@
  */
 package io.amaze.bench.leader.cluster;
 
-import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.agent.Agent;
-import io.amaze.bench.runtime.agent.AgentKey;
-import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.runtime.cluster.actor.ActorConfig;
+import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.actor.DeployConfig;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.test.IntegrationTest;
 import io.amaze.bench.util.BenchRule;

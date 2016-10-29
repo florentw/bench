@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.agent.AgentKey;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

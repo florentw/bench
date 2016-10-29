@@ -16,12 +16,12 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ActorRegistrySender;
 import io.amaze.bench.runtime.cluster.ActorSender;
+import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
+import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;

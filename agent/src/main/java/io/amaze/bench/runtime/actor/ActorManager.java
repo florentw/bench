@@ -17,6 +17,9 @@ package io.amaze.bench.runtime.actor;
 
 
 import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.cluster.actor.ActorConfig;
+import io.amaze.bench.runtime.cluster.actor.DeployConfig;
+import io.amaze.bench.runtime.cluster.actor.ValidationException;
 
 import javax.validation.constraints.NotNull;
 

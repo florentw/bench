@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.agent;
 
 import com.google.common.base.Throwables;
+import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.test.IntegrationTest;

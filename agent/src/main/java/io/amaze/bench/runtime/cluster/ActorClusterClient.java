@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
+import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
 
 import javax.validation.constraints.NotNull;
 

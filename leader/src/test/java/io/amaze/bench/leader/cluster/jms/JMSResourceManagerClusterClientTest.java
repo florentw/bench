@@ -16,8 +16,8 @@
 package io.amaze.bench.leader.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.agent.AgentInputMessage;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
+import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;
@@ -34,7 +34,7 @@ import java.io.Serializable;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_CONFIG;
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
-import static io.amaze.bench.runtime.agent.Constants.AGENTS_TOPIC;
+import static io.amaze.bench.runtime.cluster.agent.Constants.AGENTS_TOPIC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;

@@ -29,7 +29,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jms.MessageListener;
 
-import static io.amaze.bench.runtime.agent.Constants.METRICS_TOPIC;
+import static io.amaze.bench.runtime.cluster.agent.Constants.METRICS_TOPIC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;

@@ -18,7 +18,7 @@ package io.amaze.bench.runtime.actor.metric;
 import com.google.common.collect.ImmutableMap;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
-import io.amaze.bench.runtime.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;

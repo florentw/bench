@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.actor;
+package io.amaze.bench.runtime.cluster.actor;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
-import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;

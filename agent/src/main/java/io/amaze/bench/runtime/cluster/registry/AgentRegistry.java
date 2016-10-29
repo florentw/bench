@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.agent.AgentKey;
-import io.amaze.bench.runtime.agent.AgentRegistrationMessage;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

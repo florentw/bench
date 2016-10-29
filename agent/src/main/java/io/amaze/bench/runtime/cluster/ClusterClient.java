@@ -17,8 +17,8 @@ package io.amaze.bench.runtime.cluster;
 
 
 import io.amaze.bench.runtime.actor.ActorInternal;
-import io.amaze.bench.runtime.actor.RuntimeActor;
 import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
 
 import java.io.Closeable;
 

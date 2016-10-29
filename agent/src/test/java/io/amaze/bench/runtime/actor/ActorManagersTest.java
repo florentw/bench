@@ -16,9 +16,9 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Test;

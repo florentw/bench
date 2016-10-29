@@ -16,9 +16,9 @@
 package io.amaze.bench.runtime.cluster;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.Agent;
-import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;

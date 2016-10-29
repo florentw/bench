@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.agent;
+package io.amaze.bench.runtime.cluster.agent;
 
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.shared.metric.SystemConfig;

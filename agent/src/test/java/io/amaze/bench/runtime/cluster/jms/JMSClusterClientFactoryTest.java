@@ -17,10 +17,10 @@ package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.*;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSServerRule;

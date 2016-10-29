@@ -19,6 +19,7 @@
         <module>agent</module>
         <module>leader</module>
         <module>shared</module>
+        <module>cluster-api</module>
     </modules>
 
     <properties>

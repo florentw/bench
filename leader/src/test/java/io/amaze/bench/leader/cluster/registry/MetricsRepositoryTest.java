@@ -17,10 +17,10 @@ package io.amaze.bench.leader.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.runtime.actor.metric.MetricValue;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.Before;
 import org.junit.Rule;

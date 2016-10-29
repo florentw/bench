@@ -16,9 +16,9 @@
 package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.runtime.agent.AgentKey;
-import io.amaze.bench.runtime.agent.AgentLifecycleMessage;
-import io.amaze.bench.runtime.agent.Constants;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentLifecycleMessage;
+import io.amaze.bench.runtime.cluster.agent.Constants;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;

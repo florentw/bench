@@ -15,11 +15,11 @@
  */
 package io.amaze.bench.runtime.cluster.jgroups;
 
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.agent.AgentInputMessage;
-import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.*;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;

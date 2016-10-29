@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.cluster.registry;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.shared.metric.SystemConfig;
 
 import javax.validation.constraints.NotNull;

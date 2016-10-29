@@ -17,9 +17,9 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.actor.ActorDeployInfo;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
-import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.runtime.cluster.registry.RegisteredActor;
@@ -40,9 +40,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static io.amaze.bench.runtime.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
+import static io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.runtime.cluster.jgroups.JgroupsActorRegistryClusterClient.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

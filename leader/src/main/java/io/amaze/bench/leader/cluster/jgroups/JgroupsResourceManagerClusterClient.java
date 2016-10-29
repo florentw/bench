@@ -16,8 +16,8 @@
 package io.amaze.bench.leader.cluster.jgroups;
 
 import io.amaze.bench.leader.cluster.ResourceManagerClusterClient;
-import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.agent.AgentInputMessage;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsSender;
 
 import javax.validation.constraints.NotNull;

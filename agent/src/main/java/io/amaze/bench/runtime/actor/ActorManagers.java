@@ -15,10 +15,10 @@
  */
 package io.amaze.bench.runtime.actor;
 
-import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 

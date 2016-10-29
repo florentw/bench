@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
+import static io.amaze.bench.runtime.cluster.agent.Constants.AGENT_REGISTRY_TOPIC;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;

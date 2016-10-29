@@ -17,7 +17,7 @@ package io.amaze.bench.runtime.cluster;
 
 import io.amaze.bench.runtime.agent.Agent;
 import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 

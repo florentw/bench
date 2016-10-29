@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.actor;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.cluster.actor.DeployConfig;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;

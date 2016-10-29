@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.agent;
+package io.amaze.bench.runtime.cluster.agent;
 
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

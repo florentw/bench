@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.runtime.cluster;
 
-import io.amaze.bench.runtime.actor.ActorConfig;
+import io.amaze.bench.runtime.cluster.actor.ActorConfig;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

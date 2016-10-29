@@ -19,7 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.runtime.actor.ActorValidators;
-import io.amaze.bench.runtime.actor.ValidationException;
+import io.amaze.bench.runtime.cluster.actor.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

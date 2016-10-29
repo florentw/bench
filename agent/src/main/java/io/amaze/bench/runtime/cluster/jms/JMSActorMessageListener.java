@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import io.amaze.bench.api.Reactor;
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.RuntimeActor;
+import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
+import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

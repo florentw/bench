@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.actor;
+package io.amaze.bench.runtime.cluster.agent;
 
-import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.runtime.actor.TestActor;
+import io.amaze.bench.runtime.cluster.ActorCreationRequest;
 import io.amaze.bench.shared.test.Json;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -28,37 +30,39 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created on 9/29/16.
+ * Created on 8/15/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class ActorKeyTest {
+public final class AgentInputMessageTest {
 
-    private static final ActorKey ACTOR_KEY = new ActorKey("dummy");
+    private AgentInputMessage inputMessage;
+
+    @Before
+    public void before() {
+        inputMessage = AgentInputMessage.createActor(new AgentKey("agent"),
+                                                     new ActorCreationRequest(TestActor.DUMMY_CONFIG));
+    }
 
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
-        tester.testAllPublicConstructors(ActorKey.class);
+
+        tester.testAllPublicConstructors(AgentInputMessage.class);
+        tester.testAllPublicInstanceMethods(inputMessage);
     }
 
     @Test
-    public void equality() {
-        EqualsTester tester = new EqualsTester();
-        tester.addEqualityGroup(ACTOR_KEY, ACTOR_KEY);
-        tester.testEquals();
-    }
+    public void serialize_deserialize() {
+        AgentInputMessage received = SerializableTester.reserialize(inputMessage);
 
-    @Test
-    public void serializable() {
-        ActorKey expected = ACTOR_KEY;
-        ActorKey actual = SerializableTester.reserialize(expected);
-        assertThat(expected.getName(), is(actual.getName()));
-        assertThat(expected, is(actual));
+        assertThat(received.getAction(), is(inputMessage.getAction()));
+        assertThat(received.getCreationRequest(), is(inputMessage.getCreationRequest()));
+        assertThat(received.getTargetAgent(), is(inputMessage.getTargetAgent()));
     }
 
     @Test
     public void toString_yields_valid_json() {
-        assertTrue(Json.isValid(ACTOR_KEY.toString()));
+        assertTrue(Json.isValid(inputMessage.toString()));
     }
 
 }

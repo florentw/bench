@@ -15,10 +15,10 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
-import io.amaze.bench.runtime.actor.ActorKey;
-import io.amaze.bench.runtime.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.cluster.Message;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -17,10 +17,10 @@ package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.runtime.LifecycleMessage;
-import io.amaze.bench.runtime.actor.ActorDeployInfo;
+import io.amaze.bench.runtime.cluster.LifecycleMessage;
+import io.amaze.bench.runtime.cluster.Message;
+import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.runtime.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.runtime.message.Message;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSHelper;
 import io.amaze.bench.shared.util.Network;
@@ -34,9 +34,9 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.io.IOException;
 
-import static io.amaze.bench.runtime.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
+import static io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;

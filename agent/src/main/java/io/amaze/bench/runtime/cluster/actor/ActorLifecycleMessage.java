@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.actor;
+package io.amaze.bench.runtime.cluster.actor;
 
-import io.amaze.bench.runtime.LifecycleMessage;
-import io.amaze.bench.runtime.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.LifecycleMessage;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -35,7 +35,8 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
     private final Throwable throwable;
 
     private ActorLifecycleMessage(@NotNull final State state,
-                                  @NotNull final ActorKey actor, final AgentKey agent,
+                                  @NotNull final ActorKey actor,
+                                  final AgentKey agent,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {
         this.actor = checkNotNull(actor);

@@ -23,6 +23,10 @@ import io.amaze.bench.api.TerminationException;
 import io.amaze.bench.runtime.actor.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
 import io.amaze.bench.runtime.cluster.ActorClusterClient;
+import io.amaze.bench.runtime.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage;
+import io.amaze.bench.runtime.cluster.actor.RuntimeActor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import oshi.json.SystemInfo;
@@ -34,7 +38,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.amaze.bench.runtime.actor.ActorLifecycleMessage.*;
+import static io.amaze.bench.runtime.cluster.actor.ActorLifecycleMessage.*;
 
 /**
  * Main internal implementation of the {@link RuntimeActor}.

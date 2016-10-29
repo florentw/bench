@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.runtime.agent;
+package io.amaze.bench.runtime.cluster.agent;
 
-import io.amaze.bench.runtime.Key;
+import io.amaze.bench.runtime.agent.Agent;
+import io.amaze.bench.runtime.cluster.Key;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;

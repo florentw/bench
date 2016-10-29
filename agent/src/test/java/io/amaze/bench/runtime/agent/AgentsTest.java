@@ -22,6 +22,8 @@ import io.amaze.bench.runtime.cluster.AgentClusterClient;
 import io.amaze.bench.runtime.cluster.AgentRegistrySender;
 import io.amaze.bench.runtime.cluster.ClusterClientFactory;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
+import io.amaze.bench.runtime.cluster.agent.AgentRegistrationMessage;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistry;
 import io.amaze.bench.runtime.cluster.registry.AgentRegistryListener;
 import org.junit.Before;

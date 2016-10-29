@@ -16,11 +16,11 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import io.amaze.bench.api.Reactor;
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.agent.AgentClientListener;
-import io.amaze.bench.runtime.agent.AgentInputMessage;
-import io.amaze.bench.runtime.agent.AgentKey;
 import io.amaze.bench.runtime.cluster.ActorCreationRequest;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
+import io.amaze.bench.runtime.cluster.agent.AgentInputMessage;
+import io.amaze.bench.runtime.cluster.agent.AgentKey;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -15,9 +15,9 @@
  */
 package io.amaze.bench.runtime.cluster.jms;
 
-import io.amaze.bench.runtime.actor.ActorInputMessage;
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ActorSender;
+import io.amaze.bench.runtime.cluster.actor.ActorInputMessage;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 

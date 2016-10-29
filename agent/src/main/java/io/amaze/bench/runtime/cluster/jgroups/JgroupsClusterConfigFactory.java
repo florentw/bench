@@ -18,9 +18,9 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import io.amaze.bench.runtime.actor.ActorKey;
 import io.amaze.bench.runtime.cluster.ClusterClients;
 import io.amaze.bench.runtime.cluster.ClusterConfigFactory;
+import io.amaze.bench.runtime.cluster.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 

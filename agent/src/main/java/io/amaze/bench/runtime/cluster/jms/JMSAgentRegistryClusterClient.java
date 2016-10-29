@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
-import static io.amaze.bench.runtime.agent.Constants.AGENT_REGISTRY_TOPIC;
+import static io.amaze.bench.runtime.cluster.agent.Constants.AGENT_REGISTRY_TOPIC;
 
 /**
  * Created on 9/25/16.
