@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import java.io.IOException;
 
 import static io.amaze.bench.shared.jms.JMSHelper.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -54,7 +53,7 @@ public final class JMSHelperTest {
     }
 
     @Test
-    public void serialize_deserialize() throws IOException {
+    public void serialize_deserialize() {
         String expected = DUMMY;
         byte[] data = convertToBytes(expected);
         String actual = convertFromBytes(data);
@@ -63,7 +62,7 @@ public final class JMSHelperTest {
     }
 
     @Test
-    public void serialize_deserialize_through_bytes_message() throws IOException, JMSException {
+    public void serialize_deserialize_through_bytes_message() throws JMSException {
         String expected = DUMMY;
         byte[] data = convertToBytes(expected);
         BytesMessage bytesMessage = createTestBytesMessage(data);
@@ -72,22 +71,22 @@ public final class JMSHelperTest {
         assertThat(actual, is(expected));
     }
 
-    @Test(expected = IOException.class)
-    public void serialize_deserialize_corrupted_data_through_bytes_message() throws IOException, JMSException {
+    @Test(expected = RuntimeException.class)
+    public void serialize_deserialize_corrupted_data_through_bytes_message() throws JMSException {
         BytesMessage bytesMessage = createTestBytesMessage(new byte[3]);
         objectFromMsg(bytesMessage);
     }
 
     @Test
-    public void serialize_deserialize_null() throws IOException {
+    public void serialize_deserialize_null() {
         byte[] data = convertToBytes(null);
         String actual = convertFromBytes(data);
 
         assertThat(actual, is((String) null));
     }
 
-    @Test(expected = IOException.class)
-    public void deserialize_corrupted_data_throws() throws IOException {
+    @Test(expected = RuntimeException.class)
+    public void deserialize_corrupted_data_throws() {
         convertFromBytes(new byte[3]);
     }
 

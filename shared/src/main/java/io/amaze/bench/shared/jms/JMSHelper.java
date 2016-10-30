@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import java.io.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 /**
  * Created on 3/3/16.
@@ -38,9 +39,9 @@ public final class JMSHelper {
      * @param message JMS input message with a serialized payload
      * @param <T>     Type of the serialized object
      * @return The de-serialized object
-     * @throws IOException Can be thrown if deserialization fails.
+     * @throws RuntimeException Can be thrown if deserialization fails.
      */
-    public static <T extends Serializable> T objectFromMsg(@NotNull final BytesMessage message) throws IOException {
+    public static <T extends Serializable> T objectFromMsg(@NotNull final BytesMessage message) {
         checkNotNull(message);
 
         try {
@@ -48,7 +49,7 @@ public final class JMSHelper {
             message.readBytes(rawData);
             return (T) convertFromBytes(rawData); // NOSONAR
         } catch (javax.jms.JMSException e) {
-            throw new IOException(e);
+            throw propagate(e);
         }
     }
 
@@ -57,23 +58,25 @@ public final class JMSHelper {
      *
      * @param object A serializable object
      * @return The byte buffer containing the serialized object
-     * @throws IOException Can be thrown if serialization fails.
+     * @throws RuntimeException Can be thrown if serialization fails.
      */
-    public static byte[] convertToBytes(@NotNull final Serializable object) throws IOException {
+    public static byte[] convertToBytes(@NotNull final Serializable object) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(object);
             return bos.toByteArray();
+        } catch (IOException e) {
+            throw propagate(e);
         }
     }
 
     @VisibleForTesting
-    static <T extends Serializable> T convertFromBytes(byte[] bytes) throws IOException {
+    static <T extends Serializable> T convertFromBytes(byte[] bytes) {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
              ObjectInput in = new ObjectInputStream(bis)) {
             return (T) in.readObject(); // NOSONAR
-        } catch (ClassNotFoundException e) {
-            throw new IOException(e);
+        } catch (ClassNotFoundException | IOException e) {
+            throw propagate(e);
         }
     }
 }

@@ -139,7 +139,14 @@ public class ResourceManager implements AutoCloseable {
             return pickRandomAgent(allAgents);
         }
 
-        // Try to find an agent on one of the preferred hosts
+        return findAgentOnPreferredHost(allAgents, preferredHosts);
+    }
+
+    /**
+     * Tries to find an agent on one of the preferred hosts, defaults to random otherwise.
+     */
+    private Optional<RegisteredAgent> findAgentOnPreferredHost(final Set<RegisteredAgent> allAgents,
+                                                               final List<String> preferredHosts) {
         Optional<RegisteredAgent> agentOnPreferredHost = pickAgentOnOneOfPreferredHosts(allAgents, preferredHosts);
         if (agentOnPreferredHost.isPresent()) {
             return agentOnPreferredHost;
