@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
-
-import io.amaze.bench.cluster.metric.MetricValuesMessage;
+package io.amaze.bench.cluster.metric;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 
 /**
- * Created on 10/3/16.
+ * Facade to add a listener on metrics produced by actors.
+ *
+ * @see MetricsRepositoryListener
  */
-@FunctionalInterface
-public interface MetricsRepositoryListener {
+public interface MetricsRepositoryClusterClient extends Closeable {
 
-    void onMetricValues(@NotNull MetricValuesMessage metrics);
+    /**
+     * Register the given listeners to be plugged to the underlying message system.
+     * {@link MetricsRepositoryListener} instance will be notified of metrics related events.
+     *
+     * @param metricsListener Listener that will be called upon new metrics notifications.
+     */
+    void startMetricsListener(@NotNull MetricsRepositoryListener metricsListener);
+
+    @Override
+    void close();
 
 }

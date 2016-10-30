@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.metric;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.cluster.actor.ActorKey;
-import io.amaze.bench.cluster.metric.MetricValue;
-import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.Before;
@@ -44,7 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Created on 9/18/16.
+ * Created on 10/30/16.
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsRepositoryTest {

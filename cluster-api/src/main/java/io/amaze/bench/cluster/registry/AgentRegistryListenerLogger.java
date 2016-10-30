@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.registry;
 
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;

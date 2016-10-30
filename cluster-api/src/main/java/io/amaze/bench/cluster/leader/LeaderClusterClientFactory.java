@@ -16,7 +16,12 @@
 package io.amaze.bench.cluster.leader;
 
 import io.amaze.bench.cluster.actor.ActorSender;
-import io.amaze.bench.cluster.leader.registry.*;
+import io.amaze.bench.cluster.metric.MetricsRepository;
+import io.amaze.bench.cluster.metric.MetricsRepositoryClusterClient;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
@@ -26,18 +31,44 @@ import java.io.Closeable;
  */
 public interface LeaderClusterClientFactory extends Closeable {
 
+    /**
+     * Used by the leader to send messages to actors in the cluster.
+     *
+     * @return A non-null instance of {@link ActorSender}
+     */
     @NotNull
     ActorSender actorSender();
 
+    /**
+     * Creates a client for the ResourceManager to communicate with the cluster.
+     *
+     * @return A non-null instance of {@link ResourceManagerClusterClient}
+     */
     @NotNull
     ResourceManagerClusterClient createForResourceManager();
 
+    /**
+     * Creates a client for the MetricsRepository to communicate with the cluster.
+     *
+     * @param metricsRepository Repository that will be notified by cluster messages.
+     * @return A non-null instance of {@link MetricsRepositoryClusterClient}
+     */
     @NotNull
     MetricsRepositoryClusterClient createForMetricsRepository(@NotNull MetricsRepository metricsRepository);
 
+    /**
+     * Creates a client for the {@link ActorRegistry} to communicate with the cluster.
+     *
+     * @return A non-null instance of {@link ActorRegistryClusterClient}
+     */
     @NotNull
     ActorRegistryClusterClient createForActorRegistry();
 
+    /**
+     * Creates a client for the {@link AgentRegistry} to communicate with the cluster.
+     *
+     * @return A non-null instance of {@link AgentRegistryClusterClient}
+     */
     @NotNull
     AgentRegistryClusterClient createForAgentRegistry(@NotNull AgentRegistry agentRegistry);
 

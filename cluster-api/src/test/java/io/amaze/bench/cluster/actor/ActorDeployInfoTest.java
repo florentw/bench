@@ -17,7 +17,7 @@ package io.amaze.bench.cluster.actor;
 
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.SerializableTester;
-import io.amaze.bench.cluster.leader.registry.RegisteredActorTest;
+import io.amaze.bench.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;

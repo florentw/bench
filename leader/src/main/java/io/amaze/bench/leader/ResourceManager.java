@@ -21,8 +21,8 @@ import io.amaze.bench.cluster.actor.ActorCreationRequest;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
 import io.amaze.bench.cluster.leader.ResourceManagerClusterClient;
-import io.amaze.bench.cluster.leader.registry.AgentRegistry;
-import io.amaze.bench.cluster.leader.registry.RegisteredAgent;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.RegisteredAgent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -16,7 +16,7 @@
 package io.amaze.bench.cluster.leader.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.cluster.leader.registry.MetricsRepositoryListener;
+import io.amaze.bench.cluster.metric.MetricsRepositoryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import org.junit.Before;

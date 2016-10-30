@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
-
-import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
-
-import javax.validation.constraints.NotNull;
+package io.amaze.bench.cluster.registry;
 
 /**
- * Created on 3/28/16.
+ * Created on 10/14/16.
  */
-public interface AgentRegistryListener {
-
-    void onAgentRegistration(@NotNull AgentRegistrationMessage msg);
-
-    void onAgentSignOff(@NotNull AgentKey agent);
-
-    void onAgentFailed(@NotNull AgentKey agent, @NotNull Throwable throwable);
+public final class AgentDisconnectedException extends Exception {
 
 }

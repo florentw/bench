@@ -19,9 +19,9 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.cluster.agent.AgentLifecycleMessage;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
-import io.amaze.bench.cluster.leader.registry.AgentRegistry;
-import io.amaze.bench.cluster.leader.registry.AgentRegistryListener;
-import io.amaze.bench.cluster.leader.registry.RegisteredAgent;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.registry.RegisteredAgent;
 import io.amaze.bench.shared.jgroups.*;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.util.Network;
@@ -131,8 +131,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
     @Test
     public void view_listener_forwards_members_disconnection() {
-        RegistryViewListener listener = new RegistryViewListener(
-                agentRegistry);
+        RegistryViewListener listener = new RegistryViewListener(agentRegistry);
 
         listener.memberLeft(address);
 
@@ -142,8 +141,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
     @Test
     public void view_listener_does_not_forward_other_calls() {
-        RegistryViewListener listener = new RegistryViewListener(
-                agentRegistry);
+        RegistryViewListener listener = new RegistryViewListener(agentRegistry);
 
         listener.initialView(Collections.singleton(address));
         listener.memberJoined(address);
@@ -153,16 +151,14 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
     @Test
     public void state_holder_returns_valid_key() {
-        RegistryStateHolder stateHolder = new RegistryStateHolder(
-                agentRegistry);
+        RegistryStateHolder stateHolder = new RegistryStateHolder(agentRegistry);
 
         assertThat(stateHolder.getKey(), is(AGENT_REGISTRY_STATE_KEY));
     }
 
     @Test
     public void state_holder_resets_registry_state_on_state_change() {
-        RegistryStateHolder stateHolder = new RegistryStateHolder(
-                agentRegistry);
+        RegistryStateHolder stateHolder = new RegistryStateHolder(agentRegistry);
         Set<RegisteredAgent> registeredAgents = registeredAgents();
 
         stateHolder.setState(new AgentView(registeredAgents));
@@ -175,8 +171,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
     public void get_state_on_state_holder_returns_registered_agents() {
         Set<RegisteredAgent> registeredAgents = registeredAgents();
         when(agentRegistry.all()).thenReturn(registeredAgents);
-        RegistryStateHolder stateHolder = new RegistryStateHolder(
-                agentRegistry);
+        RegistryStateHolder stateHolder = new RegistryStateHolder(agentRegistry);
 
         AgentView agentView = stateHolder.getState();
 
@@ -185,8 +180,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
     @Test
     public void message_listener_forwards_agent_created() throws IOException {
-        RegistryMessageListener registryMessageListener = new RegistryMessageListener(
-                agentRegistryListener);
+        RegistryMessageListener registryMessageListener = new RegistryMessageListener(agentRegistryListener);
         AgentRegistrationMessage registrationMessage = AgentRegistrationMessage.create(DUMMY_AGENT, endpoint);
         AgentLifecycleMessage created = AgentLifecycleMessage.created(registrationMessage);
 
@@ -198,8 +192,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
     @Test
     public void message_listener_forwards_agent_failure() throws IOException {
-        RegistryMessageListener registryMessageListener = new RegistryMessageListener(
-                agentRegistryListener);
+        RegistryMessageListener registryMessageListener = new RegistryMessageListener(agentRegistryListener);
         Throwable throwable = new IllegalArgumentException();
 
         registryMessageListener.onMessage(message, AgentLifecycleMessage.failed(DUMMY_AGENT, throwable));
@@ -210,8 +203,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
     @Test
     public void message_listener_forwards_agent_closed() throws IOException {
-        RegistryMessageListener registryMessageListener = new RegistryMessageListener(
-                agentRegistryListener);
+        RegistryMessageListener registryMessageListener = new RegistryMessageListener(agentRegistryListener);
 
         registryMessageListener.onMessage(message, closed(DUMMY_AGENT));
 

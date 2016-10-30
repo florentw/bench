@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
@@ -21,7 +21,7 @@ import io.amaze.bench.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentUtil;
-import io.amaze.bench.cluster.leader.registry.RegisteredActor.State;
+import io.amaze.bench.cluster.registry.RegisteredActor.State;
 import io.amaze.bench.runtime.actor.TestActor;
 import org.hamcrest.core.Is;
 import org.junit.After;

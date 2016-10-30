@@ -17,8 +17,8 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.cluster.actor.*;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
 import io.amaze.bench.cluster.metric.MetricValuesMessage;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 

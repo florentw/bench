@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.registry;
 
 /**
  * Created on 10/9/16.
  */
 public final class ActorDisconnectedException extends Exception {
-    
+
 }

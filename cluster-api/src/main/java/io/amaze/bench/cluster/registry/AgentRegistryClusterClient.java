@@ -13,24 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
-
-import io.amaze.bench.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.cluster.actor.ActorKey;
-import io.amaze.bench.cluster.agent.AgentKey;
+package io.amaze.bench.cluster.registry;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
 
 /**
- * Created on 3/28/16.
+ * Facade to add a listener on agent lifecycle events.
+ *
+ * @see AgentRegistryListener
  */
-public interface ActorRegistryListener {
+public interface AgentRegistryClusterClient extends Closeable {
 
-    void onActorCreated(@NotNull ActorKey actorKey, @NotNull AgentKey agent);
+    /**
+     * Register the given listeners to be plugged to the underlying message system.
+     * {@link AgentRegistryListener} instance will be notified of agent related events.
+     *
+     * @param agentsListener Listener that will be called upon actors notifications.
+     */
+    void startRegistryListener(@NotNull AgentRegistryListener agentsListener);
 
-    void onActorInitialized(@NotNull ActorKey actorKey, @NotNull ActorDeployInfo deployInfo);
+    @Override
+    void close();
 
-    void onActorFailed(@NotNull ActorKey actorKey, @NotNull Throwable throwable);
-
-    void onActorClosed(@NotNull ActorKey actorKey);
 }

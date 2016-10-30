@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.registry;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
 
 /**
- * Facade to add a listener on metrics produced by actors.
+ * Facade to add a listener on actors lifecycle events.
  *
- * @see MetricsRepositoryListener
+ * @see ActorRegistryListener
  */
-public interface MetricsRepositoryClusterClient extends Closeable {
+public interface ActorRegistryClusterClient extends Closeable {
 
     /**
      * Register the given listeners to be plugged to the underlying message system.
-     * {@link MetricsRepositoryListener} instance will be notified of metrics related events.
+     * {@link ActorRegistryListener} instance will be notified of Actor related events.
      *
-     * @param metricsListener Listener that will be called upon new metrics notifications.
+     * @param actorsListener Listener that will be called upon actors notifications.
      */
-    void startMetricsListener(@NotNull MetricsRepositoryListener metricsListener);
+    void startRegistryListener(@NotNull ActorRegistryListener actorsListener);
 
     @Override
     void close();

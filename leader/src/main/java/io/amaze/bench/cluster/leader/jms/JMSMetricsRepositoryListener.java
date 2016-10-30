@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.cluster.leader.jms;
 
-import io.amaze.bench.cluster.leader.registry.MetricsRepositoryListener;
 import io.amaze.bench.cluster.metric.MetricValuesMessage;
+import io.amaze.bench.cluster.metric.MetricsRepositoryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -17,10 +17,10 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
-import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
-import io.amaze.bench.cluster.leader.registry.AgentRegistry;
-import io.amaze.bench.cluster.leader.registry.AgentRegistryClusterClient;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
 import org.jgroups.JChannel;
 

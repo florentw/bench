@@ -20,7 +20,7 @@ import io.amaze.bench.cluster.actor.ActorInputMessage;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.ActorInternal;
 import io.amaze.bench.runtime.actor.Actors;
 import io.amaze.bench.runtime.actor.TestActor;

@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.leader.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.cluster.leader.registry.MetricsRepositoryClusterClient;
-import io.amaze.bench.cluster.leader.registry.MetricsRepositoryListener;
+import io.amaze.bench.cluster.metric.MetricsRepositoryClusterClient;
+import io.amaze.bench.cluster.metric.MetricsRepositoryListener;
 import io.amaze.bench.runtime.cluster.jms.JMSClusterClient;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;

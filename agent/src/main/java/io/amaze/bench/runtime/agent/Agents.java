@@ -19,8 +19,8 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
-import io.amaze.bench.cluster.leader.registry.AgentRegistry;
-import io.amaze.bench.cluster.leader.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.runtime.actor.ActorManagers;
 
 import javax.validation.constraints.NotNull;

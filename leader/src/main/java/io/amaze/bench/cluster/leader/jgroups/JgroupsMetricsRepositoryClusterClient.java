@@ -15,9 +15,9 @@
  */
 package io.amaze.bench.cluster.leader.jgroups;
 
-import io.amaze.bench.cluster.leader.registry.MetricsRepositoryClusterClient;
-import io.amaze.bench.cluster.leader.registry.MetricsRepositoryListener;
 import io.amaze.bench.cluster.metric.MetricValuesMessage;
+import io.amaze.bench.cluster.metric.MetricsRepositoryClusterClient;
+import io.amaze.bench.cluster.metric.MetricsRepositoryListener;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 

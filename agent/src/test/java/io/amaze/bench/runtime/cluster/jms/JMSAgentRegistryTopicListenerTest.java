@@ -22,7 +22,7 @@ import io.amaze.bench.cluster.Message;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentLifecycleMessage;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
-import io.amaze.bench.cluster.leader.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
 import org.junit.Before;
 import org.junit.Test;

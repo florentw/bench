@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.registry;
+
+import io.amaze.bench.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.agent.AgentKey;
+
+import javax.validation.constraints.NotNull;
 
 /**
- * Created on 10/14/16.
+ * Created on 3/28/16.
  */
-public final class AgentDisconnectedException extends Exception {
+public interface ActorRegistryListener {
 
+    void onActorCreated(@NotNull ActorKey actorKey, @NotNull AgentKey agent);
+
+    void onActorInitialized(@NotNull ActorKey actorKey, @NotNull ActorDeployInfo deployInfo);
+
+    void onActorFailed(@NotNull ActorKey actorKey, @NotNull Throwable throwable);
+
+    void onActorClosed(@NotNull ActorKey actorKey);
 }

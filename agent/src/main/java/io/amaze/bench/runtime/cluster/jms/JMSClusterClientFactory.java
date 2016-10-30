@@ -24,10 +24,10 @@ import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
-import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
-import io.amaze.bench.cluster.leader.registry.AgentRegistry;
-import io.amaze.bench.cluster.leader.registry.AgentRegistryClusterClient;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistry;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 
 import javax.validation.constraints.NotNull;

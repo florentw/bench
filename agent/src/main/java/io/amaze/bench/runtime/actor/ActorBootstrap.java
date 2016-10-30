@@ -26,7 +26,7 @@ import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.Constants;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

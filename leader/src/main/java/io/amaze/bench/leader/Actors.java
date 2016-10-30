@@ -18,8 +18,8 @@ package io.amaze.bench.leader;
 import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.cluster.actor.*;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
-import io.amaze.bench.cluster.leader.registry.ActorRegistryListener;
+import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistryListener;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

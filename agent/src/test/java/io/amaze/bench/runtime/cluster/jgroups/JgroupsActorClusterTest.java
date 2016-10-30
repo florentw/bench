@@ -17,7 +17,7 @@ package io.amaze.bench.runtime.cluster.jgroups;
 
 import io.amaze.bench.api.After;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.ActorInternal;
 import io.amaze.bench.runtime.actor.Actors;
 import io.amaze.bench.runtime.actor.TestActor;

@@ -19,13 +19,12 @@ import io.amaze.bench.cluster.ClusterClient;
 import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
-import io.amaze.bench.leader.ResourceManager;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
 
 /**
- * Facade for the {@link ResourceManager} to interact with the cluster messaging system.
+ * Facade for the ResourceManager to interact with the cluster messaging system.
  *
  * @see ClusterClient
  * @see ClusterClientFactory

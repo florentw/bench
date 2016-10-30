@@ -16,7 +16,7 @@
 package io.amaze.bench.util;
 
 import io.amaze.bench.cluster.ClusterConfigFactory;
-import io.amaze.bench.cluster.leader.registry.AgentRegistryClusterClient;
+import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
 import io.amaze.bench.runtime.agent.AgentConfig;
 
 /**

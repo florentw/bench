@@ -16,7 +16,7 @@
 package io.amaze.bench.cluster;
 
 import com.typesafe.config.Config;
-import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.registry.ActorRegistry;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 

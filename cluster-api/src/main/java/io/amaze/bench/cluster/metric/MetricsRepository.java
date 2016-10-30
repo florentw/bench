@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.leader.registry;
+package io.amaze.bench.cluster.metric;
 
 import com.google.common.util.concurrent.SettableFuture;
 import io.amaze.bench.cluster.actor.ActorKey;
-import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
