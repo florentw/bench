@@ -96,7 +96,7 @@ public class ActorInternal implements RuntimeActor {
         log.debug("{} Invoking before method...", this);
         try {
             beforeMethod.invoke(instance);
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything here
             log.warn("{} Error while invoking before method on actor {}.", this, actorKey, e);
             try {
                 after();
@@ -163,7 +163,7 @@ public class ActorInternal implements RuntimeActor {
             }
 
             sendLifecycleMessage(closed(actorKey));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything here
             log.info("{} Exception while closing.", this, e);
         } finally {
             try {

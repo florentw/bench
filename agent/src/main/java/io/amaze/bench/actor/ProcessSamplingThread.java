@@ -52,6 +52,34 @@ final class ProcessSamplingThread implements Runnable {
         threadCountSink = metrics.sinkFor(threadCount(message));
     }
 
+    private static Metric virtualSize(final ProcessWatcherActorInput message) {
+        return metric(format("proc.%s.mem.virtualSize", message.getMetricKeyPrefix()),
+                      AbstractWatcherActor.UNIT_BYTES) //
+                .label("Virtual memory usage " + message.getMetricLabelSuffix()).minValue(0).build();
+    }
+
+    private static Metric residentSet(final ProcessWatcherActorInput message) {
+        return metric(format("proc.%s.mem.residentRet", message.getMetricKeyPrefix()),
+                      AbstractWatcherActor.UNIT_BYTES) //
+                .label(format("RAM usage %s", message.getMetricLabelSuffix())).minValue(0).build();
+    }
+
+    private static Metric kernelTime(final ProcessWatcherActorInput message) {
+        return metric(format("proc.%s.cpu.kernelTime", message.getMetricKeyPrefix()),
+                      AbstractWatcherActor.UNIT_MILLIS) //
+                .label(format("CPU sys time %s", message.getMetricLabelSuffix())).minValue(0).build();
+    }
+
+    private static Metric userTime(final ProcessWatcherActorInput message) {
+        return metric(format("proc.%s.cpu.userTime", message.getMetricKeyPrefix()), AbstractWatcherActor.UNIT_MILLIS) //
+                .label(format("CPU user time %s", message.getMetricLabelSuffix())).minValue(0).build();
+    }
+
+    private static Metric threadCount(final ProcessWatcherActorInput message) {
+        return metric(format("proc.%s.threadCount", message.getMetricKeyPrefix()), "threads") //
+                .label("Thread count " + message.getMetricLabelSuffix()).minValue(0).build();
+    }
+
     @Override
     public void run() {
         OSProcess process = processOrNull();
@@ -74,33 +102,5 @@ final class ProcessSamplingThread implements Runnable {
             log.warn("Pid not found {}", message.getPid(), e);
             return null;
         }
-    }
-
-    private Metric virtualSize(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.mem.virtualSize", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
-                .label("Virtual memory usage " + message.getMetricLabelSuffix()).minValue(0).build();
-    }
-
-    private Metric residentSet(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.mem.residentRet", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
-                .label(format("RAM usage %s", message.getMetricLabelSuffix())).minValue(0).build();
-    }
-
-    private Metric kernelTime(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.cpu.kernelTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
-                .label(format("CPU sys time %s", message.getMetricLabelSuffix())).minValue(0).build();
-    }
-
-    private Metric userTime(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.cpu.userTime", message.getMetricKeyPrefix()), AbstractWatcherActor.UNIT_MILLIS) //
-                .label(format("CPU user time %s", message.getMetricLabelSuffix())).minValue(0).build();
-    }
-
-    private Metric threadCount(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.threadCount", message.getMetricKeyPrefix()), "threads") //
-                .label("Thread count " + message.getMetricLabelSuffix()).minValue(0).build();
     }
 }
