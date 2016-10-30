@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.runtime.agent;
 
+import com.google.common.testing.NullPointerTester;
 import com.typesafe.config.ConfigException;
 import io.amaze.bench.Endpoint;
 import io.amaze.bench.cluster.ClusterConfigFactory;
@@ -62,13 +63,25 @@ public final class AgentBootstrapTest {
     }
 
     @Test
+    public void null_parameters_are_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+
+        tester.testAllPublicStaticMethods(AgentBootstrap.class);
+    }
+
+    @Test
     public void invalid_arguments_show_usage() {
         main(new String[]{});
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void invalid_file_throws_illegal_argument_exception() {
+        main(new String[]{""});
+    }
+
     @Test(expected = ConfigException.class)
     public void invalid_config_throws_config_exception() {
-        main(new String[]{"dummy"});
+        main(new String[]{"/dummy.file"});
     }
 
     @Test

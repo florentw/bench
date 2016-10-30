@@ -20,6 +20,7 @@ import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.ActorManagers;
+import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,13 +44,15 @@ public final class AgentBootstrap {
     }
 
     public static void main(final String[] args) {
+        checkNotNull(args);
+
         if (args.length != 1) {
             log.info("Usage:");
             log.info("$ agent <configFile>");
             return;
         }
 
-        String configFileName = args[0];
+        String configFileName = Files.checkFilePath(args[0]);
 
         File configFile = new File(configFileName);
         AgentConfig agentConfig = new AgentConfig(configFile);
