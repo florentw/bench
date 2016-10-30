@@ -25,6 +25,9 @@ package io.amaze.bench.api;
  */
 public final class TerminationException extends ReactorException {
 
+    /**
+     * To instantiate the exception object.
+     */
     public TerminationException() {
         super();
     }

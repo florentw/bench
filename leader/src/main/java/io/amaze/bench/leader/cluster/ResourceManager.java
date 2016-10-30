@@ -63,13 +63,12 @@ public class ResourceManager implements AutoCloseable {
         ActorKey actorKey = actorConfig.getKey();
         resourceManagerClusterClient.initForActor(actorKey);
 
-        ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig);
-
         Optional<RegisteredAgent> agent = applyDeployStrategy(actorConfig);
         if (!agent.isPresent()) {
             throw new IllegalStateException("No agents found to create actor " + actorKey);
         }
 
+        ActorCreationRequest actorCreationMsg = new ActorCreationRequest(actorConfig);
         AgentInputMessage msg = AgentInputMessage.createActor(agent.get().getAgentKey(), actorCreationMsg);
 
         resourceManagerClusterClient.sendToAgent(msg);

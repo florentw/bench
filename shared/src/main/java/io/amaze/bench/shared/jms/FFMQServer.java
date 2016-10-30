@@ -78,7 +78,7 @@ public final class FFMQServer implements JMSServer {
             createTopicTemplate();
 
             tcpListener = startListenerSynchronously(endpoint, settings);
-        } catch (Exception e) {
+        } catch (JMSException | IOException e) {
             throw new io.amaze.bench.shared.jms.JMSException(e);
         }
     }

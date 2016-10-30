@@ -36,10 +36,10 @@ public final class MetricBuilder {
 
     private final String key;
     private final String firstUnit;
-    private String label = null;
-    private String secondUnit = null;
-    private Number minValue = null;
-    private Number maxValue = null;
+    private String label;
+    private String secondUnit;
+    private Number minValue;
+    private Number maxValue;
 
     /**
      * @param key       Key of the metric, must be unique per {@link Metrics.Sink} and not empty or whitespace.

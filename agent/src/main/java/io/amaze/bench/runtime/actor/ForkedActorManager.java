@@ -181,7 +181,7 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         };
 
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";
-        File actorLogFile = new File(actorLogFileName);
+        File actorLogFile = new File(Files.checkFilePath(actorLogFileName));
 
         ProcessBuilder builder = new ProcessBuilder(cmd) //
                 .redirectErrorStream(true) //

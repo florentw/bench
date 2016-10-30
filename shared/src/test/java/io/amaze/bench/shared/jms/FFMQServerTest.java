@@ -55,7 +55,7 @@ public final class FFMQServerTest {
 
     @Test
     public void start_server_on_bound_port_throws() throws Exception {
-        expectedException.expect(JMSException.class);
+        expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("Cannot create server socket");
 
         new FFMQServer(server.getEndpoint());

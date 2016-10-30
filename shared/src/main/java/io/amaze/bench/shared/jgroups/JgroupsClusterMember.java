@@ -39,7 +39,7 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
     @VisibleForTesting
     static final String CLUSTER_NAME = "bench-cluster";
     private static final Logger log = LogManager.getLogger();
-    private static final int DEFAULT_STATE_TIMEOUT_MS = 10000;
+    private static final int DEFAULT_STATE_TIMEOUT_MS = 10_000;
 
     private final JChannel jChannel;
     private final JgroupsListenerMultiplexer listenerMultiplexer;

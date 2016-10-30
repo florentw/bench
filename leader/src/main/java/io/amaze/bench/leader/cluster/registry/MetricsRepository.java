@@ -84,7 +84,7 @@ public class MetricsRepository {
 
     @NotNull
     public MetricsRepositoryListener createClusterListener() {
-        return (metrics) -> {
+        return metrics -> {
             ActorKey from = metrics.fromActor();
             log.info("Received metric values from {}: {}", from, metrics);
 
