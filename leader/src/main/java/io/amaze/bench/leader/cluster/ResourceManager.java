@@ -51,6 +51,11 @@ public class ResourceManager implements AutoCloseable {
         this.agentRegistry = checkNotNull(agentRegistry);
     }
 
+    private static Optional<RegisteredAgent> pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
+                                                                            final List<String> preferredHosts) {
+        return allAgents.stream().filter(input -> preferredHosts.contains(input.getSystemConfig().getHostName())).findFirst();
+    }
+
     /**
      * Requests an actor instantiation using the given {@link ActorConfig} configuration.
      *
@@ -156,10 +161,5 @@ public class ResourceManager implements AutoCloseable {
             // Fallback to pick a random agent
             return pickRandomAgent(allAgents);
         }
-    }
-
-    private Optional<RegisteredAgent> pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
-                                                                     final List<String> preferredHosts) {
-        return allAgents.stream().filter(input -> preferredHosts.contains(input.getSystemConfig().getHostName())).findFirst();
     }
 }
