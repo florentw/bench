@@ -176,7 +176,7 @@ public final class JgroupsActorRegistryClusterClientTest {
 
         ActorView actorView = stateHolder.getState();
 
-        assertThat(actorView.getRegisteredActors(), is(registeredActors));
+        assertThat(actorView.registeredActors(), is(registeredActors));
     }
 
     @Test

@@ -166,7 +166,7 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
         @Override
         public void setState(@NotNull final ActorView newState) {
             checkNotNull(newState);
-            actorRegistry.resetState(newState.getRegisteredActors());
+            actorRegistry.resetState(newState.registeredActors());
         }
     }
 }

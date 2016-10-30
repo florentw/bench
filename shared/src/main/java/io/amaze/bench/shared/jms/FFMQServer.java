@@ -89,7 +89,7 @@ public final class FFMQServer implements JMSServer {
 
         try {
             internalCreateQueue(name);
-        } catch (Exception e) {
+        } catch (NameAlreadyBoundException | JMSException e) {
             throw new io.amaze.bench.shared.jms.JMSException(e);
         }
     }
@@ -100,7 +100,7 @@ public final class FFMQServer implements JMSServer {
 
         try {
             internalCreateTopic(name);
-        } catch (Exception e) {
+        } catch (NameAlreadyBoundException | JMSException e) {
             throw new io.amaze.bench.shared.jms.JMSException(e);
         }
     }
@@ -125,7 +125,7 @@ public final class FFMQServer implements JMSServer {
         try {
             engine.deleteTopic(topic);
             return true;
-        } catch (Exception e) {
+        } catch (JMSException e) {
             log.warn("Error while deleting topic {}", topic, e);
             return false;
         }

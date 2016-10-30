@@ -52,17 +52,15 @@ public class ActorBootstrap implements Closeable {
     private final ClusterClientFactory clientFactory;
     private volatile RuntimeActor actor;
 
-    public ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) throws IOException, ValidationException {
+    ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) throws IOException, ValidationException {
         this.clientFactory = checkNotNull(clientFactory);
         actors = new Actors(this.clientFactory);
     }
 
     /**
      * @param args [actorName] [className] [temporaryClusterConfigFile] [temporaryActorConfigFile]
-     * @throws ValidationException if an invalid actor is being created
-     * @throws IOException         if an error occurs while reading the actors configuration file
      */
-    public static void main(final String[] args) throws ValidationException, IOException {
+    public static void main(final String[] args) {
         checkNotNull(args);
 
         try {
@@ -80,6 +78,11 @@ public class ActorBootstrap implements Closeable {
         return hook;
     }
 
+    /**
+     * @param args Arguments from the main method.
+     * @throws ValidationException if an invalid actor is being created
+     * @throws IOException         if an error occurs while reading the actors configuration file
+     */
     @VisibleForTesting
     static void mainInternal(final String[] args) throws ValidationException, IOException {
         if (args.length != 4) {

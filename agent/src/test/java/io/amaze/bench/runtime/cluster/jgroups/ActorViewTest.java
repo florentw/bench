@@ -45,7 +45,7 @@ public final class ActorViewTest {
         ActorView expected = actorView();
         ActorView actual = SerializableTester.reserialize(expected);
 
-        assertThat(expected.getRegisteredActors(), is(actual.getRegisteredActors()));
+        assertThat(expected.registeredActors(), is(actual.registeredActors()));
     }
 
     private ActorView actorView() {

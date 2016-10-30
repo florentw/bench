@@ -138,7 +138,7 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
         @Override
         public void setState(@NotNull final AgentView newState) {
             checkNotNull(newState);
-            agentRegistry.resetState(newState.getRegisteredAgents());
+            agentRegistry.resetState(newState.registeredAgents());
         }
     }
 

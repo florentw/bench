@@ -38,7 +38,7 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
     private final CountDownLatch watchdogStartedLatch;
 
     private volatile boolean doWork = true;
-    private volatile boolean exited = false;
+    private volatile boolean exited;
 
     ProcessWatchDogThread(@NotNull final String name,
                           @NotNull final Process process,

@@ -47,11 +47,6 @@ public final class FilesTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void checkFilePath_throws_for_relative_path() {
-        Files.checkFilePath("../../../hello.tmp");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void checkFilePath_throws_for_invalid_path() {
         Files.checkFilePath("\\r\\n\\[[\0'");
     }

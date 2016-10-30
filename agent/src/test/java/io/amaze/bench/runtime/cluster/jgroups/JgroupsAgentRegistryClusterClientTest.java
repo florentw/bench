@@ -180,7 +180,7 @@ public final class JgroupsAgentRegistryClusterClientTest {
 
         AgentView agentView = stateHolder.getState();
 
-        assertThat(agentView.getRegisteredAgents(), is(registeredAgents));
+        assertThat(agentView.registeredAgents(), is(registeredAgents));
     }
 
     @Test

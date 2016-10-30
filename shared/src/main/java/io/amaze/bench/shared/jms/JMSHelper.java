@@ -47,7 +47,7 @@ public final class JMSHelper {
             byte[] rawData = new byte[(int) message.getBodyLength()];
             message.readBytes(rawData);
             return (T) convertFromBytes(rawData); // NOSONAR
-        } catch (Exception e) {
+        } catch (javax.jms.JMSException e) {
             throw new IOException(e);
         }
     }
@@ -72,7 +72,7 @@ public final class JMSHelper {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
              ObjectInput in = new ObjectInputStream(bis)) {
             return (T) in.readObject(); // NOSONAR
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
     }

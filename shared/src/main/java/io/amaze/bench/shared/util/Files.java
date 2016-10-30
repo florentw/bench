@@ -57,9 +57,6 @@ public final class Files {
         }
         try {
             Path path = Paths.get(filePath);
-            if (!path.isAbsolute()) {
-                throw new IllegalArgumentException("Relative paths are not allowed: \"" + filePath + "\".");
-            }
             return path.toAbsolutePath().toString();
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("File path is invalid: \"" + filePath + "\"", e);

@@ -129,6 +129,14 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
             swapUsedSink = metrics.sinkFor(METRIC_SWAP_USED);
         }
 
+        private static <T extends Number> void produceIfValid(final T value, //
+                                                              final long now, //
+                                                              final Metrics.Sink sink) {
+            if (value.doubleValue() >= 0) {
+                sink.timed(now, value);
+            }
+        }
+
         @Override
         public void run() {
             double loadAverage = systemInfo.getHardware().getProcessor().getSystemLoadAverage();
@@ -141,12 +149,6 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
             produceIfValid(systemCpuLoad, now, systemCpuLoadSink);
             produceIfValid(availableRam, now, availableRamSink);
             produceIfValid(swapUsed, now, swapUsedSink);
-        }
-
-        private <T extends Number> void produceIfValid(final T value, final long now, final Metrics.Sink sink) {
-            if (value.doubleValue() >= 0) {
-                sink.timed(now, value);
-            }
         }
     }
 

@@ -97,7 +97,7 @@ public final class FFMQClient implements JMSClient {
     public void sendToQueue(@NotNull final String queueName, @NotNull final Serializable msg) throws JMSException {
         try {
             internalSendToQueue(queueName, msg);
-        } catch (Exception e) {
+        } catch (NamingException | IOException | javax.jms.JMSException | ClassNotFoundException e) {
             throw new JMSException(e);
         }
     }
@@ -106,7 +106,7 @@ public final class FFMQClient implements JMSClient {
     public void sendToTopic(@NotNull final String topicName, @NotNull final Serializable msg) throws JMSException {
         try {
             internalSendToTopic(topicName, msg);
-        } catch (Exception e) {
+        } catch (NamingException | IOException | javax.jms.JMSException | ClassNotFoundException e) {
             throw new JMSException(e);
         }
     }

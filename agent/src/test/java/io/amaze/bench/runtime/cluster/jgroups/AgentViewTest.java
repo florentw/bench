@@ -45,7 +45,7 @@ public final class AgentViewTest {
         AgentView expected = agentView();
         AgentView actual = SerializableTester.reserialize(expected);
 
-        assertThat(expected.getRegisteredAgents(), is(actual.getRegisteredAgents()));
+        assertThat(expected.registeredAgents(), is(actual.registeredAgents()));
     }
 
     private AgentView agentView() {

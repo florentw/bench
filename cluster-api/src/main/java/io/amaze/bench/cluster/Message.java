@@ -34,12 +34,12 @@ public final class Message<T extends Serializable> implements Serializable {
     }
 
     @NotNull
-    public final String from() {
+    public String from() {
         return from;
     }
 
     @NotNull
-    public final T data() {
+    public T data() {
         return data;
     }
 

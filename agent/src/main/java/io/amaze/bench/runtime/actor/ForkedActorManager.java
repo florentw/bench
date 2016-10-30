@@ -164,6 +164,9 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
                                 @NotNull final String actorConfigFile,
                                 @NotNull final String clusterConfigFile) throws IOException {
 
+        Files.checkFilePath(clusterConfigFile);
+        Files.checkFilePath(actorConfigFile);
+
         String name = actorConfig.getKey().getName();
 
         String[] cmd = { //

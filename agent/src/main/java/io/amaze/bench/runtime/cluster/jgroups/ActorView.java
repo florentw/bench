@@ -18,6 +18,7 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import io.amaze.bench.cluster.registry.RegisteredActor;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,7 +34,7 @@ public final class ActorView implements Serializable {
         this.registeredActors = checkNotNull(registeredActors);
     }
 
-    public Set<RegisteredActor> getRegisteredActors() {
-        return registeredActors;
+    public Set<RegisteredActor> registeredActors() {
+        return new HashSet<>(registeredActors);
     }
 }
