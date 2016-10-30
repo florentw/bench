@@ -175,7 +175,7 @@ public class Agent implements AgentClientListener, Closeable {
             agentClient.actorRegistrySender().send(created(actorConfig.getKey(), key));
             return Optional.of(manager.createActor(actorConfig));
 
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.warn("Could not create actor with config {}.", actorConfig, e);
             actorFailure(actorConfig.getKey(), e);
             return Optional.empty();

@@ -73,6 +73,11 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
         watcherThread = watcherThread(metrics);
     }
 
+    private static SystemWatcherThread watcherThread(final Metrics metrics) {
+        SystemInfo systemInfo = new SystemInfo();
+        return new SystemWatcherThread(systemInfo, checkNotNull(metrics));
+    }
+
     @Override
     public void onMessage(@NotNull final String from, @NotNull final SystemWatcherInput message)
             throws ReactorException {
@@ -100,55 +105,9 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
         closeScheduler();
     }
 
-    private SystemWatcherThread watcherThread(final Metrics metrics) {
-        SystemInfo systemInfo = new SystemInfo();
-        return new SystemWatcherThread(systemInfo, checkNotNull(metrics));
-    }
-
     private void cancelTask() {
         if (currentTaskHandle != null) {
             cancel(currentTaskHandle);
-        }
-    }
-
-    private static final class SystemWatcherThread implements Runnable {
-
-        private final SystemInfo systemInfo;
-
-        private final Metrics.Sink loadAverageSink;
-        private final Metrics.Sink systemCpuLoadSink;
-        private final Metrics.Sink availableRamSink;
-        private final Metrics.Sink swapUsedSink;
-
-        private SystemWatcherThread(final SystemInfo systemInfo, final Metrics metrics) {
-            this.systemInfo = systemInfo;
-
-            loadAverageSink = metrics.sinkFor(METRIC_LOAD_AVERAGE);
-            systemCpuLoadSink = metrics.sinkFor(METRIC_CPU_USAGE);
-            availableRamSink = metrics.sinkFor(METRIC_AVAILABLE_RAM);
-            swapUsedSink = metrics.sinkFor(METRIC_SWAP_USED);
-        }
-
-        private static <T extends Number> void produceIfValid(final T value, //
-                                                              final long now, //
-                                                              final Metrics.Sink sink) {
-            if (value.doubleValue() >= 0) {
-                sink.timed(now, value);
-            }
-        }
-
-        @Override
-        public void run() {
-            double loadAverage = systemInfo.getHardware().getProcessor().getSystemLoadAverage();
-            double systemCpuLoad = systemInfo.getHardware().getProcessor().getSystemCpuLoad();
-            long availableRam = systemInfo.getHardware().getMemory().getAvailable();
-            long swapUsed = systemInfo.getHardware().getMemory().getSwapUsed();
-
-            long now = System.currentTimeMillis();
-            produceIfValid(loadAverage, now, loadAverageSink);
-            produceIfValid(systemCpuLoad, now, systemCpuLoadSink);
-            produceIfValid(availableRam, now, availableRamSink);
-            produceIfValid(swapUsed, now, swapUsedSink);
         }
     }
 

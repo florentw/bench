@@ -55,7 +55,7 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
         try {
             AgentLifecycleMessage lifecycleMessage = (AgentLifecycleMessage) received.get().data();
             onAgentLifecycle(lifecycleMessage);
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error handling agent registry message {}", received.get(), e);
         }
     }
@@ -63,7 +63,7 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
     private Optional<Message> readMessage(final javax.jms.Message jmsMessage) {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error while reading JMS message.", e);
             return Optional.empty();
         }

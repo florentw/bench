@@ -48,6 +48,15 @@ final class JMSAgentMessageListener implements MessageListener {
         this.listener = checkNotNull(listener);
     }
 
+    private static Optional<AgentInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
+        try {
+            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
+        } catch (Exception e) { // NOSONAR - We want to catch everything
+            log.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
+            return Optional.empty();
+        }
+    }
+
     @Override
     public void onMessage(@NotNull final Message jmsMessage) {
         checkNotNull(jmsMessage);
@@ -72,15 +81,6 @@ final class JMSAgentMessageListener implements MessageListener {
                 closeActor(inputMessage);
                 break;
             default:
-        }
-    }
-
-    private Optional<AgentInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
-        try {
-            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
-        } catch (Exception e) {
-            log.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
-            return Optional.empty();
         }
     }
 

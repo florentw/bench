@@ -50,6 +50,14 @@ public final class ActorValidator {
         // Should not be public
     }
 
+    private static Class<?> loadClass(@NotNull final String className) throws ValidationException {
+        try {
+            return Class.forName(className); // NOSONAR
+        } catch (ClassNotFoundException e) {
+            throw ValidationException.create(String.format(LOAD_MSG, className), e);
+        }
+    }
+
     /**
      * Attempts to load the {@link Reactor} class using the current classpath,<br>
      * a set of checks is then performed on the resulting Class,<br>
@@ -79,14 +87,6 @@ public final class ActorValidator {
         }
 
         return verify.resultingClass();
-    }
-
-    private Class<?> loadClass(@NotNull final String className) throws ValidationException {
-        try {
-            return Class.forName(className); // NOSONAR
-        } catch (ClassNotFoundException e) {
-            throw ValidationException.create(String.format(LOAD_MSG, className), e);
-        }
     }
 
     private static final class Verify {

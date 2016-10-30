@@ -46,7 +46,7 @@ public class JgroupsSender {
 
         try {
             channel.send(null, Util.objectToByteBuffer(message));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - No choice here
             throw propagate(e);
         }
     }
@@ -57,7 +57,7 @@ public class JgroupsSender {
 
         try {
             channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - No choice here
             throw propagate(e);
         }
     }

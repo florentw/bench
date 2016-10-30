@@ -61,7 +61,7 @@ public abstract class JgroupsAbstractClusterClientFactory {
         checkNotNull(clusterConfig);
         try {
             return new JChannel(clusterConfig.getString(XML_CONFIG));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - No choice here
             throw propagate(e);
         }
     }

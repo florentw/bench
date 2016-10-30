@@ -57,7 +57,7 @@ final class JMSMetricsRepositoryListener implements MessageListener {
     private Optional<MetricValuesMessage> readMessage(final Message jmsMessage) {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error while reading JMS message.", e);
             return Optional.empty();
         }

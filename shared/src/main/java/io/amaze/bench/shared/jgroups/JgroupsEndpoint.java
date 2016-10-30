@@ -38,7 +38,7 @@ public final class JgroupsEndpoint implements Endpoint {
         try {
             this.addressClass = address.getClass();
             serializedEndpoint = Util.streamableToByteBuffer(address);
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - No choice here
             throw Throwables.propagate(e);
         }
     }
@@ -46,7 +46,7 @@ public final class JgroupsEndpoint implements Endpoint {
     public Address getAddress() {
         try {
             return Util.streamableFromByteBuffer(addressClass, serializedEndpoint);
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - No choice here
             throw Throwables.propagate(e);
         }
     }

@@ -91,7 +91,7 @@ public final class AgentBootstrap {
             log.info("Calling shutdown hook for agent {}", agent);
             try {
                 agent.close();
-            } catch (Exception e) {
+            } catch (Exception e) { // NOSONAR - We want to catch everything
                 log.warn("Error while closing agent {}", agent, e);
             }
         }

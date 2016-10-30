@@ -59,9 +59,8 @@ public class JgroupsListenerMultiplexer {
 
         listenersFor(msg).forEach(listener -> {
             try {
-
                 listener.onMessage(msg, msg.getObject());
-            } catch (Exception e) {
+            } catch (Exception e) { // NOSONAR - We want to catch everything
                 log.warn("Error while processing message {}, listener is {}", msg, listener, e);
             }
         });

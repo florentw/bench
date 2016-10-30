@@ -55,7 +55,7 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
         try {
             ActorLifecycleMessage lifecycleMessage = (ActorLifecycleMessage) received.get().data();
             onActorLifecycle(lifecycleMessage);
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error handling actor registry message {}", received.get(), e);
         }
     }
@@ -63,7 +63,7 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
     private Optional<Message> readMessage(final javax.jms.Message jmsMessage) {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error while reading JMS message.", e);
             return Optional.empty();
         }

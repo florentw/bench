@@ -72,7 +72,7 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
         try {
             jChannel.connect(CLUSTER_NAME);
             jChannel.getState(null, DEFAULT_STATE_TIMEOUT_MS);
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - No choice here
             throw Throwables.propagate(e);
         }
     }

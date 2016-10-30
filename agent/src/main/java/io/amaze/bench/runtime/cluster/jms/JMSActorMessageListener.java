@@ -70,7 +70,7 @@ final class JMSActorMessageListener implements MessageListener {
     private Optional<ActorInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
         try {
             return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("Invalid ActorInputMessage received, jmsMessage:{}", jmsMessage, e);
             return Optional.empty();
         }

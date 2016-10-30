@@ -89,7 +89,7 @@ final class StopwatchThread implements Runnable {
     private OSProcess processOrNull() {
         try {
             return systemInfo.getOperatingSystem().getProcess(message.getPid());
-        } catch (Exception e) {
+        } catch (Exception e) { // NOSONAR - We want to catch everything
             log.warn("Pid {} not found", message.getPid(), e);
             return null;
         }

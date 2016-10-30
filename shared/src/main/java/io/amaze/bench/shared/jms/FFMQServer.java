@@ -112,7 +112,7 @@ public final class FFMQServer implements JMSServer {
         try {
             engine.deleteQueue(queue);
             return true;
-        } catch (Exception e) {
+        } catch (JMSException e) {
             log.debug("Error while deleting queue {}", queue, e);
             return false;
         }

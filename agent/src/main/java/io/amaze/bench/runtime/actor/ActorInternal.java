@@ -168,7 +168,7 @@ public class ActorInternal implements RuntimeActor {
         } finally {
             try {
                 client.close();
-            } catch (Exception e) {
+            } catch (Exception e) { // NOSONAR - We want to catch everything
                 log.warn("{} Error while closing client.", this, e);
             }
         }

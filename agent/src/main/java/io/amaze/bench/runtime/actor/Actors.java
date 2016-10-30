@@ -60,6 +60,14 @@ public class Actors {
         this.clientFactory = checkNotNull(clientFactory);
     }
 
+    private static Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
+        try {
+            return ConfigFactory.parseString(jsonConfig, Constants.CONFIG_PARSE_OPTIONS);
+        } catch (ConfigException e) {
+            throw ValidationException.create("Configuration error", e);
+        }
+    }
+
     public final RuntimeActor create(@NotNull final ActorKey actorKey,
                                      @NotNull final String className,
                                      @NotNull final String jsonConfig) throws ValidationException {
@@ -77,14 +85,6 @@ public class Actors {
         Reactor reactor = createReactor(actorKey, metrics, clazz, client, config);
 
         return new ActorInternal(actorKey, metrics, reactor, client, beforeMethod, afterMethod);
-    }
-
-    private Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
-        try {
-            return ConfigFactory.parseString(jsonConfig, Constants.CONFIG_PARSE_OPTIONS);
-        } catch (ConfigException e) {
-            throw ValidationException.create("Configuration error", e);
-        }
     }
 
     /**
