@@ -20,7 +20,7 @@ import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.*;
+import io.amaze.bench.cluster.leader.registry.*;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSServerRule;

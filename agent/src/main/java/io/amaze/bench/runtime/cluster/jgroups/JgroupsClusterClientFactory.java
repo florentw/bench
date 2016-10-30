@@ -24,7 +24,7 @@ import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.leader.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.jgroups.JChannel;
 

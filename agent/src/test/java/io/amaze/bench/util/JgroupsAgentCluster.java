@@ -17,9 +17,9 @@ package io.amaze.bench.util;
 
 import com.google.common.base.Throwables;
 import io.amaze.bench.cluster.ClusterConfigFactory;
-import io.amaze.bench.cluster.registry.ActorRegistry;
-import io.amaze.bench.cluster.registry.AgentRegistry;
-import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.leader.registry.AgentRegistry;
+import io.amaze.bench.cluster.leader.registry.AgentRegistryClusterClient;
 import io.amaze.bench.runtime.agent.AgentConfig;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsAgentRegistryClusterClient;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsClusterClientFactory;

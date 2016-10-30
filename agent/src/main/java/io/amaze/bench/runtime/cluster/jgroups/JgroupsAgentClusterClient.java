@@ -20,7 +20,7 @@ import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.agent.*;
-import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.leader.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsListener;
 import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 

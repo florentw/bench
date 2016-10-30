@@ -21,7 +21,7 @@ import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.*;
 import io.amaze.bench.cluster.agent.*;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.actor.*;
 import io.amaze.bench.shared.test.Json;
 import org.junit.After;

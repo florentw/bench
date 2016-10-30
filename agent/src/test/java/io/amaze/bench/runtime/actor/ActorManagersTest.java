@@ -19,7 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

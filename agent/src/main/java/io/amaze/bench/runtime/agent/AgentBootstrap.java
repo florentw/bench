@@ -18,7 +18,7 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
-import io.amaze.bench.cluster.registry.ActorRegistry;
+import io.amaze.bench.cluster.leader.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;

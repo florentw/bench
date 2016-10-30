@@ -18,7 +18,7 @@ package io.amaze.bench.cluster.actor;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.RegisteredActorTest;
+import io.amaze.bench.cluster.leader.registry.RegisteredActorTest;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;

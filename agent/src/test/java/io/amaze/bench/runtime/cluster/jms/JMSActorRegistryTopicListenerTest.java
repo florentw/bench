@@ -20,7 +20,7 @@ import io.amaze.bench.Endpoint;
 import io.amaze.bench.cluster.LifecycleMessage;
 import io.amaze.bench.cluster.Message;
 import io.amaze.bench.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSHelper;
 import io.amaze.bench.shared.util.Network;

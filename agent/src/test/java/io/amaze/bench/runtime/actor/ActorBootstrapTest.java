@@ -24,7 +24,7 @@ import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.shared.util.Files;
 import io.amaze.bench.util.ClusterConfigs;

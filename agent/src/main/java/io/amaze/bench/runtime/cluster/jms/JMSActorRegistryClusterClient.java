@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
-import io.amaze.bench.cluster.registry.ActorRegistryListener;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSException;

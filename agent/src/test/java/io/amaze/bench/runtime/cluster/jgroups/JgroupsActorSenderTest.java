@@ -20,8 +20,8 @@ import io.amaze.bench.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.ActorRegistry;
-import io.amaze.bench.cluster.registry.RegisteredActor;
+import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.leader.registry.RegisteredActor;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import org.jgroups.Address;
 import org.junit.Before;
@@ -32,8 +32,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.NoSuchElementException;
 
-import static io.amaze.bench.cluster.registry.RegisteredActor.created;
-import static io.amaze.bench.cluster.registry.RegisteredActor.initialized;
+import static io.amaze.bench.cluster.leader.registry.RegisteredActor.created;
+import static io.amaze.bench.cluster.leader.registry.RegisteredActor.initialized;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.mockito.Mockito.*;
 

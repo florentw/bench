@@ -22,7 +22,7 @@ import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentRegistrySender;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -22,7 +22,7 @@ import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import org.junit.Before;
 import org.junit.Test;

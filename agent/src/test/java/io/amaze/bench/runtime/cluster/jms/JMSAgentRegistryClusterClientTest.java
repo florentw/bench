@@ -16,8 +16,8 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
-import io.amaze.bench.cluster.registry.AgentRegistryListener;
+import io.amaze.bench.cluster.leader.registry.AgentRegistryClusterClient;
+import io.amaze.bench.cluster.leader.registry.AgentRegistryListener;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;
 import io.amaze.bench.shared.jms.JMSServer;

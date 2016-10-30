@@ -21,7 +21,7 @@ import com.typesafe.config.ConfigException;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
-import io.amaze.bench.cluster.registry.*;
+import io.amaze.bench.cluster.leader.registry.*;
 import io.amaze.bench.shared.jgroups.JgroupsClusterMember;
 import io.amaze.bench.shared.util.Network;
 import io.amaze.bench.util.ClusterConfigs;

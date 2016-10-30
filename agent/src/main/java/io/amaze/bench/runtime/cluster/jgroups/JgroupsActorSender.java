@@ -18,8 +18,8 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorSender;
-import io.amaze.bench.cluster.registry.ActorRegistry;
-import io.amaze.bench.cluster.registry.RegisteredActor;
+import io.amaze.bench.cluster.leader.registry.ActorRegistry;
+import io.amaze.bench.cluster.leader.registry.RegisteredActor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
