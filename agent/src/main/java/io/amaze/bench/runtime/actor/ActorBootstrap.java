@@ -27,15 +27,17 @@ import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.Constants;
 import io.amaze.bench.cluster.registry.ActorRegistry;
-import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.lang.model.SourceVersion;
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.amaze.bench.shared.util.Files.checkFilePath;
+import static io.amaze.bench.shared.util.Files.readAndDelete;
 
 /**
  * Acts as entry point for a forked actor JVM, created by a {@link ForkedActorManager}.
@@ -63,6 +65,23 @@ public class ActorBootstrap implements Closeable {
     public static void main(final String[] args) throws ValidationException, IOException {
         checkNotNull(args);
 
+        try {
+            mainInternal(args);
+        } catch (Exception e) { // NOSONAR - We really want to catch everything here.
+            log.error("Exception while starting actor with arguments {}", args, e);
+            System.exit(1);
+        }
+    }
+
+    @VisibleForTesting
+    static Thread installShutdownHook(final ActorBootstrap actorBootstrap, final RuntimeActor actor) {
+        ActorShutdownThread hook = new ActorShutdownThread(actorBootstrap, actor);
+        Runtime.getRuntime().addShutdownHook(hook);
+        return hook;
+    }
+
+    @VisibleForTesting
+    static void mainInternal(final String[] args) throws ValidationException, IOException {
         if (args.length != 4) {
             log.error("Usage:");
             log.error("ActorBootstrap <actorName> <className> " + //
@@ -71,15 +90,15 @@ public class ActorBootstrap implements Closeable {
         }
 
         ActorKey actorKey = new ActorKey(args[0]);
-        String className = args[1];
-        String tmpClusterConfig = args[2];
-        String tmpActorConfig = args[3];
+        String className = checkClassName(args[1]);
+        String tmpClusterConfig = checkFilePath(args[2]);
+        String tmpActorConfig = checkFilePath(args[3]);
 
         log.info("{} starting...", actorKey);
 
         // Read and delete temporary config files
-        Config clusterConfig = parseClusterConfig(Files.readAndDelete(tmpClusterConfig));
-        String jsonActorConfig = Files.readAndDelete(tmpActorConfig);
+        Config clusterConfig = parseClusterConfig(readAndDelete(tmpClusterConfig));
+        String jsonActorConfig = readAndDelete(tmpActorConfig);
 
         log.debug("{} bootstrap with clusterConfig {}, actorConfig {}",
                   actorKey,
@@ -98,11 +117,12 @@ public class ActorBootstrap implements Closeable {
         log.info("{} started.", actorKey);
     }
 
-    @VisibleForTesting
-    static Thread installShutdownHook(final ActorBootstrap actorBootstrap, final RuntimeActor actor) {
-        ActorShutdownThread hook = new ActorShutdownThread(actorBootstrap, actor);
-        Runtime.getRuntime().addShutdownHook(hook);
-        return hook;
+    private static String checkClassName(@NotNull final String className) {
+        checkNotNull(className);
+        if (!SourceVersion.isName(className)) {
+            throw new IllegalArgumentException("Class name " + className + " is invalid.");
+        }
+        return className;
     }
 
     private static Config parseClusterConfig(@NotNull final String jsonConfig) throws ValidationException {

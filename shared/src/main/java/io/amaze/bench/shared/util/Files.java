@@ -15,11 +15,16 @@
  */
 package io.amaze.bench.shared.util;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created on 3/16/16.
@@ -45,12 +50,32 @@ public final class Files {
         return content;
     }
 
-    public static String read(final String path) throws IOException {
+    public static String checkFilePath(@NotNull final String filePath) {
+        checkNotNull(filePath);
+        if (filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Path is empty.");
+        }
+        try {
+            Path path = Paths.get(filePath);
+            if (!path.isAbsolute()) {
+                throw new IllegalArgumentException("Relative paths are not allowed: \"" + filePath + "\".");
+            }
+            return path.toAbsolutePath().toString();
+        } catch (InvalidPathException e) {
+            throw new IllegalArgumentException("File path is invalid: \"" + filePath + "\"", e);
+        }
+    }
+
+    public static String read(@NotNull final String path) throws IOException {
+        checkNotNull(path);
         byte[] encoded = java.nio.file.Files.readAllBytes(Paths.get(path));
         return new String(encoded, Charset.forName("UTF-8"));
     }
 
-    public static void writeTo(File dest, String content) throws IOException {
+    public static void writeTo(@NotNull final File dest, @NotNull final String content) throws IOException {
+        checkNotNull(dest);
+        checkNotNull(content);
+
         try (PrintWriter writer = new PrintWriter(dest, "UTF-8")) {
             writer.print(content);
         }

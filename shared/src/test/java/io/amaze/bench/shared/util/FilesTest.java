@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.shared.util;
 
+import com.google.common.testing.NullPointerTester;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,6 +33,38 @@ public final class FilesTest {
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
+
+    @Test
+    public void null_parameters_are_invalid() {
+        NullPointerTester tester = new NullPointerTester();
+
+        tester.testAllPublicStaticMethods(Files.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkFilePath_throws_for_empty_path() {
+        Files.checkFilePath("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkFilePath_throws_for_relative_path() {
+        Files.checkFilePath("../../../hello.tmp");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkFilePath_throws_for_invalid_path() {
+        Files.checkFilePath("\\r\\n\\[[\0'");
+    }
+
+    @Test
+    public void checkFilePath_returns_same_path() throws IOException {
+        File file = folder.newFile();
+
+        String expected = file.getAbsolutePath();
+        String actual = Files.checkFilePath(expected);
+
+        assertThat(actual, is(expected));
+    }
 
     @Test
     public void write_read_file() throws IOException {

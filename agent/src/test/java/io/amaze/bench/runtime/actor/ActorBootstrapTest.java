@@ -125,7 +125,7 @@ public final class ActorBootstrapTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void main_wrong_usage_throws() throws IOException, ValidationException {
-        ActorBootstrap.main(new String[]{"", ""});
+        ActorBootstrap.mainInternal(new String[]{"", ""});
     }
 
     @Test
@@ -134,7 +134,7 @@ public final class ActorBootstrapTest {
         File actorConfigFile = writeActorConfig();
 
         try {
-            ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+            ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
         } catch (ValidationException ignore) {
         }
 
@@ -143,11 +143,27 @@ public final class ActorBootstrapTest {
     }
 
     @Test(expected = ValidationException.class)
+    public void main_invalid_config_throws() throws IOException, ValidationException {
+        File actorConfigFile = writeActorConfig();
+        File clusterConfigFile = writeClusterConfigFile();
+
+        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void main_invalid_class_throws() throws IOException, ValidationException {
         File actorConfigFile = writeActorConfig();
         File clusterConfigFile = writeClusterConfigFile();
 
-        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), "Invalid -?", clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void main_empty_class_throws() throws IOException, ValidationException {
+        File actorConfigFile = writeActorConfig();
+        File clusterConfigFile = writeClusterConfigFile();
+
+        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), "", clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
     }
 
     @Test(expected = ValidationException.class)
@@ -156,7 +172,7 @@ public final class ActorBootstrapTest {
         File tmpConfigFile = writeActorConfig();
         File clusterConfigFile = folder.newFile();
 
-        ActorBootstrap.main(new String[]{DUMMY_ACTOR.getName(), TestActor.class.getName(), clusterConfigFile.getAbsolutePath(), tmpConfigFile.getAbsolutePath()});
+        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), TestActor.class.getName(), clusterConfigFile.getAbsolutePath(), tmpConfigFile.getAbsolutePath()});
     }
 
     private File writeActorConfig() throws IOException {
