@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
@@ -34,7 +34,7 @@ public class EmbeddedActorManager extends AbstractActorManager {
 
     private final Actors actors;
 
-    public EmbeddedActorManager(@NotNull final AgentKey agent, @NotNull final ClusterClientFactory clientFactory) {
+    public EmbeddedActorManager(@NotNull final AgentKey agent, @NotNull final AgentClusterClientFactory clientFactory) {
         super(agent);
         actors = new Actors(clientFactory);
     }

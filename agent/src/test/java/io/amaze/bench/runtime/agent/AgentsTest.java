@@ -17,7 +17,7 @@ package io.amaze.bench.runtime.agent;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
@@ -62,7 +62,7 @@ public final class AgentsTest {
     @Mock
     private ActorManagers actorManagers;
     @Mock
-    private ClusterClientFactory clusterClientFactory;
+    private AgentClusterClientFactory agentClusterClientFactory;
     @Mock
     private AgentRegistry agentRegistry;
     @Mock
@@ -79,9 +79,9 @@ public final class AgentsTest {
 
     @Before
     public void createAgentsAndMockRegistry() {
-        agents = new Agents(actorManagers, clusterClientFactory, agentRegistry);
-        when(clusterClientFactory.createForAgent(AGENT)).thenReturn(agentClusterClient);
-        when(clusterClientFactory.localEndpoint()).thenReturn(endpoint);
+        agents = new Agents(actorManagers, agentClusterClientFactory, agentRegistry);
+        when(agentClusterClientFactory.createForAgent(AGENT)).thenReturn(agentClusterClient);
+        when(agentClusterClientFactory.localEndpoint()).thenReturn(endpoint);
         when(agentClusterClient.agentRegistrySender()).thenReturn(agentRegistrySender);
 
         doAnswer(invocation -> agentRegistryListener = (AgentRegistryListener) invocation.getArguments()[0]).when(
@@ -105,8 +105,8 @@ public final class AgentsTest {
         assertNotNull(future);
         InOrder inOrder = inOrder(agentRegistry, actorManagers);
         inOrder.verify(agentRegistry).addListener(any(AgentRegistryListener.class));
-        inOrder.verify(actorManagers).createEmbedded(AGENT, clusterClientFactory);
-        inOrder.verify(actorManagers).createForked(AGENT, clusterClientFactory.clusterConfigFactory());
+        inOrder.verify(actorManagers).createEmbedded(AGENT, agentClusterClientFactory);
+        inOrder.verify(actorManagers).createForked(AGENT, agentClusterClientFactory.clusterConfigFactory());
         inOrder.verifyNoMoreInteractions();
     }
 

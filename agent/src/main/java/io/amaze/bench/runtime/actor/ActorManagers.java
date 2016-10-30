@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.runtime.actor;
 
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
@@ -40,12 +40,13 @@ public class ActorManagers {
      * Will create a new instance of {@link ActorManager} that will instantiate actors in the current JVM.
      *
      * @param agent   The host agent key.
-     * @param factory An {@link ClusterClientFactory} to be used to create
+     * @param factory An {@link AgentClusterClientFactory} to be used to create
      *                {@link ActorClusterClient} instances.
      * @return An instantiated {@link EmbeddedActorManager}
      */
     @NotNull
-    public ActorManager createEmbedded(@NotNull final AgentKey agent, @NotNull final ClusterClientFactory factory) {
+    public ActorManager createEmbedded(@NotNull final AgentKey agent,
+                                       @NotNull final AgentClusterClientFactory factory) {
         checkNotNull(agent);
         checkNotNull(factory);
 

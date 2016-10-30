@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.agent;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.runtime.actor.ActorManagers;
@@ -56,16 +56,16 @@ public final class AgentBootstrap {
 
         File configFile = new File(configFileName);
         AgentConfig agentConfig = new AgentConfig(configFile);
-        ClusterClientFactory clientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                                       agentConfig.clusterConfig(),
-                                                                       new ActorRegistry());
+        AgentClusterClientFactory clientFactory = ClusterClients.newFactory(AgentClusterClientFactory.class,
+                                                                            agentConfig.clusterConfig(),
+                                                                            new ActorRegistry());
 
         Agent agent = createAgent(clientFactory);
         registerShutdownHook(agent);
     }
 
     @VisibleForTesting
-    static Agent createAgent(final ClusterClientFactory clientFactory) {
+    static Agent createAgent(final AgentClusterClientFactory clientFactory) {
         return new Agent(clientFactory, new ActorManagers());
     }
 

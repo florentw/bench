@@ -27,7 +27,7 @@ import java.io.Closeable;
  * <li>or a {@link RuntimeActor})</li>
  * </ul>
  *
- * @see ClusterClientFactory
+ * @see AgentClusterClientFactory
  * @see RuntimeActor
  */
 public interface ClusterClient extends Closeable {

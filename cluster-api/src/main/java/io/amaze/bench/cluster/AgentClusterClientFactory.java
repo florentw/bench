@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Closeable;
 
 /**
- * Factory to create clients to communicate with the cluster.
+ * Factory to create clients on the agent side to communicate with the cluster.
  * <ul>
  * <li>Provides {@link AgentClusterClient} instances for the agent
  * to listen to incoming messages.</li>
@@ -42,7 +42,7 @@ import java.io.Closeable;
  * @see ActorRegistryClusterClient
  * @see ClusterConfigFactory
  */
-public interface ClusterClientFactory extends Closeable {
+public interface AgentClusterClientFactory extends Closeable {
 
     @NotNull
     Endpoint localEndpoint();

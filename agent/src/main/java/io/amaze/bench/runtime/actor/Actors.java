@@ -23,8 +23,8 @@ import io.amaze.bench.api.Before;
 import io.amaze.bench.api.Reactor;
 import io.amaze.bench.api.Sender;
 import io.amaze.bench.api.metric.Metrics;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClient;
-import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.actor.*;
 import io.amaze.bench.cluster.agent.Constants;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
@@ -54,9 +54,9 @@ import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod
  */
 public class Actors {
 
-    private final ClusterClientFactory clientFactory;
+    private final AgentClusterClientFactory clientFactory;
 
-    public Actors(@NotNull final ClusterClientFactory clientFactory) {
+    public Actors(@NotNull final AgentClusterClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
     }
 

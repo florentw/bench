@@ -20,7 +20,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
@@ -49,10 +49,10 @@ public class ActorBootstrap implements Closeable {
     private static final Logger log = LogManager.getLogger();
 
     private final Actors actors;
-    private final ClusterClientFactory clientFactory;
+    private final AgentClusterClientFactory clientFactory;
     private volatile RuntimeActor actor;
 
-    ActorBootstrap(@NotNull final ClusterClientFactory clientFactory) throws IOException, ValidationException {
+    ActorBootstrap(@NotNull final AgentClusterClientFactory clientFactory) throws IOException, ValidationException {
         this.clientFactory = checkNotNull(clientFactory);
         actors = new Actors(this.clientFactory);
     }
@@ -108,9 +108,9 @@ public class ActorBootstrap implements Closeable {
                   clusterConfig.root().render(ConfigRenderOptions.concise()),
                   jsonActorConfig);
 
-        ClusterClientFactory clientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                                       clusterConfig,
-                                                                       new ActorRegistry());
+        AgentClusterClientFactory clientFactory = ClusterClients.newFactory(AgentClusterClientFactory.class,
+                                                                            clusterConfig,
+                                                                            new ActorRegistry());
 
         ActorBootstrap actorBootstrap = new ActorBootstrap(clientFactory);
         RuntimeActor actor = actorBootstrap.createActor(actorKey, className, jsonActorConfig);

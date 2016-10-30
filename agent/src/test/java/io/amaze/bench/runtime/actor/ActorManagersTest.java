@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
@@ -40,7 +40,7 @@ public final class ActorManagersTest {
     private ActorManagers actorManagers;
 
     @Mock
-    private ClusterClientFactory clientFactory;
+    private AgentClusterClientFactory clientFactory;
     @Mock
     private ClusterConfigFactory configFactory;
 

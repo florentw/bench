@@ -16,7 +16,7 @@
 package io.amaze.bench.util;
 
 import com.typesafe.config.Config;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
 import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.leader.LeaderClusterClientFactory;
@@ -65,7 +65,7 @@ public final class BenchRule extends ExternalResource {
     private ResourceManagerClusterClient resourceManagerClient;
     private MetricsRepositoryClusterClient metricsClusterClient;
     private LeaderClusterClientFactory leaderClientFactory;
-    private ClusterClientFactory clusterClientFactory;
+    private AgentClusterClientFactory agentClusterClientFactory;
 
     private BenchRule(@NotNull final Config leaderConfig, @NotNull final Config clusterConfig) {
         this.leaderConfig = checkNotNull(leaderConfig);
@@ -124,11 +124,11 @@ public final class BenchRule extends ExternalResource {
 
         ActorSender actorSender = leaderClientFactory.actorSender();
 
-        clusterClientFactory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                         clusterConfig,
-                                                         new ActorRegistry());
+        agentClusterClientFactory = ClusterClients.newFactory(AgentClusterClientFactory.class,
+                                                              clusterConfig,
+                                                              new ActorRegistry());
 
-        agents = new Agents(new ActorManagers(), clusterClientFactory, agentRegistry);
+        agents = new Agents(new ActorManagers(), agentClusterClientFactory, agentRegistry);
         actors = new Actors(actorSender, resourceManager, actorRegistry);
 
         metricsRepository = new MetricsRepository();
@@ -145,7 +145,7 @@ public final class BenchRule extends ExternalResource {
         agentRegistryClient.close();
         actorRegistryClient.close();
 
-        clusterClientFactory.close();
+        agentClusterClientFactory.close();
         leaderClientFactory.close();
 
         log.debug("----- Rule closed for {} -----", leaderConfig);

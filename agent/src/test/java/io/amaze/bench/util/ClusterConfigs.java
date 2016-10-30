@@ -18,7 +18,7 @@ package io.amaze.bench.util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
 import io.amaze.bench.runtime.agent.AgentConfig;
 import io.amaze.bench.runtime.cluster.jgroups.JgroupsClusterClientFactory;
@@ -31,9 +31,9 @@ import io.amaze.bench.shared.jms.JMSServerRule;
  */
 public final class ClusterConfigs {
 
-    public static final Class<? extends ClusterClientFactory> JMS_AGENT_FACTORY_CLASS = JMSClusterClientFactory.class;
-    public static final Class<? extends ClusterClientFactory> JGROUPS_FACTORY_CLASS = JgroupsClusterClientFactory.class;
-    public static final Class<? extends ClusterClientFactory> DEFAULT_FACTORY_CLASS = JMS_AGENT_FACTORY_CLASS;
+    public static final Class<? extends AgentClusterClientFactory> JMS_AGENT_FACTORY_CLASS = JMSClusterClientFactory.class;
+    public static final Class<? extends AgentClusterClientFactory> JGROUPS_FACTORY_CLASS = JgroupsClusterClientFactory.class;
+    public static final Class<? extends AgentClusterClientFactory> DEFAULT_FACTORY_CLASS = JMS_AGENT_FACTORY_CLASS;
     public static final String JGROUPS_XML_PROTOCOLS = "fast.xml";
     private static final JMSEndpoint DUMMY_ENDPOINT = new JMSEndpoint("dummy", 1337);
 
@@ -41,7 +41,7 @@ public final class ClusterConfigs {
         return dummyConfigFor(DEFAULT_FACTORY_CLASS);
     }
 
-    public static Config dummyConfigFor(final Class<? extends ClusterClientFactory> factoryClass) {
+    public static Config dummyConfigFor(final Class<? extends AgentClusterClientFactory> factoryClass) {
         String factoryConfig;
         if (factoryClass.equals(JMS_AGENT_FACTORY_CLASS)) {
             factoryConfig = jmsFactoryConfigJson(DUMMY_ENDPOINT);

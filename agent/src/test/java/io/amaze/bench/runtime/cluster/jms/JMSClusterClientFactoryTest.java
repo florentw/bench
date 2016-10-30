@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.agent.AgentClusterClient;
 import io.amaze.bench.cluster.agent.AgentKey;
@@ -52,7 +52,7 @@ public final class JMSClusterClientFactoryTest {
     @Mock
     private AgentRegistry agentRegistry;
 
-    private ClusterClientFactory clientFactory;
+    private AgentClusterClientFactory clientFactory;
 
     @Before
     public void init() {

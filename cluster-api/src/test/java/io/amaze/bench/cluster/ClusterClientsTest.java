@@ -60,9 +60,9 @@ public final class ClusterClientsTest {
         Config clusterConfig = ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + DummyClusterClientFactory.class.getName() + "\"," + //
                                                                  "\"" + ClusterClients.FACTORY_CONFIG + "\":{}}");
 
-        ClusterClientFactory factory = ClusterClients.newFactory(ClusterClientFactory.class,
-                                                                 clusterConfig,
-                                                                 actorRegistry);
+        AgentClusterClientFactory factory = ClusterClients.newFactory(AgentClusterClientFactory.class,
+                                                                      clusterConfig,
+                                                                      actorRegistry);
 
         assertNotNull(factory);
         assertThat(factory, instanceOf(DummyClusterClientFactory.class));
@@ -72,10 +72,10 @@ public final class ClusterClientsTest {
     public void factory_propagates_class_not_found() {
         Config clusterConfig = ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + String.class.getName() + "\"," + //
                                                                  "\"" + ClusterClients.FACTORY_CONFIG + "\":{}}");
-        ClusterClients.newFactory(ClusterClientFactory.class, clusterConfig, actorRegistry);
+        ClusterClients.newFactory(AgentClusterClientFactory.class, clusterConfig, actorRegistry);
     }
 
-    public static class DummyClusterClientFactory implements ClusterClientFactory {
+    public static class DummyClusterClientFactory implements AgentClusterClientFactory {
         @Override
         public Endpoint localEndpoint() {
             return null;

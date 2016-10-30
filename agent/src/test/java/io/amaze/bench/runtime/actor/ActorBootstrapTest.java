@@ -19,7 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.RuntimeActor;
@@ -70,7 +70,7 @@ public final class ActorBootstrapTest {
     public void before() throws IOException, ValidationException {
         when(client.localEndpoint()).thenReturn(mock(Endpoint.class));
         when(client.actorRegistrySender()).thenReturn(mock(ActorRegistrySender.class));
-        ClusterClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null, null);
+        AgentClusterClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null, null);
         actorBootstrap = spy(new ActorBootstrap(factory));
     }
 

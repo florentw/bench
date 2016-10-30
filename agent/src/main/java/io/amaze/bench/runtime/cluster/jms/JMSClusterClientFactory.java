@@ -18,7 +18,7 @@ package io.amaze.bench.runtime.cluster.jms;
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorKey;
@@ -37,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created on 3/3/16.
  */
-public final class JMSClusterClientFactory implements ClusterClientFactory {
+public final class JMSClusterClientFactory implements AgentClusterClientFactory {
 
     private static final JMSEndpoint DUMMY_JMS_ENDPOINT = new JMSEndpoint("dummy", 1337);
 

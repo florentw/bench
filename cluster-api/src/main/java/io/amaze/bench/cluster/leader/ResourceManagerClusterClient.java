@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.cluster.leader;
 
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClient;
-import io.amaze.bench.cluster.ClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
 
@@ -27,7 +27,7 @@ import java.io.Closeable;
  * Facade for the ResourceManager to interact with the cluster messaging system.
  *
  * @see ClusterClient
- * @see ClusterClientFactory
+ * @see AgentClusterClientFactory
  */
 public interface ResourceManagerClusterClient extends Closeable {
 

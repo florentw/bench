@@ -18,7 +18,7 @@ package io.amaze.bench.runtime.cluster.jgroups;
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorKey;
@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created on 10/2/16.
  */
-public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterClientFactory implements ClusterClientFactory {
+public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterClientFactory implements AgentClusterClientFactory {
 
     private JgroupsClusterConfigFactory jgroupsClusterConfigFactory;
 

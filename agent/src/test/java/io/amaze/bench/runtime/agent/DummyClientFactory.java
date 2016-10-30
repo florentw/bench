@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.agent;
 
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorKey;
@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created on 3/30/16.
  */
-public final class DummyClientFactory implements ClusterClientFactory {
+public final class DummyClientFactory implements AgentClusterClientFactory {
 
     private final Endpoint endpoint;
     private final AgentClusterClient agentClient;

@@ -19,7 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.amaze.bench.Endpoint;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.*;
@@ -57,12 +57,12 @@ public class Agent implements AgentClientListener, Closeable {
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
     private final AgentKey key;
 
-    public Agent(@NotNull final ClusterClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
+    public Agent(@NotNull final AgentClusterClientFactory clientFactory, @NotNull final ActorManagers actorManagers) {
         this(defaultKey(), clientFactory, actorManagers);
     }
 
     public Agent(@NotNull final AgentKey key, //
-                 @NotNull final ClusterClientFactory clientFactory, //
+                 @NotNull final AgentClusterClientFactory clientFactory, //
                  @NotNull final ActorManagers actorManagers) {
 
         this.key = checkNotNull(key);

@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.agent;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.cluster.ClusterClientFactory;
+import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
 import io.amaze.bench.cluster.registry.AgentRegistry;
@@ -36,11 +36,10 @@ import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterrup
 public final class Agents {
 
     private final ActorManagers actorManagers;
-    private final ClusterClientFactory clientFactory;
+    private final AgentClusterClientFactory clientFactory;
     private final AgentRegistry agentRegistry;
 
-    public Agents(@NotNull final ActorManagers actorManagers,
-                  @NotNull final ClusterClientFactory clientFactory,
+    public Agents(@NotNull final ActorManagers actorManagers, @NotNull final AgentClusterClientFactory clientFactory,
                   @NotNull final AgentRegistry agentRegistry) {
 
         this.actorManagers = checkNotNull(actorManagers);
