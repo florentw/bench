@@ -1,0 +1,32 @@
+-- How to setup Ubuntu firewall UFW to allow internal multicast traffic
+
+* Configure UFW firewall for internal multicast:
+ufw allow out proto udp to 224.0.0.0/3
+ufw allow out proto udp to ff00::/8
+ufw allow in  proto udp to 224.0.0.0/3
+ufw allow in  proto udp to ff00::/8
+
+* Edit /etc/ufw/before.rules (before the COMMIT statement):
+-A ufw-before-input -p igmp -m ttl --ttl-eq 1 -j ACCEPT
+
+* Edit /etc/ufw/before6.rules (before the COMMIT statement):
+-A ufw6-before-output -p icmpv6 --icmpv6-type 130 -m hl --hl-eq 1 -j ACCEPT
+-A ufw6-before-output -p icmpv6 --icmpv6-type 131 -m hl --hl-eq 1 -j ACCEPT
+-A ufw6-before-output -p icmpv6 --icmpv6-type 132 -m hl --hl-eq 1 -j ACCEPT
+-A ufw6-before-output -p icmpv6 --icmpv6-type 143 -m hl --hl-eq 1 -j ACCEPT
+-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT
+-A ufw6-before-input -p icmpv6 --icmpv6-type 131 -j ACCEPT
+-A ufw6-before-input -p icmpv6 --icmpv6-type 132 -j ACCEPT
+-A ufw6-before-input -p icmpv6 --icmpv6-type 143 -j ACCEPT
+
+* Then:
+ufw reload
+
+-- Ubuntu system config
+
+* Configure /etc/sysctl.conf with correct max mem size:
+net.core.rmem_max=5242880
+net.core.wmem_max=5242880
+
+* The reload sysctl parameters
+sudo sysctl -p /etc/sysctl.conf

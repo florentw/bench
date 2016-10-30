@@ -50,7 +50,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     public static final Metric METRIC_LOAD_AVERAGE = metric("sys.loadAverage", "none") //
             .label("Load Average").build();
     public static final Metric METRIC_CPU_USAGE = metric("sys.cpu.usage", "%") //
-            .label("CPU Usage").minValue(0d).maxValue(1d).build();
+            .label("CPU Usage").minValue(0D).maxValue(1D).build();
     public static final Metric METRIC_SWAP_USED = metric("sys.mem.swapUsed", UNIT_BYTES) //
             .label("Swap used").build();
     public static final Metric METRIC_AVAILABLE_RAM = metric("sys.mem.availableMemory", UNIT_BYTES) //
