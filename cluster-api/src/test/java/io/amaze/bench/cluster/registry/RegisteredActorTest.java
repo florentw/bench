@@ -17,7 +17,7 @@ package io.amaze.bench.cluster.registry;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
-import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentKey;

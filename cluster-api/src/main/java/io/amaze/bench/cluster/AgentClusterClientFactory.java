@@ -15,7 +15,6 @@
  */
 package io.amaze.bench.cluster;
 
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentClusterClient;

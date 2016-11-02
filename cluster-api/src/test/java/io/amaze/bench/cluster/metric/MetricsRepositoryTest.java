@@ -19,7 +19,6 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.runtime.actor.TestActor;
-import io.amaze.bench.shared.jms.JMSException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public final class MetricsRepositoryTest {
     private MetricsRepository metricsRepository;
 
     @Before
-    public void initMetricsRepository() throws JMSException {
+    public void initMetricsRepository() {
         metricsRepository = new MetricsRepository();
     }
 
@@ -66,7 +65,7 @@ public final class MetricsRepositoryTest {
     }
 
     @Test
-    public void metrics_are_added_on_message() throws javax.jms.JMSException, IOException {
+    public void metrics_are_added_on_message() throws IOException {
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
 
@@ -77,7 +76,7 @@ public final class MetricsRepositoryTest {
     }
 
     @Test
-    public void all_metrics_return_copy() throws javax.jms.JMSException, IOException {
+    public void all_metrics_return_copy() throws IOException {
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
         clusterListener.onMetricValues(valuesMessage);
@@ -90,7 +89,7 @@ public final class MetricsRepositoryTest {
     }
 
     @Test
-    public void metrics_are_merged_on_second_message() throws javax.jms.JMSException, IOException {
+    public void metrics_are_merged_on_second_message() throws IOException {
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
         List<MetricValue> values = new ArrayList<>();
@@ -106,8 +105,7 @@ public final class MetricsRepositoryTest {
     }
 
     @Test
-    public void expected_metrics_is_set_if_it_already_exists()
-            throws IOException, javax.jms.JMSException, ExecutionException {
+    public void expected_metrics_is_set_if_it_already_exists() throws IOException, ExecutionException {
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
         MetricValuesMessage valuesMessage = metricsMessage(new ArrayList<>());
         clusterListener.onMetricValues(valuesMessage);
@@ -118,8 +116,7 @@ public final class MetricsRepositoryTest {
     }
 
     @Test
-    public void expected_metrics_futures_are_set_when_metrics_are_received()
-            throws IOException, javax.jms.JMSException, ExecutionException {
+    public void expected_metrics_futures_are_set_when_metrics_are_received() throws IOException, ExecutionException {
         MetricsRepositoryListener clusterListener = metricsRepository.createClusterListener();
         Future<MetricValuesMessage> firstFuture = metricsRepository.expectValuesFor(DUMMY_ACTOR);
         Future<MetricValuesMessage> secondFuture = metricsRepository.expectValuesFor(DUMMY_ACTOR);
@@ -131,8 +128,7 @@ public final class MetricsRepositoryTest {
         assertThat(getUninterruptibly(secondFuture).metrics().size(), is(1));
     }
 
-    private MetricValuesMessage metricsMessage(final List<MetricValue> values)
-            throws IOException, javax.jms.JMSException {
+    private MetricValuesMessage metricsMessage(final List<MetricValue> values) throws IOException {
         Map<Metric, List<MetricValue>> metricValues = new HashMap<>();
         metricValues.put(Metric.metric("metric", "sec").build(), values);
         return new MetricValuesMessage(TestActor.DUMMY_ACTOR, metricValues);

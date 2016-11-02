@@ -17,7 +17,7 @@ package io.amaze.bench.cluster.agent;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
-import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;

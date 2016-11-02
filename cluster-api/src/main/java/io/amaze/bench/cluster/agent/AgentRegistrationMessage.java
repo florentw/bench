@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.cluster.agent;
 
-import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.shared.metric.SystemConfig;
 import io.amaze.bench.shared.metric.SystemConfigs;
 

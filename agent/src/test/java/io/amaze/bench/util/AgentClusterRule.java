@@ -16,8 +16,10 @@
 package io.amaze.bench.util;
 
 import io.amaze.bench.cluster.ClusterConfigFactory;
+import io.amaze.bench.cluster.agent.AgentConfig;
+import io.amaze.bench.cluster.jms.JMSAgentCluster;
 import io.amaze.bench.cluster.registry.AgentRegistryClusterClient;
-import io.amaze.bench.runtime.agent.AgentConfig;
+import io.amaze.bench.shared.jgroups.JgroupsAgentCluster;
 import org.junit.rules.ExternalResource;
 
 import javax.validation.constraints.NotNull;

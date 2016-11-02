@@ -29,16 +29,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-            <version>${javax.jms.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jgroups</groupId>
-            <artifactId>jgroups</artifactId>
-            <version>${jgroups.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.picocontainer</groupId>
             <artifactId>picocontainer</artifactId>
             <version>${picocontainer.version}</version>
@@ -69,6 +59,33 @@
         <dependency>
             <groupId>io.amaze</groupId>
             <artifactId>bench-cluster-api</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jms</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jgroups</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jms</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jgroups</artifactId>
             <type>test-jar</type>
             <version>${project.version}</version>
             <scope>test</scope>

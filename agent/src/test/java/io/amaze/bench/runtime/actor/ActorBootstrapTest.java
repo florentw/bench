@@ -18,8 +18,8 @@ package io.amaze.bench.runtime.actor;
 import com.google.common.testing.NullPointerTester;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-import io.amaze.bench.Endpoint;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.RuntimeActor;
@@ -182,7 +182,7 @@ public final class ActorBootstrapTest {
     }
 
     private File writeClusterConfigFile() throws IOException {
-        Config clusterConfig = ClusterConfigs.defaultConfig();
+        Config clusterConfig = ClusterConfigs.defaultConfig().clusterConfig();
         File clusterConfigFile = folder.newFile();
         Files.writeTo(clusterConfigFile, clusterConfig.root().render(ConfigRenderOptions.concise()));
         return clusterConfigFile;

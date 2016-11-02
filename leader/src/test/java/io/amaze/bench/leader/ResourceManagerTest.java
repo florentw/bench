@@ -16,7 +16,7 @@
 package io.amaze.bench.leader;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.DeployConfig;
 import io.amaze.bench.cluster.agent.AgentInputMessage;

@@ -16,7 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.RuntimeActor;

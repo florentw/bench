@@ -16,7 +16,7 @@
 package io.amaze.bench.cluster.actor;
 
 
-import io.amaze.bench.Endpoint;
+import io.amaze.bench.cluster.Endpoint;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

@@ -20,6 +20,8 @@
         <module>leader</module>
         <module>shared</module>
         <module>cluster-api</module>
+        <module>cluster-jms</module>
+        <module>cluster-jgroups</module>
     </modules>
 
     <properties>

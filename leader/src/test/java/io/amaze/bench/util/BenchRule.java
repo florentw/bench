@@ -21,8 +21,6 @@ import io.amaze.bench.cluster.ClusterClients;
 import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.leader.LeaderClusterClientFactory;
 import io.amaze.bench.cluster.leader.ResourceManagerClusterClient;
-import io.amaze.bench.cluster.leader.jgroups.JgroupsLeaderClusterClientFactory;
-import io.amaze.bench.cluster.leader.jms.JMSLeaderClusterClientFactory;
 import io.amaze.bench.cluster.metric.MetricsRepository;
 import io.amaze.bench.cluster.metric.MetricsRepositoryClusterClient;
 import io.amaze.bench.cluster.registry.ActorRegistry;
@@ -33,8 +31,6 @@ import io.amaze.bench.leader.Actors;
 import io.amaze.bench.leader.ResourceManager;
 import io.amaze.bench.runtime.actor.ActorManagers;
 import io.amaze.bench.runtime.agent.Agents;
-import io.amaze.bench.shared.jms.JMSEndpoint;
-import io.amaze.bench.shared.util.Network;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.rules.ExternalResource;
@@ -73,16 +69,13 @@ public final class BenchRule extends ExternalResource {
     }
 
     public static BenchRule newJmsCluster() {
-        JMSEndpoint endpoint = new JMSEndpoint(Network.LOCALHOST, Network.findFreePort());
-        Config leaderConfig = ClusterConfigs.leaderJmsClusterConfig(endpoint, JMSLeaderClusterClientFactory.class);
-        Config clusterConfig = ClusterConfigs.jmsClusterConfig(endpoint);
-        return new BenchRule(leaderConfig, clusterConfig);
+        TestClusterConfigs configs = ClusterConfigs.jms();
+        return new BenchRule(configs.leaderConfig(), configs.clusterConfig());
     }
 
     public static BenchRule newJgroupsCluster() {
-        Config leaderConfig = ClusterConfigs.leaderJgroupsClusterConfig(JgroupsLeaderClusterClientFactory.class);
-        Config clusterConfig = ClusterConfigs.jgroupsClusterConfig();
-        return new BenchRule(leaderConfig, clusterConfig);
+        TestClusterConfigs configs = ClusterConfigs.jgroups();
+        return new BenchRule(configs.leaderConfig(), configs.clusterConfig());
     }
 
     public AgentRegistry agentRegistry() {

@@ -37,6 +37,32 @@
 
         <dependency>
             <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jms</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jgroups</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jms</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jgroups</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
             <artifactId>bench-agent</artifactId>
             <type>test-jar</type>
             <version>${project.version}</version>
