@@ -28,11 +28,10 @@
             <artifactId>bench-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-            <version>${javax.jms.version}</version>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>${config.version}</version>
         </dependency>
 
         <dependency>

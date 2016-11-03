@@ -28,20 +28,11 @@
             <artifactId>bench-cluster-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.picocontainer</groupId>
-            <artifactId>picocontainer</artifactId>
-            <version>${picocontainer.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
             <version>${config.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.dblock</groupId>
-            <artifactId>oshi-core</artifactId>
-            <version>${oshi.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.dblock</groupId>
@@ -63,7 +54,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>io.amaze</groupId>
             <artifactId>bench-cluster-jms</artifactId>
