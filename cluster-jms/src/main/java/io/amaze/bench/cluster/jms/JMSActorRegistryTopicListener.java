@@ -16,7 +16,6 @@
 package io.amaze.bench.cluster.jms;
 
 import io.amaze.bench.cluster.Message;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.shared.jms.JMSHelper;
@@ -37,10 +36,10 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
 
     private static final Logger log = LogManager.getLogger();
 
-    private final ActorRegistryListener actorsListener;
+    private final ActorRegistryListener registryListener;
 
-    JMSActorRegistryTopicListener(@NotNull final ActorRegistryListener actorsListener) {
-        this.actorsListener = checkNotNull(actorsListener);
+    JMSActorRegistryTopicListener(@NotNull final ActorRegistryListener registryListener) {
+        this.registryListener = checkNotNull(registryListener);
     }
 
     @Override
@@ -54,7 +53,9 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
 
         try {
             ActorLifecycleMessage lifecycleMessage = (ActorLifecycleMessage) received.get().data();
-            onActorLifecycle(lifecycleMessage);
+
+            lifecycleMessage.sendTo(registryListener);
+
         } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error handling actor registry message {}", received.get(), e);
         }
@@ -66,26 +67,6 @@ public final class JMSActorRegistryTopicListener implements MessageListener {
         } catch (Exception e) { // NOSONAR - We want to catch everything
             log.error("Error while reading JMS message.", e);
             return Optional.empty();
-        }
-    }
-
-    private void onActorLifecycle(final ActorLifecycleMessage lfMsg) {
-        ActorKey actor = lfMsg.getActor();
-
-        switch (lfMsg.getState()) {
-            case CREATED:
-                actorsListener.onActorCreated(actor, lfMsg.getAgent());
-                break;
-            case INITIALIZED:
-                actorsListener.onActorInitialized(actor, lfMsg.getDeployInfo());
-                break;
-            case FAILED:
-                actorsListener.onActorFailed(actor, lfMsg.getThrowable());
-                break;
-            case CLOSED:
-                actorsListener.onActorClosed(actor);
-                break;
-            default:
         }
     }
 }

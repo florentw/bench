@@ -17,6 +17,7 @@ package io.amaze.bench.cluster.actor;
 
 import io.amaze.bench.cluster.LifecycleMessage;
 import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.registry.ActorRegistryListener;
 
 import javax.validation.constraints.NotNull;
 
@@ -72,6 +73,32 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
         checkNotNull(actor);
 
         return new ActorLifecycleMessage(State.CLOSED, actor, null, null, null);
+    }
+
+    /**
+     * Calls the given registry listener using the current message.
+     * Not synchronized.
+     *
+     * @param registryListener Listener to be notified with the event represented by this message.
+     */
+    public void sendTo(final ActorRegistryListener registryListener) {
+        checkNotNull(registryListener);
+
+        switch (getState()) {
+            case CREATED:
+                registryListener.onActorCreated(actor, agent);
+                break;
+            case INITIALIZED:
+                registryListener.onActorInitialized(actor, deployInfo);
+                break;
+            case FAILED:
+                registryListener.onActorFailed(actor, throwable);
+                break;
+            case CLOSED:
+                registryListener.onActorClosed(actor);
+                break;
+            default:
+        }
     }
 
     @NotNull

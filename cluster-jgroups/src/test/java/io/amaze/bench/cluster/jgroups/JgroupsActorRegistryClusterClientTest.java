@@ -17,7 +17,6 @@ package io.amaze.bench.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.cluster.Endpoint;
-import io.amaze.bench.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.registry.ActorRegistry;
@@ -40,7 +39,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.*;
+import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.created;
 import static io.amaze.bench.cluster.agent.AgentUtil.DUMMY_AGENT;
 import static io.amaze.bench.cluster.jgroups.JgroupsActorRegistryClusterClient.*;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
@@ -186,38 +185,6 @@ public final class JgroupsActorRegistryClusterClientTest {
         registryMessageListener.onMessage(message, created(DUMMY_ACTOR, DUMMY_AGENT));
 
         verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void message_listener_forwards_actor_initialized() throws IOException {
-        RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
-        ActorDeployInfo deployInfo = new ActorDeployInfo(endpoint, 10);
-
-        registryMessageListener.onMessage(message, initialized(DUMMY_ACTOR, deployInfo));
-
-        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, deployInfo);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void message_listener_forwards_actor_failure() throws IOException {
-        RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
-        Throwable throwable = new IllegalArgumentException();
-
-        registryMessageListener.onMessage(message, failed(DUMMY_ACTOR, throwable));
-
-        verify(actorRegistryListener).onActorFailed(eq(DUMMY_ACTOR), any(Throwable.class));
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void message_listener_forwards_actor_closed() throws IOException {
-        RegistryMessageListener registryMessageListener = new RegistryMessageListener(actorRegistryListener);
-
-        registryMessageListener.onMessage(message, closed(DUMMY_ACTOR));
-
-        verify(actorRegistryListener).onActorClosed(DUMMY_ACTOR);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 

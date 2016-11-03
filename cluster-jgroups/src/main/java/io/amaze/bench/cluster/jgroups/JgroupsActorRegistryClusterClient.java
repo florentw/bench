@@ -16,7 +16,6 @@
 package io.amaze.bench.cluster.jgroups;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
 import io.amaze.bench.cluster.agent.Constants;
 import io.amaze.bench.cluster.registry.ActorRegistry;
@@ -100,24 +99,11 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
         }
 
         @Override
-        public void onMessage(@NotNull final Message msg, @NotNull final ActorLifecycleMessage lfMsg) {
-            ActorKey actor = lfMsg.getActor();
+        public void onMessage(@NotNull final Message msg, @NotNull final ActorLifecycleMessage lifecycleMessage) {
+            checkNotNull(msg);
+            checkNotNull(lifecycleMessage);
 
-            switch (lfMsg.getState()) {
-                case CREATED:
-                    actorsListener.onActorCreated(actor, lfMsg.getAgent());
-                    break;
-                case INITIALIZED:
-                    actorsListener.onActorInitialized(actor, lfMsg.getDeployInfo());
-                    break;
-                case FAILED:
-                    actorsListener.onActorFailed(actor, lfMsg.getThrowable());
-                    break;
-                case CLOSED:
-                    actorsListener.onActorClosed(actor);
-                    break;
-                default:
-            }
+            lifecycleMessage.sendTo(actorsListener);
         }
     }
 

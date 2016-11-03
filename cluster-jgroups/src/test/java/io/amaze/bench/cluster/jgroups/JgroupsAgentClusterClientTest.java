@@ -19,6 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.cluster.actor.ActorCreationRequest;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
 import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.agent.AgentClientListener;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
 import io.amaze.bench.cluster.agent.AgentKey;
@@ -32,6 +33,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -117,6 +120,29 @@ public final class JgroupsAgentClusterClientTest {
 
         verify(agentClientListener).onActorCloseRequest(DUMMY_ACTOR);
         verifyNoMoreInteractions(agentClientListener);
+    }
+
+    @Test
+    public void message_listener_does_not_forward_for_another_agent() {
+        JgroupsAgentClusterClient.MessageListener messageListener = new JgroupsAgentClusterClient.MessageListener(
+                DUMMY_AGENT,
+                agentClientListener);
+
+        messageListener.onMessage(mock(org.jgroups.Message.class),
+                                  AgentInputMessage.createActor(new AgentKey("other-agent"),
+                                                                new ActorCreationRequest(TestActor.DUMMY_CONFIG)));
+
+        verifyNoMoreInteractions(agentClientListener);
+    }
+
+    @Test
+    public void sender_returns_new_instance() {
+        ActorSender actorSender1 = clusterClient.actorSender();
+        ActorSender actorSender2 = clusterClient.actorSender();
+
+        assertNotNull(actorSender1);
+        assertNotNull(actorSender2);
+        assertNotSame(actorSender1, actorSender2);
     }
 
 }

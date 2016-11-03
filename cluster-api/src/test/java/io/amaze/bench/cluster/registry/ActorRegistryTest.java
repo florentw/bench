@@ -82,6 +82,11 @@ public final class ActorRegistryTest {
         tester.testAllPublicInstanceMethods(registry);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void adding_same_listener_a_second_time_throws() {
+        registry.addListener(clientListener);
+    }
+
     @Test
     public void cluster_listener_is_a_logger() {
         assertTrue(registry.createClusterListener() instanceof ActorRegistryListenerLogger);

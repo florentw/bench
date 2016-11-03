@@ -16,14 +16,10 @@
 package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
-import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.LifecycleMessage;
 import io.amaze.bench.cluster.Message;
-import io.amaze.bench.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
-import io.amaze.bench.shared.jms.JMSEndpoint;
 import io.amaze.bench.shared.jms.JMSHelper;
-import io.amaze.bench.shared.util.Network;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,12 +30,10 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.io.IOException;
 
-import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.*;
+import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.created;
 import static io.amaze.bench.cluster.agent.AgentUtil.DUMMY_AGENT;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.shared.jms.JMSHelperTest.createTestBytesMessage;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,8 +41,6 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class JMSActorRegistryTopicListenerTest {
-
-    private final Endpoint endpoint = new JMSEndpoint(Network.LOCALHOST, 1337);
 
     @Mock
     private ActorRegistryListener actorRegistryListener;
@@ -84,44 +76,12 @@ public final class JMSActorRegistryTopicListenerTest {
     }
 
     @Test
-    public void actor_created() throws IOException, JMSException {
+    public void actor_created_forwards_to_listener() throws IOException, JMSException {
         BytesMessage msg = toBytesMessage(created(DUMMY_ACTOR, DUMMY_AGENT));
 
         messageListener.onMessage(msg);
 
         verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_initialized() throws IOException, JMSException {
-        ActorDeployInfo deployInfo = new ActorDeployInfo(endpoint, 10);
-        BytesMessage msg = toBytesMessage(initialized(DUMMY_ACTOR, deployInfo));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, deployInfo);
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_failure() throws IOException, JMSException {
-        Throwable throwable = new IllegalArgumentException();
-        BytesMessage msg = toBytesMessage(failed(DUMMY_ACTOR, throwable));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorFailed(eq(DUMMY_ACTOR), any(Throwable.class));
-        verifyNoMoreInteractions(actorRegistryListener);
-    }
-
-    @Test
-    public void actor_closed() throws IOException, JMSException {
-        BytesMessage msg = toBytesMessage(closed(DUMMY_ACTOR));
-
-        messageListener.onMessage(msg);
-
-        verify(actorRegistryListener).onActorClosed(DUMMY_ACTOR);
         verifyNoMoreInteractions(actorRegistryListener);
     }
 

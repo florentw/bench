@@ -17,19 +17,30 @@ package io.amaze.bench.cluster.actor;
 
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
+import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.agent.AgentKey;
+import io.amaze.bench.cluster.registry.ActorRegistryListener;
 import io.amaze.bench.cluster.registry.RegisteredActorTest;
 import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.test.Json;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
+
+import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.*;
 import static io.amaze.bench.cluster.agent.AgentUtil.DUMMY_AGENT;
+import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Created on 8/15/16.
@@ -41,6 +52,10 @@ public final class ActorLifecycleMessageTest {
             "endpoint");
     private static final ActorDeployInfo ACTOR_DEPLOY_INFO = new ActorDeployInfo(DUMMY_ENDPOINT, 10);
 
+    @Mock
+    private ActorRegistryListener actorRegistryListener;
+    @Mock
+    private Endpoint endpoint;
     private ActorLifecycleMessage msg;
 
     @Before
@@ -76,4 +91,39 @@ public final class ActorLifecycleMessageTest {
         assertTrue(Json.isValid(ActorLifecycleMessage.created(TestActor.DUMMY_ACTOR, DUMMY_AGENT).toString()));
     }
 
+    @Test
+    public void message_listener_forwards_actor_created() throws IOException {
+        created(DUMMY_ACTOR, DUMMY_AGENT).sendTo(actorRegistryListener);
+
+        verify(actorRegistryListener).onActorCreated(DUMMY_ACTOR, DUMMY_AGENT);
+        verifyNoMoreInteractions(actorRegistryListener);
+    }
+
+    @Test
+    public void message_listener_forwards_actor_initialized() throws IOException {
+        ActorDeployInfo deployInfo = new ActorDeployInfo(endpoint, 10);
+
+        initialized(DUMMY_ACTOR, deployInfo).sendTo(actorRegistryListener);
+
+        verify(actorRegistryListener).onActorInitialized(DUMMY_ACTOR, deployInfo);
+        verifyNoMoreInteractions(actorRegistryListener);
+    }
+
+    @Test
+    public void message_listener_forwards_actor_failure() throws IOException {
+        Throwable throwable = new IllegalArgumentException();
+
+        failed(DUMMY_ACTOR, throwable).sendTo(actorRegistryListener);
+
+        verify(actorRegistryListener).onActorFailed(eq(DUMMY_ACTOR), any(Throwable.class));
+        verifyNoMoreInteractions(actorRegistryListener);
+    }
+
+    @Test
+    public void message_listener_forwards_actor_closed() throws IOException {
+        closed(DUMMY_ACTOR).sendTo(actorRegistryListener);
+
+        verify(actorRegistryListener).onActorClosed(DUMMY_ACTOR);
+        verifyNoMoreInteractions(actorRegistryListener);
+    }
 }

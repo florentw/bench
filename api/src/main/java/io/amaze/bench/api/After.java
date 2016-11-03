@@ -21,7 +21,7 @@ import java.lang.annotation.*;
  * A class annotated with @{@link Actor} can use @{@link After} to annotate one of its methods.<br>
  * This method will be called when the Actor is destroyed.<br>
  * At most one method can be tagged with @{@link After}.
- * <p>
+ *
  * @see Before
  */
 @Target(value = {ElementType.METHOD})
