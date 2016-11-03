@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.shared.metric;
 
+import io.amaze.bench.shared.util.SystemConfig;
+import io.amaze.bench.shared.util.SystemConfigs;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertFalse;

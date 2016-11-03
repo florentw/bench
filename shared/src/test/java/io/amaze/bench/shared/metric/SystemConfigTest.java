@@ -19,6 +19,8 @@ import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.shared.test.Json;
+import io.amaze.bench.shared.util.SystemConfig;
+import io.amaze.bench.shared.util.SystemConfigs;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;

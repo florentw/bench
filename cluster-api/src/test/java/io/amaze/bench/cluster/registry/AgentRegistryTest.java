@@ -19,7 +19,7 @@ import com.google.common.testing.NullPointerTester;
 import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;
 import io.amaze.bench.cluster.agent.AgentUtil;
-import io.amaze.bench.shared.metric.SystemConfig;
+import io.amaze.bench.shared.util.SystemConfig;
 import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Before;

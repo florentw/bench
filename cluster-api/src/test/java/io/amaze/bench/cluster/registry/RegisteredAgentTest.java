@@ -20,7 +20,7 @@ import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.SerializableTester;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentUtil;
-import io.amaze.bench.shared.metric.SystemConfig;
+import io.amaze.bench.shared.util.SystemConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
