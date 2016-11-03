@@ -44,8 +44,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static io.amaze.bench.cluster.agent.AgentUtil.DUMMY_AGENT;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
-import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -273,7 +273,7 @@ public final class ForkedActorManagerTest {
         long t0 = System.currentTimeMillis();
 
         while ((System.currentTimeMillis() - t0) < timeoutMs) {
-            String content = null;
+            String content;
             try {
                 content = Files.read(file.getAbsolutePath());
             } catch (IOException e) {

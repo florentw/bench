@@ -84,7 +84,7 @@ public class ActorBootstrap implements Closeable {
      * @throws IOException         if an error occurs while reading the actors configuration file
      */
     @VisibleForTesting
-    static void mainInternal(final String[] args) throws ValidationException, IOException {
+    static void mainInternal(final String... args) throws ValidationException, IOException {
         if (args.length != 4) {
             log.error("Usage:");
             log.error("ActorBootstrap <actorName> <className> " + //

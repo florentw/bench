@@ -16,9 +16,11 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
-import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
+import io.amaze.bench.cluster.ClusterClients;
+import io.amaze.bench.cluster.ClusterClientsTest;
 import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
@@ -27,7 +29,6 @@ import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.agent.DummyClientFactory;
 import io.amaze.bench.shared.util.Files;
-import io.amaze.bench.util.ClusterConfigs;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
+import static io.amaze.bench.runtime.actor.ActorBootstrap.*;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -101,7 +103,7 @@ public final class ActorBootstrapTest {
                                                         TestActor.DUMMY_JSON_CONFIG);
         actor = spy(actor);
 
-        ActorBootstrap.ActorShutdownThread thread = new ActorBootstrap.ActorShutdownThread(actorBootstrap, actor);
+        ActorShutdownThread thread = new ActorShutdownThread(actorBootstrap, actor);
         thread.start();
 
         joinUninterruptibly(thread);
@@ -116,7 +118,7 @@ public final class ActorBootstrapTest {
 
     @Test
     public void install_shutdown_hook() {
-        Thread thread = ActorBootstrap.installShutdownHook(actorBootstrap, mock(RuntimeActor.class));
+        Thread thread = installShutdownHook(actorBootstrap, mock(RuntimeActor.class));
 
         assertNotNull(thread);
         boolean removed = Runtime.getRuntime().removeShutdownHook(thread);
@@ -125,7 +127,7 @@ public final class ActorBootstrapTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void main_wrong_usage_throws() throws IOException, ValidationException {
-        ActorBootstrap.mainInternal(new String[]{"", ""});
+        mainInternal("", "");
     }
 
     @Test
@@ -134,7 +136,11 @@ public final class ActorBootstrapTest {
         File actorConfigFile = writeActorConfig();
 
         try {
-            ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+            mainInternal(DUMMY_ACTOR.getName(), //
+                         DUMMY, //
+                         clusterConfigFile.getAbsolutePath(), //
+                         actorConfigFile.getAbsolutePath());
+
         } catch (ValidationException ignore) {
         }
 
@@ -147,7 +153,10 @@ public final class ActorBootstrapTest {
         File actorConfigFile = writeActorConfig();
         File clusterConfigFile = writeClusterConfigFile();
 
-        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), DUMMY, clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+        mainInternal(DUMMY_ACTOR.getName(), //
+                     DUMMY, //
+                     clusterConfigFile.getAbsolutePath(), //
+                     actorConfigFile.getAbsolutePath());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -155,7 +164,10 @@ public final class ActorBootstrapTest {
         File actorConfigFile = writeActorConfig();
         File clusterConfigFile = writeClusterConfigFile();
 
-        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), "Invalid -?", clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+        mainInternal(DUMMY_ACTOR.getName(), //
+                     "Invalid -?", //
+                     clusterConfigFile.getAbsolutePath(), //
+                     actorConfigFile.getAbsolutePath());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -163,7 +175,7 @@ public final class ActorBootstrapTest {
         File actorConfigFile = writeActorConfig();
         File clusterConfigFile = writeClusterConfigFile();
 
-        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), "", clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath()});
+        mainInternal(DUMMY_ACTOR.getName(), "", clusterConfigFile.getAbsolutePath(), actorConfigFile.getAbsolutePath());
     }
 
     @Test(expected = ValidationException.class)
@@ -172,7 +184,10 @@ public final class ActorBootstrapTest {
         File tmpConfigFile = writeActorConfig();
         File clusterConfigFile = folder.newFile();
 
-        ActorBootstrap.mainInternal(new String[]{DUMMY_ACTOR.getName(), TestActor.class.getName(), clusterConfigFile.getAbsolutePath(), tmpConfigFile.getAbsolutePath()});
+        mainInternal(DUMMY_ACTOR.getName(), //
+                     TestActor.class.getName(), //
+                     clusterConfigFile.getAbsolutePath(), //
+                     tmpConfigFile.getAbsolutePath());
     }
 
     private File writeActorConfig() throws IOException {
@@ -181,10 +196,15 @@ public final class ActorBootstrapTest {
         return actorConfigFile;
     }
 
+    private String clusterConfig() {
+        return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + ClusterClientsTest.DummyClusterClientFactory.class.getName() + "\"," + //
+                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":{}}").root().render(
+                ConfigRenderOptions.concise());
+    }
+
     private File writeClusterConfigFile() throws IOException {
-        Config clusterConfig = ClusterConfigs.defaultConfig().clusterConfig();
         File clusterConfigFile = folder.newFile();
-        Files.writeTo(clusterConfigFile, clusterConfig.root().render(ConfigRenderOptions.concise()));
+        Files.writeTo(clusterConfigFile, clusterConfig());
         return clusterConfigFile;
     }
 }

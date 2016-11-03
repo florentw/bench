@@ -25,6 +25,54 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bench-agent-inttests</artifactId>
+    <name>Bench :: Agent integration tests</name>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-agent</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-shared</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-api</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jms</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jgroups</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jms</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.amaze</groupId>
+            <artifactId>bench-cluster-jgroups</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
