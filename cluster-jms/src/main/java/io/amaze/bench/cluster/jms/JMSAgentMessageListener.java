@@ -15,9 +15,9 @@
  */
 package io.amaze.bench.cluster.jms;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.Reactor;
 import io.amaze.bench.cluster.actor.ActorCreationRequest;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentClientListener;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
 import io.amaze.bench.cluster.agent.AgentKey;
@@ -48,15 +48,6 @@ final class JMSAgentMessageListener implements MessageListener {
         this.listener = checkNotNull(listener);
     }
 
-    private static Optional<AgentInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
-        try {
-            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
-        } catch (Exception e) { // NOSONAR - We want to catch everything
-            log.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
-            return Optional.empty();
-        }
-    }
-
     @Override
     public void onMessage(@NotNull final Message jmsMessage) {
         checkNotNull(jmsMessage);
@@ -81,6 +72,15 @@ final class JMSAgentMessageListener implements MessageListener {
                 closeActor(inputMessage);
                 break;
             default:
+        }
+    }
+
+    private static Optional<AgentInputMessage> readInputMessageFrom(@NotNull final Message jmsMessage) {
+        try {
+            return Optional.of(JMSHelper.objectFromMsg((BytesMessage) jmsMessage));
+        } catch (Exception e) { // NOSONAR - We want to catch everything
+            log.error("Invalid AgentInputMessage received, jmsMessage:{}", jmsMessage, e);
+            return Optional.empty();
         }
     }
 

@@ -15,9 +15,9 @@
  */
 package io.amaze.bench.cluster.leader;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClient;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
 
 import javax.validation.constraints.NotNull;

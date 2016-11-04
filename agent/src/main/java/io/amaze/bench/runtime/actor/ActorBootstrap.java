@@ -20,9 +20,9 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClients;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.Constants;
@@ -69,6 +69,14 @@ public class ActorBootstrap implements Closeable {
             log.error("Exception while starting actor with arguments {}", args, e);
             System.exit(1);
         }
+    }
+
+    @Override
+    public void close() {
+        if (actor != null) {
+            actor.close();
+        }
+        clientFactory.close();
     }
 
     @VisibleForTesting
@@ -120,6 +128,14 @@ public class ActorBootstrap implements Closeable {
         log.info("{} started.", actorKey);
     }
 
+    RuntimeActor createActor(final ActorKey key, //
+                             final String className, //
+                             final String jsonConfig) throws ValidationException, IOException {
+        actor = actors.create(key, className, jsonConfig);
+        actor.init();
+        return actor;
+    }
+
     private static String checkClassName(@NotNull final String className) {
         checkNotNull(className);
         if (!SourceVersion.isName(className)) {
@@ -134,22 +150,6 @@ public class ActorBootstrap implements Closeable {
         } catch (ConfigException e) {
             throw ValidationException.create("Cluster configuration error for " + jsonConfig, e);
         }
-    }
-
-    @Override
-    public void close() {
-        if (actor != null) {
-            actor.close();
-        }
-        clientFactory.close();
-    }
-
-    RuntimeActor createActor(final ActorKey key, //
-                             final String className, //
-                             final String jsonConfig) throws ValidationException, IOException {
-        actor = actors.create(key, className, jsonConfig);
-        actor.init();
-        return actor;
     }
 
     static final class ActorShutdownThread extends Thread {

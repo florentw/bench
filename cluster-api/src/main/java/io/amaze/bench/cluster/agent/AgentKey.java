@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.cluster.agent;
 
-import io.amaze.bench.cluster.Key;
+import io.amaze.bench.api.Key;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;

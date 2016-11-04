@@ -53,7 +53,7 @@ public final class ActorInputMessageTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void from_should_not_be_empty() {
-        ActorInputMessage.sendMessage("", "payload");
+        ActorInputMessage.message("", "payload");
     }
 
     @Test
@@ -69,7 +69,7 @@ public final class ActorInputMessageTest {
         assertTrue(Json.isValid(ActorInputMessage.close().toString()));
         assertTrue(Json.isValid(ActorInputMessage.dumpMetrics().toString()));
         assertTrue(Json.isValid(ActorInputMessage.dumpMetrics().toString()));
-        assertTrue(Json.isValid(ActorInputMessage.sendMessage("from", "payload").toString()));
+        assertTrue(Json.isValid(ActorInputMessage.message("from", "payload").toString()));
     }
 
 }

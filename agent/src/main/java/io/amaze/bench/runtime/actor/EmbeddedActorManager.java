@@ -16,9 +16,9 @@
 package io.amaze.bench.runtime.actor;
 
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorConfig;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.AgentKey;

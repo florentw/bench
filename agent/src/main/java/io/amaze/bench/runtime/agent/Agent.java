@@ -18,10 +18,10 @@ package io.amaze.bench.runtime.agent;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorConfig;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.*;
 import io.amaze.bench.runtime.actor.ActorManager;
 import io.amaze.bench.runtime.actor.ActorManagers;
@@ -83,11 +83,6 @@ public class Agent implements AgentClientListener, Closeable {
         sendRegistrationMessage(regMsg);
 
         log.info("{} Started.", this);
-    }
-
-    private static AgentKey defaultKey() {
-        String suffix = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@", "-");
-        return new AgentKey(DEFAULT_AGENT_PREFIX + suffix);
     }
 
     @Override
@@ -159,6 +154,11 @@ public class Agent implements AgentClientListener, Closeable {
     @VisibleForTesting
     synchronized Set<ManagedActor> getActors() {
         return ImmutableSet.copyOf(actors.values());
+    }
+
+    private static AgentKey defaultKey() {
+        String suffix = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@", "-");
+        return new AgentKey(DEFAULT_AGENT_PREFIX + suffix);
     }
 
     private void sendRegistrationMessage(@NotNull final AgentRegistrationMessage regMsg) {

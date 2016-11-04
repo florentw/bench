@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.jms;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.shared.jms.JMSClient;
 import io.amaze.bench.shared.jms.JMSException;

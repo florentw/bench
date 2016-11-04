@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster.actor;
-
-import io.amaze.bench.cluster.Key;
+package io.amaze.bench.api;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
@@ -24,8 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Identifies uniquely an actor instance across the cluster.
- *
- * @see RuntimeActor
+ * When implementing an actor you can have your own {@link ActorKey} injected in your public constructor.
  */
 public final class ActorKey implements Key {
 

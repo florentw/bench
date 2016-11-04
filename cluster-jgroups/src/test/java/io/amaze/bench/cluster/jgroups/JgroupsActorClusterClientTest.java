@@ -16,9 +16,9 @@
 package io.amaze.bench.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.cluster.registry.ActorRegistry;
@@ -123,7 +123,7 @@ public final class JgroupsActorClusterClientTest {
         String payload = "payload";
 
         messageListener.onMessage(mock(org.jgroups.Message.class),
-                                  createMessage(ActorInputMessage.sendMessage(from, payload)));
+                                  createMessage(ActorInputMessage.message(from, payload)));
 
         verify(runtimeActor).getKey();
         verify(runtimeActor).onMessage(from, payload);

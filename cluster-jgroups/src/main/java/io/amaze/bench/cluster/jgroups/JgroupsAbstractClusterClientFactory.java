@@ -57,15 +57,6 @@ public abstract class JgroupsAbstractClusterClientFactory {
         registryClusterClient.startRegistryListener(actorRegistry.createClusterListener());
     }
 
-    protected static JChannel createJChannel(final Config clusterConfig) {
-        checkNotNull(clusterConfig);
-        try {
-            return new JChannel(clusterConfig.getString(XML_CONFIG));
-        } catch (Exception e) { // NOSONAR - No choice here
-            throw propagate(e);
-        }
-    }
-
     public ActorRegistryClusterClient createForActorRegistry() {
         return registryClusterClient;
     }
@@ -88,5 +79,14 @@ public abstract class JgroupsAbstractClusterClientFactory {
     @VisibleForTesting
     public JChannel getJChannel() {
         return jChannel;
+    }
+
+    protected static JChannel createJChannel(final Config clusterConfig) {
+        checkNotNull(clusterConfig);
+        try {
+            return new JChannel(clusterConfig.getString(XML_CONFIG));
+        } catch (Exception e) { // NOSONAR - No choice here
+            throw propagate(e);
+        }
     }
 }

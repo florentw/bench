@@ -16,7 +16,7 @@
 package io.amaze.bench.cluster;
 
 import com.typesafe.config.Config;
-import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.api.ActorKey;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;

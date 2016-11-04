@@ -16,11 +16,11 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.amaze.bench.api.Reactor;
-import io.amaze.bench.api.ReactorException;
-import io.amaze.bench.api.RecoverableException;
-import io.amaze.bench.api.TerminationException;
-import io.amaze.bench.cluster.actor.*;
+import io.amaze.bench.api.*;
+import io.amaze.bench.cluster.actor.ActorClusterClient;
+import io.amaze.bench.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
+import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.metric.MetricValuesMessage;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
 import org.apache.logging.log4j.LogManager;

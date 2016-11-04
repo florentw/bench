@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.metric;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.metric.Metric;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.runtime.actor.TestActor;
 import org.junit.Before;
 import org.junit.Rule;

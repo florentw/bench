@@ -16,9 +16,9 @@
 package io.amaze.bench.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorDeployInfo;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.cluster.registry.RegisteredActor;
@@ -77,7 +77,7 @@ public final class JgroupsActorSenderTest {
     public void send_to_actor_resolves_endpoint_through_registry_and_sends() throws Exception {
         RegisteredActor agent = created(DUMMY_ACTOR, AGENT);
         when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(initialized(agent, new ActorDeployInfo(endpoint, 10)));
-        ActorInputMessage message = ActorInputMessage.sendMessage("other", "hello");
+        ActorInputMessage message = ActorInputMessage.message("other", "hello");
 
         sender.send(DUMMY_ACTOR, message);
 
@@ -87,14 +87,14 @@ public final class JgroupsActorSenderTest {
 
     @Test(expected = NoSuchElementException.class)
     public void sending_to_unknown_actor_throws_NoSuchElementException() {
-        sender.send(DUMMY_ACTOR, ActorInputMessage.sendMessage("other", "hello"));
+        sender.send(DUMMY_ACTOR, ActorInputMessage.message("other", "hello"));
     }
 
     @Test(expected = NoSuchElementException.class)
     public void sending_to_uninitialized_actor_throws_NoSuchElementException() {
         when(actorRegistry.byKey(DUMMY_ACTOR)).thenReturn(created(DUMMY_ACTOR, AGENT));
 
-        sender.send(DUMMY_ACTOR, ActorInputMessage.sendMessage("other", "hello"));
+        sender.send(DUMMY_ACTOR, ActorInputMessage.message("other", "hello"));
     }
 
 }

@@ -38,16 +38,6 @@ public final class JMSAgentCluster implements AgentCluster {
     private final JMSServerRule jmsServerRule = new JMSServerRule();
     private ClusterConfigFactory clusterConfigFactory;
 
-    private static Config jmsClusterConfig(final JMSEndpoint endpoint) {
-        return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JMSClusterClientFactory.class.getName() + "\"," + //
-                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":" + jmsFactoryConfigJson(
-                endpoint) + "}");
-    }
-
-    private static String jmsFactoryConfigJson(final JMSEndpoint endpoint) {
-        return endpoint.toConfig().root().render(ConfigRenderOptions.concise());
-    }
-
     @Override
     public ClusterConfigFactory clusterConfigFactory() {
         return clusterConfigFactory;
@@ -77,5 +67,15 @@ public final class JMSAgentCluster implements AgentCluster {
     @Override
     public void after() {
         jmsServerRule.close();
+    }
+
+    private static Config jmsClusterConfig(final JMSEndpoint endpoint) {
+        return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JMSClusterClientFactory.class.getName() + "\"," + //
+                                                 "\"" + ClusterClients.FACTORY_CONFIG + "\":" + jmsFactoryConfigJson(
+                endpoint) + "}");
+    }
+
+    private static String jmsFactoryConfigJson(final JMSEndpoint endpoint) {
+        return endpoint.toConfig().root().render(ConfigRenderOptions.concise());
     }
 }

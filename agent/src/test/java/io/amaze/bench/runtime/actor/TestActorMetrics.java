@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import com.typesafe.config.Config;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.ReactorException;
 import io.amaze.bench.api.Sender;
 import io.amaze.bench.api.metric.Metric;
@@ -36,13 +37,13 @@ public final class TestActorMetrics extends TestActor {
 
     private final Metrics metrics;
 
-    public TestActorMetrics(final Sender sender, final Metrics metrics) {
-        super(sender);
+    public TestActorMetrics(final ActorKey actorKey, final Sender sender, final Metrics metrics, final Config config) {
+        super(actorKey, sender, config);
         this.metrics = metrics;
     }
 
-    public TestActorMetrics(final Sender sender, final Metrics metrics, final Config config) {
-        super(sender, config);
+    protected TestActorMetrics(final Sender sender, final Metrics metrics) {
+        super(sender);
         this.metrics = metrics;
     }
 

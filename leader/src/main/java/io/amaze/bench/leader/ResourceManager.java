@@ -16,9 +16,9 @@
 package io.amaze.bench.leader;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.ActorCreationRequest;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.agent.AgentInputMessage;
 import io.amaze.bench.cluster.leader.ResourceManagerClusterClient;
 import io.amaze.bench.cluster.registry.AgentRegistry;
@@ -50,11 +50,6 @@ public class ResourceManager implements AutoCloseable {
                            @NotNull final AgentRegistry agentRegistry) {
         this.resourceManagerClusterClient = checkNotNull(resourceManagerClusterClient);
         this.agentRegistry = checkNotNull(agentRegistry);
-    }
-
-    private static Optional<RegisteredAgent> pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
-                                                                            final List<String> preferredHosts) {
-        return allAgents.stream().filter(input -> preferredHosts.contains(input.getSystemConfig().getHostName())).findFirst();
     }
 
     /**
@@ -112,6 +107,11 @@ public class ResourceManager implements AutoCloseable {
     @VisibleForTesting
     Map<ActorKey, RegisteredAgent> getActorsToAgents() {
         return Collections.unmodifiableMap(actorsToAgents);
+    }
+
+    private static Optional<RegisteredAgent> pickAgentOnOneOfPreferredHosts(final Set<RegisteredAgent> allAgents,
+                                                                            final List<String> preferredHosts) {
+        return allAgents.stream().filter(input -> preferredHosts.contains(input.getSystemConfig().getHostName())).findFirst();
     }
 
     private Optional<RegisteredAgent> pickRandomAgent(final Set<RegisteredAgent> agents) {

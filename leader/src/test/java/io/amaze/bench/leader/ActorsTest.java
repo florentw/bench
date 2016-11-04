@@ -16,6 +16,7 @@
 package io.amaze.bench.leader;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.*;
 import io.amaze.bench.cluster.agent.AgentKey;
@@ -110,7 +111,7 @@ public final class ActorsTest {
     public void initialize_awaits_initialization() {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
 
-        Future<ActorDeployInfo> future = actorHandle.initialize();
+        Future<ActorDeployInfo> future = actorHandle.actorInitialization();
 
         assertNotNull(future);
         verifyNoMoreInteractions(actorSender);
@@ -134,7 +135,7 @@ public final class ActorsTest {
 
         actorHandle.send(from, message);
 
-        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.sendMessage(from, message));
+        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.message(from, message));
         verifyNoMoreInteractions(actorSender);
     }
 

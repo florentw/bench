@@ -92,7 +92,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test(expected = NullPointerException.class)
     public void on_actor_null_message_msg_throws() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = ActorInputMessage.sendMessage("", null);
+        ActorInputMessage inputMsg = ActorInputMessage.message("", null);
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
@@ -102,7 +102,7 @@ public final class JMSActorMessageListenerTest {
 
     @Test
     public void on_actor_message_msg() throws IOException, ClassNotFoundException, JMSException {
-        ActorInputMessage inputMsg = ActorInputMessage.sendMessage(DUMMY_ACTOR.getName(), DUMMY_PAYLOAD);
+        ActorInputMessage inputMsg = ActorInputMessage.message(DUMMY_ACTOR.getName(), DUMMY_PAYLOAD);
 
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);

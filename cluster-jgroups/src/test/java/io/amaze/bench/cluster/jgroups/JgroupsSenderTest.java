@@ -16,8 +16,8 @@
 package io.amaze.bench.cluster.jgroups;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.shared.jgroups.JgroupsEndpoint;
 import io.amaze.bench.shared.util.Network;

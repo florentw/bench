@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.cluster.jgroups;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorInputMessage;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.cluster.registry.RegisteredActor;

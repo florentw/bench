@@ -52,6 +52,21 @@ final class ProcessSamplingThread implements Runnable {
         threadCountSink = metrics.sinkFor(threadCount(message));
     }
 
+    @Override
+    public void run() {
+        OSProcess process = processOrNull();
+        if (process == null) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        virtualSizeSink.timed(now, process.getVirtualSize());
+        residentSetSink.timed(now, process.getResidentSetSize());
+        kernelTimeSink.timed(now, process.getKernelTime());
+        userTimeSink.timed(now, process.getUserTime());
+        threadCountSink.timed(now, process.getThreadCount());
+    }
+
     private static Metric virtualSize(final ProcessWatcherActorInput message) {
         return metric(format("proc.%s.mem.virtualSize", message.getMetricKeyPrefix()),
                       AbstractWatcherActor.UNIT_BYTES) //
@@ -78,21 +93,6 @@ final class ProcessSamplingThread implements Runnable {
     private static Metric threadCount(final ProcessWatcherActorInput message) {
         return metric(format("proc.%s.threadCount", message.getMetricKeyPrefix()), "threads") //
                 .label("Thread count " + message.getMetricLabelSuffix()).minValue(0).build();
-    }
-
-    @Override
-    public void run() {
-        OSProcess process = processOrNull();
-        if (process == null) {
-            return;
-        }
-
-        long now = System.currentTimeMillis();
-        virtualSizeSink.timed(now, process.getVirtualSize());
-        residentSetSink.timed(now, process.getResidentSetSize());
-        kernelTimeSink.timed(now, process.getKernelTime());
-        userTimeSink.timed(now, process.getUserTime());
-        threadCountSink.timed(now, process.getThreadCount());
     }
 
     private OSProcess processOrNull() {

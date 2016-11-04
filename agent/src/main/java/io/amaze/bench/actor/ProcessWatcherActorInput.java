@@ -94,10 +94,6 @@ public final class ProcessWatcherActorInput implements Serializable {
         return new ProcessWatcherActorInput(STOP_STOPWATCH, pid, NA_PERIOD, keyPrefix, NA);
     }
 
-    private static String defaultLabelSuffix(final int pid) {
-        return String.format("pid:%d", pid);
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(pid);
@@ -133,6 +129,10 @@ public final class ProcessWatcherActorInput implements Serializable {
 
     String getMetricLabelSuffix() {
         return metricLabelSuffix;
+    }
+
+    private static String defaultLabelSuffix(final int pid) {
+        return String.format("pid:%d", pid);
     }
 
     enum Command {

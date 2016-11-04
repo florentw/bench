@@ -17,10 +17,7 @@ package io.amaze.bench.runtime.actor;
 
 import com.google.common.base.Throwables;
 import com.typesafe.config.Config;
-import io.amaze.bench.api.After;
-import io.amaze.bench.api.IrrecoverableException;
-import io.amaze.bench.api.ReactorException;
-import io.amaze.bench.api.Sender;
+import io.amaze.bench.api.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,8 +42,8 @@ public final class TestActorWriter extends TestActor {
     private static final Logger log = LogManager.getLogger();
     private static final String MSG_CREATION_ERROR = "Could not create file %s";
 
-    public TestActorWriter(final Sender sender, final Config config) {
-        super(sender, config);
+    public TestActorWriter(final ActorKey actorKey, final Sender sender, final Config config) {
+        super(actorKey, sender, config);
 
         if (config.hasPath(INIT_FILE_CONFIG)) {
             String initFileName = getConfig().getString(INIT_FILE_CONFIG);

@@ -73,11 +73,6 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
         watcherThread = watcherThread(metrics);
     }
 
-    private static SystemWatcherThread watcherThread(final Metrics metrics) {
-        SystemInfo systemInfo = new SystemInfo();
-        return new SystemWatcherThread(systemInfo, checkNotNull(metrics));
-    }
-
     @Override
     public void onMessage(@NotNull final String from, @NotNull final SystemWatcherInput message)
             throws ReactorException {
@@ -103,6 +98,11 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     public void closeThreads() {
         cancelTask();
         closeScheduler();
+    }
+
+    private static SystemWatcherThread watcherThread(final Metrics metrics) {
+        SystemInfo systemInfo = new SystemInfo();
+        return new SystemWatcherThread(systemInfo, checkNotNull(metrics));
     }
 
     private void cancelTask() {

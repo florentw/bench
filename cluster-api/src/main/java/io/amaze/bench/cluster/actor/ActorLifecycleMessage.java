@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.cluster.actor;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.LifecycleMessage;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;

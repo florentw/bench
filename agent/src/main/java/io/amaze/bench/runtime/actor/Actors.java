@@ -18,14 +18,14 @@ package io.amaze.bench.runtime.actor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
-import io.amaze.bench.api.After;
-import io.amaze.bench.api.Before;
-import io.amaze.bench.api.Reactor;
-import io.amaze.bench.api.Sender;
+import io.amaze.bench.api.*;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.ClusterClient;
-import io.amaze.bench.cluster.actor.*;
+import io.amaze.bench.cluster.actor.ActorClusterClient;
+import io.amaze.bench.cluster.actor.ActorInputMessage;
+import io.amaze.bench.cluster.actor.RuntimeActor;
+import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.Constants;
 import io.amaze.bench.runtime.actor.metric.MetricsInternal;
 import org.picocontainer.DefaultPicoContainer;
@@ -60,14 +60,6 @@ public class Actors {
         this.clientFactory = checkNotNull(clientFactory);
     }
 
-    private static Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
-        try {
-            return ConfigFactory.parseString(jsonConfig, Constants.CONFIG_PARSE_OPTIONS);
-        } catch (ConfigException e) {
-            throw ValidationException.create("Configuration error", e);
-        }
-    }
-
     public final RuntimeActor create(@NotNull final ActorKey actorKey,
                                      @NotNull final String className,
                                      @NotNull final String jsonConfig) throws ValidationException {
@@ -87,6 +79,14 @@ public class Actors {
         return new ActorInternal(actorKey, metrics, reactor, client, beforeMethod, afterMethod);
     }
 
+    private static Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {
+        try {
+            return ConfigFactory.parseString(jsonConfig, Constants.CONFIG_PARSE_OPTIONS);
+        } catch (ConfigException e) {
+            throw ValidationException.create("Configuration error", e);
+        }
+    }
+
     /**
      * Inject dependencies to create a reactor.
      */
@@ -98,14 +98,15 @@ public class Actors {
 
         MutablePicoContainer pico = new DefaultPicoContainer();
 
+        pico.addComponent(key);
+
         pico.addComponent(config);
 
         pico.addComponent((Sender) (to, payload) -> {
             checkNotNull(to);
             checkNotNull(payload);
 
-            ActorInputMessage message = ActorInputMessage.sendMessage(key.getName(), payload);
-            client.actorSender().send(new ActorKey(to), message);
+            client.actorSender().send(new ActorKey(to), ActorInputMessage.message(key.getName(), payload));
         });
 
         pico.addComponent(metrics);

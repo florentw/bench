@@ -21,9 +21,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorConfig;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ValidationException;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.shared.util.Files;
@@ -81,12 +81,6 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         this(agent, clusterConfigFactory, new File(LOG_DIRECTORY_NAME));
     }
 
-    private static File writeTmpFile(final String actorJsonConfig) throws IOException {
-        File tempActorConfig = File.createTempFile(TMP_CONFIG_PREFIX, TMP_CONFIG_SUFFIX);
-        Files.writeTo(tempActorConfig, actorJsonConfig);
-        return tempActorConfig;
-    }
-
     @NotNull
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
@@ -140,6 +134,12 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         synchronized (processes) {
             return ImmutableMap.copyOf(processes);
         }
+    }
+
+    private static File writeTmpFile(final String actorJsonConfig) throws IOException {
+        File tempActorConfig = File.createTempFile(TMP_CONFIG_PREFIX, TMP_CONFIG_SUFFIX);
+        Files.writeTo(tempActorConfig, actorJsonConfig);
+        return tempActorConfig;
     }
 
     private Process createActorProcess(final ActorConfig actorConfig, final Config clusterConfig) {

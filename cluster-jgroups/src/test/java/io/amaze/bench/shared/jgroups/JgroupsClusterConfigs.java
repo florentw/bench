@@ -38,14 +38,6 @@ public final class JgroupsClusterConfigs implements TestClusterConfigs {
                                                  "\"" + ClusterClients.FACTORY_CONFIG + "\":{}}");
     }
 
-    private static Config jgroupsFactoryConfig() {
-        return ConfigFactory.parseString("{\"" + JgroupsClusterClientFactory.XML_CONFIG + "\":\"" + JGROUPS_XML_PROTOCOLS + "\"}");
-    }
-
-    private static String jgroupsFactoryConfigJson() {
-        return jgroupsFactoryConfig().root().render(ConfigRenderOptions.concise());
-    }
-
     @Override
     public Config leaderConfig() {
         return ConfigFactory.parseString("{\"" + ClusterClients.FACTORY_CLASS + "\":\"" + JGROUPS_LEADER_FACTORY_CLASS + "\"," + //
@@ -61,5 +53,13 @@ public final class JgroupsClusterConfigs implements TestClusterConfigs {
     @Override
     public Config agentFactoryConfig() {
         return jgroupsFactoryConfig();
+    }
+
+    private static Config jgroupsFactoryConfig() {
+        return ConfigFactory.parseString("{\"" + JgroupsClusterClientFactory.XML_CONFIG + "\":\"" + JGROUPS_XML_PROTOCOLS + "\"}");
+    }
+
+    private static String jgroupsFactoryConfigJson() {
+        return jgroupsFactoryConfig().root().render(ConfigRenderOptions.concise());
     }
 }

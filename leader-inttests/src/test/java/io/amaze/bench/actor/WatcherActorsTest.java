@@ -16,9 +16,9 @@
 package io.amaze.bench.actor;
 
 import com.google.common.base.Throwables;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.DeployConfig;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.metric.MetricValuesMessage;
@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
  */
 @Category(IntegrationTest.class)
 @RunWith(Theories.class)
-public final class WatcherActorsIntegrationTest {
+public final class WatcherActorsTest {
 
     @DataPoints
     public static final boolean[] forked = {false, true};
@@ -87,8 +87,8 @@ public final class WatcherActorsIntegrationTest {
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
 
-        getUninterruptibly(systemWatcher.initialize());
-        getUninterruptibly(processesWatcher.initialize());
+        getUninterruptibly(systemWatcher.actorInitialization());
+        getUninterruptibly(processesWatcher.actorInitialization());
     }
 
     @Theory
@@ -96,8 +96,8 @@ public final class WatcherActorsIntegrationTest {
         before(benchRule);
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
-        getUninterruptibly(systemWatcher.initialize());
-        getUninterruptibly(processesWatcher.initialize());
+        getUninterruptibly(systemWatcher.actorInitialization());
+        getUninterruptibly(processesWatcher.actorInitialization());
 
         getUninterruptibly(systemWatcher.close());
         getUninterruptibly(processesWatcher.close());
@@ -108,11 +108,11 @@ public final class WatcherActorsIntegrationTest {
         before(benchRule);
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
 
-        systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.start(1));
+        systemWatcher.send(WatcherActorsTest.class.getName(), SystemWatcherInput.start(1));
 
         sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-        systemWatcher.send(WatcherActorsIntegrationTest.class.getName(), SystemWatcherInput.stop());
+        systemWatcher.send(WatcherActorsTest.class.getName(), SystemWatcherInput.stop());
 
         systemWatcher.dumpMetrics();
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(SYSTEM_WATCHER);
@@ -134,7 +134,7 @@ public final class WatcherActorsIntegrationTest {
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
-        ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.initialize());
+        ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.actorInitialization());
 
         processesWatcher.send(PROCESS_WATCHER.getName(), startStopwatch(deployInfo.getPid(), METRIC_KEY));
 
@@ -156,7 +156,7 @@ public final class WatcherActorsIntegrationTest {
 
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
-        ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.initialize());
+        ActorDeployInfo deployInfo = getUninterruptibly(processesWatcher.actorInitialization());
 
         processesWatcher.send(PROCESS_WATCHER.getName(), startSampling(deployInfo.getPid(), 1, METRIC_KEY));
 
@@ -210,7 +210,7 @@ public final class WatcherActorsIntegrationTest {
 
     private Actors.ActorHandle createAndInitSystemWatcher(boolean forked) throws ExecutionException {
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
-        getUninterruptibly(systemWatcher.initialize());
+        getUninterruptibly(systemWatcher.actorInitialization());
         return systemWatcher;
     }
 }

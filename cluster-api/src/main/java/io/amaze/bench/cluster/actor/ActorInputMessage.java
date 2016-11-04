@@ -47,7 +47,7 @@ public final class ActorInputMessage implements Serializable {
         return new ActorInputMessage(Command.DUMP_METRICS, NA, NA);
     }
 
-    public static ActorInputMessage sendMessage(@NotNull final String from, @NotNull final Serializable payload) {
+    public static ActorInputMessage message(@NotNull final String from, @NotNull final Serializable payload) {
         return new ActorInputMessage(Command.MESSAGE, from, payload);
     }
 

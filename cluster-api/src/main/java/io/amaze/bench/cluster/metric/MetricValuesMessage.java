@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.cluster.metric;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.metric.Metric;
-import io.amaze.bench.cluster.actor.ActorKey;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

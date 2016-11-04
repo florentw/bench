@@ -17,6 +17,7 @@ package io.amaze.bench.actor;
 
 import io.amaze.bench.api.metric.Metrics;
 import oshi.json.SystemInfo;
+import oshi.json.hardware.HardwareAbstractionLayer;
 
 /**
  * Created on 10/30/16.
@@ -39,25 +40,27 @@ final class SystemWatcherThread implements Runnable {
         swapUsedSink = metrics.sinkFor(SystemWatcherActor.METRIC_SWAP_USED);
     }
 
-    private static <T extends Number> void produceIfValid(final T value, //
-                                                          final long now, //
-                                                          final Metrics.Sink sink) {
-        if (value.doubleValue() >= 0) {
-            sink.timed(now, value);
-        }
-    }
-
     @Override
     public void run() {
-        double loadAverage = systemInfo.getHardware().getProcessor().getSystemLoadAverage();
-        double systemCpuLoad = systemInfo.getHardware().getProcessor().getSystemCpuLoad();
-        long availableRam = systemInfo.getHardware().getMemory().getAvailable();
-        long swapUsed = systemInfo.getHardware().getMemory().getSwapUsed();
+        HardwareAbstractionLayer hardware = systemInfo.getHardware();
+
+        double loadAverage = hardware.getProcessor().getSystemLoadAverage();
+        double systemCpuLoad = hardware.getProcessor().getSystemCpuLoad();
+        long availableRam = hardware.getMemory().getAvailable();
+        long swapUsed = hardware.getMemory().getSwapUsed();
 
         long now = System.currentTimeMillis();
         produceIfValid(loadAverage, now, loadAverageSink);
         produceIfValid(systemCpuLoad, now, systemCpuLoadSink);
         produceIfValid(availableRam, now, availableRamSink);
         produceIfValid(swapUsed, now, swapUsedSink);
+    }
+
+    private static <T extends Number> void produceIfValid(final T value, //
+                                                          final long now, //
+                                                          final Metrics.Sink sink) {
+        if (value.doubleValue() >= 0) {
+            sink.timed(now, value);
+        }
     }
 }

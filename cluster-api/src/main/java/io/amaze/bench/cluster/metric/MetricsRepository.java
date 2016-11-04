@@ -16,7 +16,7 @@
 package io.amaze.bench.cluster.metric;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.cluster.actor.ActorKey;
+import io.amaze.bench.api.ActorKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

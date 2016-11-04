@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.amaze.bench.cluster;
+package io.amaze.bench.api;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

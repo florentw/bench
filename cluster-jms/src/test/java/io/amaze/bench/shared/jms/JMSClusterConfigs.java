@@ -37,10 +37,6 @@ public final class JMSClusterConfigs implements TestClusterConfigs {
         endpoint = new JMSEndpoint(Network.LOCALHOST, Network.findFreePort());
     }
 
-    private static String jmsFactoryConfigJson(final JMSEndpoint endpoint) {
-        return endpoint.toConfig().root().render(ConfigRenderOptions.concise());
-    }
-
     @Override
     public Config leaderConfig() {
         return leaderJmsClusterConfig(JMSLeaderClusterClientFactory.class.getName());
@@ -54,6 +50,10 @@ public final class JMSClusterConfigs implements TestClusterConfigs {
     @Override
     public Config agentFactoryConfig() {
         return endpoint.toConfig();
+    }
+
+    private static String jmsFactoryConfigJson(final JMSEndpoint endpoint) {
+        return endpoint.toConfig().root().render(ConfigRenderOptions.concise());
     }
 
     private Config jmsClusterConfig() {

@@ -15,8 +15,8 @@
  */
 package io.amaze.bench.cluster.jgroups;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorCreationRequest;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
 import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.agent.*;

@@ -16,6 +16,7 @@
 package io.amaze.bench.runtime.actor;
 
 import com.google.common.testing.NullPointerTester;
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
 import io.amaze.bench.cluster.Endpoint;
@@ -163,7 +164,7 @@ public final class ActorInternalTest {
             actor.onMessage(DUMMY_ACTOR.getName(), "");
 
             // Assert message is received by the instance
-            assertThat(((TestActor) actor.getInstance()).getReceivedMessages().size(), is(1));
+            assertThat(((TestActor) actor.getInstance()).awaitFirstAndReturnMessages().size(), is(1));
         }
     }
 

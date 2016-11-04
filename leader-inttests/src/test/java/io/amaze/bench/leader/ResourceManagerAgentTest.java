@@ -15,9 +15,9 @@
  */
 package io.amaze.bench.leader;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.ActorDeployInfo;
-import io.amaze.bench.cluster.actor.ActorKey;
 import io.amaze.bench.cluster.actor.DeployConfig;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.agent.AgentRegistrationMessage;

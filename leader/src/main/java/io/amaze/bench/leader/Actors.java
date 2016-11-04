@@ -16,7 +16,11 @@
 package io.amaze.bench.leader;
 
 import com.google.common.util.concurrent.SettableFuture;
-import io.amaze.bench.cluster.actor.*;
+import io.amaze.bench.api.ActorKey;
+import io.amaze.bench.cluster.actor.ActorConfig;
+import io.amaze.bench.cluster.actor.ActorDeployInfo;
+import io.amaze.bench.cluster.actor.ActorInputMessage;
+import io.amaze.bench.cluster.actor.ActorSender;
 import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.cluster.registry.ActorRegistry;
 import io.amaze.bench.cluster.registry.ActorRegistryListener;
@@ -66,16 +70,12 @@ public final class Actors {
             this.config = config;
         }
 
-        public Future<ActorDeployInfo> initialize() {
-            return actorInitialized;
-        }
-
         public void dumpMetrics() {
             actorSender.send(config.getKey(), ActorInputMessage.dumpMetrics());
         }
 
         public void send(final String from, final Serializable message) {
-            actorSender.send(config.getKey(), ActorInputMessage.sendMessage(from, message));
+            actorSender.send(config.getKey(), ActorInputMessage.message(from, message));
         }
 
         public Future<Void> close() {

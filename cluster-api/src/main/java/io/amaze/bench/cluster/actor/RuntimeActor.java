@@ -15,6 +15,7 @@
  */
 package io.amaze.bench.cluster.actor;
 
+import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.After;
 import io.amaze.bench.api.Before;
 import io.amaze.bench.api.Reactor;

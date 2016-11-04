@@ -15,6 +15,8 @@
  */
 package io.amaze.bench.cluster.actor;
 
+import io.amaze.bench.api.ActorKey;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
