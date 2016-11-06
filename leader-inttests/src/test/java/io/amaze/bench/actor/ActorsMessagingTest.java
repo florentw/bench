@@ -41,6 +41,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
+import static io.amaze.bench.runtime.actor.TestActor.REPLY_MESSAGE;
+import static io.amaze.bench.runtime.actor.TestActor.runningActors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -60,7 +62,7 @@ public final class ActorsMessagingTest {
     private static final ActorKey ACTOR_2 = new ActorKey("actor-2");
 
     @Rule
-    public final Timeout globalTimeout = new Timeout(90, TimeUnit.SECONDS);
+    public final Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
     private BenchRule benchRule;
     private Agent agent;
 
@@ -71,11 +73,11 @@ public final class ActorsMessagingTest {
         Actors.ActorHandle actor1 = createActor(benchRule, ACTOR_1);
         Actors.ActorHandle actor2 = createActor(benchRule, ACTOR_2);
 
-        actor1.send("test", TestActor.REPLY_MESSAGE + ":" + ACTOR_2.getName());
-        actor2.send("test", TestActor.REPLY_MESSAGE + ":" + ACTOR_1.getName());
+        actor1.send("test", REPLY_MESSAGE + ":" + ACTOR_2.getName());
+        actor2.send("test", REPLY_MESSAGE + ":" + ACTOR_1.getName());
 
-        Map<String, List<String>> msgs1 = TestActor.runningActors().get(ACTOR_1).awaitFirstAndReturnMessages();
-        Map<String, List<String>> msgs2 = TestActor.runningActors().get(ACTOR_2).awaitFirstAndReturnMessages();
+        Map<String, List<String>> msgs1 = runningActors().get(ACTOR_1).awaitFirstAndReturnMessages();
+        Map<String, List<String>> msgs2 = runningActors().get(ACTOR_2).awaitFirstAndReturnMessages();
 
         assertThat(msgs1.size(), is(1));
         assertThat(msgs2.size(), is(1));
