@@ -70,13 +70,20 @@ public class JgroupsListenerMultiplexer {
         checkNotNull(listener);
 
         synchronized (listeners) {
+            Set<String> keysToRemove = new HashSet<>();
             listeners.entrySet().forEach(entry -> {
-                if (!entry.getValue().remove(listener)) {
+                Set<JgroupsListener<? extends Serializable>> listenersForKey = entry.getValue();
+                if (!listenersForKey.remove(listener)) {
                     log.warn("Tried to remove an non-existent listener for {}, {}", entry.getKey(), listener);
                 } else {
                     log.debug("Removing listener for {}, {}", entry.getKey(), listener);
                 }
+                if (listenersForKey.isEmpty()) {
+                    keysToRemove.add(entry.getKey());
+                }
             });
+
+            keysToRemove.forEach(listeners::remove);
         }
     }
 

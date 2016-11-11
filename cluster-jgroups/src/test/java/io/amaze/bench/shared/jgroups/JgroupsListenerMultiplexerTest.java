@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
@@ -73,13 +74,25 @@ public final class JgroupsListenerMultiplexerTest {
     }
 
     @Test
-    public void remove_listener_should_unregister_listener() {
+    public void remove_single_key_listener_should_unregister_listener_and_delete_key() {
         listenerMultiplexer.addListener(String.class, listener);
 
         listenerMultiplexer.removeListener(listener);
 
+        assertThat(listenerMultiplexer.getListeners().isEmpty(), is(true));
+        verifyZeroInteractions(listener);
+    }
+
+    @Test
+    public void remove_listener_should_unregister_listener() {
+        listenerMultiplexer.addListener(String.class, listener);
+        listenerMultiplexer.addListener(Integer.class, (msg, payload) -> {
+        });
+
+        listenerMultiplexer.removeListener(listener);
+
         assertThat(listenerMultiplexer.getListeners().size(), is(1));
-        assertThat(listenerMultiplexer.getListeners().get(String.class.getName()).size(), is(0));
+        assertNull(listenerMultiplexer.getListeners().get(String.class.getName()));
         verifyZeroInteractions(listener);
     }
 

@@ -33,7 +33,7 @@ public final class TestActorMetrics extends TestActor {
     static final String PRODUCE_METRICS_MSG = "PRODUCE_METRICS_MSG";
 
     static final Metric DUMMY_METRIC_A = Metric.metric("latency", "ms").build();
-    static final Metric DUMMY_METRIC_B = Metric.metric("throughput", "events").secondUnit("seconds").build();
+    static final Metric DUMMY_METRIC_B = Metric.metric("throughput", "events").build();
 
     private final Metrics metrics;
 

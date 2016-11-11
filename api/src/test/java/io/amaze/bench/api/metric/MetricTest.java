@@ -31,11 +31,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricTest {
 
-    private static final Metric DUMMY = Metric.metric("speed", "meters") //
+    private static final Metric DUMMY = Metric.metric("speed", "km/s") //
             .label("label") //
             .minValue(0) //
             .maxValue(10) //
-            .secondUnit("sec") //
             .build();
 
     @Test
@@ -56,8 +55,7 @@ public final class MetricTest {
 
         assertThat(actual.getKey(), is(DUMMY.getKey()));
         assertThat(actual.getLabel(), is(actual.getLabel()));
-        assertThat(actual.getFirstUnit(), is(actual.getFirstUnit()));
-        assertThat(actual.getSecondUnit(), is(actual.getSecondUnit()));
+        assertThat(actual.getUnit(), is(actual.getUnit()));
         assertThat(actual.getMinValue(), is(actual.getMinValue()));
         assertThat(actual.getMaxValue(), is(actual.getMaxValue()));
     }

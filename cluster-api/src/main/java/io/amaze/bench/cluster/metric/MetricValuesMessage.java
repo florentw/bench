@@ -34,7 +34,8 @@ public final class MetricValuesMessage implements Serializable {
     private final ActorKey fromActor;
     private final Map<Metric, List<MetricValue>> metricValues; // NOSONAR: Serializable
 
-    public MetricValuesMessage(final ActorKey fromActor, @NotNull final Map<Metric, List<MetricValue>> metricValues) {
+    public MetricValuesMessage(@NotNull final ActorKey fromActor,
+                               @NotNull final Map<Metric, List<MetricValue>> metricValues) {
         this.fromActor = checkNotNull(fromActor);
         this.metricValues = checkNotNull(metricValues);
     }

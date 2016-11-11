@@ -114,7 +114,6 @@ public class MetricsRepository {
         return currentActorMetrics;
     }
 
-
     private SettableFuture<MetricValuesMessage> registerExpectedActor(final ActorKey actor) {
         List<SettableFuture<MetricValuesMessage>> futures = expectedActors.get(actor);
         SettableFuture<MetricValuesMessage> future = SettableFuture.create();

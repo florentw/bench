@@ -32,23 +32,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class Metric implements Serializable {
 
     private final String key;
-    private final String firstUnit;
-    private final String secondUnit;
+    private final String unit;
     private final String label;
     private final Number minValue;
     private final Number maxValue;
 
-    Metric(@NotNull final String key,
-           @NotNull final String firstUnit,
+    Metric(@NotNull final String key, @NotNull final String unit,
            final String label,
-           final String secondUnit,
            final Number minValue,
            final Number maxValue) {
 
         this.key = checkNotNull(key);
-        this.firstUnit = checkNotNull(firstUnit);
+        this.unit = checkNotNull(unit);
         this.label = label;
-        this.secondUnit = secondUnit;
         this.minValue = minValue;
         this.maxValue = maxValue;
     }
@@ -72,10 +68,10 @@ public final class Metric implements Serializable {
     }
 
     /**
-     * @return Label of the first (and possibly only unit). (ex: percent)
+     * @return Label of the unit for this metric. (ex: percent)
      */
-    public String getFirstUnit() {
-        return firstUnit;
+    public String getUnit() {
+        return unit;
     }
 
     /**
@@ -83,13 +79,6 @@ public final class Metric implements Serializable {
      */
     public Optional<String> getLabel() {
         return Optional.ofNullable(label);
-    }
-
-    /**
-     * @return Label of the {@link Optional} second unit. (as in meters per sec)
-     */
-    public Optional<String> getSecondUnit() {
-        return Optional.ofNullable(secondUnit);
     }
 
     /**
@@ -127,8 +116,7 @@ public final class Metric implements Serializable {
     public String toString() {
         return "{\"key\":\"" + key + "\"" + ", " + //
                 "\"label\":\"" + label + "\"" + ", " + //
-                "\"firstUnit\":\"" + firstUnit + "\"" + ", " + //
-                "\"secondUnit\":\"" + secondUnit + "\"" + ", " + //
+                "\"unit\":\"" + unit + "\"" + ", " + //
                 "\"minValue\":\"" + minValue + "\"" + ", " + //
                 "\"maxValue\":\"" + maxValue + "\"" + "}";
     }

@@ -35,30 +35,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class MetricBuilder {
 
     private final String key;
-    private final String firstUnit;
+    private final String unit;
     private String label;
-    private String secondUnit;
     private Number minValue;
     private Number maxValue;
 
     /**
-     * @param key       Key of the metric, must be unique per {@link Metrics.Sink} and not empty or whitespace.
-     * @param firstUnit Name of the first (and possibly only unit). (ex: percent)
+     * @param key  Key of the metric, must be unique per {@link Metrics.Sink} and not empty or whitespace.
+     * @param unit Name of the unit. (ex: km/s)
      */
-    MetricBuilder(final String key, final String firstUnit) {
+    MetricBuilder(final String key, final String unit) {
         this.key = checkNotNull(key);
-        this.firstUnit = checkNotNull(firstUnit);
+        this.unit = checkNotNull(unit);
 
         checkArgument(!key.trim().isEmpty(), "Key cannot be empty.");
-    }
-
-    /**
-     * @param secondUnit Name of the optional second unit. (as in meters per sec)
-     * @return The builder instance
-     */
-    public MetricBuilder secondUnit(final String secondUnit) {
-        this.secondUnit = checkNotNull(secondUnit);
-        return this;
     }
 
     /**
@@ -94,6 +84,6 @@ public final class MetricBuilder {
      * @return An instance of {@link Metric}.
      */
     public Metric build() {
-        return new Metric(key, firstUnit, label, secondUnit, minValue, maxValue);
+        return new Metric(key, unit, label, minValue, maxValue);
     }
 }
