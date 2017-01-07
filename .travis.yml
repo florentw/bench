@@ -9,7 +9,7 @@ before_script:
   - sudo sysctl -w net.core.wmem_max=5242880
 
 script:
-  - mvn install failsafe:verify -Pwith-sonar
+  - mvn install failsafe:verify dependency:copy-dependencies -Pwith-sonar
 
 after_success:
   - sonar-scanner
