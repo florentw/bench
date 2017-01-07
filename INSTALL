@@ -28,5 +28,5 @@ ufw reload
 net.core.rmem_max=5242880
 net.core.wmem_max=5242880
 
-* The reload sysctl parameters
+* Then reload sysctl parameters
 sudo sysctl -p /etc/sysctl.conf
