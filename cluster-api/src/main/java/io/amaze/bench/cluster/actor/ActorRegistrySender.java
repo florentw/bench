@@ -18,7 +18,7 @@ package io.amaze.bench.cluster.actor;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 10/18/16.
+ * To be used by agents and actors to broadcast lifecycle events.
  */
 @FunctionalInterface
 public interface ActorRegistrySender {

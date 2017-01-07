@@ -44,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static io.amaze.bench.cluster.agent.AgentUtil.DUMMY_AGENT;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -213,7 +212,7 @@ public final class ForkedActorManagerTest {
         doReturn(false).when(localLogDir).exists(); // NOSONAR
 
         expectedException.expect(IllegalStateException.class);
-        actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, localLogDir);
+        actorManager = new ForkedActorManager(clusterConfigFactory, localLogDir);
     }
 
     @Theory
@@ -242,7 +241,7 @@ public final class ForkedActorManagerTest {
         this.agentCluster = agentCluster;
         this.agentCluster.before();
         clusterConfigFactory = agentCluster.clusterConfigFactory();
-        actorManager = new ForkedActorManager(DUMMY_AGENT, clusterConfigFactory, new File("target/logs"));
+        actorManager = new ForkedActorManager(clusterConfigFactory, new File("target/logs"));
     }
 
     private ActorConfig suicideConfig(final String className, final File rdvFileInit) {

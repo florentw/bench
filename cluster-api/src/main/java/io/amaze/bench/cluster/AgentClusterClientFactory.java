@@ -43,12 +43,29 @@ import java.io.Closeable;
  */
 public interface AgentClusterClientFactory extends Closeable {
 
+    /**
+     * Can be used by some implementations to expose their local endpoint for point to point communication.
+     *
+     * @return A cluster endpoint that can be used to talk to this client.
+     */
     @NotNull
     Endpoint localEndpoint();
 
+    /**
+     * Creates a cluster client instance for Agents to connect to the cluster.
+     *
+     * @param agent The agent to create an {@link AgentClusterClient} instance for.
+     * @return A non null instance of {@link AgentClusterClient}
+     */
     @NotNull
     AgentClusterClient createForAgent(@NotNull AgentKey agent);
 
+    /**
+     * Creates a cluster client instance for Actors to connect to the cluster.
+     *
+     * @param actor The actor to create an {@link ActorClusterClient} instance for.
+     * @return A non null instance of {@link ActorClusterClient}
+     */
     @NotNull
     ActorClusterClient createForActor(@NotNull ActorKey actor);
 

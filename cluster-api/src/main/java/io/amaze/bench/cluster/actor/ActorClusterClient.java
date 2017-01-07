@@ -46,9 +46,17 @@ public interface ActorClusterClient extends ClusterClient {
     @NotNull
     Endpoint localEndpoint();
 
+    /**
+     * Allows a client to send messages to an actor instance in the cluster.
+     *
+     * @return A non null instance of {@link ActorSender}
+     */
     @NotNull
     ActorSender actorSender();
 
+    /**
+     * To be used by the actor to broadcast lifecycle events.
+     */
     @NotNull
     ActorRegistrySender actorRegistrySender();
 

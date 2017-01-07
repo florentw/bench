@@ -23,6 +23,7 @@ import io.amaze.bench.cluster.actor.*;
 import io.amaze.bench.cluster.agent.*;
 import io.amaze.bench.cluster.registry.ActorRegistryClusterClient;
 import io.amaze.bench.runtime.actor.*;
+import io.amaze.bench.runtime.actor.TestActor;
 import io.amaze.bench.shared.test.Json;
 import org.junit.After;
 import org.junit.Before;
@@ -88,7 +89,7 @@ public final class AgentTest {
                                                actorRegistryClient,
                                                clusterConfigFactory,
                                                null);
-        embeddedManager = spy(new EmbeddedActorManager(DUMMY_AGENT, clientFactory));
+        embeddedManager = spy(new EmbeddedActorManager(clientFactory));
 
         when(actorClient.localEndpoint()).thenReturn(localEndpoint);
         when(actorManagers.createEmbedded(any(AgentKey.class), any(AgentClusterClientFactory.class))).thenReturn(

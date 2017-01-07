@@ -50,7 +50,7 @@ public class ActorManagers {
         checkNotNull(agent);
         checkNotNull(factory);
 
-        return new EmbeddedActorManager(agent, factory);
+        return new EmbeddedActorManager(factory);
     }
 
     /**
@@ -66,7 +66,7 @@ public class ActorManagers {
         checkNotNull(agent);
         checkNotNull(clusterConfigFactory);
 
-        return new ForkedActorManager(agent, clusterConfigFactory);
+        return new ForkedActorManager(clusterConfigFactory);
     }
 
 }

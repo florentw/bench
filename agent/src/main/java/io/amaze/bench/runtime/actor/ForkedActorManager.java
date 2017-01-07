@@ -25,7 +25,6 @@ import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.cluster.ClusterConfigFactory;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.ValidationException;
-import io.amaze.bench.cluster.agent.AgentKey;
 import io.amaze.bench.shared.util.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +50,7 @@ import static io.amaze.bench.cluster.agent.Constants.LOG_DIRECTORY_NAME;
  *
  * @see ActorBootstrap
  */
-final class ForkedActorManager extends AbstractActorManager implements ProcessTerminationListener {
+final class ForkedActorManager implements ActorManager, ProcessTerminationListener {
 
     private static final Logger log = LogManager.getLogger();
 
@@ -64,10 +63,8 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
     private final File localLogDir;
 
     @VisibleForTesting
-    ForkedActorManager(@NotNull final AgentKey agent,
-                       @NotNull final ClusterConfigFactory clusterConfigFactory,
-                       @NotNull final File localLogDir) {
-        super(agent);
+    ForkedActorManager(@NotNull final ClusterConfigFactory clusterConfigFactory, @NotNull final File localLogDir) {
+        super();
         this.clusterConfigFactory = checkNotNull(clusterConfigFactory);
         this.localLogDir = checkNotNull(localLogDir);
 
@@ -77,8 +74,8 @@ final class ForkedActorManager extends AbstractActorManager implements ProcessTe
         }
     }
 
-    ForkedActorManager(@NotNull final AgentKey agent, @NotNull final ClusterConfigFactory clusterConfigFactory) {
-        this(agent, clusterConfigFactory, new File(LOG_DIRECTORY_NAME));
+    ForkedActorManager(@NotNull final ClusterConfigFactory clusterConfigFactory) {
+        this(clusterConfigFactory, new File(LOG_DIRECTORY_NAME));
     }
 
     @NotNull

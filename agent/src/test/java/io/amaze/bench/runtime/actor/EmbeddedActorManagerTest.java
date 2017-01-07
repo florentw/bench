@@ -31,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_CONFIG;
-import static io.amaze.bench.runtime.agent.AgentTest.DUMMY_AGENT;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -55,7 +54,7 @@ public final class EmbeddedActorManagerTest {
         when(client.actorRegistrySender()).thenReturn(mock(ActorRegistrySender.class));
         when(client.localEndpoint()).thenReturn(mock(Endpoint.class));
         DummyClientFactory factory = new DummyClientFactory(null, null, client, actorRegistryClient, null, null);
-        actorManager = new EmbeddedActorManager(DUMMY_AGENT, factory);
+        actorManager = new EmbeddedActorManager(factory);
     }
 
     @Test

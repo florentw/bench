@@ -21,7 +21,6 @@ import io.amaze.bench.cluster.AgentClusterClientFactory;
 import io.amaze.bench.cluster.actor.ActorConfig;
 import io.amaze.bench.cluster.actor.RuntimeActor;
 import io.amaze.bench.cluster.actor.ValidationException;
-import io.amaze.bench.cluster.agent.AgentKey;
 
 import javax.validation.constraints.NotNull;
 
@@ -30,12 +29,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Instantiates actors using the given factory, in the local JVM.
  */
-public class EmbeddedActorManager extends AbstractActorManager {
+public class EmbeddedActorManager implements ActorManager {
 
     private final Actors actors;
 
-    public EmbeddedActorManager(@NotNull final AgentKey agent, @NotNull final AgentClusterClientFactory clientFactory) {
-        super(agent);
+    /**
+     * @param clientFactory Will be used by the manager to give actors the ability to connect to the cluster.
+     */
+    public EmbeddedActorManager(@NotNull final AgentClusterClientFactory clientFactory) {
+        super();
         actors = new Actors(clientFactory);
     }
 

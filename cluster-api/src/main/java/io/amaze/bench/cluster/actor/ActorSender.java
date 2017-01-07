@@ -20,7 +20,7 @@ import io.amaze.bench.api.ActorKey;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created on 10/16/16.
+ * Allows a client to send messages to an actor instance in the cluster.
  */
 @FunctionalInterface
 public interface ActorSender {
