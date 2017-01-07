@@ -8,7 +8,15 @@ before_script:
   - sudo sysctl -w net.core.rmem_max=5242880
   - sudo sysctl -w net.core.wmem_max=5242880
 
-script: mvn install failsafe:verify -Pwith-codecov
+script:
+  - mvn install failsafe:verify -Pwith-sonar
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - sonar-scanner
+
+addons:
+  sonarqube:
+    token:
+      secure: "k7jp+kk2vO0sFbweW/aV8QeoQS7PGxIPQF3yzDhdXKt9hoNetqJi/qFczjvni2LnW/Y1IGJbLOdjMymORk3jFv4lIqNbvvRnZrUDt8/K0l7hp1uW3U2EqJaQVrmEGcGYr/JTCClXm7BzDYBZ6sBCYSY4M8es3J6+Mda2a9Q8qqrr4XpIEzwMVDNzh6/Bvl7h2fddVcWa1HgqOL3inj2n7YaLfPqJAvZkW6GfVPtRoFraswG1QOqdJaHdjspafgyLzYfqlce/+Oh9oxLovBrFqwewnZwzw3WnTD5UVK7/ifuGhZQzLAhWWIMm9PaCOuQ1XPcBYVZJlFSSeTYnAeHhEJIn2CoJctbNJWyPKuq6n8TiIb4wvzUfxYPSBRQKyRRDUAXFmGKgF8UmBxAyx9hz/V67/5Qu55Aog0rFPX/lKbXk5KmwbxP5TvxtSWj1sSpU1bvbQpAnlmaMQX7Vj2Nq7rT1RDAaWTDUrYBrWz20UbbK/4GiC04kpnS4S8+xrlVBtYzAYF9o1OqSsTlkAcuO09gbfyws51gA8wHGyPTAQzaha+wwfFBaN9U6fwfuBF3/0PWon1r5KTB/L12MMT717s5oUbEDEwsh9wb+sbPAgXjz6w6xCAufFT3OKNPc9nhgZfMEeCXK3coM/HNVJb0U4ixJtk/VmNyVGJkyTWn0VVU="
+    branches:
+      - master

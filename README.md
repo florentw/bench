@@ -37,4 +37,4 @@ sudo sysctl -p /etc/sysctl.conf
 * Florent Weber <florent.weber@gmail.com>
 
 ## License
-The source code is licensed under the Apache v2 license, see [LICENSE](./blob/master/LICENSE) file.
+The source code is licensed under the Apache v2 license, see [LICENSE](./LICENSE) file.
