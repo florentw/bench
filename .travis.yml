@@ -1,5 +1,8 @@
 sudo: true
 
+os: linux
+dist: precise
+
 language: java
 jdk:
   - oraclejdk8
