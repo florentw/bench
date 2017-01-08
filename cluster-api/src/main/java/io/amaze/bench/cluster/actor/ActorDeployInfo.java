@@ -20,23 +20,31 @@ import io.amaze.bench.cluster.Endpoint;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 9/17/16.
+ * This bean provides information that is discovered at runtime after deployment on the actor's side.
  */
 public final class ActorDeployInfo implements Serializable {
 
     private final int pid;
     private final Endpoint endpoint;
+    private final List<String> command;
 
     public ActorDeployInfo(@NotNull final Endpoint endpoint, final int pid) {
+        this(endpoint, pid, Collections.emptyList());
+    }
+
+    public ActorDeployInfo(@NotNull final Endpoint endpoint, final int pid, @NotNull final List<String> command) {
         this.endpoint = checkNotNull(endpoint);
         checkArgument(pid > 0, "Invalid pid " + pid);
         this.pid = pid;
+        this.command = checkNotNull(command);
     }
 
     @NotNull
@@ -48,9 +56,14 @@ public final class ActorDeployInfo implements Serializable {
         return pid;
     }
 
+    @NotNull
+    public List<String> getCommand() {
+        return command;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(pid);
+        return Objects.hash(pid, endpoint, command);
     }
 
     @Override
@@ -62,13 +75,16 @@ public final class ActorDeployInfo implements Serializable {
             return false;
         }
         ActorDeployInfo that = (ActorDeployInfo) o;
-        return pid == that.pid;
+        return pid == that.pid && //
+                Objects.equals(endpoint, that.endpoint) && //
+                Objects.equals(command, that.command);
     }
 
     @Override
     public String toString() {
-        return "{\"ActorDeployInfo\":{" +  //
+        return "{\"ActorDeployInfo\":{" + //
                 "\"pid\":\"" + pid + "\"" + ", " + //
-                "\"endpoint\":" + endpoint + "}}";
+                "\"endpoint\":" + endpoint + ", " + //
+                "\"command\":" + command + "}}";
     }
 }

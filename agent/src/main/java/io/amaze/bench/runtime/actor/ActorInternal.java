@@ -29,6 +29,7 @@ import oshi.json.SystemInfo;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -186,7 +187,7 @@ public class ActorInternal implements RuntimeActor {
 
     private ActorDeployInfo deployInfo() {
         int pid = new SystemInfo().getOperatingSystem().getProcessId();
-        return new ActorDeployInfo(client.localEndpoint(), pid);
+        return new ActorDeployInfo(client.localEndpoint(), pid, ManagementFactory.getRuntimeMXBean().getInputArguments());
     }
 
     private boolean tryToCallAfterMethod() {

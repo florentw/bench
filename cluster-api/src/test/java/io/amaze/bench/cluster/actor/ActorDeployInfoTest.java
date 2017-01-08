@@ -23,8 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -43,6 +47,8 @@ public final class ActorDeployInfoTest {
         ActorDeployInfo actual = SerializableTester.reserialize(expected);
 
         assertThat(actual.getPid(), is(expected.getPid()));
+        assertEquals(expected.getEndpoint(), actual.getEndpoint());
+        assertThat(actual.getCommand(), is(expected.getCommand()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -60,12 +66,21 @@ public final class ActorDeployInfoTest {
         EqualsTester tester = new EqualsTester();
         tester.addEqualityGroup(deployInfo(), deployInfo());
         tester.addEqualityGroup(deployInfo().hashCode(), deployInfo().hashCode());
+        tester.addEqualityGroup(deployInfo().getCommand(), command());
 
         tester.testEquals();
     }
 
+    private static List<String> command() {
+        List<String> command = new ArrayList<>();
+        command.add("java");
+        command.add("-version");
+        return command;
+    }
+
     private ActorDeployInfo deployInfo() {
-        return new ActorDeployInfo(DUMMY_ENDPOINT, 10);
+        List<String> command = command();
+        return new ActorDeployInfo(DUMMY_ENDPOINT, 10, command);
     }
 
 }

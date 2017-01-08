@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -46,11 +47,12 @@ import static com.google.common.util.concurrent.Uninterruptibles.getUninterrupti
 import static io.amaze.bench.cluster.registry.RegisteredActor.State;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_ACTOR;
 import static io.amaze.bench.runtime.actor.TestActor.DUMMY_JSON_CONFIG;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
- * Test interactions between the ResourceManager and an Agent
+ * Test interactions between the ResourceManager and an Agent, with theories using both the JMS ang Jgroups clusters.
  */
 @RunWith(Theories.class)
 @Category(IntegrationTest.class)
@@ -121,6 +123,27 @@ public final class ResourceManagerAgentTest {
     }
 
     @Theory
+    public void create_and_close_forked_actor_on_agent(final BenchRule benchRule) throws Exception {
+        before(benchRule);
+
+        List<String> jvmArgs = new ArrayList<>();
+        jvmArgs.add("-Xmx128m");
+        ActorSync sync = createForkedActor(jvmArgs);
+
+        // Verify that the forked actor is properly registered
+        assertThat(actorRegistry.all().size(), is(1));
+        assertThat(actorRegistry.byKey(DUMMY_ACTOR).getDeployInfo().getCommand(), hasItem(jvmArgs.get(0)));
+        assertTrue(actorRegistry.byKey(DUMMY_ACTOR).getDeployInfo().getPid() > 0);
+        assertNotNull(actorRegistry.byKey(DUMMY_ACTOR).getDeployInfo().getEndpoint());
+
+        resourceManager.closeActor(DUMMY_ACTOR);
+
+        sync.assertActorClosed();
+        assertThat(actorRegistry.all().size(), is(0));
+        after(benchRule);
+    }
+
+    @Theory
     public void closing_agent_unregisters(final BenchRule benchRule) throws Exception {
         before(benchRule);
 
@@ -128,6 +151,19 @@ public final class ResourceManagerAgentTest {
 
         assertTrue(agentSync.agentClosed.await(TEST_TIMEOUT_SEC, TimeUnit.SECONDS));
         after(benchRule);
+    }
+
+    private ActorSync createForkedActor(final List<String> jvmArgs) throws InterruptedException {
+        ActorSync sync = new ActorSync();
+        actorRegistry.addListener(sync);
+        ActorConfig actorConfig = new ActorConfig(DUMMY_ACTOR,
+                                                  TestActor.class.getName(),
+                                                  new DeployConfig(true, Collections.emptyList(), jvmArgs),
+                                                  DUMMY_JSON_CONFIG);
+
+        resourceManager.createActor(actorConfig);
+        sync.assertActorInitialized();
+        return sync;
     }
 
     private void before(final BenchRule benchRule) throws ExecutionException {
