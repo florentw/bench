@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
@@ -59,7 +60,7 @@ import static org.junit.Assert.*;
 public final class ResourceManagerAgentTest {
 
     @DataPoints
-    public static final BenchRule[] benchRules = new BenchRule[]{ //
+    public static final Supplier[] benchRules = new Supplier[]{ //
             BenchRule.newJmsCluster(), //
             BenchRule.newJgroupsCluster() //
     };
@@ -78,7 +79,8 @@ public final class ResourceManagerAgentTest {
     private AgentSync agentSync;
 
     @Theory
-    public void agent_registration_complete(final BenchRule benchRule) throws Exception {
+    public void agent_registration_complete(final Supplier supplier) throws Exception {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
 
         assertThat(agentRegistry.all().size(), is(1));
@@ -90,7 +92,8 @@ public final class ResourceManagerAgentTest {
     }
 
     @Theory
-    public void create_embedded_actor_on_agent(final BenchRule benchRule) throws Exception {
+    public void create_embedded_actor_on_agent(final Supplier supplier) throws Exception {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
 
         List<String> preferredHosts = new ArrayList<>();
@@ -108,7 +111,8 @@ public final class ResourceManagerAgentTest {
     }
 
     @Theory
-    public void create_and_close_embedded_actor_on_agent(final BenchRule benchRule) throws Exception {
+    public void create_and_close_embedded_actor_on_agent(final Supplier supplier) throws Exception {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
 
         List<String> preferredHosts = new ArrayList<>();
@@ -123,7 +127,8 @@ public final class ResourceManagerAgentTest {
     }
 
     @Theory
-    public void create_and_close_forked_actor_on_agent(final BenchRule benchRule) throws Exception {
+    public void create_and_close_forked_actor_on_agent(final Supplier supplier) throws Exception {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
 
         List<String> jvmArgs = new ArrayList<>();
@@ -144,7 +149,8 @@ public final class ResourceManagerAgentTest {
     }
 
     @Theory
-    public void closing_agent_unregisters(final BenchRule benchRule) throws Exception {
+    public void closing_agent_unregisters(final Supplier supplier) throws Exception {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
 
         agent.close();

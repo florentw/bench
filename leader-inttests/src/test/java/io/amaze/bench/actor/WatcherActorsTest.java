@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
@@ -58,7 +59,7 @@ public final class WatcherActorsTest {
     @DataPoints
     public static final boolean[] forked = {false, true};
     @DataPoints
-    public static final BenchRule[] benchRules = new BenchRule[]{ //
+    public static final Supplier[] benchRules = new Supplier[]{ //
             BenchRule.newJmsCluster(), //
             BenchRule.newJgroupsCluster() //
     };
@@ -72,20 +73,21 @@ public final class WatcherActorsTest {
 
     private Agent agent;
     private MetricsRepository metricsRepository;
-    private BenchRule benchRule;
+    private BenchRule currentRule;
 
     @After
     public void after() throws Exception {
         try {
             agent.close();
         } finally {
-            benchRule.after();
+            currentRule.after();
         }
     }
 
     @Theory
-    public void create_and_initialize_watcher_actors(boolean forked, final BenchRule benchRule)
+    public void create_and_initialize_watcher_actors(boolean forked, final Supplier supplier)
             throws ExecutionException {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
@@ -95,7 +97,8 @@ public final class WatcherActorsTest {
     }
 
     @Theory
-    public void close_watcher_actors(boolean forked, final BenchRule benchRule) throws ExecutionException {
+    public void close_watcher_actors(boolean forked, final Supplier supplier) throws ExecutionException {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
         Actors.ActorHandle systemWatcher = createSystemWatcher(forked);
         Actors.ActorHandle processesWatcher = createProcessWatcher(forked);
@@ -107,7 +110,8 @@ public final class WatcherActorsTest {
     }
 
     @Theory
-    public void start_system_monitoring(boolean forked, final BenchRule benchRule) throws ExecutionException {
+    public void start_system_monitoring(boolean forked, final Supplier supplier) throws ExecutionException {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
         Actors.ActorHandle systemWatcher = createAndInitSystemWatcher(forked);
 
@@ -127,10 +131,11 @@ public final class WatcherActorsTest {
     /**
      * Here we monitor the {@link SystemWatcherActor} process using the {@link ProcessWatcherActor}
      *
-     * @throws ExecutionException No expected
+     * @throws ExecutionException Not expected
      */
     @Theory
-    public void stopWatch_process_monitoring(boolean forked, final BenchRule benchRule) throws ExecutionException {
+    public void stopWatch_process_monitoring(boolean forked, final Supplier supplier) throws ExecutionException {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
         MetricsRepository metricsRepository = benchRule.metricsRepository();
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
@@ -153,7 +158,8 @@ public final class WatcherActorsTest {
     }
 
     @Theory
-    public void sampling_process_monitoring(boolean forked, final BenchRule benchRule) throws ExecutionException {
+    public void sampling_process_monitoring(boolean forked, final Supplier supplier) throws ExecutionException {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
         Future<MetricValuesMessage> metrics = metricsRepository.expectValuesFor(PROCESS_WATCHER);
 
@@ -175,10 +181,10 @@ public final class WatcherActorsTest {
     }
 
     private void before(final BenchRule benchRule) {
-        this.benchRule = benchRule;
+        this.currentRule = benchRule;
         benchRule.before();
         try {
-            agent = getUninterruptibly(this.benchRule.agents().create(new AgentKey("test-agent-1")));
+            agent = getUninterruptibly(this.currentRule.agents().create(new AgentKey("test-agent-1")));
         } catch (ExecutionException e) {
             throw Throwables.propagate(e);
         }
@@ -186,13 +192,13 @@ public final class WatcherActorsTest {
     }
 
     private Actors.ActorHandle createSystemWatcher(final boolean forked) throws ExecutionException {
-        Actors.ActorHandle systemWatcher = benchRule.actors().create(systemActorConfig(forked));
+        Actors.ActorHandle systemWatcher = currentRule.actors().create(systemActorConfig(forked));
         getUninterruptibly(systemWatcher.actorCreation());
         return systemWatcher;
     }
 
     private Actors.ActorHandle createProcessWatcher(final boolean forked) throws ExecutionException {
-        Actors.ActorHandle processesWatcher = benchRule.actors().create(processActorConfig(forked));
+        Actors.ActorHandle processesWatcher = currentRule.actors().create(processActorConfig(forked));
         getUninterruptibly(processesWatcher.actorCreation());
         return processesWatcher;
     }

@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.rules.ExternalResource;
 
 import javax.validation.constraints.NotNull;
+import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -68,14 +69,18 @@ public final class BenchRule extends ExternalResource {
         this.clusterConfig = checkNotNull(clusterConfig);
     }
 
-    public static BenchRule newJmsCluster() {
-        TestClusterConfigs configs = ClusterConfigs.jms();
-        return new BenchRule(configs.leaderConfig(), configs.clusterConfig());
+    public static Supplier<BenchRule> newJmsCluster() {
+        return () -> {
+            TestClusterConfigs configs = ClusterConfigs.jms();
+            return new BenchRule(configs.leaderConfig(), configs.clusterConfig());
+        };
     }
 
-    public static BenchRule newJgroupsCluster() {
-        TestClusterConfigs configs = ClusterConfigs.jgroups();
-        return new BenchRule(configs.leaderConfig(), configs.clusterConfig());
+    public static Supplier<BenchRule> newJgroupsCluster() {
+        return () -> {
+            TestClusterConfigs configs = ClusterConfigs.jgroups();
+            return new BenchRule(configs.leaderConfig(), configs.clusterConfig());
+        };
     }
 
     public AgentRegistry agentRegistry() {

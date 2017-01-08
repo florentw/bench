@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static io.amaze.bench.runtime.actor.TestActor.REPLY_MESSAGE;
@@ -54,7 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ActorsMessagingTest {
 
     @DataPoints
-    public static final BenchRule[] benchRules = new BenchRule[]{ //
+    public static final Supplier[] benchRules = new Supplier[]{ //
             BenchRule.newJmsCluster(), //
             BenchRule.newJgroupsCluster() //
     };
@@ -67,7 +68,8 @@ public final class ActorsMessagingTest {
     private Agent agent;
 
     @Theory
-    public void two_actors_sends_message_to_each_other(final BenchRule benchRule) throws ExecutionException {
+    public void two_actors_sends_message_to_each_other(final Supplier supplier) throws ExecutionException {
+        BenchRule benchRule = (BenchRule) supplier.get();
         before(benchRule);
 
         Actors.ActorHandle actor1 = createActor(benchRule, ACTOR_1);
