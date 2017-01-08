@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -37,6 +38,7 @@ public final class DeployConfigTest {
     @Test
     public void null_parameters_are_invalid() {
         NullPointerTester tester = new NullPointerTester();
+
         tester.testAllPublicConstructors(DeployConfig.class);
     }
 
@@ -45,6 +47,7 @@ public final class DeployConfigTest {
         EqualsTester tester = new EqualsTester();
         tester.addEqualityGroup(createDeployConfig(), createDeployConfig());
         tester.addEqualityGroup(createDeployConfig().hashCode(), createDeployConfig().hashCode());
+
         tester.testEquals();
     }
 
@@ -60,11 +63,17 @@ public final class DeployConfigTest {
         DeployConfig actual = SerializableTester.reserializeAndAssert(expected);
 
         assertThat(actual.getPreferredHosts(), is(expected.getPreferredHosts()));
+        assertThat(actual.getJvmArguments(), is(expected.getJvmArguments()));
         assertThat(actual.isForked(), is(expected.isForked()));
     }
 
     private DeployConfig createDeployConfig() {
-        return new DeployConfig(true, new ArrayList<>());
+        List<String> preferredHosts = new ArrayList<>();
+        preferredHosts.add("localhost");
+        List<String> jvmArguments = new ArrayList<>();
+        jvmArguments.add("-Xmx512m");
+
+        return new DeployConfig(true, preferredHosts, jvmArguments);
     }
 
 }

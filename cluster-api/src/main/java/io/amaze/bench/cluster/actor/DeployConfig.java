@@ -24,30 +24,59 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created on 4/6/16.
+ * Deployment configuration for actors.
  */
 public final class DeployConfig implements Serializable {
 
     private final boolean forked;
     private final List<String> preferredHosts;
+    private final List<String> jvmArguments;
 
     public DeployConfig(final boolean forked, @NotNull final List<String> preferredHosts) {
-        this.forked = forked;
-        this.preferredHosts = checkNotNull(preferredHosts);
+        this(forked, preferredHosts, Collections.emptyList());
     }
 
+    public DeployConfig(final boolean forked,
+                        @NotNull final List<String> preferredHosts,
+                        @NotNull final List<String> jvmArguments) {
+        this.forked = forked;
+        this.preferredHosts = checkNotNull(preferredHosts);
+        this.jvmArguments = checkNotNull(jvmArguments);
+    }
+
+    /**
+     * If preferred hosts are specified, the resource manager will try to spawn the actor instances on them.
+     *
+     * @return The list of preferred hosts for this actor instance.
+     */
     @NotNull
     public List<String> getPreferredHosts() {
         return Collections.unmodifiableList(preferredHosts);
     }
 
+    /**
+     * Indicates whether the actor instance must be created in its own JVM, or should be embedded in the agent's JVM.
+     *
+     * @return true if the actor instance must be in its own JVM.
+     */
     public boolean isForked() {
         return forked;
     }
 
+    /**
+     * Allows to specify JVM arguments to be passed to the JVM of a forked actor.
+     * If {@link #isForked()} is false, these parameters are ignored.
+     *
+     * @return A non-null list of arguments to be passed to the JVM of the forked actor.
+     */
+    @NotNull
+    public List<String> getJvmArguments() {
+        return jvmArguments;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(forked, preferredHosts);
+        return Objects.hash(forked, preferredHosts, jvmArguments);
     }
 
     @Override
@@ -60,14 +89,15 @@ public final class DeployConfig implements Serializable {
         }
         DeployConfig that = (DeployConfig) o;
         return forked == that.forked && //
-                Objects.equals(preferredHosts, that.preferredHosts);
+                Objects.equals(preferredHosts, that.preferredHosts) && //
+                Objects.equals(jvmArguments, that.jvmArguments);
     }
 
     @Override
     public String toString() {
         return "{\"DeployConfig\":{" + //
                 "\"forked\":\"" + forked + "\"" + ", " + //
-                "\"preferredHosts\":\"" + preferredHosts + "\"}}";
+                "\"preferredHosts\":" + preferredHosts + ", " + //
+                "\"jvmArguments\":" + jvmArguments + "}}";
     }
-
 }

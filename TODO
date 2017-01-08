@@ -1,5 +1,4 @@
 - Pass a JMSClientFactory instead of a JMSClient ?
 - Static methods to create ActorConfigs
-- Custom java arguments for forked jvms
 - Optional Bootstrap method for Reactors
 - Switch to Guice for dependency injection

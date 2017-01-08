@@ -32,9 +32,7 @@ import org.apache.logging.log4j.Logger;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
@@ -166,21 +164,12 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
 
         String name = actorConfig.getKey().getName();
 
-        String[] cmd = { //
-                JAVA_HOME.value() + JAVA_CMD_PATH, //
-                "-cp", //
-                JAVA_CLASS_PATH.value(), // Use the current classpath
-                ActorBootstrap.class.getName(), // Main class
-                name,                           // arg[0]
-                actorConfig.getClassName(),     // arg[1]
-                clusterConfigFile,              // arg[2]
-                actorConfigFile                 // arg[3]
-        };
+        List<String> command = createCommand(actorConfig, actorConfigFile, clusterConfigFile);
 
         String actorLogFileName = localLogDir.getAbsolutePath() + File.separator + name + ".log";
         File actorLogFile = new File(Files.checkFilePath(actorLogFileName));
 
-        ProcessBuilder builder = new ProcessBuilder(cmd) //
+        ProcessBuilder builder = new ProcessBuilder(command) //
                 .redirectErrorStream(true) //
                 .redirectOutput(actorLogFile);
 
@@ -189,15 +178,31 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
         return builder.start();
     }
 
+    private List<String> createCommand(final ActorConfig actorConfig,
+                                       final String actorConfigFile,
+                                       final String clusterConfigFile) {
+
+        List<String> tokens = new ArrayList<>();
+        tokens.add(JAVA_HOME.value() + JAVA_CMD_PATH);// Using current JAVA_HOME for the new JVM
+        tokens.add("-cp");
+        tokens.add(JAVA_CLASS_PATH.value());          // Use the current classpath
+        tokens.addAll(actorConfig.getDeployConfig().getJvmArguments()); // Custom JVM args if any
+        tokens.add(ActorBootstrap.class.getName());   // Main class
+        tokens.add(actorConfig.getKey().getName());   // arg[0]
+        tokens.add(actorConfig.getClassName());       // arg[1]
+        tokens.add(clusterConfigFile);                // arg[2]
+        tokens.add(actorConfigFile);                  // arg[3]
+        return tokens;
+    }
+
     private ProcessWatchDogThread removeFromProcesses(ActorKey actor) {
-        ProcessWatchDogThread thread;
         synchronized (processes) {
-            thread = processes.remove(actor);
+            ProcessWatchDogThread thread = processes.remove(actor);
             if (thread == null) {
                 return null;
             }
+            return thread;
         }
-        return thread;
     }
 
     private final class ForkedManagedActor implements ManagedActor {

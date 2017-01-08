@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
@@ -93,6 +94,20 @@ public final class ForkedActorManagerTest {
         before(agentCluster);
         File rdvFile = folder.newFile();
         ActorConfig actorConfig = configWithInitRdv(TestActorWriter.class.getName(), rdvFile);
+
+        ManagedActor actor = actorManager.createActor(actorConfig);
+
+        assertNotNull(actor);
+        assertThat(actor.getKey(), is(DUMMY_ACTOR));
+        verifyFileContentWithin(rdvFile, TestActorWriter.OK, MAX_TIMEOUT_SEC, TimeUnit.SECONDS);
+    }
+
+    @Theory
+    public void create_actor_with_custom_JVM_arguments(final AgentClusterRule agentCluster)
+            throws ValidationException, IOException, InterruptedException {
+        before(agentCluster);
+        File rdvFile = folder.newFile();
+        ActorConfig actorConfig = configWithInitRdvCustomArgs(TestActorWriter.class.getName(), rdvFile);
 
         ManagedActor actor = actorManager.createActor(actorConfig);
 
@@ -258,9 +273,20 @@ public final class ForkedActorManagerTest {
 
         DeployConfig deployConfig = new DeployConfig(true, Collections.emptyList());
 
+        return createConfig(className, rdvFile, deployConfig);
+    }
+
+    private ActorConfig createConfig(final String className, final File rdvFile, final DeployConfig deployConfig) {
         String jsonConfig = "{\"" + TestActorWriter.INIT_FILE_CONFIG + "\":\"" + rdvFile.getAbsolutePath() + "\"}";
 
         return new ActorConfig(DUMMY_ACTOR, className, deployConfig, jsonConfig);
+    }
+
+    private ActorConfig configWithInitRdvCustomArgs(final String className, final File rdvFile) {
+        List<String> customJvmArguments = Collections.singletonList("-Xmx128m");
+        DeployConfig deployConfig = new DeployConfig(true, Collections.emptyList(), customJvmArguments);
+
+        return createConfig(className, rdvFile, deployConfig);
     }
 
     private void verifyFileContentWithin(final File file,
