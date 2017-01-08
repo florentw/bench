@@ -55,6 +55,7 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
     private static final String JAVA_CMD_PATH = File.separator + "bin" + File.separator + "java";
     private static final String TMP_CONFIG_PREFIX = "config-";
     private static final String TMP_CONFIG_SUFFIX = ".json";
+    private static final String CLASSPATH_ENV = "CLASSPATH";
 
     private final ClusterConfigFactory clusterConfigFactory;
     private final Map<ActorKey, ProcessWatchDogThread> processes = new HashMap<>();
@@ -173,6 +174,9 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
                 .redirectErrorStream(true) //
                 .redirectOutput(actorLogFile);
 
+        // Use the current classpath, passed as an env variable to avoid cluttering ps output.
+        builder.environment().put(CLASSPATH_ENV, JAVA_CLASS_PATH.value());
+
         log.info("Started process for {} with command {}, logging to {}", name, builder.command(), actorLogFileName);
 
         return builder.start();
@@ -184,8 +188,6 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
 
         List<String> tokens = new ArrayList<>();
         tokens.add(JAVA_HOME.value() + JAVA_CMD_PATH);// Using current JAVA_HOME for the new JVM
-        tokens.add("-cp");
-        tokens.add(JAVA_CLASS_PATH.value());          // Use the current classpath
         tokens.addAll(actorConfig.getDeployConfig().getJvmArguments()); // Custom JVM args if any
         tokens.add(ActorBootstrap.class.getName());   // Main class
         tokens.add(actorConfig.getKey().getName());   // arg[0]

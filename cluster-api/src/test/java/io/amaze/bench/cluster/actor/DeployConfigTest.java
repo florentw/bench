@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,6 +48,8 @@ public final class DeployConfigTest {
         EqualsTester tester = new EqualsTester();
         tester.addEqualityGroup(createDeployConfig(), createDeployConfig());
         tester.addEqualityGroup(createDeployConfig().hashCode(), createDeployConfig().hashCode());
+        tester.addEqualityGroup(new DeployConfig(false, Collections.emptyList(), Collections.emptyList()),
+                                new DeployConfig(false, Collections.emptyList(), Collections.emptyList()));
 
         tester.testEquals();
     }
@@ -75,5 +78,4 @@ public final class DeployConfigTest {
 
         return new DeployConfig(true, preferredHosts, jvmArguments);
     }
-
 }
