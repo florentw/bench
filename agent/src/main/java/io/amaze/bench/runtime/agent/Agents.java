@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 
 /**
- * Created on 9/12/16.
+ * Utility class to create {@link Agent} instances, and synchronize with their lifecycle.
  */
 public final class Agents {
 
@@ -39,7 +39,8 @@ public final class Agents {
     private final AgentClusterClientFactory clientFactory;
     private final AgentRegistry agentRegistry;
 
-    public Agents(@NotNull final ActorManagers actorManagers, @NotNull final AgentClusterClientFactory clientFactory,
+    public Agents(@NotNull final ActorManagers actorManagers,
+                  @NotNull final AgentClusterClientFactory clientFactory,
                   @NotNull final AgentRegistry agentRegistry) {
 
         this.actorManagers = checkNotNull(actorManagers);

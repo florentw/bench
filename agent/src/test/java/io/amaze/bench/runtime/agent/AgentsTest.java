@@ -105,8 +105,8 @@ public final class AgentsTest {
         assertNotNull(future);
         InOrder inOrder = inOrder(agentRegistry, actorManagers);
         inOrder.verify(agentRegistry).addListener(any(AgentRegistryListener.class));
-        inOrder.verify(actorManagers).createEmbedded(AGENT, agentClusterClientFactory);
-        inOrder.verify(actorManagers).createForked(AGENT, agentClusterClientFactory.clusterConfigFactory());
+        inOrder.verify(actorManagers).createEmbedded(agentClusterClientFactory);
+        inOrder.verify(actorManagers).createForked(agentClusterClientFactory.clusterConfigFactory());
         inOrder.verifyNoMoreInteractions();
     }
 

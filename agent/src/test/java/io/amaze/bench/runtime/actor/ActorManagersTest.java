@@ -64,7 +64,7 @@ public final class ActorManagersTest {
 
     @Test
     public void can_supply_embedded_manager() {
-        try (ActorManager embedded = actorManagers.createEmbedded(DUMMY_AGENT, clientFactory)) {
+        try (ActorManager embedded = actorManagers.createEmbedded(clientFactory)) {
             assertNotNull(embedded);
             assertTrue(embedded instanceof EmbeddedActorManager);
         }
@@ -72,7 +72,7 @@ public final class ActorManagersTest {
 
     @Test
     public void can_supply_forked_manager() {
-        try (ActorManager forked = actorManagers.createForked(DUMMY_AGENT, configFactory)) {
+        try (ActorManager forked = actorManagers.createForked(configFactory)) {
             assertNotNull(forked);
             assertTrue(forked instanceof ForkedActorManager);
         }

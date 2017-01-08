@@ -92,9 +92,9 @@ public final class AgentTest {
         embeddedManager = spy(new EmbeddedActorManager(clientFactory));
 
         when(actorClient.localEndpoint()).thenReturn(localEndpoint);
-        when(actorManagers.createEmbedded(any(AgentKey.class), any(AgentClusterClientFactory.class))).thenReturn(
+        when(actorManagers.createEmbedded(any(AgentClusterClientFactory.class))).thenReturn(
                 embeddedManager);
-        when(actorManagers.createForked(any(AgentKey.class), eq(clusterConfigFactory))).thenReturn(forkedManager);
+        when(actorManagers.createForked(eq(clusterConfigFactory))).thenReturn(forkedManager);
         doReturn(embeddedManagedActor).when(embeddedManager).createActor(DUMMY_CONFIG);
         doReturn(forkedManagedActor).when(forkedManager).createActor(DUMMY_CONFIG);
 
@@ -134,8 +134,8 @@ public final class AgentTest {
         assertNotNull(agent.getKey());
 
         // Check ActorManagers created
-        verify(actorManagers).createEmbedded(agent.getKey(), clientFactory);
-        verify(actorManagers).createForked(agent.getKey(), clusterConfigFactory);
+        verify(actorManagers).createEmbedded(clientFactory);
+        verify(actorManagers).createForked(clusterConfigFactory);
         verifyNoMoreInteractions(actorManagers);
 
         verifyNoMoreInteractions(agentClient);

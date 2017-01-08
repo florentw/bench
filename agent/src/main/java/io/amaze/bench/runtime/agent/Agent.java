@@ -74,8 +74,8 @@ public class Agent implements AgentClientListener, Closeable {
 
         log.info("{} Starting...", this);
 
-        embeddedManager = actorManagers.createEmbedded(key, clientFactory);
-        forkedManager = actorManagers.createForked(key, clientFactory.clusterConfigFactory());
+        embeddedManager = actorManagers.createEmbedded(clientFactory);
+        forkedManager = actorManagers.createForked(clientFactory.clusterConfigFactory());
 
         agentClient = clientFactory.createForAgent(key);
 
