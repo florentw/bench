@@ -10,6 +10,8 @@ It uses Java 8 and the network communication layer within the actor's cluster ca
 - Using a lightweight embedded JMS server: [FFMQ](http://timewalker74.github.io/ffmq/), all actor communication then goes through a single master node.
 - Using [Jgroups](http://www.jgroups.org/) to form a peer to peer network where actors can communicate directly with one another.
 
+Bench includes actors to watch the host system and processes using the excellent [OSHI library](https://github.com/oshi/oshi).
+
 ## Installation
 On linux, the Jgroups cluster implementation displays warnings when the following kernel properties are not set to the following values:
 
