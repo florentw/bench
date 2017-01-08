@@ -45,7 +45,7 @@ public class MetricsRepository {
     public MetricValuesMessage valuesFor(@NotNull final ActorKey actor) {
         checkNotNull(actor);
         synchronized (actorValues) {
-            return actorValues.get(actor).copy();
+            return actorValues.get(actor);
         }
     }
 
@@ -75,9 +75,7 @@ public class MetricsRepository {
      */
     public Map<ActorKey, MetricValuesMessage> allValues() {
         synchronized (actorValues) {
-            Map<ActorKey, MetricValuesMessage> copy = new HashMap<>(actorValues.size());
-            actorValues.forEach((actor, metricValues) -> copy.put(actor, actorValues.get(actor).copy()));
-            return copy;
+            return new HashMap<>(actorValues); // No need to copy nested objects, they are immutable.
         }
     }
 
