@@ -179,10 +179,12 @@ public final class ResourceManagerAgentTest {
     }
 
     private void after(final BenchRule benchRule) throws Exception {
-        resourceManager.close();
-        agent.close();
-
-        benchRule.after();
+        try {
+            resourceManager.close();
+            agent.close();
+        } finally {
+            benchRule.after();
+        }
     }
 
     private ActorSync createActorWith(final List<String> preferredHosts) {

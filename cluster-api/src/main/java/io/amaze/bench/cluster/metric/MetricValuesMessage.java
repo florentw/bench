@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Container for produced metric values for a given actor.
+ * Immutable container for produced metric values for a given actor.
  * It contain a collection of {@link Metric} and their associated values lists.
  */
 public final class MetricValuesMessage implements Serializable {
@@ -38,24 +38,6 @@ public final class MetricValuesMessage implements Serializable {
                                @NotNull final Map<Metric, List<MetricValue>> metricValues) {
         this.fromActor = checkNotNull(fromActor);
         this.metricValues = checkNotNull(metricValues);
-    }
-
-    /**
-     * Merges values from the given {@link MetricValuesMessage} to the current ones.
-     *
-     * @param otherValues New metric values to be added to our current set.
-     */
-    public synchronized void mergeWith(@NotNull final MetricValuesMessage otherValues) {
-        checkNotNull(otherValues);
-
-        otherValues.metrics().forEach((otherMetric, otherMetricValues) -> {
-            List<MetricValue> existingValues = metricValues.get(otherMetric);
-            if (existingValues != null) {
-                existingValues.addAll(otherMetricValues);
-            } else {
-                metricValues.put(otherMetric, otherMetricValues);
-            }
-        });
     }
 
     /**
@@ -115,5 +97,29 @@ public final class MetricValuesMessage implements Serializable {
             }
         }
         return out.append("}}").toString();
+    }
+
+    /**
+     * Merges values from the given {@link MetricValuesMessage} to the current ones and returns a new object.
+     * The state of the current instance is NOT changed.
+     *
+     * @param otherValues New metric values to be added to our current set.
+     */
+    @NotNull
+    MetricValuesMessage mergeWith(@NotNull final MetricValuesMessage otherValues) {
+        checkNotNull(otherValues);
+
+        Map<Metric, List<MetricValue>> metricsCopy = metrics();
+
+        otherValues.metrics().forEach((otherMetric, otherMetricValues) -> {
+            List<MetricValue> existingValues = metricsCopy.get(otherMetric);
+            if (existingValues != null) {
+                existingValues.addAll(otherMetricValues);
+            } else {
+                metricsCopy.put(otherMetric, otherMetricValues);
+            }
+        });
+
+        return new MetricValuesMessage(fromActor, metricsCopy);
     }
 }

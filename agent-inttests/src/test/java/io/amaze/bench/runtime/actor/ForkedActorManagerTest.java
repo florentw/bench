@@ -248,8 +248,11 @@ public final class ForkedActorManagerTest {
 
     @After
     public void after() {
-        actorManager.close();
-        agentCluster.after();
+        try {
+            actorManager.close();
+        } finally {
+            agentCluster.after();
+        }
     }
 
     private void before(final AgentClusterRule agentCluster) {

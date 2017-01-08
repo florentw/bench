@@ -25,10 +25,6 @@ public final class ClusterConfigs {
     public static final String JMS_CLUSTER_CONFIGS = "io.amaze.bench.shared.jms.JMSClusterConfigs";
     public static final String JGROUPS_CLUSTER_CONFIGS = "io.amaze.bench.shared.jgroups.JgroupsClusterConfigs";
 
-    public static TestClusterConfigs defaultConfig() {
-        return jms();
-    }
-
     public static TestClusterConfigs jms() {
         return loadConfig(JMS_CLUSTER_CONFIGS);
     }

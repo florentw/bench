@@ -106,7 +106,7 @@ public class MetricsRepository {
     private MetricValuesMessage updateActorMetricValues(final ActorKey actor, final MetricValuesMessage metrics) {
         MetricValuesMessage currentActorMetrics = actorValues.remove(actor);
         if (currentActorMetrics != null) {
-            currentActorMetrics.mergeWith(metrics);
+            currentActorMetrics = currentActorMetrics.mergeWith(metrics);
         } else {
             currentActorMetrics = metrics;
         }

@@ -90,8 +90,11 @@ public final class ActorsMessagingTest {
 
     @After
     public void after() throws Exception {
-        agent.close();
-        benchRule.after();
+        try {
+            agent.close();
+        } finally {
+            benchRule.after();
+        }
     }
 
     private Actors.ActorHandle createActor(final BenchRule benchRule, final ActorKey actor) throws ExecutionException {

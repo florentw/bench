@@ -255,6 +255,9 @@ public final class FFMQServer implements JMSServer {
         return settings;
     }
 
+    /**
+     * Starts the TCP server socket on a dedicated thread.
+     */
     private static final class ListenerThread extends Thread {
 
         private static final String LISTENER_THREAD_NAME = "jms-listener-";

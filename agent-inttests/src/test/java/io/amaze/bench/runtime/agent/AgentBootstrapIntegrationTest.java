@@ -92,8 +92,11 @@ public final class AgentBootstrapIntegrationTest {
     }
 
     private void after(final AgentClusterRule clusterRule) {
-        registryClusterClient.close();
-        clusterRule.after();
+        try {
+            registryClusterClient.close();
+        } finally {
+            clusterRule.after();
+        }
     }
 
 }

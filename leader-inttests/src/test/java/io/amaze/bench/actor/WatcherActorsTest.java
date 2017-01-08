@@ -76,8 +76,11 @@ public final class WatcherActorsTest {
 
     @After
     public void after() throws Exception {
-        agent.close();
-        benchRule.after();
+        try {
+            agent.close();
+        } finally {
+            benchRule.after();
+        }
     }
 
     @Theory

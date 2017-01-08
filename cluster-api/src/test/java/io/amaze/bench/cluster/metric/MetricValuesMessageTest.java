@@ -80,10 +80,10 @@ public final class MetricValuesMessageTest {
         MetricValuesMessage originalValues = emptyMetricValues();
         MetricValuesMessage newValues = metricValues(3);
 
-        originalValues.mergeWith(newValues);
+        MetricValuesMessage mergedMetrics = originalValues.mergeWith(newValues);
 
-        assertThat(originalValues.metrics().size(), is(2));
-        assertThat(originalValues.metrics().get(DUMMY_METRIC).size(), is(3));
+        assertThat(mergedMetrics.metrics().size(), is(2));
+        assertThat(mergedMetrics.metrics().get(DUMMY_METRIC).size(), is(3));
     }
 
     @Test
@@ -91,10 +91,18 @@ public final class MetricValuesMessageTest {
         MetricValuesMessage originalValues = metricValues(2);
         MetricValuesMessage newValues = metricValues(3);
 
-        originalValues.mergeWith(newValues);
+        MetricValuesMessage mergedMetrics = originalValues.mergeWith(newValues);
 
+        // Original message left untouched
         assertThat(originalValues.metrics().size(), is(2));
-        assertThat(originalValues.metrics().get(DUMMY_METRIC).size(), is(5));
+        assertThat(originalValues.metrics().get(DUMMY_METRIC).size(), is(2));
+
+        // New message left untouched
+        assertThat(newValues.metrics().size(), is(2));
+        assertThat(newValues.metrics().get(DUMMY_METRIC).size(), is(3));
+
+        assertThat(mergedMetrics.metrics().size(), is(2));
+        assertThat(mergedMetrics.metrics().get(DUMMY_METRIC).size(), is(5));
     }
 
     @Test

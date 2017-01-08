@@ -25,7 +25,7 @@ import io.amaze.bench.shared.util.Network;
 import io.amaze.bench.util.TestClusterConfigs;
 
 /**
- * Created on 10/31/16.
+ * Do not remove, is referenced directly in configuration.
  */
 public final class JMSClusterConfigs implements TestClusterConfigs {
 

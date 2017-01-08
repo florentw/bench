@@ -16,6 +16,8 @@
 package io.amaze.bench.shared.jms;
 
 import io.amaze.bench.shared.util.Network;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.rules.ExternalResource;
 
 import static com.google.common.base.Throwables.propagate;
@@ -26,6 +28,8 @@ import static com.google.common.base.Throwables.propagate;
 public final class JMSServerRule extends ExternalResource {
 
     static final String DEFAULT_HOST = Network.LOCALHOST;
+
+    private static final Logger log = LogManager.getLogger();
 
     private JMSServer server;
     private JMSEndpoint endpoint;
@@ -50,6 +54,8 @@ public final class JMSServerRule extends ExternalResource {
         int port = Network.findFreePort();
         try {
             endpoint = new JMSEndpoint(DEFAULT_HOST, port);
+
+            log.info("Starting JMS server with endpoint: {}", endpoint);
             server = new FFMQServer(endpoint);
         } catch (JMSException e) {
             propagate(e);
@@ -60,6 +66,7 @@ public final class JMSServerRule extends ExternalResource {
         if (server != null) {
             try {
                 server.close();
+                log.info("Stopped JMS server with endpoint: {}", endpoint);
             } catch (Exception e) {
                 propagate(e);
             }
