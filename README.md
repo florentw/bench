@@ -1,5 +1,8 @@
 ## Bench
 [![Build Status](https://travis-ci.org/florentw/bench.svg?branch=master)](https://travis-ci.org/florentw/bench)
+[![Quality gate](https://sonarqube.com/api/badges/gate?key=io.amaze%3Abench)](https://sonarqube.com/dashboard?id=io.amaze%3Abench)
+[![Code coverage](https://sonarqube.com/api/badges/measure?key=io.amaze%3Abench&metric=coverage)](https://sonarqube.com/dashboard?id=io.amaze%3Abench)
+[![Lines of code](https://sonarqube.com/api/badges/measure?key=io.amaze%3Abench&metric=ncloc)](https://sonarqube.com/dashboard?id=io.amaze%3Abench)
 
 Bench is an actor framework to help write performance benchmarks in Java for distributed applications.
 
