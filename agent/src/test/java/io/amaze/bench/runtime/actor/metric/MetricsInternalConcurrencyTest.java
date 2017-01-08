@@ -68,7 +68,7 @@ public final class MetricsInternalConcurrencyTest {
             Metrics.Sink sink = getUninterruptibly(fSink);
             assertNotNull(sink);
         }
-        assertThat(metricsInternal.dumpAndFlush().metrics().size(), is(1));
+        assertThat(metricsInternal.getValues().size(), is(1));
     }
 
     @Test

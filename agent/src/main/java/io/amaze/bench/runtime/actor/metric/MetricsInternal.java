@@ -15,7 +15,7 @@
  */
 package io.amaze.bench.runtime.actor.metric;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.api.ActorKey;
 import io.amaze.bench.api.metric.Metric;
 import io.amaze.bench.api.metric.Metrics;
@@ -38,7 +38,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class MetricsInternal implements Metrics {
 
     private final Map<Metric, List<MetricValue>> values = new HashMap<>();
-
     private final ActorKey actor;
 
     private MetricsInternal(@NotNull final ActorKey actor) {
@@ -61,16 +60,20 @@ public final class MetricsInternal implements Metrics {
     }
 
     public MetricValuesMessage dumpAndFlush() {
+        Map<Metric, List<MetricValue>> copy = new HashMap<>();
         synchronized (values) {
-            Map<Metric, List<MetricValue>> copy = ImmutableMap.copyOf(values);
-            flush();
-            return new MetricValuesMessage(actor, copy);
+            values.forEach((metric, metricValues) -> {
+                if (!metricValues.isEmpty()) {
+                    copy.put(metric, new ArrayList<>(metricValues));
+                    metricValues.clear();
+                }
+            });
         }
+        return new MetricValuesMessage(actor, copy);
     }
 
-    public void flush() {
-        synchronized (values) {
-            values.clear();
-        }
+    @VisibleForTesting
+    Map<Metric, List<MetricValue>> getValues() {
+        return values;
     }
 }

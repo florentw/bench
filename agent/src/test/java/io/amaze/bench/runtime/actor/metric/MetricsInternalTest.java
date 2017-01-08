@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 public final class MetricsInternalTest {
 
     private static final Metric DUMMY_METRIC = metric("elapsed", "ms").build();
+    private static final Metric ANOTHER_METRIC = metric("elapsed2", "ms").build();
 
     private MetricsInternal metrics;
 
@@ -97,7 +98,7 @@ public final class MetricsInternalTest {
     }
 
     @Test
-    public void call_to_get_and_flush_clears() {
+    public void call_to_get_and_flush_clears_lists() {
         MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
         sink.add(10);
 
@@ -105,7 +106,28 @@ public final class MetricsInternalTest {
         metrics.dumpAndFlush();
 
         // Then
-        assertTrue(metrics.dumpAndFlush().metrics().isEmpty());
+        assertThat(metrics.getValues().size(), is(1));
+        assertThat(metrics.getValues().get(DUMMY_METRIC).size(), is(0));
+    }
+
+    @Test
+    public void call_to_flush_twice_does_not_remove_existing_lists() {
+        MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
+        sink.add(10);
+
+        // When
+        metrics.dumpAndFlush();
+
+        MetricSink anotherSink = (MetricSink) this.metrics.sinkFor(ANOTHER_METRIC);
+        anotherSink.add(11);
+
+        MetricValuesMessage flushed = metrics.dumpAndFlush();
+
+        // Then
+        assertThat(metrics.getValues().size(), is(2));
+        assertThat(metrics.getValues().get(DUMMY_METRIC).size(), is(0));
+        assertThat(metrics.getValues().get(ANOTHER_METRIC).size(), is(0));
+        assertThat(flushed.metrics().size(), is(1));
     }
 
     @Test
