@@ -63,7 +63,8 @@ public final class ActorsMessagingTest {
     private static final ActorKey ACTOR_2 = new ActorKey("actor-2");
 
     @Rule
-    public final Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
+    public final Timeout globalTimeout = new Timeout(120, TimeUnit.SECONDS);
+
     private BenchRule benchRule;
     private Agent agent;
 

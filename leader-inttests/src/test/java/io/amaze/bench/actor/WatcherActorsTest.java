@@ -69,7 +69,7 @@ public final class WatcherActorsTest {
     private static final ActorKey PROCESS_WATCHER = new ActorKey("ProcessWatcher");
 
     @Rule
-    public final Timeout globalTimeout = new Timeout(90, TimeUnit.SECONDS);
+    public final Timeout globalTimeout = new Timeout(180, TimeUnit.SECONDS);
 
     private Agent agent;
     private MetricsRepository metricsRepository;

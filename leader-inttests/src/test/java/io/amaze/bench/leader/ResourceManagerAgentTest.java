@@ -65,7 +65,7 @@ public final class ResourceManagerAgentTest {
             BenchRule.newJgroupsCluster() //
     };
 
-    private static final int TEST_TIMEOUT_SEC = 15;
+    private static final int TEST_TIMEOUT_SEC = 60;
 
     @Rule
     public final Timeout globalTimeout = new Timeout(TEST_TIMEOUT_SEC * 2, TimeUnit.SECONDS);
