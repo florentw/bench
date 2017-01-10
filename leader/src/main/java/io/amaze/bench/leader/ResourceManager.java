@@ -90,9 +90,9 @@ public class ResourceManager implements AutoCloseable {
             throw new IllegalArgumentException("Attempt to close unknown actor " + actor);
         }
 
-        resourceManagerClusterClient.closeForActor(actor);
         AgentInputMessage msg = AgentInputMessage.closeActor(agent.getAgentKey(), actor);
         resourceManagerClusterClient.sendToAgent(msg);
+        resourceManagerClusterClient.closeForActor(actor);
     }
 
     /**

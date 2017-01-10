@@ -30,6 +30,7 @@ import io.amaze.bench.shared.util.SystemConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -101,16 +102,17 @@ public final class ResourceManagerTest {
     }
 
     @Test
-    public void create_and_close() {
+    public void close_actor_send_message_to_agent_and_closes_resources() {
         registerAgentOnOurHost();
         resourceManager.createActor(defaultActorConfig);
 
         resourceManager.closeActor(DUMMY_ACTOR);
 
-        verify(resourceManagerClusterClient).initForActor(DUMMY_ACTOR);
-        verify(resourceManagerClusterClient, times(2)).sendToAgent(any(AgentInputMessage.class));
-        verify(resourceManagerClusterClient).closeForActor(DUMMY_ACTOR);
-        verifyNoMoreInteractions(resourceManagerClusterClient);
+        InOrder inOrder = inOrder(resourceManagerClusterClient);
+        inOrder.verify(resourceManagerClusterClient).initForActor(DUMMY_ACTOR);
+        inOrder.verify(resourceManagerClusterClient, times(2)).sendToAgent(any(AgentInputMessage.class));
+        inOrder.verify(resourceManagerClusterClient).closeForActor(DUMMY_ACTOR);
+        inOrder.verifyNoMoreInteractions();
 
         assertThat(resourceManager.getActorsToAgents().isEmpty(), is(true));
     }
