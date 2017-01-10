@@ -31,8 +31,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class JMSEndpoint implements Endpoint {
 
-    private static final String SERVER_HOST = "jms.server.host";
-    private static final String SERVER_PORT = "jms.server.port";
+    private static final String SERVER_HOST = "jmsServerHost";
+    private static final String SERVER_PORT = "jmsServerPort";
 
     private final String host;
     private final int port;

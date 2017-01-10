@@ -17,6 +17,7 @@ package io.amaze.bench.cluster.jms;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.amaze.bench.api.ActorKey;
+import io.amaze.bench.cluster.DummyEndpoint;
 import io.amaze.bench.cluster.Endpoint;
 import io.amaze.bench.cluster.actor.ActorClusterClient;
 import io.amaze.bench.cluster.actor.ActorRegistrySender;
@@ -74,9 +75,12 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
         }
     }
 
+    /**
+     * @return A {@link DummyEndpoint} instance, as there is no way to contact an actor directly when using JMS.
+     */
     @Override
     public Endpoint localEndpoint() {
-        return new JMSEndpoint("dummy", 1337);
+        return new DummyEndpoint();
     }
 
     @Override
