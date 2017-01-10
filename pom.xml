@@ -24,6 +24,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>Bench :: All</name>
+    <url>https://github.com/florentw/bench/</url>
 
     <organization>
         <name>Amaze.io</name>
@@ -33,13 +34,14 @@
     <modules>
         <module>api</module>
         <module>agent</module>
-        <module>leader</module>
-        <module>shared</module>
+        <module>agent-inttests</module>
+        <module>agent-package</module>
         <module>cluster-api</module>
         <module>cluster-jms</module>
         <module>cluster-jgroups</module>
+        <module>leader</module>
         <module>leader-inttests</module>
-        <module>agent-inttests</module>
+        <module>shared</module>
     </modules>
 
     <properties>

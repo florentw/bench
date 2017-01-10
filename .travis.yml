@@ -13,6 +13,7 @@ before_script:
 
 script:
   - mvn install failsafe:verify dependency:copy-dependencies -Pwith-sonar
+  - mvn package -DskipTests
 
 after_success:
   - sonar-scanner
