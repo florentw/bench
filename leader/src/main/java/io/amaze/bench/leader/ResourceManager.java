@@ -61,6 +61,10 @@ public class ResourceManager implements AutoCloseable {
     public void createActor(@NotNull final ActorConfig actorConfig) {
         checkNotNull(actorConfig);
 
+        if (actorsToAgents.containsKey(actorConfig.getKey())) {
+            throw new IllegalStateException("Actor " + actorConfig.getKey() + " already exists");
+        }
+
         ActorKey actorKey = actorConfig.getKey();
         resourceManagerClusterClient.initForActor(actorKey);
 

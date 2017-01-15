@@ -86,6 +86,14 @@ public final class ResourceManagerTest {
         resourceManager.createActor(defaultActorConfig);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void create_actor_twice_throws() {
+        registerAgentOnOurHost();
+        resourceManager.createActor(defaultActorConfig);
+
+        resourceManager.createActor(defaultActorConfig);
+    }
+
     @Test
     public void create_actor_on_single_agent() {
         registerAgentOnOurHost();
