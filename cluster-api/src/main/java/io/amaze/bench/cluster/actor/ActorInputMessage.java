@@ -43,6 +43,10 @@ public final class ActorInputMessage implements Serializable {
         checkArgument(!from.trim().isEmpty(), "From should not be empty.");
     }
 
+    public static ActorInputMessage bootstrap() {
+        return new ActorInputMessage(Command.BOOTSTRAP, NA, NA);
+    }
+
     public static ActorInputMessage dumpMetrics() {
         return new ActorInputMessage(Command.DUMP_METRICS, NA, NA);
     }
@@ -95,6 +99,7 @@ public final class ActorInputMessage implements Serializable {
     }
 
     public enum Command {
+        BOOTSTRAP, //
         CLOSE, //
         DUMP_METRICS, //
         MESSAGE

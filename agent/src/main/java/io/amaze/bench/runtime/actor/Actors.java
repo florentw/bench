@@ -34,6 +34,7 @@ import org.picocontainer.MutablePicoContainer;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod;
@@ -69,15 +70,22 @@ public class Actors {
         Class<? extends Reactor> clazz = ActorValidators.get().loadAndValidate(className);
         Config config = parseConfig(jsonConfig);
 
-        Method beforeMethod = findAtMostOneAnnotatedMethod(clazz, Before.class);
-        Method afterMethod = findAtMostOneAnnotatedMethod(clazz, After.class);
+        Optional<Method> beforeMethod = findAtMostOneAnnotatedMethod(clazz, Before.class);
+        Optional<Method> afterMethod = findAtMostOneAnnotatedMethod(clazz, After.class);
+        Optional<Method> bootstrapMethod = findAtMostOneAnnotatedMethod(clazz, Bootstrap.class);
 
         MetricsInternal metrics = MetricsInternal.create(actorKey);
 
         ActorClusterClient client = clientFactory.createForActor(actorKey);
         Reactor<Serializable> reactor = createReactor(actorKey, metrics, clazz, client, config);
 
-        return new ActorInternal(actorKey, metrics, reactor, client, beforeMethod, afterMethod);
+        return new ActorInternal(actorKey,
+                                 metrics,
+                                 reactor,
+                                 client,
+                                 beforeMethod.orElse(null),
+                                 afterMethod.orElse(null),
+                                 bootstrapMethod.orElse(null));
     }
 
     private static Config parseConfig(@NotNull final String jsonConfig) throws ValidationException {

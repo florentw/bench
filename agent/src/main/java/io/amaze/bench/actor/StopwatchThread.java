@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import oshi.json.SystemInfo;
 import oshi.json.software.os.OSProcess;
 
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -61,37 +62,37 @@ final class StopwatchThread implements Runnable {
     @Override
     public void run() {
         try {
-            OSProcess beforeProcess = processOrNull();
-            if (beforeProcess == null) {
+            Optional<OSProcess> beforeProcess = process();
+            if (!beforeProcess.isPresent()) {
                 return;
             }
 
-            startMetrics(beforeProcess);
+            startMetrics(beforeProcess.get());
 
             awaitUninterruptibly(stopping);
 
-            OSProcess afterProcess = processOrNull();
-            if (afterProcess == null) {
+            Optional<OSProcess> afterProcess = process();
+            if (!afterProcess.isPresent()) {
                 return;
             }
 
-            stopMetrics(afterProcess);
+            stopMetrics(afterProcess.get());
         } finally {
             stopped.countDown();
         }
     }
 
-    public void stop() {
+    void stop() {
         stopping.countDown();
         awaitUninterruptibly(stopped);
     }
 
-    private OSProcess processOrNull() {
+    private Optional<OSProcess> process() {
         try {
-            return systemInfo.getOperatingSystem().getProcess(message.getPid());
+            return Optional.ofNullable(systemInfo.getOperatingSystem().getProcess(message.getPid()));
         } catch (Exception e) { // NOSONAR - We want to catch everything
             log.warn("Pid {} not found", message.getPid(), e);
-            return null;
+            return Optional.empty();
         }
     }
 

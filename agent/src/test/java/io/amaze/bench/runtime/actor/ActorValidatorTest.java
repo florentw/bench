@@ -103,12 +103,20 @@ public final class ActorValidatorTest {
         get().loadAndValidate(TwoBeforeMethods.class.getName());
     }
 
-    @Test//(expected = ValidationException.class)
+    @Test
     public void actor_declaring_two_after_methods_throws() throws ValidationException {
         expectedException.expect(ValidationException.class);
         expectedException.expectMessage("@After annotation is declared for more than one method");
 
         get().loadAndValidate(TwoAfterMethods.class.getName());
+    }
+
+    @Test
+    public void actor_declaring_two_bootstrap_methods_throws() throws ValidationException {
+        expectedException.expect(ValidationException.class);
+        expectedException.expectMessage("@Bootstrap annotation is declared for more than one method");
+
+        get().loadAndValidate(TwoBootstrapMethods.class.getName());
     }
 
     @Test
@@ -203,5 +211,27 @@ public final class ActorValidatorTest {
     @Actor
     private abstract class AbstractActor implements Reactor {
 
+    }
+
+    @Actor
+    private static final class TwoBootstrapMethods implements Reactor {
+        public TwoBootstrapMethods() {
+            // Dummy
+        }
+
+        @Bootstrap
+        public void bootstrap1() {
+            // Dummy
+        }
+
+        @Bootstrap
+        public void bootstrap2() {
+            // Dummy
+        }
+
+        @Override
+        public void onMessage(@NotNull final String from, @NotNull final Serializable message) throws ReactorException {
+            // Dummy
+        }
     }
 }

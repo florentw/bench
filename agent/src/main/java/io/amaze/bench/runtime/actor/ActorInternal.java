@@ -49,15 +49,17 @@ import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.*;
  */
 public class ActorInternal implements RuntimeActor {
 
-    private static final String MSG_AFTER_METHOD_FAILED = "{} Error while invoking after method.";
     private static final Logger log = LogManager.getLogger();
+    private static final String ERROR_INVOKING_METHOD = "{} Error while invoking {} method.";
 
     private final ActorKey actorKey;
     private final MetricsInternal metrics;
-    private final Method beforeMethod;
-    private final Method afterMethod;
     private final Reactor<Serializable> instance;
     private final ActorClusterClient client;
+
+    private final Method beforeMethod;
+    private final Method afterMethod;
+    private final Method bootstrapMethod;
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
@@ -66,14 +68,17 @@ public class ActorInternal implements RuntimeActor {
                          @NotNull final Reactor<Serializable> instance,
                          @NotNull final ActorClusterClient client,
                          final Method beforeMethod,
-                         final Method afterMethod) {
+                         final Method afterMethod,
+                         final Method bootstrapMethod) {
 
         this.actorKey = checkNotNull(actorKey);
         this.metrics = checkNotNull(metrics);
-        this.beforeMethod = beforeMethod;
-        this.afterMethod = afterMethod;
         this.instance = checkNotNull(instance);
         this.client = checkNotNull(client);
+
+        this.beforeMethod = beforeMethod;
+        this.afterMethod = afterMethod;
+        this.bootstrapMethod = bootstrapMethod;
 
         // Plug the reactor listener to the cluster messaging system
         // Should be done last!
@@ -98,17 +103,40 @@ public class ActorInternal implements RuntimeActor {
         try {
             beforeMethod.invoke(instance);
         } catch (Exception e) { // NOSONAR - We want to catch everything here
-            log.warn("{} Error while invoking before method on actor {}.", this, actorKey, e);
+            log.warn(ERROR_INVOKING_METHOD, this, "before", e);
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException ex) {
-                log.debug("{} Error while invoking after method for {}", this, actorKey, ex);
+                log.debug(ERROR_INVOKING_METHOD, this, "before", ex);
             }
             actorFailure(e);
             return;
         }
 
         sendLifecycleMessage(initialized(actorKey, deployInfo()));
+    }
+
+    @Override
+    public void bootstrap() {
+        log.info("{} Bootstrapping scenario...", this);
+
+        log.debug("{} Invoking bootstrap method...", this);
+        try {
+            if (bootstrapMethod == null) {
+                throw new IllegalStateException(
+                        "Bootstrap called on a Reactor class that does not declare a @Bootstrap method.");
+            }
+
+            bootstrapMethod.invoke(instance);
+        } catch (Exception e) { // NOSONAR - We want to catch everything here
+            log.warn(ERROR_INVOKING_METHOD, this, "bootstrap", e);
+            try {
+                after();
+            } catch (InvocationTargetException | IllegalAccessException ex) {
+                log.debug(ERROR_INVOKING_METHOD, this, "bootstrap", ex);
+            }
+            actorFailure(e);
+        }
     }
 
     @Override
@@ -143,7 +171,7 @@ public class ActorInternal implements RuntimeActor {
             try {
                 after();
             } catch (InvocationTargetException | IllegalAccessException afterException) {
-                log.warn(MSG_AFTER_METHOD_FAILED, this, afterException);
+                log.warn(ERROR_INVOKING_METHOD, this, "after", afterException);
             }
 
             actorFailure(e);
@@ -212,7 +240,7 @@ public class ActorInternal implements RuntimeActor {
 
             afterMethod.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            log.warn(MSG_AFTER_METHOD_FAILED, this, e);
+            log.warn(ERROR_INVOKING_METHOD, this, "after", e);
             throw e;
         }
     }

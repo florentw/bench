@@ -74,6 +74,10 @@ public final class Actors {
             actorSender.send(config.getKey(), ActorInputMessage.dumpMetrics());
         }
 
+        public void bootstrap() {
+            actorSender.send(config.getKey(), ActorInputMessage.bootstrap());
+        }
+
         public void send(final String from, final Serializable message) {
             actorSender.send(config.getKey(), ActorInputMessage.message(from, message));
         }

@@ -32,7 +32,7 @@ import static io.amaze.bench.shared.util.Files.writeTo;
 /**
  * Created on 3/15/16.
  */
-@io.amaze.bench.api.Actor
+@Actor
 public final class TestActorWriter extends TestActor {
 
     static final String INIT_FILE_CONFIG = "init_file";

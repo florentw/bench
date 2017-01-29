@@ -54,6 +54,9 @@ final class JMSActorMessageListener implements MessageListener {
 
         ActorInputMessage input = msg.get();
         switch (input.getCommand()) { // NOSONAR
+            case BOOTSTRAP:
+                actor.bootstrap();
+                break;
             case CLOSE:
                 actor.close();
                 break;
@@ -64,6 +67,7 @@ final class JMSActorMessageListener implements MessageListener {
                 actor.onMessage(input.getFrom(), input.getPayload());
                 break;
             default:
+                throw new UnsupportedOperationException();
         }
     }
 

@@ -128,6 +128,16 @@ public final class ActorsTest {
     }
 
     @Test
+    public void bootstrap_sends_message_to_actor() {
+        Actors.ActorHandle actorHandle = actors.create(actorConfig);
+
+        actorHandle.bootstrap();
+
+        verify(actorSender).send(ACTOR_KEY, ActorInputMessage.bootstrap());
+        verifyNoMoreInteractions(actorSender);
+    }
+
+    @Test
     public void send_sends_message_to_actor() {
         Actors.ActorHandle actorHandle = actors.create(actorConfig);
         String from = "from";
