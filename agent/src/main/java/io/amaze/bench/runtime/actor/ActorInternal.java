@@ -56,14 +56,14 @@ public class ActorInternal implements RuntimeActor {
     private final MetricsInternal metrics;
     private final Method beforeMethod;
     private final Method afterMethod;
-    private final Reactor instance;
+    private final Reactor<Serializable> instance;
     private final ActorClusterClient client;
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public ActorInternal(@NotNull final ActorKey actorKey,
                          @NotNull final MetricsInternal metrics,
-                         @NotNull final Reactor instance,
+                         @NotNull final Reactor<Serializable> instance,
                          @NotNull final ActorClusterClient client,
                          final Method beforeMethod,
                          final Method afterMethod) {
@@ -187,7 +187,9 @@ public class ActorInternal implements RuntimeActor {
 
     private ActorDeployInfo deployInfo() {
         int pid = new SystemInfo().getOperatingSystem().getProcessId();
-        return new ActorDeployInfo(client.localEndpoint(), pid, ManagementFactory.getRuntimeMXBean().getInputArguments());
+        return new ActorDeployInfo(client.localEndpoint(),
+                                   pid,
+                                   ManagementFactory.getRuntimeMXBean().getInputArguments());
     }
 
     private boolean tryToCallAfterMethod() {

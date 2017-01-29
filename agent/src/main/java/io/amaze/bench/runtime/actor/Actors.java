@@ -32,6 +32,7 @@ import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -56,7 +57,7 @@ public class Actors {
 
     private final AgentClusterClientFactory clientFactory;
 
-    public Actors(@NotNull final AgentClusterClientFactory clientFactory) {
+    Actors(@NotNull final AgentClusterClientFactory clientFactory) {
         this.clientFactory = checkNotNull(clientFactory);
     }
 
@@ -74,7 +75,7 @@ public class Actors {
         MetricsInternal metrics = MetricsInternal.create(actorKey);
 
         ActorClusterClient client = clientFactory.createForActor(actorKey);
-        Reactor reactor = createReactor(actorKey, metrics, clazz, client, config);
+        Reactor<Serializable> reactor = createReactor(actorKey, metrics, clazz, client, config);
 
         return new ActorInternal(actorKey, metrics, reactor, client, beforeMethod, afterMethod);
     }
@@ -90,11 +91,11 @@ public class Actors {
     /**
      * Inject dependencies to create a reactor.
      */
-    private Reactor createReactor(final ActorKey key, //
-                                  final Metrics metrics, //
-                                  final Class<? extends Reactor> clazz, //
-                                  final ActorClusterClient client, //
-                                  final Config config) {
+    private Reactor<Serializable> createReactor(final ActorKey key, //
+                                                final Metrics metrics, //
+                                                final Class<? extends Reactor> clazz, //
+                                                final ActorClusterClient client, //
+                                                final Config config) {
 
         MutablePicoContainer pico = new DefaultPicoContainer();
 
