@@ -99,6 +99,9 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
 
             ActorInputMessage input = jgroupsMsg.inputMessage();
             switch (input.getCommand()) {
+                case BOOTSTRAP:
+                    actor.bootstrap();
+                    break;
                 case CLOSE:
                     actor.close();
                     break;
@@ -109,6 +112,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
                     actor.onMessage(input.getFrom(), input.getPayload());
                     break;
                 default:
+                    throw new UnsupportedOperationException();
             }
         }
     }

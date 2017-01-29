@@ -19,6 +19,7 @@ package io.amaze.bench.shared.util;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Created on 2/28/16.
@@ -32,16 +33,16 @@ public final class Reflection {
     }
 
     /**
-     * Helper to find a method annotated with the given annotation. If not method is annotated, null is returned.<br>
+     * Helper to find a method annotated with the given annotation. If no method is annotated, the optional is empty.<br>
      * If more than one method in the input class in annotated, a {@link java.lang.IllegalArgumentException} is thrown.
      *
      * @param clazz      An input class to look for annotated methods in
      * @param annotation The method annotation to look for
-     * @return An annotated method or null if not found
+     * @return An annotated method if found
      * @throws IllegalArgumentException If more than one method is annotated with the given annotation
      */
-    public static Method findAtMostOneAnnotatedMethod(@NotNull final Class<?> clazz,
-                                                      @NotNull final Class<? extends Annotation> annotation) {
+    public static Optional<Method> findAtMostOneAnnotatedMethod(@NotNull final Class<?> clazz,
+                                                                @NotNull final Class<? extends Annotation> annotation) {
         Method found = null;
         for (Method m : clazz.getMethods()) {
             Annotation an = m.getAnnotation(annotation);
@@ -59,7 +60,7 @@ public final class Reflection {
                 found = m;
             }
         }
-        return found;
+        return Optional.ofNullable(found);
     }
 
 }

@@ -15,10 +15,7 @@
  */
 package io.amaze.bench.cluster.actor;
 
-import io.amaze.bench.api.ActorKey;
-import io.amaze.bench.api.After;
-import io.amaze.bench.api.Before;
-import io.amaze.bench.api.Reactor;
+import io.amaze.bench.api.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
@@ -44,6 +41,13 @@ public interface RuntimeActor extends Closeable {
      * Send "initialized" lifecycle notification if successful.<br>
      */
     void init();
+
+    /**
+     * Triggers the start of a scenario if the Reactor contains a method annotated with @{@link Bootstrap},
+     * and was declared as bootstrap actor in the scenario configuration.<br>
+     * Will send failure messages to the registry.<br>
+     */
+    void bootstrap();
 
     /**
      * Dump the actor's accumulated getMetricsAndFlush and sends a message to the getMetricsAndFlush actor for collection.<br>

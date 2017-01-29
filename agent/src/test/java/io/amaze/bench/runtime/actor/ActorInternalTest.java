@@ -158,6 +158,58 @@ public final class ActorInternalTest {
     }
 
     @Test
+    public void bootstrap_on_reactor_with_no_method_sends_failure_message() throws ValidationException {
+        try (ActorInternal actor = defaultTestActor()) {
+
+            actor.bootstrap();
+
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
+            // Assert after method was called
+            assertTrue(((TestActor) actor.getInstance()).isAfterCalled());
+        }
+    }
+
+    @Test
+    public void bootstrap_on_reactor_with_method_that_throws_sends_failure_message() throws ValidationException {
+        try (ActorInternal actor = createActor(TestActorBootstrapThrows.class)) {
+
+            actor.bootstrap();
+
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
+            // Assert after method was called
+            assertTrue(((TestActorBootstrapThrows) actor.getInstance()).isAfterCalled());
+        }
+    }
+
+    @Test
+    public void bootstrap_on_reactor_with_method_that_throws_then_after_throws() throws ValidationException {
+        try (ActorInternal actor = createActor(TestActorBootstrapThrows.class)) {
+            ((TestActorBootstrapThrows) actor.getInstance()).setAfterMethodThrows(true);
+
+            actor.bootstrap();
+
+            verify(actorRegistrySender).send(argThat(isActorState(ActorLifecycleMessage.State.FAILED)));
+            verifyNoMoreInteractions(actorRegistrySender);
+            // Assert after method was called
+            assertTrue(((TestActorBootstrapThrows) actor.getInstance()).isAfterCalled());
+        }
+    }
+
+    @Test
+    public void bootstrap_on_reactor_with_valid_method_calls_the_method() throws ValidationException {
+        try (ActorInternal actor = createActor(TestActorBootstrap.class)) {
+
+            actor.bootstrap();
+
+            // Assert bootstrap method was called
+            assertTrue(((TestActorBootstrap) actor.getInstance()).isBootstrapCalled());
+            verifyNoMoreInteractions(actorRegistrySender);
+        }
+    }
+
+    @Test
     public void actor_receives_message() throws Exception {
         try (ActorInternal actor = defaultTestActor()) {
 

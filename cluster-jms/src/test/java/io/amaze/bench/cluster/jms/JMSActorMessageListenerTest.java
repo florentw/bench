@@ -62,18 +62,27 @@ public final class JMSActorMessageListenerTest {
     @Test
     public void invalid_jms_message_does_not_throw() {
         listener.onMessage(mock(Message.class));
+
         verifyNoMoreInteractions(actor);
     }
 
     @Test
     public void stop_actor_msg() throws IOException, ClassNotFoundException, JMSException {
         ActorInputMessage inputMsg = ActorInputMessage.close();
-        final byte[] data = JMSHelper.convertToBytes(inputMsg);
-        BytesMessage msg = createTestBytesMessage(data);
 
-        listener.onMessage(msg);
+        sendMessage(inputMsg);
 
         verify(actor).close();
+        verifyNoMoreInteractions(actor);
+    }
+
+    @Test
+    public void bootstrap_actor_msg() throws IOException, ClassNotFoundException, JMSException {
+        ActorInputMessage inputMsg = ActorInputMessage.bootstrap();
+
+        sendMessage(inputMsg);
+
+        verify(actor).bootstrap();
         verifyNoMoreInteractions(actor);
     }
 
@@ -81,10 +90,7 @@ public final class JMSActorMessageListenerTest {
     public void dump_actor_metrics_msg() throws IOException, ClassNotFoundException, JMSException {
         ActorInputMessage inputMsg = ActorInputMessage.dumpMetrics();
 
-        final byte[] data = JMSHelper.convertToBytes(inputMsg);
-        BytesMessage msg = createTestBytesMessage(data);
-
-        listener.onMessage(msg);
+        sendMessage(inputMsg);
 
         verify(actor).dumpAndFlushMetrics();
         verifyNoMoreInteractions(actor);
@@ -94,22 +100,23 @@ public final class JMSActorMessageListenerTest {
     public void on_actor_null_message_msg_throws() throws IOException, ClassNotFoundException, JMSException {
         ActorInputMessage inputMsg = ActorInputMessage.message("", null);
 
-        final byte[] data = JMSHelper.convertToBytes(inputMsg);
-        BytesMessage msg = createTestBytesMessage(data);
-
-        listener.onMessage(msg);
+        sendMessage(inputMsg);
     }
 
     @Test
     public void on_actor_message_msg() throws IOException, ClassNotFoundException, JMSException {
         ActorInputMessage inputMsg = ActorInputMessage.message(DUMMY_ACTOR.getName(), DUMMY_PAYLOAD);
 
+        sendMessage(inputMsg);
+
+        verify(actor).onMessage(argThat(is(DUMMY_ACTOR.getName())), argThat(is(DUMMY_PAYLOAD)));
+        verifyNoMoreInteractions(actor);
+    }
+
+    private void sendMessage(final ActorInputMessage inputMsg) throws JMSException {
         final byte[] data = JMSHelper.convertToBytes(inputMsg);
         BytesMessage msg = createTestBytesMessage(data);
 
         listener.onMessage(msg);
-
-        verify(actor).onMessage(argThat(is(DUMMY_ACTOR.getName())), argThat(is(DUMMY_PAYLOAD)));
-        verifyNoMoreInteractions(actor);
     }
 }

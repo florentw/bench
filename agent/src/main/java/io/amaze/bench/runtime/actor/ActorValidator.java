@@ -15,10 +15,7 @@
  */
 package io.amaze.bench.runtime.actor;
 
-import io.amaze.bench.api.After;
-import io.amaze.bench.api.Before;
-import io.amaze.bench.api.Reactor;
-import io.amaze.bench.api.Sender;
+import io.amaze.bench.api.*;
 import io.amaze.bench.cluster.actor.ValidationException;
 
 import javax.validation.constraints.NotNull;
@@ -73,6 +70,7 @@ public final class ActorValidator {
         verify.mustNotImplementSender();
         verify.canDeclareOneBeforeMethod();
         verify.canDeclareOneAfterMethod();
+        verify.canDeclareOneBootstrapMethod();
 
         if (!verify.causes().isEmpty()) {
             throw ValidationException.create(String.format(VALIDATION_MSG, className), verify.causes());
@@ -139,6 +137,14 @@ public final class ActorValidator {
         void canDeclareOneBeforeMethod() {
             try {
                 findAtMostOneAnnotatedMethod(inputActorClass, Before.class);
+            } catch (IllegalArgumentException e) {
+                causes.add(e);
+            }
+        }
+
+        void canDeclareOneBootstrapMethod() {
+            try {
+                findAtMostOneAnnotatedMethod(inputActorClass, Bootstrap.class);
             } catch (IllegalArgumentException e) {
                 causes.add(e);
             }

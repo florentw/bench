@@ -60,7 +60,10 @@ public final class ActorInputMessageTest {
     public void equality() {
         EqualsTester tester = new EqualsTester();
         tester.addEqualityGroup(ActorInputMessage.close(), ActorInputMessage.close());
+        tester.addEqualityGroup(ActorInputMessage.bootstrap(), ActorInputMessage.bootstrap());
         tester.addEqualityGroup(ActorInputMessage.dumpMetrics(), ActorInputMessage.dumpMetrics());
+        tester.addEqualityGroup(message(), message());
+
         tester.testEquals();
     }
 
@@ -68,8 +71,12 @@ public final class ActorInputMessageTest {
     public void toString_yields_valid_json() {
         assertTrue(Json.isValid(ActorInputMessage.close().toString()));
         assertTrue(Json.isValid(ActorInputMessage.dumpMetrics().toString()));
-        assertTrue(Json.isValid(ActorInputMessage.dumpMetrics().toString()));
-        assertTrue(Json.isValid(ActorInputMessage.message("from", "payload").toString()));
+        assertTrue(Json.isValid(ActorInputMessage.bootstrap().toString()));
+        assertTrue(Json.isValid(message().toString()));
+    }
+
+    private ActorInputMessage message() {
+        return ActorInputMessage.message("from", "payload");
     }
 
 }

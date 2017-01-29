@@ -141,6 +141,17 @@ public final class JgroupsActorClusterClientTest {
         verifyNoMoreInteractions(runtimeActor);
     }
 
+    @Test
+    public void message_listener_forwards_bootstrap() {
+        MessageListener messageListener = new MessageListener(runtimeActor);
+
+        messageListener.onMessage(mock(org.jgroups.Message.class), createMessage(ActorInputMessage.bootstrap()));
+
+        verify(runtimeActor).getKey();
+        verify(runtimeActor).bootstrap();
+        verifyNoMoreInteractions(runtimeActor);
+    }
+
     private JgroupsActorMessage createMessage(ActorInputMessage input) {
         return new JgroupsActorMessage(DUMMY_ACTOR, input);
     }

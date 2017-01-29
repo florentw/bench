@@ -22,10 +22,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -36,15 +36,19 @@ public final class ReflectionTest {
 
     @Test
     public void find_no_annotated_method_returns_null() {
-        Method method = findAtMostOneAnnotatedMethod(NoAnnotatedMethod.class, TestAnnotation.class);
-        assertNull(method);
+        Optional<Method> method = findAtMostOneAnnotatedMethod(NoAnnotatedMethod.class, TestAnnotation.class);
+
+        assertNotNull(method);
+        assertThat(method.isPresent(), is(false));
     }
 
     @Test
     public void find_single_annotated_method_works() {
-        Method method = findAtMostOneAnnotatedMethod(SingleAnnotatedMethod.class, TestAnnotation.class);
+        Optional<Method> method = findAtMostOneAnnotatedMethod(SingleAnnotatedMethod.class, TestAnnotation.class);
+
         assertNotNull(method);
-        assertThat(method.getName(), is("annotated"));
+        assertThat(method.isPresent(), is(true));
+        assertThat(method.get().getName(), is("annotated"));
     }
 
     @Test(expected = IllegalArgumentException.class)
