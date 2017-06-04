@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/2/16.
@@ -29,7 +29,7 @@ public final class JgroupsStateKey implements Serializable {
     private final String key;
 
     public JgroupsStateKey(@NotNull final String key) {
-        this.key = checkNotNull(key);
+        this.key = requireNonNull(key);
     }
 
     public String getKey() {

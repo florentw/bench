@@ -31,7 +31,7 @@ public interface Metrics extends Serializable {
      * @param metric Metric for which to get a {@link Sink} instance for.
      * @return A sink instance of this particular {@link Metric}.
      */
-    Sink sinkFor(Metric metric);
+    Sink sinkFor(@NotNull Metric metric);
 
     /**
      * Offers a facade to produce metrics values.<br>

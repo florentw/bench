@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Message sent by an agent to the agent registry after startup for registration.
@@ -39,14 +39,14 @@ public final class AgentRegistrationMessage implements Serializable {
                                     @NotNull final SystemConfig systemConfig,
                                     @NotNull final Endpoint endpoint,
                                     final long creationTime) {
-        this.key = checkNotNull(key);
-        this.systemConfig = checkNotNull(systemConfig);
-        this.endpoint = checkNotNull(endpoint);
+        this.key = requireNonNull(key);
+        this.systemConfig = requireNonNull(systemConfig);
+        this.endpoint = requireNonNull(endpoint);
         this.creationTime = creationTime;
     }
 
     public static AgentRegistrationMessage create(@NotNull final AgentKey key, @NotNull final Endpoint endpoint) {
-        checkNotNull(key);
+        requireNonNull(key);
 
         SystemConfig systemConfig = SystemConfigs.get();
         long creationTime = System.currentTimeMillis();

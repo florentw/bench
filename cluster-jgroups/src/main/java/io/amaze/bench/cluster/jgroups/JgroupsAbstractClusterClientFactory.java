@@ -26,8 +26,8 @@ import org.jgroups.JChannel;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/23/16.
@@ -44,8 +44,8 @@ public abstract class JgroupsAbstractClusterClientFactory {
 
     protected JgroupsAbstractClusterClientFactory(@NotNull final JChannel jChannel,
                                                   @NotNull final ActorRegistry actorRegistry) {
-        this.jChannel = checkNotNull(jChannel);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.jChannel = requireNonNull(jChannel);
+        this.actorRegistry = requireNonNull(actorRegistry);
 
         jgroupsClusterMember = new JgroupsClusterMember(jChannel);
         registryClusterClient = new JgroupsActorRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
@@ -62,7 +62,7 @@ public abstract class JgroupsAbstractClusterClientFactory {
     }
 
     public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
-        checkNotNull(agentRegistry);
+        requireNonNull(agentRegistry);
         AgentRegistryClusterClient clusterClient = new JgroupsAgentRegistryClusterClient(jgroupsClusterMember.listenerMultiplexer(),
                                                                                          jgroupsClusterMember.stateMultiplexer(),
                                                                                          jgroupsClusterMember.viewMultiplexer(),
@@ -82,7 +82,7 @@ public abstract class JgroupsAbstractClusterClientFactory {
     }
 
     protected static JChannel createJChannel(final Config clusterConfig) {
-        checkNotNull(clusterConfig);
+        requireNonNull(clusterConfig);
         try {
             return new JChannel(clusterConfig.getString(XML_CONFIG));
         } catch (Exception e) { // NOSONAR - No choice here

@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Deployment configuration for actors.
@@ -40,8 +40,8 @@ public final class DeployConfig implements Serializable {
                         @NotNull final List<String> preferredHosts,
                         @NotNull final List<String> jvmArguments) {
         this.forked = forked;
-        this.preferredHosts = checkNotNull(preferredHosts);
-        this.jvmArguments = checkNotNull(jvmArguments);
+        this.preferredHosts = requireNonNull(preferredHosts);
+        this.jvmArguments = requireNonNull(jvmArguments);
     }
 
     /**

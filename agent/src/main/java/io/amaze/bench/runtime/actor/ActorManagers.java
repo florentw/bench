@@ -21,7 +21,7 @@ import io.amaze.bench.cluster.actor.ActorClusterClient;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * /**
@@ -44,7 +44,7 @@ public class ActorManagers {
      */
     @NotNull
     public ActorManager createEmbedded(@NotNull final AgentClusterClientFactory factory) {
-        checkNotNull(factory);
+        requireNonNull(factory);
 
         return new EmbeddedActorManager(factory);
     }
@@ -57,7 +57,7 @@ public class ActorManagers {
      */
     @NotNull
     public ActorManager createForked(@NotNull final ClusterConfigFactory clusterConfigFactory) {
-        checkNotNull(clusterConfigFactory);
+        requireNonNull(clusterConfigFactory);
 
         return new ForkedActorManager(clusterConfigFactory);
     }

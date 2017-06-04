@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Serves as a definition for a type of metric.
@@ -37,13 +37,14 @@ public final class Metric implements Serializable {
     private final Number minValue;
     private final Number maxValue;
 
-    Metric(@NotNull final String key, @NotNull final String unit,
+    Metric(@NotNull final String key,
+           @NotNull final String unit,
            final String label,
            final Number minValue,
            final Number maxValue) {
 
-        this.key = checkNotNull(key);
-        this.unit = checkNotNull(unit);
+        this.key = requireNonNull(key);
+        this.unit = requireNonNull(unit);
         this.label = label;
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -56,7 +57,7 @@ public final class Metric implements Serializable {
      * @param firstUnit Mandatory name of the unit (ex: seconds).
      * @return A {@link MetricBuilder} instance.
      */
-    public static MetricBuilder metric(final String key, final String firstUnit) {
+    public static MetricBuilder metric(@NotNull final String key, @NotNull final String firstUnit) {
         return new MetricBuilder(key, firstUnit);
     }
 

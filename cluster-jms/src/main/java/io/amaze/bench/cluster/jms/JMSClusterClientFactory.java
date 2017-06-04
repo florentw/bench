@@ -32,7 +32,7 @@ import io.amaze.bench.shared.jms.JMSEndpoint;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/3/16.
@@ -45,15 +45,15 @@ public final class JMSClusterClientFactory implements AgentClusterClientFactory 
     private final ActorRegistry actorRegistry;
 
     public JMSClusterClientFactory(@NotNull final Config factoryConfig, @NotNull final ActorRegistry actorRegistry) {
-        checkNotNull(factoryConfig);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        requireNonNull(factoryConfig);
+        this.actorRegistry = requireNonNull(actorRegistry);
         this.serverEndpoint = new JMSEndpoint(factoryConfig);
     }
 
     @VisibleForTesting
     JMSClusterClientFactory(@NotNull final JMSEndpoint serverEndpoint, @NotNull final ActorRegistry actorRegistry) {
-        this.serverEndpoint = checkNotNull(serverEndpoint);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.serverEndpoint = requireNonNull(serverEndpoint);
+        this.actorRegistry = requireNonNull(actorRegistry);
     }
 
     @Override
@@ -63,12 +63,12 @@ public final class JMSClusterClientFactory implements AgentClusterClientFactory 
 
     @Override
     public AgentClusterClient createForAgent(@NotNull AgentKey agent) {
-        return new JMSAgentClusterClient(serverEndpoint, checkNotNull(agent));
+        return new JMSAgentClusterClient(serverEndpoint, requireNonNull(agent));
     }
 
     @Override
     public ActorClusterClient createForActor(@NotNull ActorKey actor) {
-        return new JMSActorClusterClient(serverEndpoint, checkNotNull(actor));
+        return new JMSActorClusterClient(serverEndpoint, requireNonNull(actor));
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class JMSClusterClientFactory implements AgentClusterClientFactory 
 
     @Override
     public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
-        checkNotNull(agentRegistry);
+        requireNonNull(agentRegistry);
         AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
         agentRegistryClient.startRegistryListener(agentRegistry.createClusterListener());
         return agentRegistryClient;

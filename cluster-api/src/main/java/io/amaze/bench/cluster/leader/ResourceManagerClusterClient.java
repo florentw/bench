@@ -33,7 +33,7 @@ public interface ResourceManagerClusterClient extends Closeable {
 
     /**
      * Will create an endpoint for the actor to receive messages.<br>
-     * In practice a message queue is created in the underlying implementation.<br>
+     * In practice a message queue can be created in the underlying implementation.<br>
      * The actor can then consume incoming messages from the queue.
      *
      * @param key The actor name, that will uniquely identify the queue in the cluster.

@@ -18,7 +18,7 @@ package io.amaze.bench.shared.jgroups;
 import java.io.Serializable;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/3/16.
@@ -28,7 +28,7 @@ public final class JgroupsSharedState implements Serializable {
     private final Map<JgroupsStateKey, Serializable> statesByKey;
 
     public JgroupsSharedState(final Map<JgroupsStateKey, Serializable> statesByKey) {
-        this.statesByKey = checkNotNull(statesByKey);
+        this.statesByKey = requireNonNull(statesByKey);
     }
 
     public Map<JgroupsStateKey, Serializable> getStatesByKey() {

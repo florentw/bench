@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Decorator to log actor registry events
@@ -35,13 +35,13 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
     private final ActorRegistryListener delegate;
 
     ActorRegistryListenerLogger(@NotNull final ActorRegistryListener delegate) {
-        this.delegate = checkNotNull(delegate);
+        this.delegate = requireNonNull(delegate);
     }
 
     @Override
     public void onActorCreated(@NotNull final ActorKey key, @NotNull final AgentKey agent) {
-        checkNotNull(key);
-        checkNotNull(agent);
+        requireNonNull(key);
+        requireNonNull(agent);
 
         log.info("Create actor {} by agent {}", key, agent);
 
@@ -50,8 +50,8 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorInitialized(@NotNull final ActorKey key, @NotNull final ActorDeployInfo deployInfo) {
-        checkNotNull(key);
-        checkNotNull(deployInfo);
+        requireNonNull(key);
+        requireNonNull(deployInfo);
 
         log.info("Initialization of actor {} with deploy info {}", key, deployInfo);
 
@@ -60,8 +60,8 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorFailed(@NotNull final ActorKey key, @NotNull final Throwable throwable) {
-        checkNotNull(key);
-        checkNotNull(throwable);
+        requireNonNull(key);
+        requireNonNull(throwable);
 
         log.info("Actor failure of actor {}", key, throwable);
 
@@ -70,7 +70,7 @@ final class ActorRegistryListenerLogger implements ActorRegistryListener {
 
     @Override
     public void onActorClosed(@NotNull final ActorKey key) {
-        checkNotNull(key);
+        requireNonNull(key);
 
         log.info("Close actor {}", key);
 

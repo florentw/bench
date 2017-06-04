@@ -24,9 +24,9 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.METRICS_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/3/16.
@@ -44,7 +44,7 @@ public final class JMSMetricsRepositoryClusterClient extends JMSClusterClient im
 
     @Override
     public void startMetricsListener(@NotNull final MetricsRepositoryListener metricsListener) {
-        checkNotNull(metricsListener);
+        requireNonNull(metricsListener);
         try {
             JMSMetricsRepositoryListener msgListener = new JMSMetricsRepositoryListener(metricsListener);
             getClient().addTopicListener(METRICS_TOPIC, msgListener);

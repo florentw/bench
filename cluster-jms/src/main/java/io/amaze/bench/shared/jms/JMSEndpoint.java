@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 9/4/16.
@@ -45,7 +45,7 @@ public final class JMSEndpoint implements Endpoint {
     public JMSEndpoint(final String host, final int port) {
         checkArgument(port > 0, "Port must be a non-zero positive integer.");
 
-        this.host = checkNotNull(host);
+        this.host = requireNonNull(host);
         this.port = port;
     }
 

@@ -31,7 +31,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 4/2/16.
@@ -48,8 +48,8 @@ public class ResourceManager implements AutoCloseable {
 
     public ResourceManager(@NotNull final ResourceManagerClusterClient resourceManagerClusterClient,
                            @NotNull final AgentRegistry agentRegistry) {
-        this.resourceManagerClusterClient = checkNotNull(resourceManagerClusterClient);
-        this.agentRegistry = checkNotNull(agentRegistry);
+        this.resourceManagerClusterClient = requireNonNull(resourceManagerClusterClient);
+        this.agentRegistry = requireNonNull(agentRegistry);
     }
 
     /**
@@ -59,7 +59,7 @@ public class ResourceManager implements AutoCloseable {
      * @throws IllegalStateException if the agent cannot be created before
      */
     public void createActor(@NotNull final ActorConfig actorConfig) {
-        checkNotNull(actorConfig);
+        requireNonNull(actorConfig);
 
         if (actorsToAgents.containsKey(actorConfig.getKey())) {
             throw new IllegalStateException("Actor " + actorConfig.getKey() + " already exists");
@@ -87,7 +87,7 @@ public class ResourceManager implements AutoCloseable {
      * @throws IllegalArgumentException if the actor does not exist.
      */
     public void closeActor(@NotNull final ActorKey actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
 
         RegisteredAgent agent = actorsToAgents.remove(actor);
         if (agent == null) {

@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/4/16.
@@ -36,9 +36,9 @@ public final class ActorInputMessage implements Serializable {
     private ActorInputMessage(@NotNull final Command command,
                               @NotNull final String from,
                               @NotNull final Serializable payload) {
-        this.command = checkNotNull(command);
-        this.from = checkNotNull(from);
-        this.payload = checkNotNull(payload);
+        this.command = requireNonNull(command);
+        this.from = requireNonNull(from);
+        this.payload = requireNonNull(payload);
 
         checkArgument(!from.trim().isEmpty(), "From should not be empty.");
     }

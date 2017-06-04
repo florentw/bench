@@ -107,11 +107,7 @@ public class TestActor implements Reactor<String> {
         }
 
         synchronized (receivedMessages) {
-            List<String> messages = receivedMessages.get(from);
-            if (messages == null) {
-                messages = new ArrayList<>();
-                receivedMessages.put(from, messages);
-            }
+            List<String> messages = receivedMessages.computeIfAbsent(from, k -> new ArrayList<>());
             messages.add(message);
 
             messageReceived.countDown();

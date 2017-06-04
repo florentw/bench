@@ -20,7 +20,7 @@ import io.amaze.bench.cluster.actor.ActorLifecycleMessage;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Message that notifies the Agent registries of an agent lifecycle change.
@@ -38,8 +38,8 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
     private AgentLifecycleMessage(@NotNull final State state, @NotNull final AgentKey agent,
                                   final AgentRegistrationMessage registrationMessage,
                                   final Throwable throwable) {
-        this.state = checkNotNull(state);
-        this.agent = checkNotNull(agent);
+        this.state = requireNonNull(state);
+        this.agent = requireNonNull(agent);
         this.registrationMessage = registrationMessage;
         this.throwable = throwable;
     }
@@ -51,7 +51,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      * @return A non-{@code null} instance of {@link AgentLifecycleMessage}
      */
     public static AgentLifecycleMessage created(@NotNull final AgentRegistrationMessage registrationMessage) {
-        checkNotNull(registrationMessage);
+        requireNonNull(registrationMessage);
         return new AgentLifecycleMessage(State.CREATED, registrationMessage.getKey(), registrationMessage, null);
     }
 
@@ -62,7 +62,7 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      * @return A non-{@code null} instance of {@link AgentLifecycleMessage}
      */
     public static AgentLifecycleMessage closed(@NotNull final AgentKey agent) {
-        checkNotNull(agent);
+        requireNonNull(agent);
         return new AgentLifecycleMessage(State.CLOSED, agent, null, null);
     }
 
@@ -74,8 +74,8 @@ public final class AgentLifecycleMessage implements LifecycleMessage {
      * @return A non-{@code null} instance of {@link AgentLifecycleMessage}
      */
     public static AgentLifecycleMessage failed(@NotNull final AgentKey agent, @NotNull final Throwable throwable) {
-        checkNotNull(agent);
-        checkNotNull(throwable);
+        requireNonNull(agent);
+        requireNonNull(throwable);
         return new AgentLifecycleMessage(State.FAILED, agent, null, throwable);
     }
 

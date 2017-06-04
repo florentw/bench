@@ -30,7 +30,7 @@ import org.jgroups.JChannel;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/2/16.
@@ -41,7 +41,7 @@ public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterCli
 
     public JgroupsClusterClientFactory(@NotNull final Config factoryConfig,
                                        @NotNull final ActorRegistry actorRegistry) {
-        this(createJChannel(factoryConfig), checkNotNull(actorRegistry), factoryConfig);
+        this(createJChannel(factoryConfig), requireNonNull(actorRegistry), factoryConfig);
     }
 
     @VisibleForTesting
@@ -49,7 +49,7 @@ public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterCli
                                 @NotNull final ActorRegistry actorRegistry,
                                 @NotNull final Config factoryConfig) {
         super(jChannel, actorRegistry);
-        checkNotNull(factoryConfig);
+        requireNonNull(factoryConfig);
 
         jgroupsClusterConfigFactory = new JgroupsClusterConfigFactory(factoryConfig);
     }
@@ -61,13 +61,13 @@ public final class JgroupsClusterClientFactory extends JgroupsAbstractClusterCli
 
     @Override
     public AgentClusterClient createForAgent(@NotNull final AgentKey agent) {
-        checkNotNull(agent);
+        requireNonNull(agent);
         return new JgroupsAgentClusterClient(jgroupsClusterMember.listenerMultiplexer(), jgroupsSender, actorRegistry);
     }
 
     @Override
     public ActorClusterClient createForActor(@NotNull final ActorKey actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
         return new JgroupsActorClusterClient(localEndpoint(),
                                              jgroupsClusterMember.listenerMultiplexer(),
                                              jgroupsSender,

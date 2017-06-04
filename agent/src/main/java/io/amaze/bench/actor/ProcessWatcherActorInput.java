@@ -20,10 +20,10 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.actor.AbstractWatcherActor.MSG_PERIOD_LESS_THAN_ONE_SEC;
 import static io.amaze.bench.actor.ProcessWatcherActorInput.Command.*;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Input message for {@link ProcessWatcherActor}. Static methods are provided to create the messages.
@@ -51,12 +51,12 @@ public final class ProcessWatcherActorInput implements Serializable {
         checkArgument(pid > 0, format("Invalid PID %d", pid));
         checkArgument(periodSeconds > 0, format(MSG_PERIOD_LESS_THAN_ONE_SEC, periodSeconds));
 
-        this.command = checkNotNull(command);
+        this.command = requireNonNull(command);
         this.pid = pid;
         this.periodSeconds = periodSeconds;
 
-        this.metricKeyPrefix = checkNotNull(metricKeyPrefix);
-        this.metricLabelSuffix = checkNotNull(metricLabelSuffix);
+        this.metricKeyPrefix = requireNonNull(metricKeyPrefix);
+        this.metricLabelSuffix = requireNonNull(metricLabelSuffix);
     }
 
     public static ProcessWatcherActorInput startSampling(final int pid,

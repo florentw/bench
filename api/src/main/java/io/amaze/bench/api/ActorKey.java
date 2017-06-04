@@ -18,7 +18,7 @@ package io.amaze.bench.api;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Identifies uniquely an actor instance across the cluster.
@@ -29,7 +29,7 @@ public final class ActorKey implements Key {
     private final String name;
 
     public ActorKey(@NotNull final String name) {
-        this.name = checkNotNull(name);
+        this.name = requireNonNull(name);
     }
 
     @Override

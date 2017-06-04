@@ -37,9 +37,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.created;
 import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.failed;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/3/16.
@@ -65,10 +65,10 @@ public class Agent implements AgentClientListener, Closeable {
                  @NotNull final AgentClusterClientFactory clientFactory, //
                  @NotNull final ActorManagers actorManagers) {
 
-        this.key = checkNotNull(key);
+        this.key = requireNonNull(key);
         Endpoint endpoint = clientFactory.localEndpoint();
-        checkNotNull(clientFactory);
-        checkNotNull(actorManagers);
+        requireNonNull(clientFactory);
+        requireNonNull(actorManagers);
 
         AgentRegistrationMessage regMsg = AgentRegistrationMessage.create(key, endpoint);
 
@@ -87,7 +87,7 @@ public class Agent implements AgentClientListener, Closeable {
 
     @Override
     public synchronized void onActorCreationRequest(@NotNull final ActorConfig actorConfig) {
-        checkNotNull(actorConfig);
+        requireNonNull(actorConfig);
 
         ActorKey actorKey = actorConfig.getKey();
         if (actors.get(actorKey) != null) {
@@ -107,7 +107,7 @@ public class Agent implements AgentClientListener, Closeable {
 
     @Override
     public synchronized void onActorCloseRequest(@NotNull final ActorKey actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
 
         ManagedActor found = actors.remove(actor);
         if (found == null) {

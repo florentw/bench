@@ -24,7 +24,7 @@ import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 9/30/16.
@@ -42,15 +42,15 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
                               @NotNull final JgroupsSender jgroupsSender,
                               @NotNull final ActorRegistry actorRegistry) {
 
-        this.localEndpoint = checkNotNull(localEndpoint);
-        this.multiplexer = checkNotNull(multiplexer);
-        this.jgroupsSender = checkNotNull(jgroupsSender);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.localEndpoint = requireNonNull(localEndpoint);
+        this.multiplexer = requireNonNull(multiplexer);
+        this.jgroupsSender = requireNonNull(jgroupsSender);
+        this.actorRegistry = requireNonNull(actorRegistry);
     }
 
     @Override
     public void startActorListener(@NotNull final RuntimeActor actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
 
         listener = new MessageListener(actor);
         multiplexer.addListener(JgroupsActorMessage.class, listener);
@@ -58,7 +58,7 @@ public final class JgroupsActorClusterClient implements ActorClusterClient {
 
     @Override
     public void sendMetrics(@NotNull final MetricValuesMessage message) {
-        checkNotNull(message);
+        requireNonNull(message);
 
         jgroupsSender.broadcast(message);
     }

@@ -27,7 +27,7 @@ import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/3/16.
@@ -39,12 +39,12 @@ final class JMSMetricsRepositoryListener implements MessageListener {
     private final MetricsRepositoryListener metricsListener;
 
     JMSMetricsRepositoryListener(@NotNull final MetricsRepositoryListener metricsListener) {
-        this.metricsListener = checkNotNull(metricsListener);
+        this.metricsListener = requireNonNull(metricsListener);
     }
 
     @Override
     public void onMessage(final Message jmsMessage) {
-        checkNotNull(jmsMessage);
+        requireNonNull(jmsMessage);
 
         Optional<MetricValuesMessage> metrics = readMessage(jmsMessage);
         if (!metrics.isPresent()) {

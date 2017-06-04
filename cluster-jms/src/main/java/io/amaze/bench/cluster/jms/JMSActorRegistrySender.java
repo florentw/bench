@@ -23,9 +23,9 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.ACTOR_REGISTRY_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/18/16.
@@ -36,8 +36,8 @@ public final class JMSActorRegistrySender implements ActorRegistrySender {
     private final String from;
 
     public JMSActorRegistrySender(@NotNull final JMSClient jmsClient, @NotNull final String from) {
-        this.jmsClient = checkNotNull(jmsClient);
-        this.from = checkNotNull(from);
+        this.jmsClient = requireNonNull(jmsClient);
+        this.from = requireNonNull(from);
     }
 
     @Override

@@ -27,8 +27,8 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.api.metric.Metric.metric;
+import static java.util.Objects.requireNonNull;
 
 /**
  * An actor that monitors the system status using polling.<br>
@@ -76,8 +76,8 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     @Override
     public void onMessage(@NotNull final String from, @NotNull final SystemWatcherInput message)
             throws ReactorException {
-        checkNotNull(from);
-        checkNotNull(message);
+        requireNonNull(from);
+        requireNonNull(message);
 
         switch (message.getCommand()) {
             case START:
@@ -102,7 +102,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
 
     private static SystemWatcherThread watcherThread(final Metrics metrics) {
         SystemInfo systemInfo = new SystemInfo();
-        return new SystemWatcherThread(systemInfo, checkNotNull(metrics));
+        return new SystemWatcherThread(systemInfo, requireNonNull(metrics));
     }
 
     private void cancelTask() {

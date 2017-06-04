@@ -36,10 +36,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/2/16.
@@ -66,7 +66,7 @@ public final class FFMQServer implements JMSServer {
     private final Object queuesLock = new Object();
 
     public FFMQServer(@NotNull JMSEndpoint endpoint) throws io.amaze.bench.shared.jms.JMSException {
-        checkNotNull(endpoint);
+        requireNonNull(endpoint);
 
         try {
             purgeQueuesAnTopicsProperties();
@@ -85,7 +85,7 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public void createQueue(@NotNull final String name) throws io.amaze.bench.shared.jms.JMSException {
-        checkNotNull(name);
+        requireNonNull(name);
 
         try {
             internalCreateQueue(name);
@@ -96,7 +96,7 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public void createTopic(@NotNull final String name) throws io.amaze.bench.shared.jms.JMSException {
-        checkNotNull(name);
+        requireNonNull(name);
 
         try {
             internalCreateTopic(name);
@@ -107,7 +107,7 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public boolean deleteQueue(@NotNull final String queue) {
-        checkNotNull(queue);
+        requireNonNull(queue);
 
         try {
             engine.deleteQueue(queue);
@@ -120,7 +120,7 @@ public final class FFMQServer implements JMSServer {
 
     @Override
     public boolean deleteTopic(@NotNull final String topic) {
-        checkNotNull(topic);
+        requireNonNull(topic);
 
         try {
             engine.deleteTopic(topic);
@@ -178,7 +178,7 @@ public final class FFMQServer implements JMSServer {
         String[] tmpProperties = tmpDir.list((dir, name) -> name.endsWith(PROP_SUFFIX) && //
                 (name.startsWith(QUEUE_PREFIX) || name.startsWith(TOPIC_PREFIX)));
 
-        for (String fileName : checkNotNull(tmpProperties)) {
+        for (String fileName : requireNonNull(tmpProperties)) {
             File tmpFileToDelete = new File(tmpDir.getAbsolutePath() + File.separator + fileName);
             if (!tmpFileToDelete.delete()) {
                 throw new IOException("Could not delete tmp file of FFMQServer " + tmpFileToDelete.getAbsolutePath());
@@ -267,8 +267,8 @@ public final class FFMQServer implements JMSServer {
         private volatile JMSException exception;
 
         ListenerThread(@NotNull final JMSEndpoint endpoint, @NotNull final ClientListener listener) {
-            this.endpoint = checkNotNull(endpoint);
-            this.listener = checkNotNull(listener);
+            this.endpoint = requireNonNull(endpoint);
+            this.listener = requireNonNull(listener);
 
             setName(LISTENER_THREAD_NAME + this.endpoint.getHost() + ":" + this.endpoint.getPort());
             setDaemon(true);

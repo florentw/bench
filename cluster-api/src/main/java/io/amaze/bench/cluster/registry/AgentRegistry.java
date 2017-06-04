@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/28/16.
@@ -40,7 +40,7 @@ public class AgentRegistry {
     private final Set<AgentRegistryListener> clientListeners = new HashSet<>();
 
     public void addListener(@NotNull final AgentRegistryListener listener) {
-        checkNotNull(listener);
+        requireNonNull(listener);
 
         synchronized (clientListeners) {
             clientListeners.add(listener);
@@ -48,7 +48,7 @@ public class AgentRegistry {
     }
 
     public void removeListener(@NotNull final AgentRegistryListener listener) {
-        checkNotNull(listener);
+        requireNonNull(listener);
 
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
@@ -65,7 +65,7 @@ public class AgentRegistry {
     }
 
     public RegisteredAgent byKey(@NotNull final AgentKey agentKey) {
-        checkNotNull(agentKey);
+        requireNonNull(agentKey);
 
         synchronized (agents) {
             return agents.get(agentKey);
@@ -78,7 +78,7 @@ public class AgentRegistry {
     }
 
     public void resetState(@NotNull final Set<RegisteredAgent> initialAgents) {
-        checkNotNull(initialAgents);
+        requireNonNull(initialAgents);
         synchronized (agents) {
             agents.clear();
             for (RegisteredAgent agent : initialAgents) {
@@ -88,7 +88,7 @@ public class AgentRegistry {
     }
 
     public void onEndpointDisconnected(final Endpoint endpoint) {
-        checkNotNull(endpoint);
+        requireNonNull(endpoint);
         List<AgentKey> agentsThatLeft = new ArrayList<>();
         synchronized (agents) {
             Predicate<RegisteredAgent> endpointFilter = agent -> agent.getEndpoint().equals(endpoint);

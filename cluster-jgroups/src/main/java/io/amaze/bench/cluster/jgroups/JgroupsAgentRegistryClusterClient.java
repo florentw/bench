@@ -29,7 +29,7 @@ import org.jgroups.Message;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -52,17 +52,17 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
                                              @NotNull final JgroupsViewMultiplexer viewMultiplexer,
                                              @NotNull final AgentRegistry agentRegistry) {
 
-        this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
-        this.stateMultiplexer = checkNotNull(stateMultiplexer);
-        this.viewMultiplexer = checkNotNull(viewMultiplexer);
-        this.agentRegistry = checkNotNull(agentRegistry);
+        this.listenerMultiplexer = requireNonNull(listenerMultiplexer);
+        this.stateMultiplexer = requireNonNull(stateMultiplexer);
+        this.viewMultiplexer = requireNonNull(viewMultiplexer);
+        this.agentRegistry = requireNonNull(agentRegistry);
 
         stateMultiplexer.addStateHolder(stateHolder());
     }
 
     @Override
     public void startRegistryListener(@NotNull final AgentRegistryListener agentsListener) {
-        checkNotNull(agentsListener);
+        requireNonNull(agentsListener);
 
         listener = registryListener(agentsListener);
         listenerMultiplexer.addListener(AgentLifecycleMessage.class, listener);
@@ -137,7 +137,7 @@ public final class JgroupsAgentRegistryClusterClient implements AgentRegistryClu
 
         @Override
         public void setState(@NotNull final AgentView newState) {
-            checkNotNull(newState);
+            requireNonNull(newState);
             agentRegistry.resetState(newState.registeredAgents());
         }
     }

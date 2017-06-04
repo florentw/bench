@@ -20,7 +20,7 @@ import io.amaze.bench.cluster.actor.ActorInputMessage;
 
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Class to be used to send a message to an actor on Jgroups implementation.<br/>
@@ -34,8 +34,8 @@ public final class JgroupsActorMessage implements Serializable {
     private final ActorInputMessage inputMessage;
 
     public JgroupsActorMessage(final ActorKey to, final ActorInputMessage inputMessage) {
-        this.to = checkNotNull(to);
-        this.inputMessage = checkNotNull(inputMessage);
+        this.to = requireNonNull(to);
+        this.inputMessage = requireNonNull(inputMessage);
     }
 
     public ActorKey to() {

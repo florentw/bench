@@ -22,7 +22,7 @@ import io.amaze.bench.cluster.agent.AgentKey;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/29/16.
@@ -39,9 +39,9 @@ public final class RegisteredActor implements Serializable {
                             @NotNull final State state, //
                             final ActorDeployInfo deployInfo) {
 
-        this.actor = checkNotNull(actor);
-        this.agent = checkNotNull(agent);
-        this.state = checkNotNull(state);
+        this.actor = requireNonNull(actor);
+        this.agent = requireNonNull(agent);
+        this.state = requireNonNull(state);
         this.deployInfo = deployInfo;
     }
 
@@ -52,8 +52,8 @@ public final class RegisteredActor implements Serializable {
 
     public static RegisteredActor initialized(@NotNull RegisteredActor created, //
                                               @NotNull final ActorDeployInfo deployInfo) {
-        checkNotNull(created);
-        checkNotNull(deployInfo);
+        requireNonNull(created);
+        requireNonNull(deployInfo);
         return new RegisteredActor(created.getKey(), created.getAgent(), State.INITIALIZED, deployInfo);
     }
 

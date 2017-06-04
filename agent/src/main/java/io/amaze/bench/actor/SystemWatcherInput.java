@@ -18,9 +18,9 @@ package io.amaze.bench.actor;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.actor.AbstractWatcherActor.MSG_PERIOD_LESS_THAN_ONE_SEC;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Input message for {@link SystemWatcherActor}. Static methods are provided to create the messages.
@@ -36,7 +36,7 @@ public final class SystemWatcherInput implements Serializable {
     private SystemWatcherInput(final Command command, final long periodSeconds) {
         checkArgument(periodSeconds > 0, format(MSG_PERIOD_LESS_THAN_ONE_SEC, periodSeconds));
 
-        this.command = checkNotNull(command);
+        this.command = requireNonNull(command);
         this.periodSeconds = periodSeconds;
     }
 

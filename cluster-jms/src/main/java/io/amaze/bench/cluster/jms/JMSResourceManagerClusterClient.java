@@ -26,9 +26,9 @@ import io.amaze.bench.shared.jms.JMSServer;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.AGENTS_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/8/16.
@@ -40,17 +40,17 @@ public final class JMSResourceManagerClusterClient extends JMSClusterClient impl
     @VisibleForTesting
     JMSResourceManagerClusterClient(@NotNull final JMSServer server, @NotNull final JMSClient client) {
         super(client);
-        this.server = checkNotNull(server);
+        this.server = requireNonNull(server);
     }
 
     JMSResourceManagerClusterClient(@NotNull final JMSServer server, @NotNull final JMSEndpoint endpoint) {
         super(endpoint);
-        this.server = checkNotNull(server);
+        this.server = requireNonNull(server);
     }
 
     @Override
     public void initForActor(@NotNull final ActorKey actorKey) {
-        checkNotNull(actorKey);
+        requireNonNull(actorKey);
 
         try {
             server.createQueue(actorKey.getName());
@@ -61,14 +61,14 @@ public final class JMSResourceManagerClusterClient extends JMSClusterClient impl
 
     @Override
     public void closeForActor(@NotNull final ActorKey actorKey) {
-        checkNotNull(actorKey);
+        requireNonNull(actorKey);
 
         server.deleteQueue(actorKey.getName());
     }
 
     @Override
     public void sendToAgent(@NotNull final AgentInputMessage message) {
-        checkNotNull(message);
+        requireNonNull(message);
 
         try {
             getClient().sendToTopic(AGENTS_TOPIC, message);

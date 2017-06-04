@@ -23,7 +23,7 @@ import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/23/16.
@@ -34,16 +34,16 @@ public final class JgroupsMetricsRepositoryClusterClient implements MetricsRepos
     private JgroupsListener<MetricValuesMessage> jgroupsListener;
 
     public JgroupsMetricsRepositoryClusterClient(@NotNull final JgroupsListenerMultiplexer multiplexer) {
-        this.multiplexer = checkNotNull(multiplexer);
+        this.multiplexer = requireNonNull(multiplexer);
     }
 
     @Override
     public void startMetricsListener(@NotNull final MetricsRepositoryListener metricsListener) {
-        checkNotNull(metricsListener);
+        requireNonNull(metricsListener);
 
         jgroupsListener = (msg, payload) -> {
-            checkNotNull(msg);
-            checkNotNull(payload);
+            requireNonNull(msg);
+            requireNonNull(payload);
 
             metricsListener.onMetricValues(payload);
         };

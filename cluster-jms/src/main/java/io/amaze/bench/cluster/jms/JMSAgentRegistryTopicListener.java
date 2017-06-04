@@ -28,7 +28,7 @@ import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/28/16.
@@ -40,12 +40,12 @@ final class JMSAgentRegistryTopicListener implements MessageListener {
     private final AgentRegistryListener agentsListener;
 
     JMSAgentRegistryTopicListener(@NotNull final AgentRegistryListener agentsListener) {
-        this.agentsListener = checkNotNull(agentsListener);
+        this.agentsListener = requireNonNull(agentsListener);
     }
 
     @Override
     public void onMessage(final javax.jms.Message message) {
-        javax.jms.Message jmsMessage = checkNotNull(message);
+        javax.jms.Message jmsMessage = requireNonNull(message);
 
         Optional<Message> received = readMessage(jmsMessage);
         if (!received.isPresent()) {

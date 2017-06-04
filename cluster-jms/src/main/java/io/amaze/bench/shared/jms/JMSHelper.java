@@ -21,8 +21,8 @@ import javax.jms.BytesMessage;
 import javax.validation.constraints.NotNull;
 import java.io.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/3/16.
@@ -42,7 +42,7 @@ public final class JMSHelper {
      * @throws RuntimeException Can be thrown if deserialization fails.
      */
     public static <T extends Serializable> T objectFromMsg(@NotNull final BytesMessage message) {
-        checkNotNull(message);
+        requireNonNull(message);
 
         try {
             byte[] rawData = new byte[(int) message.getBodyLength()];

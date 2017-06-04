@@ -28,7 +28,7 @@ import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Convert received JMS messages for an actor to calls to its {@link Reactor} methods.
@@ -40,12 +40,12 @@ final class JMSActorMessageListener implements MessageListener {
     private final RuntimeActor actor;
 
     JMSActorMessageListener(@NotNull final RuntimeActor actor) {
-        this.actor = checkNotNull(actor);
+        this.actor = requireNonNull(actor);
     }
 
     @Override
     public void onMessage(@NotNull final Message jmsMessage) {
-        checkNotNull(jmsMessage);
+        requireNonNull(jmsMessage);
 
         Optional<ActorInputMessage> msg = readInputMessageFrom(jmsMessage);
         if (!msg.isPresent()) {

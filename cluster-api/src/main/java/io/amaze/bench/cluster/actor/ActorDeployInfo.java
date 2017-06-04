@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * This bean provides information that is discovered at runtime after deployment on the actor's side.
@@ -41,10 +41,10 @@ public final class ActorDeployInfo implements Serializable {
     }
 
     public ActorDeployInfo(@NotNull final Endpoint endpoint, final int pid, @NotNull final List<String> command) {
-        this.endpoint = checkNotNull(endpoint);
+        this.endpoint = requireNonNull(endpoint);
         checkArgument(pid > 0, "Invalid pid " + pid);
         this.pid = pid;
-        this.command = checkNotNull(command);
+        this.command = requireNonNull(command);
     }
 
     @NotNull

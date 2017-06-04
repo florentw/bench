@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/29/16.
@@ -40,10 +40,10 @@ public final class RegisteredAgent implements Serializable {
                            @NotNull final long creationTime,
                            @NotNull final Endpoint endpoint) {
 
-        this.agentKey = checkNotNull(agentKey);
-        this.systemConfig = checkNotNull(systemConfig);
-        this.creationTime = checkNotNull(creationTime);
-        this.endpoint = checkNotNull(endpoint);
+        this.agentKey = requireNonNull(agentKey);
+        this.systemConfig = requireNonNull(systemConfig);
+        this.creationTime = requireNonNull(creationTime);
+        this.endpoint = requireNonNull(endpoint);
     }
 
     public AgentKey getAgentKey() {

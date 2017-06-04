@@ -24,7 +24,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/16/16.
@@ -51,7 +51,7 @@ public final class Files {
     }
 
     public static String checkFilePath(@NotNull final String filePath) {
-        checkNotNull(filePath);
+        requireNonNull(filePath);
         if (filePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Path is empty.");
         }
@@ -64,14 +64,14 @@ public final class Files {
     }
 
     public static String read(@NotNull final String path) throws IOException {
-        checkNotNull(path);
+        requireNonNull(path);
         byte[] encoded = java.nio.file.Files.readAllBytes(Paths.get(path));
         return new String(encoded, Charset.forName("UTF-8"));
     }
 
     public static void writeTo(@NotNull final File dest, @NotNull final String content) throws IOException {
-        checkNotNull(dest);
-        checkNotNull(content);
+        requireNonNull(dest);
+        requireNonNull(content);
 
         try (PrintWriter writer = new PrintWriter(dest, "UTF-8")) {
             writer.print(content);

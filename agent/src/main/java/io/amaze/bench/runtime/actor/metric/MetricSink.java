@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Internal implementation of API interface {@link io.amaze.bench.api.metric.Metrics.Sink}
@@ -35,16 +35,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 final class MetricSink implements Metrics.Sink {
 
     private final Collection<MetricValue> metricsValues;
-    private final Map<Metric, List<MetricValue>> valuesList;
+    private final Map<Metric, List<MetricValue>> valuesMap;
 
-    MetricSink(final Map<Metric, List<MetricValue>> valuesList, final List<MetricValue> metricsValues) {
-        this.valuesList = checkNotNull(valuesList);
-        this.metricsValues = checkNotNull(metricsValues);
+    MetricSink(final Map<Metric, List<MetricValue>> valuesMap, final List<MetricValue> metricsValues) {
+        this.valuesMap = requireNonNull(valuesMap);
+        this.metricsValues = requireNonNull(metricsValues);
     }
 
     @Override
     public Metrics.Sink add(@NotNull final Number value) {
-        synchronized (valuesList) {
+        synchronized (valuesMap) {
             metricsValues.add(new MetricValue(value));
         }
         return this;
@@ -52,7 +52,7 @@ final class MetricSink implements Metrics.Sink {
 
     @Override
     public Metrics.Sink timed(@NotNull final long timeStamp, @NotNull final Number value) {
-        synchronized (valuesList) {
+        synchronized (valuesMap) {
             metricsValues.add(new MetricTimedValue(timeStamp, value));
         }
         return this;
@@ -60,7 +60,7 @@ final class MetricSink implements Metrics.Sink {
 
     @Override
     public Metrics.Sink timed(@NotNull final Number value) {
-        synchronized (valuesList) {
+        synchronized (valuesMap) {
             metricsValues.add(new MetricTimedValue(System.currentTimeMillis(), value));
         }
         return this;

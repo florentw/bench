@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/20/16.
@@ -40,11 +40,11 @@ public final class SystemConfig implements Serializable {
                  @NotNull final String processorJson,
                  @NotNull final String memoryJson) {
 
-        this.hostName = checkNotNull(hostName);
-        this.operatingSystemJson = checkNotNull(operatingSystemJson);
-        this.fileSystemJson = checkNotNull(fileSystemJson);
-        this.processorJson = checkNotNull(processorJson);
-        this.memoryJson = checkNotNull(memoryJson);
+        this.hostName = requireNonNull(hostName);
+        this.operatingSystemJson = requireNonNull(operatingSystemJson);
+        this.fileSystemJson = requireNonNull(fileSystemJson);
+        this.processorJson = requireNonNull(processorJson);
+        this.memoryJson = requireNonNull(memoryJson);
     }
 
     @VisibleForTesting

@@ -24,7 +24,7 @@ import org.junit.rules.ExternalResource;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/13/16.
@@ -34,7 +34,7 @@ public final class AgentClusterRule extends ExternalResource implements AgentClu
     private final AgentCluster delegateCluster;
 
     private AgentClusterRule(@NotNull final AgentCluster delegateCluster) {
-        this.delegateCluster = checkNotNull(delegateCluster);
+        this.delegateCluster = requireNonNull(delegateCluster);
     }
 
     public static AgentClusterRule newJmsAgentCluster() {

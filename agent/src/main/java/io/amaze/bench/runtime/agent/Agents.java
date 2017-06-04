@@ -27,8 +27,8 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Utility class to create {@link Agent} instances, and synchronize with their lifecycle.
@@ -43,9 +43,9 @@ public final class Agents {
                   @NotNull final AgentClusterClientFactory clientFactory,
                   @NotNull final AgentRegistry agentRegistry) {
 
-        this.actorManagers = checkNotNull(actorManagers);
-        this.clientFactory = checkNotNull(clientFactory);
-        this.agentRegistry = checkNotNull(agentRegistry);
+        this.actorManagers = requireNonNull(actorManagers);
+        this.clientFactory = requireNonNull(clientFactory);
+        this.agentRegistry = requireNonNull(agentRegistry);
     }
 
     /**
@@ -56,7 +56,7 @@ public final class Agents {
      * If a sign off message is received, a {@link AgentSignOffException} is set.
      */
     public Future<Agent> create(@NotNull final AgentKey agentKey) {
-        checkNotNull(agentKey);
+        requireNonNull(agentKey);
         WaitAgentRegistration waitAgentRegistration = new WaitAgentRegistration(agentKey);
         agentRegistry.addListener(waitAgentRegistration);
         return waitAgentRegistration.createAgent();
@@ -88,7 +88,7 @@ public final class Agents {
 
         @Override
         public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
-            checkNotNull(msg);
+            requireNonNull(msg);
 
             awaitUninterruptibly(agentCreated);
 
@@ -100,7 +100,7 @@ public final class Agents {
 
         @Override
         public void onAgentSignOff(@NotNull final AgentKey agentKey) {
-            checkNotNull(agentKey);
+            requireNonNull(agentKey);
 
             awaitUninterruptibly(agentCreated);
 
@@ -112,8 +112,8 @@ public final class Agents {
 
         @Override
         public void onAgentFailed(@NotNull final AgentKey agent, @NotNull final Throwable throwable) {
-            checkNotNull(agentKey);
-            checkNotNull(throwable);
+            requireNonNull(agentKey);
+            requireNonNull(throwable);
 
             awaitUninterruptibly(agentCreated);
 

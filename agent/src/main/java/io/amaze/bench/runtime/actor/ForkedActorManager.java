@@ -34,11 +34,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
 import static com.google.common.base.StandardSystemProperty.JAVA_HOME;
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static io.amaze.bench.cluster.agent.Constants.LOG_DIRECTORY_NAME;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Forks a new JVM to host the actorKey.<br>
@@ -64,8 +64,8 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
     @VisibleForTesting
     ForkedActorManager(@NotNull final ClusterConfigFactory clusterConfigFactory, @NotNull final File localLogDir) {
         super();
-        this.clusterConfigFactory = checkNotNull(clusterConfigFactory);
-        this.localLogDir = checkNotNull(localLogDir);
+        this.clusterConfigFactory = requireNonNull(clusterConfigFactory);
+        this.localLogDir = requireNonNull(localLogDir);
 
         boolean success = localLogDir.mkdir();
         if (!success && !localLogDir.exists()) {
@@ -80,7 +80,7 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
     @NotNull
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
-        checkNotNull(actorConfig);
+        requireNonNull(actorConfig);
 
         final ActorKey actor = actorConfig.getKey();
 
@@ -120,7 +120,7 @@ final class ForkedActorManager implements ActorManager, ProcessTerminationListen
 
     @Override
     public void onProcessExited(@NotNull final String actorName, @NotNull final int exitCode) {
-        checkNotNull(actorName);
+        requireNonNull(actorName);
         log.info("Forked actor {} exited with code {}.", actorName, exitCode);
         removeFromProcesses(new ActorKey(actorName));
     }

@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 9/30/16.
@@ -37,8 +37,8 @@ public class JgroupsListenerMultiplexer {
 
     public <T extends Serializable> void addListener(@NotNull final Class<T> inputMessageType,
                                                      @NotNull final JgroupsListener<T> listener) {
-        checkNotNull(inputMessageType);
-        checkNotNull(listener);
+        requireNonNull(inputMessageType);
+        requireNonNull(listener);
         String msgClassName = inputMessageType.getName();
 
         synchronized (listeners) {
@@ -55,7 +55,7 @@ public class JgroupsListenerMultiplexer {
     }
 
     public void dispatch(@NotNull final Message msg) {
-        checkNotNull(msg);
+        requireNonNull(msg);
 
         listenersFor(msg).forEach(listener -> {
             try {
@@ -67,7 +67,7 @@ public class JgroupsListenerMultiplexer {
     }
 
     public void removeListener(@NotNull final JgroupsListener<? extends Serializable> listener) {
-        checkNotNull(listener);
+        requireNonNull(listener);
 
         synchronized (listeners) {
             Set<String> keysToRemove = new HashSet<>();
@@ -93,7 +93,7 @@ public class JgroupsListenerMultiplexer {
     }
 
     private Set<JgroupsListener<? extends Serializable>> listenersFor(final Message msg) {
-        checkNotNull(msg);
+        requireNonNull(msg);
         String msgClassName = msg.getObject().getClass().getName();
         synchronized (listeners) {
             Set<JgroupsListener<? extends Serializable>> targetListeners = listeners.get(msgClassName); // NOSONAR

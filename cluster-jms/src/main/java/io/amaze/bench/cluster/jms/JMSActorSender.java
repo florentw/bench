@@ -23,8 +23,8 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Interface to send messages to actors within the system.
@@ -34,7 +34,7 @@ public class JMSActorSender implements ActorSender {
     private final JMSClient client;
 
     public JMSActorSender(@NotNull final JMSClient client) {
-        this.client = checkNotNull(client);
+        this.client = requireNonNull(client);
     }
 
     /**
@@ -45,8 +45,8 @@ public class JMSActorSender implements ActorSender {
      */
     @Override
     public void send(@NotNull final ActorKey key, @NotNull final ActorInputMessage message) {
-        checkNotNull(key);
-        checkNotNull(message);
+        requireNonNull(key);
+        requireNonNull(message);
 
         try {
             client.sendToQueue(key.getName(), message);

@@ -24,7 +24,7 @@ import io.amaze.bench.cluster.ClusterConfigFactory;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Jgroups implementation of ClusterConfigFactory
@@ -34,7 +34,7 @@ public final class JgroupsClusterConfigFactory implements ClusterConfigFactory {
     private final Config jgroupsFactoryConfig;
 
     public JgroupsClusterConfigFactory(final Config jgroupsFactoryConfig) {
-        this.jgroupsFactoryConfig = checkNotNull(jgroupsFactoryConfig);
+        this.jgroupsFactoryConfig = requireNonNull(jgroupsFactoryConfig);
     }
 
     @Override

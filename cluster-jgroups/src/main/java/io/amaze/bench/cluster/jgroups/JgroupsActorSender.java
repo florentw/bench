@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 import javax.validation.constraints.NotNull;
 import java.util.NoSuchElementException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/18/16.
@@ -39,14 +39,14 @@ public final class JgroupsActorSender implements ActorSender {
     private final ActorRegistry actorRegistry;
 
     public JgroupsActorSender(@NotNull final JgroupsSender sender, @NotNull final ActorRegistry actorRegistry) {
-        this.sender = checkNotNull(sender);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.sender = requireNonNull(sender);
+        this.actorRegistry = requireNonNull(actorRegistry);
     }
 
     @Override
     public void send(@NotNull final ActorKey to, @NotNull final ActorInputMessage message) {
-        checkNotNull(to);
-        checkNotNull(message);
+        requireNonNull(to);
+        requireNonNull(message);
         log.debug("Sending {} to {}", message, to);
 
         // We need to resolve the endpoint using the actor's key first

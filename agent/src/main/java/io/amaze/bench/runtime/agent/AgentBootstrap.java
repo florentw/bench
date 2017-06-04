@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Main entry point for agents to boot.
@@ -45,7 +45,7 @@ public final class AgentBootstrap {
     }
 
     public static void main(final String[] args) {
-        checkNotNull(args);
+        requireNonNull(args);
 
         if (args.length != 1) {
             log.info("Usage:");
@@ -81,7 +81,7 @@ public final class AgentBootstrap {
         private final Agent agent;
 
         AgentShutdownHook(final Agent agent) {
-            this.agent = checkNotNull(agent);
+            this.agent = requireNonNull(agent);
 
             setName("agent-shutdown-hook-" + agent);
             setDaemon(true);

@@ -26,7 +26,7 @@ import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/8/16.
@@ -41,11 +41,11 @@ public class JgroupsViewMultiplexer {
     private final JChannel jChannel;
 
     public JgroupsViewMultiplexer(@NotNull final JChannel jChannel) {
-        this.jChannel = checkNotNull(jChannel);
+        this.jChannel = requireNonNull(jChannel);
     }
 
     public void addListener(@NotNull final JgroupsViewListener viewListener) {
-        checkNotNull(viewListener);
+        requireNonNull(viewListener);
         log.debug("Adding view listener {}...", viewListener);
 
         synchronized (viewListeners) {
@@ -63,7 +63,7 @@ public class JgroupsViewMultiplexer {
     }
 
     public void removeListener(@NotNull final JgroupsViewListener viewListener) {
-        checkNotNull(viewListener);
+        requireNonNull(viewListener);
         log.debug("Removing view listener {}...", viewListener);
 
         synchronized (viewListeners) {
@@ -72,7 +72,7 @@ public class JgroupsViewMultiplexer {
     }
 
     public void viewUpdate(final View newView) {
-        checkNotNull(newView);
+        requireNonNull(newView);
         log.debug("Processing view update {}...", newView);
 
         Map<JgroupsViewListener, Address[][]> diffs = new HashMap<>();

@@ -38,7 +38,7 @@ import org.junit.rules.ExternalResource;
 import javax.validation.constraints.NotNull;
 import java.util.function.Supplier;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * JUnit 4 rule that allows to instantiate a complete ecosystem to run integration tests.
@@ -65,8 +65,8 @@ public final class BenchRule extends ExternalResource {
     private AgentClusterClientFactory agentClusterClientFactory;
 
     private BenchRule(@NotNull final Config leaderConfig, @NotNull final Config clusterConfig) {
-        this.leaderConfig = checkNotNull(leaderConfig);
-        this.clusterConfig = checkNotNull(clusterConfig);
+        this.leaderConfig = requireNonNull(leaderConfig);
+        this.clusterConfig = requireNonNull(clusterConfig);
     }
 
     public static Supplier<BenchRule> newJmsCluster() {

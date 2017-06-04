@@ -27,7 +27,7 @@ import org.jgroups.JChannel;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/23/16.
@@ -36,7 +36,7 @@ public final class JgroupsLeaderClusterClientFactory extends JgroupsAbstractClus
 
     public JgroupsLeaderClusterClientFactory(@NotNull final Config factoryConfig,
                                              @NotNull final ActorRegistry actorRegistry) {
-        this(createJChannel(checkNotNull(factoryConfig)), checkNotNull(actorRegistry));
+        this(createJChannel(requireNonNull(factoryConfig)), requireNonNull(actorRegistry));
     }
 
     @VisibleForTesting
@@ -56,7 +56,7 @@ public final class JgroupsLeaderClusterClientFactory extends JgroupsAbstractClus
 
     @Override
     public MetricsRepositoryClusterClient createForMetricsRepository(@NotNull final MetricsRepository metricsRepository) {
-        checkNotNull(metricsRepository);
+        requireNonNull(metricsRepository);
         JgroupsMetricsRepositoryClusterClient client = //
                 new JgroupsMetricsRepositoryClusterClient(jgroupsClusterMember.listenerMultiplexer());
         client.startMetricsListener(metricsRepository.createClusterListener());

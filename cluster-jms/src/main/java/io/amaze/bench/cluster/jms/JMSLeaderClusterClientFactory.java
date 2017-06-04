@@ -31,8 +31,8 @@ import io.amaze.bench.shared.jms.*;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/23/16.
@@ -46,7 +46,7 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
 
     public JMSLeaderClusterClientFactory(@NotNull final Config factoryConfig,
                                          @NotNull final ActorRegistry actorRegistry) {
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.actorRegistry = requireNonNull(actorRegistry);
         try {
             this.serverEndpoint = new JMSEndpoint(factoryConfig);
             this.server = new FFMQServer(serverEndpoint);
@@ -60,9 +60,9 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
                                          @NotNull final JMSEndpoint serverEndpoint,
                                          @NotNull final ActorRegistry actorRegistry) {
 
-        this.actorRegistry = checkNotNull(actorRegistry);
-        this.serverEndpoint = checkNotNull(serverEndpoint);
-        this.server = checkNotNull(server);
+        this.actorRegistry = requireNonNull(actorRegistry);
+        this.serverEndpoint = requireNonNull(serverEndpoint);
+        this.server = requireNonNull(server);
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
 
     @Override
     public MetricsRepositoryClusterClient createForMetricsRepository(@NotNull final MetricsRepository metricsRepository) {
-        checkNotNull(metricsRepository);
+        requireNonNull(metricsRepository);
         MetricsRepositoryClusterClient clusterClient = new JMSMetricsRepositoryClusterClient(serverEndpoint);
         clusterClient.startMetricsListener(metricsRepository.createClusterListener());
         return clusterClient;
@@ -93,7 +93,7 @@ public final class JMSLeaderClusterClientFactory implements LeaderClusterClientF
 
     @Override
     public AgentRegistryClusterClient createForAgentRegistry(@NotNull final AgentRegistry agentRegistry) {
-        checkNotNull(agentRegistry);
+        requireNonNull(agentRegistry);
         AgentRegistryClusterClient agentRegistryClient = new JMSAgentRegistryClusterClient(serverEndpoint);
         agentRegistryClient.startRegistryListener(agentRegistry.createClusterListener());
         return agentRegistryClient;

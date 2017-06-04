@@ -23,8 +23,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod;
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -58,7 +58,7 @@ public final class ActorValidator {
      */
     @NotNull
     public Class<? extends Reactor> loadAndValidate(@NotNull final String className) throws ValidationException {
-        checkNotNull(className);
+        requireNonNull(className);
 
         Class<?> clazz = loadClass(className);
 

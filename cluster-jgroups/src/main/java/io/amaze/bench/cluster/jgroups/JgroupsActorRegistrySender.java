@@ -20,7 +20,7 @@ import io.amaze.bench.cluster.actor.ActorRegistrySender;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/18/16.
@@ -30,12 +30,12 @@ public final class JgroupsActorRegistrySender implements ActorRegistrySender {
     private final JgroupsSender jgroupsSender;
 
     public JgroupsActorRegistrySender(@NotNull final JgroupsSender jgroupsSender) {
-        this.jgroupsSender = checkNotNull(jgroupsSender);
+        this.jgroupsSender = requireNonNull(jgroupsSender);
     }
 
     @Override
     public void send(@NotNull final ActorLifecycleMessage actorLifecycleMessage) {
-        checkNotNull(actorLifecycleMessage);
+        requireNonNull(actorLifecycleMessage);
 
         jgroupsSender.broadcast(actorLifecycleMessage);
     }

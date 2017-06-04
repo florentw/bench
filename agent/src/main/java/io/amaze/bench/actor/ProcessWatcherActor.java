@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * An actor that monitors specific processes' metrics using polling.<br>
@@ -74,20 +74,20 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
 
     public ProcessWatcherActor(final Metrics metrics) {
         super(initScheduler("ProcessWatcher-%d"));
-        this.metrics = checkNotNull(metrics);
+        this.metrics = requireNonNull(metrics);
     }
 
     @VisibleForTesting
     ProcessWatcherActor(final Metrics metrics, final ScheduledExecutorService scheduler) {
         super(scheduler);
-        this.metrics = checkNotNull(metrics);
+        this.metrics = requireNonNull(metrics);
     }
 
     @Override
     public void onMessage(@NotNull final String from, @NotNull final ProcessWatcherActorInput message)
             throws ReactorException {
-        checkNotNull(from);
-        checkNotNull(message);
+        requireNonNull(from);
+        requireNonNull(message);
 
         switch (message.getCommand()) {
             case START_SAMPLING:

@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Thread safe
@@ -40,7 +40,7 @@ public class ActorRegistry {
     private final Set<ActorRegistryListener> clientListeners = new HashSet<>();
 
     public void resetState(@NotNull final Set<RegisteredActor> initialActorSet) {
-        checkNotNull(initialActorSet);
+        requireNonNull(initialActorSet);
         synchronized (actors) {
             actors.clear();
             for (RegisteredActor actor : initialActorSet) {
@@ -56,7 +56,7 @@ public class ActorRegistry {
      * @throws IllegalStateException if the listener is already registered
      */
     public void addListener(@NotNull final ActorRegistryListener listener) {
-        checkNotNull(listener);
+        requireNonNull(listener);
 
         synchronized (clientListeners) {
             if (clientListeners.contains(listener)) {
@@ -74,7 +74,7 @@ public class ActorRegistry {
      * @param listener The listener instance to unregister
      */
     public void removeListener(@NotNull final ActorRegistryListener listener) {
-        checkNotNull(listener);
+        requireNonNull(listener);
 
         synchronized (clientListeners) {
             boolean removed = clientListeners.remove(listener);
@@ -89,7 +89,7 @@ public class ActorRegistry {
      * @return {@code null} if no actor with that name is found, returns the actor otherwise
      */
     public RegisteredActor byKey(@NotNull final ActorKey key) {
-        checkNotNull(key);
+        requireNonNull(key);
 
         synchronized (actors) {
             return actors.get(key);
@@ -111,7 +111,7 @@ public class ActorRegistry {
      * @param endpoint The endpoint of the member that left the cluster.
      */
     public void onEndpointDisconnected(final Endpoint endpoint) {
-        checkNotNull(endpoint);
+        requireNonNull(endpoint);
 
         List<ActorKey> actorsThatLeft = new ArrayList<>();
         synchronized (actors) {

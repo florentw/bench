@@ -19,8 +19,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Base class for watcher actors, contains interactions with the {@link ScheduledExecutorService}.
@@ -35,11 +35,11 @@ abstract class AbstractWatcherActor {
     private final ScheduledExecutorService scheduler;
 
     AbstractWatcherActor(final String schedulerThreadNameFormat) {
-        this(initScheduler(checkNotNull(schedulerThreadNameFormat)));
+        this(initScheduler(requireNonNull(schedulerThreadNameFormat)));
     }
 
     AbstractWatcherActor(final ScheduledExecutorService scheduler) {
-        this.scheduler = checkNotNull(scheduler);
+        this.scheduler = requireNonNull(scheduler);
     }
 
     static ScheduledExecutorService initScheduler(final String nameFormat) {

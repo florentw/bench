@@ -21,7 +21,7 @@ import io.amaze.bench.cluster.actor.ActorCreationRequest;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/3/16.
@@ -38,22 +38,22 @@ public final class AgentInputMessage implements Serializable {
                               final ActorCreationRequest creationRequest,
                               final ActorKey actorToClose) {
 
-        this.targetAgent = checkNotNull(targetAgent);
-        this.action = checkNotNull(action);
+        this.targetAgent = requireNonNull(targetAgent);
+        this.action = requireNonNull(action);
         this.creationRequest = creationRequest;
         this.actorToClose = actorToClose;
     }
 
     public static AgentInputMessage createActor(@NotNull final AgentKey targetAgent,
                                                 @NotNull final ActorCreationRequest actorCreationRequest) {
-        checkNotNull(targetAgent);
-        checkNotNull(actorCreationRequest);
+        requireNonNull(targetAgent);
+        requireNonNull(actorCreationRequest);
         return new AgentInputMessage(targetAgent, Action.CREATE_ACTOR, actorCreationRequest, null);
     }
 
     public static AgentInputMessage closeActor(@NotNull final AgentKey targetAgent, @NotNull final ActorKey actorKey) {
-        checkNotNull(targetAgent);
-        checkNotNull(actorKey);
+        requireNonNull(targetAgent);
+        requireNonNull(actorKey);
         return new AgentInputMessage(targetAgent, Action.CLOSE_ACTOR, null, actorKey);
     }
 

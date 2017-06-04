@@ -23,7 +23,7 @@ import org.jgroups.util.Util;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/8/16.
@@ -34,7 +34,7 @@ public final class JgroupsEndpoint implements Endpoint {
     private final Class<? extends Address> addressClass;
 
     public JgroupsEndpoint(@NotNull final Address address) {
-        checkNotNull(address);
+        requireNonNull(address);
         try {
             this.addressClass = address.getClass();
             serializedEndpoint = Util.streamableToByteBuffer(address);

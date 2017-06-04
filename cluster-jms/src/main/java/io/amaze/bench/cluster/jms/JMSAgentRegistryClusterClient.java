@@ -23,9 +23,9 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.AGENT_REGISTRY_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 9/25/16.
@@ -42,7 +42,7 @@ public final class JMSAgentRegistryClusterClient extends JMSClusterClient implem
 
     @Override
     public void startRegistryListener(@NotNull final AgentRegistryListener agentsListener) {
-        checkNotNull(agentsListener);
+        requireNonNull(agentsListener);
 
         try {
             JMSAgentRegistryTopicListener msgListener = new JMSAgentRegistryTopicListener(agentsListener);

@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.concurrent.Future;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Implementation of the MetricsRepository (aggregate incoming metrics from actors).
@@ -43,7 +43,7 @@ public class MetricsRepository {
      * @return Produced metric values for the given actor or {@code null}
      */
     public MetricValuesMessage valuesFor(@NotNull final ActorKey actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
         synchronized (actorValues) {
             return actorValues.get(actor);
         }
@@ -57,14 +57,10 @@ public class MetricsRepository {
      * @return A future of {@link MetricValuesMessage}.
      */
     public Future<MetricValuesMessage> expectValuesFor(@NotNull final ActorKey actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
         synchronized (actorValues) {
             Optional<Future<MetricValuesMessage>> immediate = immediateResult(actor);
-            if (immediate.isPresent()) {
-                return immediate.get();
-            }
-
-            return registerExpectedActor(actor);
+            return immediate.orElseGet(() -> registerExpectedActor(actor));
         }
     }
 

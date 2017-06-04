@@ -31,7 +31,7 @@ import javax.jms.MessageListener;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Convert received JMS messages from the resource manager to the agent to calls to its {@link Reactor} methods.
@@ -44,13 +44,13 @@ final class JMSAgentMessageListener implements MessageListener {
     private final AgentKey agentKey;
 
     JMSAgentMessageListener(@NotNull final AgentKey agentKey, @NotNull final AgentClientListener listener) {
-        this.agentKey = checkNotNull(agentKey);
-        this.listener = checkNotNull(listener);
+        this.agentKey = requireNonNull(agentKey);
+        this.listener = requireNonNull(listener);
     }
 
     @Override
     public void onMessage(@NotNull final Message jmsMessage) {
-        checkNotNull(jmsMessage);
+        requireNonNull(jmsMessage);
 
         Optional<AgentInputMessage> msg = readInputMessageFrom(jmsMessage);
         if (!msg.isPresent()) {

@@ -24,8 +24,8 @@ import org.jgroups.util.Util;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/1/16.
@@ -37,11 +37,11 @@ public class JgroupsSender {
     private final JChannel channel;
 
     public JgroupsSender(@NotNull final JChannel channel) {
-        this.channel = checkNotNull(channel);
+        this.channel = requireNonNull(channel);
     }
 
     public void broadcast(@NotNull final Serializable message) {
-        checkNotNull(message);
+        requireNonNull(message);
         log.debug("Broadcasting {} on {}", message, channel);
 
         try {
@@ -52,8 +52,8 @@ public class JgroupsSender {
     }
 
     public void sendToEndpoint(JgroupsEndpoint endpoint, Serializable message) {
-        checkNotNull(endpoint);
-        checkNotNull(message);
+        requireNonNull(endpoint);
+        requireNonNull(message);
 
         try {
             channel.send(endpoint.getAddress(), Util.objectToByteBuffer(message));

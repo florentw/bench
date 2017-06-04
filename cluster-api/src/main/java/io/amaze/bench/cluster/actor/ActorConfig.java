@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Configuration object for Actors to be created.
@@ -39,10 +39,10 @@ public final class ActorConfig implements Serializable {
                        @NotNull final DeployConfig deployConfig,
                        @NotNull final String actorJsonConfig) {
 
-        this.key = checkNotNull(key);
-        this.className = checkNotNull(className);
-        this.deployConfig = checkNotNull(deployConfig);
-        this.actorJsonConfig = checkNotNull(actorJsonConfig);
+        this.key = requireNonNull(key);
+        this.className = requireNonNull(className);
+        this.deployConfig = requireNonNull(deployConfig);
+        this.actorJsonConfig = requireNonNull(actorJsonConfig);
     }
 
     @NotNull

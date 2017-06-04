@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/2/16.
@@ -38,7 +38,7 @@ public class JgroupsStateMultiplexer {
     private final Map<JgroupsStateKey, JgroupsStateHolder<? extends Serializable>> stateHolderObjects = new HashMap<>();
 
     public void addStateHolder(@NotNull final JgroupsStateHolder<?> holder) {
-        checkNotNull(holder);
+        requireNonNull(holder);
         JgroupsStateKey key = holder.getKey();
 
         log.debug("Adding state holder {}...", key);
@@ -52,7 +52,7 @@ public class JgroupsStateMultiplexer {
     }
 
     public void removeStateHolder(@NotNull final JgroupsStateKey key) {
-        checkNotNull(key);
+        requireNonNull(key);
 
         log.debug("Removing state holder for {}...", key);
 
@@ -62,7 +62,7 @@ public class JgroupsStateMultiplexer {
     }
 
     public void gatherStateFrom(@NotNull final OutputStream output) throws IOException {
-        checkNotNull(output);
+        requireNonNull(output);
 
         log.debug("Gathering state from holders...");
 
@@ -73,7 +73,7 @@ public class JgroupsStateMultiplexer {
     }
 
     public void writeStateTo(@NotNull final InputStream input) throws IOException {
-        checkNotNull(input);
+        requireNonNull(input);
 
         log.debug("Writing state to holders...");
 

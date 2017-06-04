@@ -22,8 +22,8 @@ import org.picocontainer.MutablePicoContainer;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/10/16.
@@ -41,9 +41,9 @@ public final class ClusterClients {
                                    @NotNull final Config clusterConfig,
                                    @NotNull final ActorRegistry actorRegistry) {
 
-        checkNotNull(clusterClientInterface);
-        checkNotNull(clusterConfig);
-        checkNotNull(actorRegistry);
+        requireNonNull(clusterClientInterface);
+        requireNonNull(clusterConfig);
+        requireNonNull(actorRegistry);
 
         String factoryClassName = clusterConfig.getString(FACTORY_CLASS);
         Config factoryConfig = clusterConfig.getConfig(FACTORY_CONFIG);

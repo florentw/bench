@@ -20,7 +20,7 @@ import io.amaze.bench.api.Key;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Identifies uniquely an agent instance across the cluster.
@@ -30,7 +30,7 @@ public final class AgentKey implements Key {
     private final String name;
 
     public AgentKey(@NotNull final String name) {
-        this.name = checkNotNull(name);
+        this.name = requireNonNull(name);
     }
 
     @Override

@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Internal implementation of {@link Metrics} interface provided to actors.
@@ -41,7 +41,7 @@ public final class MetricsInternal implements Metrics {
     private final ActorKey actor;
 
     private MetricsInternal(@NotNull final ActorKey actor) {
-        this.actor = checkNotNull(actor);
+        this.actor = requireNonNull(actor);
     }
 
     public static MetricsInternal create(@NotNull final ActorKey actorKey) {
@@ -49,8 +49,8 @@ public final class MetricsInternal implements Metrics {
     }
 
     @Override
-    public Sink sinkFor(final Metric metric) {
-        checkNotNull(metric);
+    public Sink sinkFor(@NotNull final Metric metric) {
+        requireNonNull(metric);
         synchronized (values) {
             if (!values.containsKey(metric)) {
                 values.put(metric, new ArrayList<>());

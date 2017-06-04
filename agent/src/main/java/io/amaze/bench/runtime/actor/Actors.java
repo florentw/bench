@@ -36,8 +36,8 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.shared.util.Reflection.findAtMostOneAnnotatedMethod;
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -59,7 +59,7 @@ public class Actors {
     private final AgentClusterClientFactory clientFactory;
 
     Actors(@NotNull final AgentClusterClientFactory clientFactory) {
-        this.clientFactory = checkNotNull(clientFactory);
+        this.clientFactory = requireNonNull(clientFactory);
     }
 
     public final RuntimeActor create(@NotNull final ActorKey actorKey,
@@ -112,8 +112,8 @@ public class Actors {
         pico.addComponent(config);
 
         pico.addComponent((Sender) (to, payload) -> {
-            checkNotNull(to);
-            checkNotNull(payload);
+            requireNonNull(to);
+            requireNonNull(payload);
 
             client.actorSender().send(new ActorKey(to), ActorInputMessage.message(key.getName(), payload));
         });

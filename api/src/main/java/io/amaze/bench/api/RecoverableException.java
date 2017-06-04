@@ -17,7 +17,7 @@ package io.amaze.bench.api;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * To be thrown by an Actor when a recoverable error happens. A recoverable error means,<br>
@@ -30,11 +30,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class RecoverableException extends ReactorException {
 
     public RecoverableException(@NotNull final String message) {
-        super(checkNotNull(message));
+        super(requireNonNull(message));
     }
 
     public RecoverableException(@NotNull final String message, @NotNull final Throwable cause) {
-        super(checkNotNull(message), checkNotNull(cause));
+        super(requireNonNull(message), requireNonNull(cause));
     }
 }
 

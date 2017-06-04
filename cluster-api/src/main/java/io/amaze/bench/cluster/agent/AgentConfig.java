@@ -21,7 +21,7 @@ import com.typesafe.config.ConfigRenderOptions;
 
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/13/16.
@@ -33,14 +33,14 @@ public final class AgentConfig {
     private final Config clusterConfig;
 
     public AgentConfig(final File configFile) {
-        checkNotNull(configFile);
+        requireNonNull(configFile);
 
         Config agentConfig = ConfigFactory.parseFile(configFile);
         clusterConfig = agentConfig.getConfig(AGENT_CLUSTER_TAG);
     }
 
     public AgentConfig(final Config clusterConfig) {
-        this.clusterConfig = checkNotNull(clusterConfig);
+        this.clusterConfig = requireNonNull(clusterConfig);
     }
 
     public Config clusterConfig() {

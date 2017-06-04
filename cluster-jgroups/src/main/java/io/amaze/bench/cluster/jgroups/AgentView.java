@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/14/16.
@@ -31,7 +31,7 @@ public final class AgentView implements Serializable {
     private final Set<RegisteredAgent> registeredAgents; // NOSONAR: It is serializable
 
     public AgentView(final Set<RegisteredAgent> registeredAgents) {
-        this.registeredAgents = checkNotNull(registeredAgents);
+        this.registeredAgents = requireNonNull(registeredAgents);
     }
 
     public Set<RegisteredAgent> registeredAgents() {

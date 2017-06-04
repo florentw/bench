@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/2/16.
@@ -59,10 +59,10 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
                          @NotNull final JgroupsStateMultiplexer stateMultiplexer,
                          @NotNull final JgroupsViewMultiplexer viewMultiplexer) {
 
-        this.jChannel = checkNotNull(jChannel);
-        this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
-        this.stateMultiplexer = checkNotNull(stateMultiplexer);
-        this.viewMultiplexer = checkNotNull(viewMultiplexer);
+        this.jChannel = requireNonNull(jChannel);
+        this.listenerMultiplexer = requireNonNull(listenerMultiplexer);
+        this.stateMultiplexer = requireNonNull(stateMultiplexer);
+        this.viewMultiplexer = requireNonNull(viewMultiplexer);
     }
 
     public synchronized void join() {
@@ -79,25 +79,25 @@ public final class JgroupsClusterMember extends ReceiverAdapter {
 
     @Override
     public void receive(@NotNull final Message msg) {
-        checkNotNull(msg);
+        requireNonNull(msg);
         listenerMultiplexer.dispatch(msg);
     }
 
     @Override
     public void getState(@NotNull final OutputStream output) throws IOException {
-        checkNotNull(output);
+        requireNonNull(output);
         stateMultiplexer.gatherStateFrom(output);
     }
 
     @Override
     public void setState(@NotNull final InputStream input) throws IOException {
-        checkNotNull(input);
+        requireNonNull(input);
         stateMultiplexer.writeStateTo(input);
     }
 
     @Override
     public void viewAccepted(final View view) {
-        checkNotNull(view);
+        requireNonNull(view);
         viewMultiplexer.viewUpdate(view);
     }
 

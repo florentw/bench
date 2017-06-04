@@ -26,7 +26,7 @@ import io.amaze.bench.shared.jgroups.JgroupsListenerMultiplexer;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/2/16.
@@ -42,15 +42,15 @@ public final class JgroupsAgentClusterClient implements AgentClusterClient {
                               @NotNull final JgroupsSender jgroupsSender,
                               @NotNull final ActorRegistry actorRegistry) {
 
-        this.multiplexer = checkNotNull(multiplexer);
-        this.jgroupsSender = checkNotNull(jgroupsSender);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.multiplexer = requireNonNull(multiplexer);
+        this.jgroupsSender = requireNonNull(jgroupsSender);
+        this.actorRegistry = requireNonNull(actorRegistry);
     }
 
     @Override
     public void startAgentListener(@NotNull final AgentKey agent, @NotNull final AgentClientListener listener) {
-        checkNotNull(agent);
-        checkNotNull(listener);
+        requireNonNull(agent);
+        requireNonNull(listener);
 
         jgroupsListener = new MessageListener(agent, listener);
         multiplexer.addListener(AgentInputMessage.class, jgroupsListener);

@@ -18,7 +18,7 @@ package io.amaze.bench.cluster;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 2/24/16
@@ -29,8 +29,8 @@ public final class Message<T extends Serializable> implements Serializable {
     private final T data;
 
     public Message(@NotNull final String from, @NotNull final T data) {
-        this.from = checkNotNull(from);
-        this.data = checkNotNull(data);
+        this.from = requireNonNull(from);
+        this.data = requireNonNull(data);
     }
 
     @NotNull

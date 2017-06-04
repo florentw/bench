@@ -34,8 +34,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.*;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Main internal implementation of the {@link RuntimeActor}.
@@ -71,10 +71,10 @@ public class ActorInternal implements RuntimeActor {
                          final Method afterMethod,
                          final Method bootstrapMethod) {
 
-        this.actorKey = checkNotNull(actorKey);
-        this.metrics = checkNotNull(metrics);
-        this.instance = checkNotNull(instance);
-        this.client = checkNotNull(client);
+        this.actorKey = requireNonNull(actorKey);
+        this.metrics = requireNonNull(metrics);
+        this.instance = requireNonNull(instance);
+        this.client = requireNonNull(client);
 
         this.beforeMethod = beforeMethod;
         this.afterMethod = afterMethod;
@@ -151,8 +151,8 @@ public class ActorInternal implements RuntimeActor {
 
     @Override
     public void onMessage(@NotNull final String from, @NotNull final Serializable message) {
-        checkNotNull(from);
-        checkNotNull(message);
+        requireNonNull(from);
+        requireNonNull(message);
 
         try {
             instance.onMessage(from, message);

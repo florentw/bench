@@ -24,9 +24,9 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.AGENT_REGISTRY_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/18/16.
@@ -37,13 +37,13 @@ public final class JMSAgentRegistrySender implements AgentRegistrySender {
     private final AgentKey agent;
 
     public JMSAgentRegistrySender(@NotNull final JMSClient client, @NotNull final AgentKey agent) {
-        this.client = checkNotNull(client);
-        this.agent = checkNotNull(agent);
+        this.client = requireNonNull(client);
+        this.agent = requireNonNull(agent);
     }
 
     @Override
     public void send(@NotNull final AgentLifecycleMessage message) {
-        checkNotNull(message);
+        requireNonNull(message);
 
         try {
             client.sendToTopic(AGENT_REGISTRY_TOPIC, new Message<>(agent.getName(), message));

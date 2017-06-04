@@ -29,7 +29,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.concurrent.Future;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 9/12/16.
@@ -44,13 +44,13 @@ public final class Actors {
                   @NotNull final ResourceManager resourceManager,
                   @NotNull final ActorRegistry actorRegistry) {
 
-        this.actorSender = checkNotNull(actorSender);
-        this.resourceManager = checkNotNull(resourceManager);
-        this.actorRegistry = checkNotNull(actorRegistry);
+        this.actorSender = requireNonNull(actorSender);
+        this.resourceManager = requireNonNull(resourceManager);
+        this.actorRegistry = requireNonNull(actorRegistry);
     }
 
     public ActorHandle create(@NotNull final ActorConfig actorConfig) {
-        checkNotNull(actorConfig);
+        requireNonNull(actorConfig);
         HandleRegistryListener handleRegistryListener = new HandleRegistryListener(actorSender, actorConfig);
         actorRegistry.addListener(handleRegistryListener);
         return handleRegistryListener.createActor();

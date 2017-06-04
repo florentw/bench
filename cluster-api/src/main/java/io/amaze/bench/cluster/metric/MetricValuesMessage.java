@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Immutable container for produced metric values for a given actor.
@@ -36,8 +36,8 @@ public final class MetricValuesMessage implements Serializable {
 
     public MetricValuesMessage(@NotNull final ActorKey fromActor,
                                @NotNull final Map<Metric, List<MetricValue>> metricValues) {
-        this.fromActor = checkNotNull(fromActor);
-        this.metricValues = checkNotNull(metricValues);
+        this.fromActor = requireNonNull(fromActor);
+        this.metricValues = requireNonNull(metricValues);
     }
 
     /**
@@ -107,7 +107,7 @@ public final class MetricValuesMessage implements Serializable {
      */
     @NotNull
     MetricValuesMessage mergeWith(@NotNull final MetricValuesMessage otherValues) {
-        checkNotNull(otherValues);
+        requireNonNull(otherValues);
 
         Map<Metric, List<MetricValue>> metricsCopy = metrics();
 

@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Decorator to log agent registry events
@@ -34,12 +34,12 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
     private final AgentRegistryListener delegate;
 
     AgentRegistryListenerLogger(@NotNull final AgentRegistryListener delegate) {
-        this.delegate = checkNotNull(delegate);
+        this.delegate = requireNonNull(delegate);
     }
 
     @Override
     public void onAgentRegistration(@NotNull final AgentRegistrationMessage msg) {
-        checkNotNull(msg);
+        requireNonNull(msg);
 
         log.info("Agent {} registering, msg: {}", msg.getKey(), msg);
 
@@ -48,7 +48,7 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
     @Override
     public void onAgentSignOff(@NotNull final AgentKey agent) {
-        checkNotNull(agent);
+        requireNonNull(agent);
 
         log.info("Agent {} signing off.", agent);
 
@@ -57,8 +57,8 @@ final class AgentRegistryListenerLogger implements AgentRegistryListener {
 
     @Override
     public void onAgentFailed(final AgentKey agent, final Throwable throwable) {
-        checkNotNull(agent);
-        checkNotNull(throwable);
+        requireNonNull(agent);
+        requireNonNull(throwable);
 
         log.info("Agent {} failed", agent, throwable);
 

@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Message sent by the resource manager to an agent when it is required to create an actor.
@@ -29,7 +29,7 @@ public final class ActorCreationRequest implements Serializable {
     private final ActorConfig actorConfig;
 
     public ActorCreationRequest(@NotNull final ActorConfig actorConfig) {
-        this.actorConfig = checkNotNull(actorConfig);
+        this.actorConfig = requireNonNull(actorConfig);
     }
 
     public ActorConfig getActorConfig() {

@@ -28,7 +28,7 @@ import org.jgroups.Message;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/1/16.
@@ -49,17 +49,17 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
                                       @NotNull final JgroupsViewMultiplexer viewMultiplexer,
                                       @NotNull final ActorRegistry actorRegistry) {
 
-        this.listenerMultiplexer = checkNotNull(listenerMultiplexer);
-        this.stateMultiplexer = checkNotNull(stateMultiplexer);
-        this.actorRegistry = checkNotNull(actorRegistry);
-        this.viewMultiplexer = checkNotNull(viewMultiplexer);
+        this.listenerMultiplexer = requireNonNull(listenerMultiplexer);
+        this.stateMultiplexer = requireNonNull(stateMultiplexer);
+        this.actorRegistry = requireNonNull(actorRegistry);
+        this.viewMultiplexer = requireNonNull(viewMultiplexer);
 
         stateMultiplexer.addStateHolder(stateHolder());
     }
 
     @Override
     public void startRegistryListener(@NotNull final ActorRegistryListener actorsListener) {
-        checkNotNull(actorsListener);
+        requireNonNull(actorsListener);
 
         listener = registryListener(actorsListener);
         listenerMultiplexer.addListener(ActorLifecycleMessage.class, listener);
@@ -100,8 +100,8 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
 
         @Override
         public void onMessage(@NotNull final Message msg, @NotNull final ActorLifecycleMessage lifecycleMessage) {
-            checkNotNull(msg);
-            checkNotNull(lifecycleMessage);
+            requireNonNull(msg);
+            requireNonNull(lifecycleMessage);
 
             lifecycleMessage.sendTo(actorsListener);
         }
@@ -151,7 +151,7 @@ public class JgroupsActorRegistryClusterClient implements ActorRegistryClusterCl
 
         @Override
         public void setState(@NotNull final ActorView newState) {
-            checkNotNull(newState);
+            requireNonNull(newState);
             actorRegistry.resetState(newState.registeredActors());
         }
     }

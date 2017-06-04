@@ -30,9 +30,9 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.METRICS_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 4/24/16.
@@ -44,17 +44,17 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
     @VisibleForTesting
     JMSActorClusterClient(@NotNull final JMSClient client, @NotNull final ActorKey actor) {
         super(client);
-        this.actor = checkNotNull(actor);
+        this.actor = requireNonNull(actor);
     }
 
     JMSActorClusterClient(@NotNull final JMSEndpoint endpoint, @NotNull final ActorKey actor) {
         super(endpoint);
-        this.actor = checkNotNull(actor);
+        this.actor = requireNonNull(actor);
     }
 
     @Override
     public void startActorListener(@NotNull final RuntimeActor actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
 
         try {
             getClient().addQueueListener(actor.getKey().getName(), new JMSActorMessageListener(actor));
@@ -66,7 +66,7 @@ final class JMSActorClusterClient extends JMSClusterClient implements ActorClust
 
     @Override
     public void sendMetrics(@NotNull final MetricValuesMessage metricValuesMessage) {
-        checkNotNull(metricValuesMessage);
+        requireNonNull(metricValuesMessage);
 
         try {
             getClient().sendToTopic(METRICS_TOPIC, metricValuesMessage);

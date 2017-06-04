@@ -24,8 +24,8 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 3/3/16.
@@ -36,11 +36,11 @@ public abstract class JMSClusterClient implements ClusterClient {
 
     @VisibleForTesting
     protected JMSClusterClient(@NotNull final JMSClient client) {
-        this.client = checkNotNull(client);
+        this.client = requireNonNull(client);
     }
 
     public JMSClusterClient(@NotNull final JMSEndpoint endpoint) {
-        checkNotNull(endpoint);
+        requireNonNull(endpoint);
 
         try {
             client = new FFMQClient(endpoint);

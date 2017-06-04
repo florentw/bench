@@ -77,16 +77,13 @@ public final class AgentBootstrapIntegrationTest {
         AgentConfig agentConfig = clusterRule.agentConfig();
         File configFile = temporaryFolder.newFile();
         Files.writeTo(configFile, agentConfig.toJson());
-        agentBootstrapThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    AgentBootstrap.main(new String[]{configFile.getAbsolutePath()});
-                } catch (Exception e) {
-                    Throwables.propagate(e);
-                }
+        agentBootstrapThread = new Thread(() -> {
+            try {
+                AgentBootstrap.main(new String[]{configFile.getAbsolutePath()});
+            } catch (Exception e) {
+                Throwables.propagate(e);
             }
-        };
+        });
 
         registryClusterClient = clusterRule.agentRegistryClusterClient();
     }

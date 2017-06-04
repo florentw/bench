@@ -24,7 +24,7 @@ import io.amaze.bench.cluster.actor.ValidationException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Instantiates actors using the given factory, in the local JVM.
@@ -44,7 +44,7 @@ public class EmbeddedActorManager implements ActorManager {
     @NotNull
     @Override
     public ManagedActor createActor(@NotNull final ActorConfig actorConfig) throws ValidationException {
-        checkNotNull(actorConfig);
+        requireNonNull(actorConfig);
 
         final ActorKey key = actorConfig.getKey();
         final RuntimeActor actor = actors.create(key, actorConfig.getClassName(), actorConfig.getActorJsonConfig());

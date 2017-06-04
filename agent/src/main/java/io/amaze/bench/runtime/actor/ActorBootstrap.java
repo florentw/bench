@@ -33,11 +33,10 @@ import org.apache.logging.log4j.Logger;
 import javax.lang.model.SourceVersion;
 import javax.validation.constraints.NotNull;
 import java.io.Closeable;
-import java.io.IOException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.amaze.bench.shared.util.Files.checkFilePath;
 import static io.amaze.bench.shared.util.Files.readAndDelete;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Acts as entry point for a forked actor JVM, created by a {@link ForkedActorManager}.
@@ -52,8 +51,8 @@ public class ActorBootstrap implements Closeable {
     private final AgentClusterClientFactory clientFactory;
     private volatile RuntimeActor actor;
 
-    ActorBootstrap(@NotNull final AgentClusterClientFactory clientFactory) throws IOException, ValidationException {
-        this.clientFactory = checkNotNull(clientFactory);
+    ActorBootstrap(@NotNull final AgentClusterClientFactory clientFactory) {
+        this.clientFactory = requireNonNull(clientFactory);
         actors = new Actors(this.clientFactory);
     }
 
@@ -61,7 +60,7 @@ public class ActorBootstrap implements Closeable {
      * @param args [actorName] [className] [temporaryClusterConfigFile] [temporaryActorConfigFile]
      */
     public static void main(final String[] args) {
-        checkNotNull(args);
+        requireNonNull(args);
 
         try {
             mainInternal(args);
@@ -73,10 +72,13 @@ public class ActorBootstrap implements Closeable {
 
     @Override
     public void close() {
-        if (actor != null) {
-            actor.close();
+        try {
+            if (actor != null) {
+                actor.close();
+            }
+        } finally {
+            clientFactory.close();
         }
-        clientFactory.close();
     }
 
     @VisibleForTesting
@@ -89,10 +91,9 @@ public class ActorBootstrap implements Closeable {
     /**
      * @param args Arguments from the main method.
      * @throws ValidationException if an invalid actor is being created
-     * @throws IOException         if an error occurs while reading the actors configuration file
      */
     @VisibleForTesting
-    static void mainInternal(final String... args) throws ValidationException, IOException {
+    static void mainInternal(final String... args) throws ValidationException {
         if (args.length != 4) {
             log.error("Usage:");
             log.error("ActorBootstrap <actorName> <className> " + //
@@ -130,14 +131,14 @@ public class ActorBootstrap implements Closeable {
 
     RuntimeActor createActor(final ActorKey key, //
                              final String className, //
-                             final String jsonConfig) throws ValidationException, IOException {
+                             final String jsonConfig) throws ValidationException {
         actor = actors.create(key, className, jsonConfig);
         actor.init();
         return actor;
     }
 
     private static String checkClassName(@NotNull final String className) {
-        checkNotNull(className);
+        requireNonNull(className);
         if (!SourceVersion.isName(className)) {
             throw new IllegalArgumentException("Class name " + className + " is invalid.");
         }
@@ -156,7 +157,7 @@ public class ActorBootstrap implements Closeable {
         private final ActorBootstrap actorBootstrap;
 
         ActorShutdownThread(final ActorBootstrap actorBootstrap, final RuntimeActor actor) {
-            this.actorBootstrap = checkNotNull(actorBootstrap);
+            this.actorBootstrap = requireNonNull(actorBootstrap);
 
             setName("actor-shutdown-hook-" + actor.getKey());
             setDaemon(true);

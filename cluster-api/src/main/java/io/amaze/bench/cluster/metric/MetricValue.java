@@ -18,7 +18,7 @@ package io.amaze.bench.cluster.metric;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 9/6/16.
@@ -28,7 +28,7 @@ public class MetricValue implements Serializable {
     private final Number value;
 
     public MetricValue(final Number value) {
-        this.value = checkNotNull(value);
+        this.value = requireNonNull(value);
     }
 
     public final Number getValue() {

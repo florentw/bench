@@ -22,7 +22,7 @@ import io.amaze.bench.cluster.registry.ActorRegistryListener;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * This message class represents actor lifecycle notifications.
@@ -41,37 +41,37 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
                                   final AgentKey agent,
                                   final ActorDeployInfo deployInfo,
                                   final Throwable throwable) {
-        this.actor = checkNotNull(actor);
-        this.state = checkNotNull(state);
+        this.actor = requireNonNull(actor);
+        this.state = requireNonNull(state);
         this.agent = agent;
         this.deployInfo = deployInfo;
         this.throwable = throwable;
     }
 
     public static ActorLifecycleMessage created(@NotNull final ActorKey actor, @NotNull final AgentKey agent) {
-        checkNotNull(actor);
-        checkNotNull(agent);
+        requireNonNull(actor);
+        requireNonNull(agent);
 
         return new ActorLifecycleMessage(State.CREATED, actor, agent, null, null);
     }
 
     public static ActorLifecycleMessage initialized(@NotNull final ActorKey actor,
                                                     @NotNull final ActorDeployInfo deployInfo) {
-        checkNotNull(actor);
-        checkNotNull(deployInfo);
+        requireNonNull(actor);
+        requireNonNull(deployInfo);
 
         return new ActorLifecycleMessage(State.INITIALIZED, actor, null, deployInfo, null);
     }
 
     public static ActorLifecycleMessage failed(@NotNull final ActorKey actor, @NotNull final Throwable throwable) {
-        checkNotNull(actor);
-        checkNotNull(throwable);
+        requireNonNull(actor);
+        requireNonNull(throwable);
 
         return new ActorLifecycleMessage(State.FAILED, actor, null, null, throwable);
     }
 
     public static ActorLifecycleMessage closed(@NotNull final ActorKey actor) {
-        checkNotNull(actor);
+        requireNonNull(actor);
 
         return new ActorLifecycleMessage(State.CLOSED, actor, null, null, null);
     }
@@ -83,7 +83,7 @@ public final class ActorLifecycleMessage implements LifecycleMessage {
      * @param registryListener Listener to be notified with the event represented by this message.
      */
     public void sendTo(final ActorRegistryListener registryListener) {
-        checkNotNull(registryListener);
+        requireNonNull(registryListener);
 
         switch (getState()) {
             case CREATED:

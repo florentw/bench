@@ -28,9 +28,9 @@ import io.amaze.bench.shared.jms.JMSException;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static io.amaze.bench.cluster.agent.Constants.AGENTS_TOPIC;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 4/24/16.
@@ -42,18 +42,18 @@ final class JMSAgentClusterClient extends JMSClusterClient implements AgentClust
     @VisibleForTesting
     JMSAgentClusterClient(@NotNull final JMSClient client, @NotNull final AgentKey agent) {
         super(client);
-        this.agent = checkNotNull(agent);
+        this.agent = requireNonNull(agent);
     }
 
     JMSAgentClusterClient(@NotNull final JMSEndpoint endpoint, @NotNull final AgentKey agent) {
         super(endpoint);
-        this.agent = checkNotNull(agent);
+        this.agent = requireNonNull(agent);
     }
 
     @Override
     public void startAgentListener(@NotNull final AgentKey agentKey, @NotNull final AgentClientListener listener) {
-        checkNotNull(agentKey);
-        checkNotNull(listener);
+        requireNonNull(agentKey);
+        requireNonNull(listener);
 
         try {
             getClient().addTopicListener(AGENTS_TOPIC, new JMSAgentMessageListener(agentKey, listener));

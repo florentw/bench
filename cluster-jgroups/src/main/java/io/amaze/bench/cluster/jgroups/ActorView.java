@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/2/16.
@@ -31,7 +31,7 @@ public final class ActorView implements Serializable {
     private final Set<RegisteredActor> registeredActors; // NOSONAR: It is serializable
 
     public ActorView(final Set<RegisteredActor> registeredActors) {
-        this.registeredActors = checkNotNull(registeredActors);
+        this.registeredActors = requireNonNull(registeredActors);
     }
 
     public Set<RegisteredActor> registeredActors() {

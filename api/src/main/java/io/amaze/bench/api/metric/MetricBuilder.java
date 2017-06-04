@@ -15,8 +15,10 @@
  */
 package io.amaze.bench.api.metric;
 
+import javax.validation.constraints.NotNull;
+
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Utility to help create a new instance instance {@link Metric}.
@@ -44,9 +46,9 @@ public final class MetricBuilder {
      * @param key  Key of the metric, must be unique per {@link Metrics.Sink} and not empty or whitespace.
      * @param unit Name of the unit. (ex: km/s)
      */
-    MetricBuilder(final String key, final String unit) {
-        this.key = checkNotNull(key);
-        this.unit = checkNotNull(unit);
+    MetricBuilder(@NotNull final String key, @NotNull final String unit) {
+        this.key = requireNonNull(key);
+        this.unit = requireNonNull(unit);
 
         checkArgument(!key.trim().isEmpty(), "Key cannot be empty.");
     }
@@ -55,8 +57,8 @@ public final class MetricBuilder {
      * @param label An optional displayable name for this metric.
      * @return The builder instance
      */
-    public MetricBuilder label(final String label) {
-        this.label = checkNotNull(label);
+    public MetricBuilder label(@NotNull final String label) {
+        this.label = requireNonNull(label);
         return this;
     }
 
@@ -64,8 +66,8 @@ public final class MetricBuilder {
      * @param minValue The optional minimum value that can be taken by values of this metric.
      * @return The builder instance
      */
-    public MetricBuilder minValue(final Number minValue) {
-        this.minValue = checkNotNull(minValue);
+    public MetricBuilder minValue(@NotNull final Number minValue) {
+        this.minValue = requireNonNull(minValue);
         return this;
     }
 
@@ -73,8 +75,8 @@ public final class MetricBuilder {
      * @param maxValue The optional maximum value that can be taken by values of this metric.
      * @return The builder instance
      */
-    public MetricBuilder maxValue(final Number maxValue) {
-        this.maxValue = checkNotNull(maxValue);
+    public MetricBuilder maxValue(@NotNull final Number maxValue) {
+        this.maxValue = requireNonNull(maxValue);
         return this;
     }
 

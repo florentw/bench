@@ -21,7 +21,7 @@ import io.amaze.bench.cluster.leader.ResourceManagerClusterClient;
 
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 10/23/16.
@@ -31,24 +31,24 @@ public final class JgroupsResourceManagerClusterClient implements ResourceManage
     private final JgroupsSender jgroupsSender;
 
     public JgroupsResourceManagerClusterClient(@NotNull final JgroupsSender jgroupsSender) {
-        this.jgroupsSender = checkNotNull(jgroupsSender);
+        this.jgroupsSender = requireNonNull(jgroupsSender);
     }
 
     @Override
     public void initForActor(@NotNull final ActorKey key) {
-        checkNotNull(key);
+        requireNonNull(key);
         // Nothing to do here
     }
 
     @Override
     public void closeForActor(@NotNull final ActorKey key) {
-        checkNotNull(key);
+        requireNonNull(key);
         // Nothing to do here
     }
 
     @Override
     public void sendToAgent(@NotNull final AgentInputMessage message) {
-        checkNotNull(message);
+        requireNonNull(message);
 
         jgroupsSender.broadcast(message);
     }

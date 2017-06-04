@@ -22,8 +22,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Closeable;
 import java.util.concurrent.CountDownLatch;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Perform a waitFor on the given process to know when the process has terminated and avoid zombies.
@@ -43,9 +43,9 @@ final class ProcessWatchDogThread extends Thread implements Closeable {
     ProcessWatchDogThread(@NotNull final String name,
                           @NotNull final Process process,
                           @NotNull final ProcessTerminationListener terminationListener) {
-        this.name = checkNotNull(name);
-        this.process = checkNotNull(process);
-        this.terminationListener = checkNotNull(terminationListener);
+        this.name = requireNonNull(name);
+        this.process = requireNonNull(process);
+        this.terminationListener = requireNonNull(terminationListener);
 
         watchdogStartedLatch = new CountDownLatch(1);
 
