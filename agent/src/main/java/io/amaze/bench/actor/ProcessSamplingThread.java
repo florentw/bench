@@ -23,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 import oshi.json.SystemInfo;
 import oshi.json.software.os.OSProcess;
 
+import static io.amaze.bench.actor.WatcherActorConstants.UNIT_BYTES;
+import static io.amaze.bench.actor.WatcherActorConstants.UNIT_MILLIS;
 import static io.amaze.bench.api.metric.Metric.metric;
 import static java.lang.String.format;
 
@@ -69,25 +71,22 @@ final class ProcessSamplingThread implements Runnable {
     }
 
     private static Metric virtualSize(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.mem.virtualSize", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.mem.virtualSize", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label("Virtual memory usage " + message.getMetricLabelSuffix()).minValue(0).build();
     }
 
     private static Metric residentSet(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.mem.residentRet", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.mem.residentRet", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("RAM usage %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private static Metric kernelTime(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.cpu.kernelTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.cpu.kernelTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU sys time %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private static Metric userTime(final ProcessWatcherActorInput message) {
-        return metric(format("proc.%s.cpu.userTime", message.getMetricKeyPrefix()), AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.cpu.userTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU user time %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 

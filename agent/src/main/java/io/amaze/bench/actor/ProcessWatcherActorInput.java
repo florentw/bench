@@ -20,8 +20,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static io.amaze.bench.actor.AbstractWatcherActor.MSG_PERIOD_LESS_THAN_ONE_SEC;
 import static io.amaze.bench.actor.ProcessWatcherActorInput.Command.*;
+import static io.amaze.bench.actor.WatcherActorConstants.MSG_PERIOD_LESS_THAN_ONE_SEC;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 

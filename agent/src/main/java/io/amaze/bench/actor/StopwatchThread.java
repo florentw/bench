@@ -28,6 +28,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static io.amaze.bench.actor.WatcherActorConstants.UNIT_BYTES;
+import static io.amaze.bench.actor.WatcherActorConstants.UNIT_MILLIS;
 import static io.amaze.bench.api.metric.Metric.metric;
 import static java.lang.String.format;
 
@@ -134,79 +136,67 @@ final class StopwatchThread implements Runnable {
     }
 
     private Metric beforeVirtualSize() {
-        return metric(format("proc.%s.before.mem.virtualSize", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.before.mem.virtualSize", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("Virtual memory usage before %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric afterVirtualSize() {
-        return metric(format("proc.%s.after.mem.virtualSize", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.after.mem.virtualSize", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("Virtual memory usage after %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric deltaVirtualSize() {
-        return metric(format("proc.%s.delta.mem.virtualSize", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.delta.mem.virtualSize", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("Virtual memory usage delta %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric beforeResidentSet() {
-        return metric(format("proc.%s.before.mem.residentRet", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.before.mem.residentRet", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("RAM usage before %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric afterResidentSet() {
-        return metric(format("proc.%s.after.mem.residentRet", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.after.mem.residentRet", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("RAM usage after %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric deltaResidentSet() {
-        return metric(format("proc.%s.delta.mem.residentRet", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_BYTES) //
+        return metric(format("proc.%s.delta.mem.residentRet", message.getMetricKeyPrefix()), UNIT_BYTES) //
                 .label(format("RAM usage delta %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric beforeKernelTime() {
-        return metric(format("proc.%s.before.cpu.kernelTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.before.cpu.kernelTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU sys time before %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric afterKernelTime() {
-        return metric(format("proc.%s.after.cpu.kernelTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.after.cpu.kernelTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU sys time after %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric deltaKernelTime() {
-        return metric(format("proc.%s.delta.cpu.kernelTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.delta.cpu.kernelTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU sys time delta %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric beforeUserTime() {
-        return metric(format("proc.%s.before.cpu.userTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.before.cpu.userTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU user time before %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric afterUserTime() {
-        return metric(format("proc.%s.after.cpu.userTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.after.cpu.userTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU user time after %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric deltaUserTime() {
-        return metric(format("proc.%s.delta.cpu.userTime", message.getMetricKeyPrefix()),
-                      AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.delta.cpu.userTime", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("CPU user time delta %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 
     private Metric elapsed() {
-        return metric(format("proc.%s.elapsed", message.getMetricKeyPrefix()), AbstractWatcherActor.UNIT_MILLIS) //
+        return metric(format("proc.%s.elapsed", message.getMetricKeyPrefix()), UNIT_MILLIS) //
                 .label(format("Elapsed time %s", message.getMetricLabelSuffix())).minValue(0).build();
     }
 }

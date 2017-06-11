@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+import static io.amaze.bench.actor.WatcherActorConstants.MSG_UNSUPPORTED_COMMAND;
+import static io.amaze.bench.actor.WatcherActorConstants.UNIT_BYTES;
 import static io.amaze.bench.api.metric.Metric.metric;
 import static java.util.Objects.requireNonNull;
 
@@ -45,7 +47,7 @@ import static java.util.Objects.requireNonNull;
  * @see SystemWatcherInput Actor input message
  */
 @Actor
-public final class SystemWatcherActor extends AbstractWatcherActor implements Reactor<SystemWatcherInput> {
+public final class SystemWatcherActor implements Reactor<SystemWatcherInput> {
 
     public static final Metric METRIC_LOAD_AVERAGE = metric("sys.loadAverage", "none") //
             .label("Load Average").build();
@@ -59,17 +61,18 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     private static final Logger log = LogManager.getLogger();
 
     private final SystemWatcherThread watcherThread;
+    private final WatcherScheduler scheduler;
 
     private volatile ScheduledFuture<?> currentTaskHandle;
 
     public SystemWatcherActor(final Metrics metrics) {
-        super("SystemWatcher-%d");
+        scheduler = new WatcherScheduler("SystemWatcher-%d");
         watcherThread = watcherThread(metrics);
     }
 
     @VisibleForTesting
     SystemWatcherActor(final Metrics metrics, final ScheduledExecutorService scheduler) {
-        super(scheduler);
+        this.scheduler = new WatcherScheduler(scheduler);
         watcherThread = watcherThread(metrics);
     }
 
@@ -83,7 +86,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
             case START:
             case SET_PERIOD:
                 log.info("System monitoring rescheduled every {} second(s)", message.getPeriodSeconds());
-                currentTaskHandle = reschedule(currentTaskHandle, watcherThread, message.getPeriodSeconds());
+                currentTaskHandle = scheduler.reschedule(currentTaskHandle, watcherThread, message.getPeriodSeconds());
                 break;
             case STOP:
                 log.info("System monitoring stopped.");
@@ -97,7 +100,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
     @After
     public void closeThreads() {
         cancelTask();
-        closeScheduler();
+        scheduler.close();
     }
 
     private static SystemWatcherThread watcherThread(final Metrics metrics) {
@@ -107,7 +110,7 @@ public final class SystemWatcherActor extends AbstractWatcherActor implements Re
 
     private void cancelTask() {
         if (currentTaskHandle != null) {
-            cancel(currentTaskHandle);
+            scheduler.cancel(currentTaskHandle);
         }
     }
 

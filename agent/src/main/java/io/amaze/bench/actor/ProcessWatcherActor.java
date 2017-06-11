@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+import static io.amaze.bench.actor.WatcherActorConstants.MSG_UNSUPPORTED_COMMAND;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -64,22 +65,23 @@ import static java.util.Objects.requireNonNull;
  * @see ProcessWatcherActorInput Actor input message
  */
 @Actor
-public final class ProcessWatcherActor extends AbstractWatcherActor implements Reactor<ProcessWatcherActorInput> {
+public final class ProcessWatcherActor implements Reactor<ProcessWatcherActorInput> {
 
     private final Map<ProcessWatcherActorInput, ScheduledFuture> samplerFutures = new HashMap<>();
     private final Map<StopWatchKey, StopwatchThread> stopWatches = new HashMap<>();
 
     private final SystemInfo systemInfo = new SystemInfo();
     private final Metrics metrics;
+    private final WatcherScheduler scheduler;
 
     public ProcessWatcherActor(final Metrics metrics) {
-        super(initScheduler("ProcessWatcher-%d"));
+        this.scheduler = new WatcherScheduler("ProcessWatcher-%d");
         this.metrics = requireNonNull(metrics);
     }
 
     @VisibleForTesting
     ProcessWatcherActor(final Metrics metrics, final ScheduledExecutorService scheduler) {
-        super(scheduler);
+        this.scheduler = new WatcherScheduler(scheduler);
         this.metrics = requireNonNull(metrics);
     }
 
@@ -110,7 +112,7 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
     @After
     public void closeThreads() {
         cancelTasks();
-        closeScheduler();
+        scheduler.close();
     }
 
     private void startStopwatch(final ProcessWatcherActorInput message) throws RecoverableException {
@@ -123,7 +125,7 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
 
             stopWatches.put(stopWatchKey, stopWatchThread);
         }
-        submit(stopWatchThread);
+        scheduler.submit(stopWatchThread);
     }
 
     private void stopStopwatch(final ProcessWatcherActorInput message) throws RecoverableException {
@@ -143,13 +145,13 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
             if (future == null) {
                 throw new RecoverableException("Sampling already stopped.");
             }
-            cancel(future);
+            scheduler.cancel(future);
         }
     }
 
     private void cancelTasks() {
         synchronized (samplerFutures) {
-            samplerFutures.values().forEach(this::cancel);
+            samplerFutures.values().forEach(scheduler::cancel);
             samplerFutures.clear();
         }
     }
@@ -158,7 +160,7 @@ public final class ProcessWatcherActor extends AbstractWatcherActor implements R
         synchronized (samplerFutures) {
             ScheduledFuture previousFuture = samplerFutures.remove(message);
             ProcessSamplingThread watcherThread = new ProcessSamplingThread(metrics, systemInfo, message);
-            ScheduledFuture future = reschedule(previousFuture, watcherThread, message.getPeriodSeconds());
+            ScheduledFuture future = scheduler.reschedule(previousFuture, watcherThread, message.getPeriodSeconds());
             samplerFutures.put(message, future);
         }
     }

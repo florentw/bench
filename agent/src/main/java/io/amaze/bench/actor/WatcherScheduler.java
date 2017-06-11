@@ -17,43 +17,32 @@ package io.amaze.bench.actor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import java.io.Closeable;
 import java.util.concurrent.*;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Base class for watcher actors, contains interactions with the {@link ScheduledExecutorService}.
+ * Scheduler to be used by monitoring actors, encapsulates interactions with the {@link ScheduledExecutorService}.
  */
-abstract class AbstractWatcherActor {
-
-    static final String UNIT_BYTES = "bytes";
-    static final String UNIT_MILLIS = "ms";
-    static final String MSG_UNSUPPORTED_COMMAND = "Unsupported command.";
-    static final String MSG_PERIOD_LESS_THAN_ONE_SEC = "Period can't be less than 1 second, was %d.";
+public final class WatcherScheduler implements Closeable {
 
     private final ScheduledExecutorService scheduler;
 
-    AbstractWatcherActor(final String schedulerThreadNameFormat) {
+    public WatcherScheduler(final String schedulerThreadNameFormat) {
         this(initScheduler(requireNonNull(schedulerThreadNameFormat)));
     }
 
-    AbstractWatcherActor(final ScheduledExecutorService scheduler) {
+    WatcherScheduler(final ScheduledExecutorService scheduler) {
         this.scheduler = requireNonNull(scheduler);
     }
 
-    static ScheduledExecutorService initScheduler(final String nameFormat) {
-        ThreadFactoryBuilder builder = new ThreadFactoryBuilder();
-        builder.setDaemon(true);
-        builder.setNameFormat(nameFormat);
-        return Executors.newScheduledThreadPool(1, builder.build());
-    }
-
-    final synchronized void submit(final Runnable taskToSubmit) {
+    public synchronized void submit(final Runnable taskToSubmit) {
         scheduler.schedule(taskToSubmit, 0, TimeUnit.SECONDS);
     }
 
-    final synchronized void cancel(final ScheduledFuture<?> scheduledTask) {
+    public synchronized void cancel(final ScheduledFuture<?> scheduledTask) {
         scheduledTask.cancel(true);
         try {
             getUninterruptibly(scheduledTask);
@@ -61,16 +50,23 @@ abstract class AbstractWatcherActor {
         }
     }
 
-    final synchronized ScheduledFuture reschedule(final ScheduledFuture previousFuture,
-                                                  final Runnable taskToSchedule,
-                                                  final long periodSeconds) {
+    public synchronized ScheduledFuture reschedule(final ScheduledFuture previousFuture,
+                                                   final Runnable taskToSchedule,
+                                                   final long periodSeconds) {
         if (previousFuture != null) {
             cancel(previousFuture);
         }
         return scheduler.scheduleAtFixedRate(taskToSchedule, 0, periodSeconds, TimeUnit.SECONDS);
     }
 
-    final synchronized void closeScheduler() {
+    public synchronized void close() {
         scheduler.shutdownNow();
+    }
+
+    private static ScheduledExecutorService initScheduler(final String nameFormat) {
+        ThreadFactoryBuilder builder = new ThreadFactoryBuilder();
+        builder.setDaemon(true);
+        builder.setNameFormat(nameFormat);
+        return Executors.newScheduledThreadPool(1, builder.build());
     }
 }
