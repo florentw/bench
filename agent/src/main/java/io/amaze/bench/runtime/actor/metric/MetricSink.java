@@ -60,9 +60,6 @@ final class MetricSink implements Metrics.Sink {
 
     @Override
     public Metrics.Sink timed(@NotNull final Number value) {
-        synchronized (valuesMap) {
-            metricsValues.add(new MetricTimedValue(System.currentTimeMillis(), value));
-        }
-        return this;
+        return timed(System.currentTimeMillis(), value);
     }
 }

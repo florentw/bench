@@ -52,10 +52,8 @@ public final class MetricsInternal implements Metrics {
     public Sink sinkFor(@NotNull final Metric metric) {
         requireNonNull(metric);
         synchronized (values) {
-            if (!values.containsKey(metric)) {
-                values.put(metric, new ArrayList<>());
-            }
-            return new MetricSink(values, values.get(metric));
+            List<MetricValue> metricsValues = values.computeIfAbsent(metric, k -> new ArrayList<>());
+            return new MetricSink(values, metricsValues);
         }
     }
 

@@ -56,7 +56,7 @@ public final class MetricsInternalTest {
 
     @Test
     public void call_to_add_adds_a_metric() {
-        Metrics.Sink sink = this.metrics.sinkFor(DUMMY_METRIC);
+        Metrics.Sink sink = metrics.sinkFor(DUMMY_METRIC);
 
         sink.add(10);
 
@@ -69,7 +69,7 @@ public final class MetricsInternalTest {
 
     @Test
     public void call_to_timed_adds_a_metric() {
-        MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
+        MetricSink sink = (MetricSink) metrics.sinkFor(DUMMY_METRIC);
 
         sink.timed(10);
         sink.timed(1337L, 11);
@@ -99,7 +99,7 @@ public final class MetricsInternalTest {
 
     @Test
     public void call_to_get_and_flush_clears_lists() {
-        MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
+        MetricSink sink = (MetricSink) metrics.sinkFor(DUMMY_METRIC);
         sink.add(10);
 
         // When
@@ -112,13 +112,13 @@ public final class MetricsInternalTest {
 
     @Test
     public void call_to_flush_twice_does_not_remove_existing_lists() {
-        MetricSink sink = (MetricSink) this.metrics.sinkFor(DUMMY_METRIC);
+        MetricSink sink = (MetricSink) metrics.sinkFor(DUMMY_METRIC);
         sink.add(10);
 
         // When
         metrics.dumpAndFlush();
 
-        MetricSink anotherSink = (MetricSink) this.metrics.sinkFor(ANOTHER_METRIC);
+        MetricSink anotherSink = (MetricSink) metrics.sinkFor(ANOTHER_METRIC);
         anotherSink.add(11);
 
         MetricValuesMessage flushed = metrics.dumpAndFlush();

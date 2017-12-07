@@ -42,7 +42,7 @@ import static io.amaze.bench.cluster.actor.ActorLifecycleMessage.failed;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Created on 3/3/16.
+ * Main logic of the agent, handles actors lifecycle requests: stop/start.
  */
 public class Agent implements AgentClientListener, Closeable {
 
@@ -98,9 +98,7 @@ public class Agent implements AgentClientListener, Closeable {
         log.info("{} Actor creation request for {} with config: {}", this, actorKey, actorConfig);
 
         Optional<ManagedActor> instance = createManagedActor(actorConfig);
-        if (instance.isPresent()) {
-            actors.put(actorKey, instance.get());
-        }
+        instance.ifPresent(managedActor -> actors.put(actorKey, managedActor));
 
         log.info("{} Actor {} created.", this, actorKey);
     }

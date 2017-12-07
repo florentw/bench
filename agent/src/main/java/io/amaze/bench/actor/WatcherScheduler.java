@@ -59,7 +59,8 @@ public final class WatcherScheduler implements Closeable {
         return scheduler.scheduleAtFixedRate(taskToSchedule, 0, periodSeconds, TimeUnit.SECONDS);
     }
 
-    public synchronized void close() {
+    @Override
+    public final synchronized void close() {
         scheduler.shutdownNow();
     }
 

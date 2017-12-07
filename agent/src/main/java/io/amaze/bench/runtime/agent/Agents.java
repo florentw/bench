@@ -63,16 +63,16 @@ public final class Agents {
     }
 
     /**
-     * Is set when the agent signs off.
+     * Is thrown when the agent signs off.
      */
-    public static final class AgentSignOffException extends Exception {
+    static final class AgentSignOffException extends Exception {
 
     }
 
     /**
-     * Is set when the agent fails.
+     * Is thrown when the agent fails.
      */
-    public static final class AgentFailureException extends Exception {
+    static final class AgentFailureException extends Exception {
 
     }
 

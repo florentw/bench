@@ -17,9 +17,18 @@ package io.amaze.bench.runtime.actor;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Interface to be notified of processes termination
+ */
 @FunctionalInterface
 interface ProcessTerminationListener {
 
+    /**
+     * This callback is triggered when a watched process terminates.
+     *
+     * @param name     A non-null process name
+     * @param exitCode The code returned by the process upon exiting
+     */
     void onProcessExited(@NotNull final String name, @NotNull final int exitCode);
 
 }
